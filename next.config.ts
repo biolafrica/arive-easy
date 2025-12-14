@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Clean config - using Webpack via CLI flag
 };
 
 export default nextConfig;
