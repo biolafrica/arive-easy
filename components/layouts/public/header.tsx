@@ -6,30 +6,8 @@ import { useRouter } from 'next/navigation';
 import { HomeModernIcon,Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/primitives/Button';
-
-interface NavItem {
-  label: string;
-  href: string;
-}
-
-interface HeaderProps {
-  navItems?: NavItem[];
-  isAuthenticated?: boolean;
-  userRole?: 'buyer' | 'seller' | 'admin';
-  className?: string;
-}
-
-const DEFAULT_NAV: NavItem[] = [
-  { label: 'View Properties', href: '/properties' },
-  { label: 'Mortgage Calculator', href: '/calculator' },
-  { label: 'Support', href: '/support' },
-];
-
-const DASHBOARD_BY_ROLE: Record<string, string> = {
-  buyer: '/dashboard',
-  seller: '/seller/dashboard',
-  admin: '/admin/dashboard',
-};
+import { DASHBOARD_BY_ROLE, DEFAULT_NAV } from '@/data/layout/public';
+import { HeaderProps } from '@/type/layout/public';
 
 export const Header: React.FC<HeaderProps> = ({
   navItems = DEFAULT_NAV,
