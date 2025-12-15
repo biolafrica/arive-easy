@@ -1,7 +1,7 @@
 'use client';
 
 import { useForm } from '@/hooks/useForm';
-import { Button } from '../Button';
+import { Button } from '../primitives/Button';
 import ImageField from './ImageField'; 
 import RichTextEditor from './RichTextEditor';
 import { FormField, FormProps } from '@/type/form';
