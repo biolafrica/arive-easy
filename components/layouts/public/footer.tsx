@@ -29,7 +29,7 @@ export const Footer: React.FC<FooterProps> = ({
               Join our newsletter
             </h3>
             <p className="mt-2 text-sm text-white/80 max-w-md">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              Lorem ipsum dolor sit amet, consectetur.
             </p>
           </div>
 
@@ -41,11 +41,11 @@ export const Footer: React.FC<FooterProps> = ({
               onSubmit={handleNewsletterSubmit}
               submitLabel="Subscribe"
               fullWidthSubmit={false}
-              className="flex flex-col sm:flex-row sm:gap-3 sm:justify-end" 
+              className="flex flex-col md:flex-row sm:gap-3 sm:justify-end" 
               submitButtonVariant="outline"
             />
 
-            <p className="mt-3 text-xs text-white/70 text-right">
+            <p className="mt-3 text-xs text-white/70 md:text-right ">
               By subscribing you agree to our{' '}
               <Link
                 href="/privacy"
