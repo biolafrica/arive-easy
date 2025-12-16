@@ -31,6 +31,7 @@ export const CTASection: React.FC<CTASectionProps> = ({
         <p className="mx-auto mt-6 max-w-2xl text-base text-secondary sm:text-lg">
           {subtitle}
         </p>
+        
         <div className="mt-10 flex justify-center">
           <Button
             size="lg"

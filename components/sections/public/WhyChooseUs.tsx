@@ -1,6 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
+import { SectionHeading } from '@/components/common/SectionHeading';
 
 interface Props {
   title?: string;
@@ -20,13 +21,13 @@ export const WhyChooseUs: React.FC<Props> = ({
     <section className="py-44 bg-background">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid gap-12 lg:grid-cols-2 lg:items-center">
         <div>
-          <h2 className="text-3xl font-semibold text-heading sm:text-4xl">
-            {title}
-          </h2>
-
-          <p className="mt-4 text-secondary max-w-xl text-base">
-            {description}
-          </p>
+          
+          <SectionHeading
+            title={title}
+            description={description}
+            align="left"
+            size="sm"
+          />
 
           <ul className="mt-8 space-y-4 text-base">
             {features.map((feature, index) => (

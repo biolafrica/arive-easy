@@ -1,4 +1,5 @@
 import { TestimonialCard } from '@/components/cards/public/testimonial';
+import { SectionHeading } from '@/components/common/SectionHeading';
 import { Testimonial } from '@/type/testimonial';
 import React from 'react';
 
@@ -17,14 +18,13 @@ export const TestimonialsSection: React.FC<Props> = ({
   return (
     <section className="py-48 bg-layout">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="max-w-2xl">
-          <h2 className="text-3xl font-semibold text-heading sm:text-4xl">
-            {title}
-          </h2>
-          <p className="mt-4 text-secondary text-base">
-            {description}
-          </p>
-        </div>
+      <SectionHeading
+        title={title}
+        description={description}
+        align="left"
+        size="sm"
+      />
+
 
         <div className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
           {testimonials.map((t) => (
