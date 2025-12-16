@@ -4,7 +4,7 @@ import { ContactInfo } from "@/components/sections/public/contact/ContactInfo";
 
 export default function ContactSection() {
   return (
-    <section className="py-24 bg-background">
+    <section className="py-10 bg-background">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Find Support"
