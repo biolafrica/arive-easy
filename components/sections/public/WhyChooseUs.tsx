@@ -17,7 +17,7 @@ export const WhyChooseUs: React.FC<Props> = ({
   image,
 }) => {
   return (
-    <section className="py-24 bg-background">
+    <section className="py-44 bg-background">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid gap-12 lg:grid-cols-2 lg:items-center">
         <div>
           <h2 className="text-3xl font-semibold text-heading sm:text-4xl">
@@ -31,7 +31,7 @@ export const WhyChooseUs: React.FC<Props> = ({
           <ul className="mt-8 space-y-4 text-base">
             {features.map((feature, index) => (
               <li key={index} className="flex items-start gap-3">
-                <CheckCircleIcon className="h-6 w-6 text-accent shrink-0" />
+                <CheckCircleIcon className="h-6 w-6 text-blue-600 shrink-0" />
                 <span className="text-text">{feature}</span>
               </li>
             ))}

@@ -1,5 +1,6 @@
 import { CTASection } from "@/components/sections/public/CTASection";
 import { ArticleSection } from "@/components/sections/public/HomeArticle";
+import { HowItWorksSection } from "@/components/sections/public/HowItWorks";
 import { TestimonialsSection } from "@/components/sections/public/Testimonial";
 import { WhyChooseUs } from "@/components/sections/public/WhyChooseUs";
 
@@ -10,7 +11,7 @@ import { testimonials } from "@/data/testimonial";
 export default function Home() {
   return (
     <div className="text-5xl">
-      welcome Home
+      <HowItWorksSection/>
       <WhyChooseUs
         image="/why-arive.jpg"
         features={[
@@ -20,7 +21,7 @@ export default function Home() {
           'Low Interest Rates',
         ]}
       />
-      
+
       <TestimonialsSection testimonials={testimonials} />
       <ArticleSection
         eyebrow="Featured Post"
