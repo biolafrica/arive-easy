@@ -1,10 +1,9 @@
 import { CTASection } from "@/components/sections/public/CTASection";
-import { FeaturedProperties } from "@/components/sections/public/FeaturedProperties";
+import { FeaturedProperties } from "@/components/sections/public/property/FeaturedProperties";
 import { ArticleSection } from "@/components/sections/public/HomeArticle";
 import { HowItWorksSection } from "@/components/sections/public/HowItWorks";
 import { TestimonialsSection } from "@/components/sections/public/Testimonial";
 import { WhyChooseUs } from "@/components/sections/public/WhyChooseUs";
-
 
 import { articles } from "@/data/articles";
 import { FEATURED_PROPERTIES } from "@/data/property";
