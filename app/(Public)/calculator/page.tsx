@@ -6,7 +6,7 @@ export default function CalculatorPage(){
       <SectionHeading
         eyebrow="Estimate Your Mortgage"
         title="Mortgage Calculator"
-        description="Calculate your monthly mortgage payments and see how different factors affect your home loan."
+        description="Explore a curated selection of our finest properties, handpicked for their investment potential and unique appeal."
       />
     </div>
   )

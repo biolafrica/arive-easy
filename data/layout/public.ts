@@ -26,9 +26,9 @@ export const DEFAULT_COLUMNS: FooterColumn[] = [
   {
     title: 'Support',
     links: [
-      { label: 'Help Center', href: '/help' },
       { label: 'Contact Us', href: '/support' },
       { label: 'FAQ', href: '/faq' },
+      { label: 'Articles', href: '/articles' },
     ],
   },
   {

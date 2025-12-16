@@ -1,7 +1,17 @@
+import { ArticleSection } from "@/components/sections/public/HomeArticle";
+import { articles } from "@/data/articles";
+
 export default function ArticlePage(){
   return(
     <div>
-      <h4>Article Page</h4>
+      <ArticleSection
+        eyebrow="Articles"
+        title="Homeownership Hub"
+        description="Expert tips, tools, and knowledge for every stage of your homebuying journey."
+        items={articles}
+        ctaLabel="View more"
+        ctaHref="/articles"
+      />
     </div>
   )
 }
