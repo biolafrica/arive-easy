@@ -1,4 +1,5 @@
 import { CTASection } from "@/components/sections/public/CTASection";
+import { FeaturedProperties } from "@/components/sections/public/FeaturedProperties";
 import { ArticleSection } from "@/components/sections/public/HomeArticle";
 import { HowItWorksSection } from "@/components/sections/public/HowItWorks";
 import { TestimonialsSection } from "@/components/sections/public/Testimonial";
@@ -6,11 +7,13 @@ import { WhyChooseUs } from "@/components/sections/public/WhyChooseUs";
 
 
 import { articles } from "@/data/articles";
+import { FEATURED_PROPERTIES } from "@/data/property";
 import { testimonials } from "@/data/testimonial";
 
 export default function Home() {
   return (
     <div className="text-5xl">
+      <FeaturedProperties properties={FEATURED_PROPERTIES}/>
       <HowItWorksSection/>
       <WhyChooseUs
         image="/why-arive.jpg"
