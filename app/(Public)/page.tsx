@@ -14,7 +14,9 @@ export default function Home() {
   return (
     <div className="text-5xl">
       <FeaturedProperties properties={FEATURED_PROPERTIES}/>
+
       <HowItWorksSection/>
+
       <WhyChooseUs
         image="/why-arive.jpg"
         features={[
@@ -26,6 +28,7 @@ export default function Home() {
       />
 
       <TestimonialsSection testimonials={testimonials} />
+
       <ArticleSection
         eyebrow="Featured Post"
         title="News and Articles"
@@ -34,6 +37,7 @@ export default function Home() {
         ctaLabel="View all"
         ctaHref="/articles"
       />
+      
       <CTASection/>
     </div>
   );
