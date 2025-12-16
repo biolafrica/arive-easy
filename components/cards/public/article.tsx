@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArticleItem } from '@/type/article';
+import { UserAvatar } from '@/components/primitives/UserAvatar';
 
 interface ArticleCardProps {
   item: ArticleItem;
@@ -36,9 +37,10 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ item }) => {
         </p>
 
         <div className="mt-3 flex items-center gap-3 text-sm text-secondary">
-          <div className="h-8 w-8 rounded-full bg-hover flex items-center justify-center text-xs font-medium">
-            {item.author.name.charAt(0)}
-          </div>
+          <UserAvatar
+            name={item.author.name}
+            size="sm"
+          />
 
           <div className="flex items-center gap-2">
             <span>{item.author.name}</span>

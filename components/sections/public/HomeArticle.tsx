@@ -23,7 +23,7 @@ export const ArticleSection: React.FC<ArticleSectionProps> = ({
   ctaHref = '/articles',
 }) => {
   return (
-    <section className="py-20 bg-background">
+    <section className="py-20 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto">
 

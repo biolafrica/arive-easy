@@ -1,11 +1,27 @@
 import { CTASection } from "@/components/sections/public/CTASection";
 import { ArticleSection } from "@/components/sections/public/HomeArticle";
+import { TestimonialsSection } from "@/components/sections/public/Testimonial";
+import { WhyChooseUs } from "@/components/sections/public/WhyChooseUs";
+
+
 import { articles } from "@/data/articles";
+import { testimonials } from "@/data/testimonial";
 
 export default function Home() {
   return (
     <div className="text-5xl">
       welcome Home
+      <WhyChooseUs
+        image="/why-arive.jpg"
+        features={[
+          'Trusted Property Listings',
+          'Seamless Digital Process',
+          'Flexible Mortgage Plans',
+          'Low Interest Rates',
+        ]}
+      />
+      
+      <TestimonialsSection testimonials={testimonials} />
       <ArticleSection
         eyebrow="Featured Post"
         title="News and Articles"
@@ -18,3 +34,4 @@ export default function Home() {
     </div>
   );
 }
+
