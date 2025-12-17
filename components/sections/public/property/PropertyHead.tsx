@@ -7,7 +7,6 @@ export default function PropertyHead(){
   return(
     <>
       <header className="mb-8 flex flex-col gap-4">
-        {/* Back */}
         <Button
           variant="text"
           size="sm"
@@ -18,7 +17,6 @@ export default function PropertyHead(){
           Back to properties
         </Button>
 
-        {/* Title + Actions */}
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <h1 className="text-3xl font-semibold text-heading"> Mary Keyes Residence </h1>
