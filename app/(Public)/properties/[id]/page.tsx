@@ -7,7 +7,7 @@ import { PropertyDetails } from '@/components/sections/public/property/PropertyD
 import { PropertyGallery } from '@/components/sections/public/property/PropertyGallery';
 import PropertyHead from '@/components/sections/public/property/PropertyHead';
 import { PropertyPricing } from '@/components/sections/public/property/PropetyPricing';
-import { FEATURED_PROPERTIES } from '@/data/property';
+import { FEATURED_PROPERTIES, mockSingleProperty } from '@/data/property';
 
 
 export default function PropertyDetailPage() {
@@ -19,42 +19,33 @@ export default function PropertyDetailPage() {
         
         <div className="lg:col-span-2 space-y-6">
           <PropertyGallery
-            images={[ '/images/house-1.jpg', '/images/house-2.jpg', '/images/house-3.jpg', '/images/house-1.jpg',]}
-            videoTourUrl='https://bukah.co'
-            virtualTourUrl='https://bukah.co'
-            
+            images={mockSingleProperty.images}
+            tours={mockSingleProperty.tours}
           />
         </div>
 
         <aside className="space-y-6 lg:sticky lg:top-24">
           <PropertyPricing
-            price="₦500,000,000"
-            deposit="₦380,000,000"
-            downPayment="₦360,000,000"
-            period="4 - 30 years"
-            interest="6.7% pa"
+            price={mockSingleProperty.price}
+            deposit={mockSingleProperty.deposit}
+            down_payment={mockSingleProperty.down_payment}
+            payment_period={mockSingleProperty.payment_period}
+            interest_rate={mockSingleProperty.interest_rate}
           />
 
           <PropertyDetails
-            address="15 Mary Keyes Street, Victoria Island"
-            area="1500 sqm"
-            bedrooms={4}
-            bathrooms={3}
-            type="Detached House"
-            interior="Fully Furnished"
+            address_full={mockSingleProperty.address_full}
+            area_sqm={mockSingleProperty.area_sqm}
+            bedrooms={mockSingleProperty.bedrooms}
+            bathrooms={mockSingleProperty.bathrooms}
+            property_type={mockSingleProperty.propert_type}
+            interior={mockSingleProperty.interior}
           />
 
-          <PropertyDescription description="A stunning 4-bedroom residence located in the heart of Victoria Island. This property features modern amenities, spacious rooms, and is perfect for families looking for luxury living in Lagos."
+          <PropertyDescription description={mockSingleProperty.description}
           />
           <PropertyAmenities
-            items={[
-              'Swimming Pool',
-              'Gym / Fitness Center',
-              '24/7 Security',
-              'Backup Generator',
-              'Modern Kitchen',
-              'Balcony / Terrace',
-            ]}
+            amenities={mockSingleProperty.amenities}
           />
           <PropertyActions />
         </aside>

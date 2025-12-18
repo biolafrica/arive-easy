@@ -1,30 +1,15 @@
-export interface Property {
-  id: string;
-  title: string;
-  images: string[];
-  tag?: 'New Listing' | 'Hot Deal' | 'Luxury';
-  price: number;
-  deposit: number;
-  size: number;
-  bedrooms: number;
-  baths: number;
-  downPayment: number;
-  paymentPeriod: string;
-  interestRate: string;
-}
-
 export type VideoTourProvider = 'youtube' | 'vimeo' | 'self';
 export type Virtual3DProvider = 'matterport' | 'custom';
 
 export interface PropertyVideoTour {
   url: string;
-  provider?: VideoTourProvider;
+  provider?: string;
   thumbnail?: string;
 }
 
 export interface PropertyVirtual3DTour {
   url: string;
-  provider?: Virtual3DProvider;
+  provider?: string;
 }
 
 export interface PropertyTours {
@@ -32,7 +17,7 @@ export interface PropertyTours {
   virtual3D?: PropertyVirtual3DTour;
 }
 
-export interface PropertyRow {
+export interface PropertyBase {
   id: string;
   slug: string;
   title: string;
@@ -44,24 +29,21 @@ export interface PropertyRow {
   city: string;
   state: string;
   country: string;
-  latitude?: number | null;
-  longitude?: number | null;
 
-  price: number;
+  price: string;
   currency: string;
-  deposit: number;
-  down_payment: number;
+  deposit: string;
+  down_payment: string;
   payment_period: string;
   interest_rate: string;
-  estimated_monthly_payment?: number | null;
+  estimated_monthly_payment?: string | null;
   roi_estimate?: string | null;
 
   property_type: string;
   interior?: string | null;
-  area_sqm?: number | null;
+  area_sqm?: string | null;
   bedrooms: number;
   bathrooms: number;
-  parking_spaces?: number | null;
 
   images: string[];
   tours?: PropertyTours | null;
@@ -83,3 +65,11 @@ export interface PropertyRow {
   created_at: string;
   updated_at: string;
 }
+
+export type PropertyForm = Pick<PropertyBase, 'title' | 'status' | 'description' | 'state' | 'price' | 'property_type' | 'city'>
+export type PropertyData = Pick<PropertyBase, 'id' |'title'|'images'|'listing_tag'|'price'|'deposit'|'area_sqm'|'bedrooms' |'bathrooms'|'down_payment'|'payment_period'|'interest_rate' >
+export type PropertyPricingProps = Pick<PropertyBase, 'price' | 'deposit' | 'down_payment' | 'payment_period' | 'interest_rate'>
+export type PropertyDetailsProps = Pick<PropertyBase, 'address_full' | 'area_sqm' | 'bedrooms' | 'bathrooms' | 'property_type' | 'interior'>
+export type PropertyGalleryProps = Pick<PropertyBase, 'images' | 'tours'>
+export type PropertyTourCardProps = Pick<PropertyBase, 'images' | 'tours'>
+export type PropertyAmenitiesProps = Pick<PropertyBase, 'amenities'>

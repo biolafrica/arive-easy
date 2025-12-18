@@ -1,9 +1,10 @@
 import { PropertyImageCarousel } from '@/components/common/PropertyImageCarousel';
-import { Property } from '@/type/property';
+import { formatNaira, formatNumber } from '@/lib/formatter';
+import { PropertyData } from '@/type/pages/property';
 import { HeartIcon } from '@heroicons/react/24/outline';
 
 interface Props {
-  property: Property;
+  property: PropertyData;
 }
 
 export function PropertyCard({ property }: Props) {
@@ -12,16 +13,16 @@ export function PropertyCard({ property }: Props) {
       <div className="relative">
         <PropertyImageCarousel images={property.images} />
 
-        {property.tag && (
+        {property.listing_tag && (
           <span
             className={`
               absolute left-3 top-3 rounded-md px-2 py-1 text-xs font-medium text-white
-              ${property.tag === 'New Listing' && 'bg-blue-600'}
-              ${property.tag === 'Hot Deal' && 'bg-red-500'}
-              ${property.tag === 'Luxury' && 'bg-yellow-500 text-black'}
+              ${property.listing_tag === 'New Listing' && 'bg-blue-600'}
+              ${property.listing_tag === 'Hot Deal' && 'bg-red-500'}
+              ${property.listing_tag === 'Luxury' && 'bg-yellow-500 text-black'}
             `}
           >
-            {property.tag}
+            {property.listing_tag}
           </span>
         )}
       </div>
@@ -37,23 +38,23 @@ export function PropertyCard({ property }: Props) {
         <div className="mt-4 space-y-2 text-sm">
           <div className="flex justify-between text-accent">
             <span>Property Price</span>
-            <span>₦{property.price.toLocaleString()}</span>
+            <span>{formatNaira(property.price)}</span>
           </div>
           <div className="flex justify-between text-accent">
             <span>Deposit</span>
-            <span>₦{property.deposit.toLocaleString()}</span>
+            <span>{formatNaira(property.deposit)}</span>
           </div>
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2 text-xs">
           <span className="rounded-md border px-2 py-1">
-            {property.size} sqm
+            {formatNumber(property.area_sqm)} sqm
           </span>
           <span className="rounded-md border px-2 py-1">
             {property.bedrooms} bedrooms
           </span>
           <span className="rounded-md border px-2 py-1">
-            {property.baths} baths
+            {property.bathrooms} baths
           </span>
         </div>
 
@@ -61,16 +62,16 @@ export function PropertyCard({ property }: Props) {
           <div className="flex justify-between">
             <span>Down Payment</span>
             <span className="text-heading">
-              ₦{property.downPayment.toLocaleString()}
+              {formatNaira(property.down_payment)}
             </span>
           </div>
           <div className="flex justify-between">
             <span>Payment Period</span>
-            <span className="text-heading">{property.paymentPeriod}</span>
+            <span className="text-heading">{`${property.payment_period} Years`}</span>
           </div>
           <div className="flex justify-between">
             <span>Interest Rate</span>
-            <span className="text-heading">{property.interestRate}</span>
+            <span className="text-heading">{`${property.interest_rate} p.a`}</span>
           </div>
         </div>
       </div>

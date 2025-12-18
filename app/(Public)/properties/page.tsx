@@ -3,13 +3,9 @@ import { SectionHeading } from "@/components/common/SectionHeading";
 import { Button } from "@/components/primitives/Button";
 import { PropertySearchWrapper } from "@/components/propertySearch/PropertySearchWraper";
 import { FEATURED_PROPERTIES } from "@/data/property";
-import { Property } from "@/type/property";
 
-interface Props {
-  properties: Property[];
-}
 
-export default function PropertiesPage({ properties }: Props) {
+export default function PropertiesPage() {
   return (
     <section className="py-20 bg-background">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 ">

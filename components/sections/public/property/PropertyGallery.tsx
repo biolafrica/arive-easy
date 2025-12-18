@@ -3,17 +3,13 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import { PropertyTourCard } from './PropertyTourCard';
+import { PropertyGalleryProps } from '@/type/pages/property';
 
-interface PropertyGalleryProps {
-  images: string[];
-  virtualTourUrl?: string;
-  videoTourUrl?: string;
-}
+
 
 export function PropertyGallery({
   images,
-  virtualTourUrl,
-  videoTourUrl,
+  tours,
 }: PropertyGalleryProps) {
   const [active, setActive] = useState(0);
   const coverImage = images[0];
@@ -54,25 +50,19 @@ export function PropertyGallery({
       </div>
 
       {/* Tours */}
-      {(virtualTourUrl || videoTourUrl) && (
+      {(tours?.virtual3D || tours?.video) && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {virtualTourUrl && (
+          {tours.virtual3D && (
             <PropertyTourCard
-              title="3D Virtual Tour"
-              coverImage={coverImage}
-              buttonLabel="Start Virtual Tour"
-              url={virtualTourUrl}
-              type="3d"
+            images={images}
+            tours={tours}
             />
           )}
 
-          {videoTourUrl && (
+          {tours.video && (
             <PropertyTourCard
-              title="Video Tour"
-              coverImage={coverImage}
-              buttonLabel="Start Video"
-              url={videoTourUrl}
-              type="video"
+            images={images}
+            tours={tours}
             />
           )}
         </div>

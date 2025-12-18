@@ -1,11 +1,10 @@
 import { PropertyCard } from "@/components/cards/public/property";
 import { SectionHeading } from "@/components/common/SectionHeading";
 import { Button } from "@/components/primitives/Button";
-import { Property } from "@/type/property";
-
+import { PropertyData } from "@/type/pages/property";
 
 interface Props {
-  properties: Property[];
+  properties: PropertyData[];
 }
 
 export function FeaturedProperties({ properties }: Props) {

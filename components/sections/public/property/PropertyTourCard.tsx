@@ -1,23 +1,18 @@
 import Image from 'next/image';
 import { Button } from '@/components/primitives/Button';
 import { CubeIcon, PlayIcon } from '@heroicons/react/24/outline';
+import { PropertyTourCardProps } from '@/type/pages/property';
 
-interface PropertyTourCardProps {
-  title: string;
-  coverImage: string;
-  buttonLabel: string;
-  url: string;
-  type: '3d' | 'video';
-}
 
 export function PropertyTourCard({
-  title,
-  coverImage,
-  buttonLabel,
-  url,
-  type,
+  images,
+  tours
 }: PropertyTourCardProps) {
-  const Icon = type === '3d' ? CubeIcon : PlayIcon;
+  const Icon = tours?.virtual3D ? CubeIcon : PlayIcon;
+  const title = tours?.virtual3D ? "3D Virtual Tour" : "Video Tour"
+  const coverImage = images[0];
+  const url = tours?.video ? tours.video.url : tours?.virtual3D?.url;
+  const buttonLabel = tours?.virtual3D ? "Start Virtual Tour" : "Start Video"
 
   return (
     <div className="rounded-xl border border-border p-4 space-y-4">
