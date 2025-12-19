@@ -3,17 +3,10 @@
 import { ArticleCard } from '@/components/cards/public/article';
 import { SectionHeading } from '@/components/common/SectionHeading';
 import { Button } from '@/components/primitives/Button';
-import { ArticleItem } from '@/type/article';
+import { ArticleSectionProps } from '@/type/pages/article';
 import React from 'react';
 
-interface ArticleSectionProps {
-  eyebrow?: string;
-  title: string;
-  description?: string;
-  items: ArticleItem[];
-  ctaLabel?: string;
-  ctaHref?: string;
-}
+
 
 export const ArticleSection: React.FC<ArticleSectionProps> = ({
   eyebrow = 'Featured',
@@ -21,7 +14,6 @@ export const ArticleSection: React.FC<ArticleSectionProps> = ({
   description,
   items,
   ctaLabel = 'View all',
-  ctaHref = '/articles',
 }) => {
   return (
     <section className="py-20 bg-white">
@@ -34,7 +26,7 @@ export const ArticleSection: React.FC<ArticleSectionProps> = ({
 
         <div className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item) => (
-            <ArticleCard key={item.id} item={item} />
+            <ArticleCard key={item.id} {...item} />
           ))}
         </div>
 

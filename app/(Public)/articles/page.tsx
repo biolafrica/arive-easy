@@ -10,7 +10,6 @@ export default function ArticlePage(){
         description="Expert tips, tools, and knowledge for every stage of your homebuying journey."
         items={articles}
         ctaLabel="View more"
-        ctaHref="/articles"
       />
     </div>
   )
