@@ -6,13 +6,14 @@ import { PropertyTourCardProps } from '@/type/pages/property';
 
 export function PropertyTourCard({
   images,
-  tours
+  tours,
+  video
 }: PropertyTourCardProps) {
-  const Icon = tours?.virtual3D ? CubeIcon : PlayIcon;
-  const title = tours?.virtual3D ? "3D Virtual Tour" : "Video Tour"
+  const Icon = video ?  PlayIcon : CubeIcon ;
+  const title = video ?  "Video Tour" : "3D Virtual Tour" 
   const coverImage = images[0];
-  const url = tours?.video ? tours.video.url : tours?.virtual3D?.url;
-  const buttonLabel = tours?.virtual3D ? "Start Virtual Tour" : "Start Video"
+  const url = video ? tours?.video?.url : tours?.virtual3D?.url;
+  const buttonLabel = video ? "Start Video" :"Start Virtual Tour" 
 
   return (
     <div className="rounded-xl border border-border p-4 space-y-4">

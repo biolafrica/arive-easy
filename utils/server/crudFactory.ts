@@ -94,6 +94,41 @@ export interface AuthContext {
 
 export type CRUDAction = 'create' | 'read' | 'update' | 'delete' | 'list' | 'search' | 'bulk' | 'export';
 
+function extractFilters(request: NextRequest): Record<string, any> {
+  const filters: Record<string, any> = {};
+  const { searchParams } = new URL(request.url);
+  
+  // Skip pagination and control parameters
+  const skipParams = ['page', 'limit', 'search', 'sortBy', 'sortOrder', 'id', 'ids', 'include', 'endpoint'];
+  
+  searchParams.forEach((value, key) => {
+    if (!skipParams.includes(key)) {
+      // Handle dot notation for nested filters (e.g., filters.status=active)
+      if (key.startsWith('filters.')) {
+        const filterKey = key.replace('filters.', '');
+        
+        // Handle special operators
+        if (filterKey.includes('.')) {
+          const [field, operator] = filterKey.split('.');
+          filters[field] = { operator, value };
+        } else {
+          // Handle array values
+          filters[filterKey] = value.includes(',') ? value.split(',') : value;
+        }
+      } else if (key.includes('.')) {
+        // Handle other dot notation (e.g., address.city=Lagos)
+        const [field, operator] = key.split('.');
+        filters[field] = { operator, value };
+      } else {
+        // Regular filter
+        filters[key] = value.includes(',') ? value.split(',') : value;
+      }
+    }
+  });
+  
+  return filters;
+}
+
 // Main CRUD factory function
 export function createCRUDHandlers<T>({
   table,
@@ -218,6 +253,8 @@ export function createCRUDHandlers<T>({
           } else if (endpoint === 'export' && features.export) {
             data = await handleExport(queryBuilder, filters);
           } else {
+            console.log('Filters being applied:', filters);
+            
             data = await queryBuilder.findPaginated({
               ...params,
               searchFields,
@@ -509,29 +546,6 @@ export function createCRUDHandlers<T>({
   };
 }
 
-// Helper functions
-function extractFilters(request: NextRequest): Record<string, any> {
-  const filters: Record<string, any> = {};
-  const { searchParams } = new URL(request.url);
-  
-  // Skip pagination and control parameters
-  const skipParams = ['page', 'limit', 'search', 'sortBy', 'sortOrder', 'id', 'ids', 'include', 'endpoint'];
-  
-  searchParams.forEach((value, key) => {
-    if (!skipParams.includes(key)) {
-      // Handle special operators
-      if (key.includes('.')) {
-        const [field, operator] = key.split('.');
-        filters[field] = { operator, value };
-      } else {
-        // Handle array values
-        filters[key] = value.includes(',') ? value.split(',') : value;
-      }
-    }
-  });
-  
-  return filters;
-}
 
 async function handleBulkCreate<T>(
   items: T[],

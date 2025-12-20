@@ -9,7 +9,7 @@ export const propertyHandlers = createCRUDHandlers<PropertyForm>({
   defaultSort: {
     field: 'created_at',
     order: 'desc'
-  }
+  },
 });
 
 export const GET = propertyHandlers.GET;

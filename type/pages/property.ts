@@ -70,6 +70,8 @@ export type PropertyForm = Pick<PropertyBase, 'title' | 'status' | 'description'
 export type PropertyData = Pick<PropertyBase, 'id' |'title'|'images'|'listing_tag'|'price'|'deposit'|'area_sqm'|'bedrooms' |'bathrooms'|'down_payment'|'payment_period'|'interest_rate' >
 export type PropertyPricingProps = Pick<PropertyBase, 'price' | 'deposit' | 'down_payment' | 'payment_period' | 'interest_rate'>
 export type PropertyDetailsProps = Pick<PropertyBase, 'address_full' | 'area_sqm' | 'bedrooms' | 'bathrooms' | 'property_type' | 'interior'>
-export type PropertyGalleryProps = Pick<PropertyBase, 'images' | 'tours'>
-export type PropertyTourCardProps = Pick<PropertyBase, 'images' | 'tours'>
+export type PropertyTourCardProps = Pick<PropertyBase, 'images' | 'tours'> &{
+  video :boolean
+}
+export type PropertyGalleryProps = PropertyTourCardProps
 export type PropertyAmenitiesProps = Pick<PropertyBase, 'amenities'>

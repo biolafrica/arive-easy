@@ -56,6 +56,7 @@ export function PropertyGallery({
             <PropertyTourCard
             images={images}
             tours={tours}
+            video={false}
             />
           )}
 
@@ -63,6 +64,7 @@ export function PropertyGallery({
             <PropertyTourCard
             images={images}
             tours={tours}
+            video={true}
             />
           )}
         </div>
