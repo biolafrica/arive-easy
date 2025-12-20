@@ -1,9 +1,10 @@
 'use client'
 
 import { Button } from "@/components/primitives/Button";
+import { PropertyHeadProps } from "@/type/pages/property";
 import { ArrowLeftIcon, BookmarkIcon, ShareIcon } from "@heroicons/react/24/outline";
 
-export default function PropertyHead(){
+export default function PropertyHead({title,address_full}:PropertyHeadProps){
   return(
     <>
       <header className="mb-8 flex flex-col gap-4">
@@ -19,8 +20,8 @@ export default function PropertyHead(){
 
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-semibold text-heading"> Mary Keyes Residence </h1>
-            <p className="mt-1 text-sm text-secondary"> 15 Mary Keyes Street, Victoria Island, Lagos, Nigeria</p>
+            <h1 className="text-3xl font-semibold text-heading"> {title} </h1>
+            <p className="mt-1 text-sm text-secondary">{address_full}</p>
           </div>
 
           <div className="flex gap-2">

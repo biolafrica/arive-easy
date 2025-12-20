@@ -34,7 +34,7 @@ export function useProperty(id: string) {
     cacheConfig: getEntityCacheConfig('properties', 'detail'),
   });
   
-  const { data, isLoading, error } = crud.useGetOne(id, { include: ['agent', 'similar'] });
+  const { data, isLoading, error } = crud.useGetOne(id);
   
   return {
     property: data,

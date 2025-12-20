@@ -73,5 +73,6 @@ export type PropertyDetailsProps = Pick<PropertyBase, 'address_full' | 'area_sqm
 export type PropertyTourCardProps = Pick<PropertyBase, 'images' | 'tours'> &{
   video :boolean
 }
-export type PropertyGalleryProps = PropertyTourCardProps
+export type PropertyGalleryProps =  Pick<PropertyBase, 'images' | 'tours'>
 export type PropertyAmenitiesProps = Pick<PropertyBase, 'amenities'>
+export type PropertyHeadProps = Pick<PropertyBase, 'address_full' | 'title'>

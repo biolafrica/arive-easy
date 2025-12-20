@@ -1,28 +1,19 @@
 "use client"
 
-import { useFeaturedProperties, useInfiniteProperties, useProperties } from "@/hooks/useSpecialized";
+import {useProperty } from "@/hooks/useSpecialized";
 
 export default function Test(){
+  const id ="0ca3e480-6a3e-4c47-bed0-637386b5f64c";
+  
   const {
-    items: properties,
+    property,
     isLoading,
-    isFetchingNextPage,
-    hasNextPage,
-    loadMoreRef,
     error,
-  } = useInfiniteProperties({
-    sortBy: 'price',
-    sortOrder: 'desc',
-  });
-
-  const { data: featuredProperties, isLoading: loadingFeatured } = useFeaturedProperties();
+  } = useProperty(id);
 
   if (isLoading) return <div>Loading properties...</div>;
   if (error) return <div>Error loading properties</div>;
-  console.log("property:", properties)
-  console.log("next page fetching", isFetchingNextPage)
-  console.log("next page status", hasNextPage)
-  console.log('featured properties', featuredProperties)
+  console.log("property:", property)
 
   return(
     <div>
