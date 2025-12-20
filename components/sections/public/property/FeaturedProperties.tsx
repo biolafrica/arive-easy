@@ -5,9 +5,13 @@ import { SectionHeading } from "@/components/common/SectionHeading";
 import { Button } from "@/components/primitives/Button";
 import { FeaturedPropertyGridSkeleton } from "@/components/skeleton/PropertyCardSkeleton";
 import { useFeaturedProperties } from "@/hooks/useSpecialized";
+import { PropertyEmptyState } from "./PropertyEmptyState";
+import { useRouter } from "next/navigation";
+
 
 
 export function FeaturedProperties() {
+  const router = useRouter();
 
   const { data: featuredProperties, isLoading: loadingFeatured } = useFeaturedProperties();
 
@@ -20,7 +24,13 @@ export function FeaturedProperties() {
           title="Featured Properties"
           description="Explore a curated selection of our finest properties, handpicked for their investment potential and unique appeal."
         />
+
         {loadingFeatured && <FeaturedPropertyGridSkeleton/>}
+
+        {!loadingFeatured && featuredProperties?.length === 0 && (
+          <PropertyEmptyState />
+        )}
+
         <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {featuredProperties?.map((property) => (
             <PropertyCard key={property.id} property={property} />
@@ -28,8 +38,9 @@ export function FeaturedProperties() {
         </div>
 
         <div className="mt-14 flex justify-center">
-          <Button variant="outline">View all</Button>
+          <Button variant="outline" onClick={()=>router.push("/properties")}>View all</Button>
         </div>
+
       </div>
     </section>
   );

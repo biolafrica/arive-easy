@@ -5,9 +5,10 @@ import { Button } from "@/components/primitives/Button";
 import { PropertySearchWrapper } from "@/components/propertySearch/PropertySearchWraper";
 import { AllPropertyGridSkeleton } from "@/components/skeleton/PropertyCardSkeleton";
 import { useInfiniteProperties } from "@/hooks/useSpecialized";
+import { PropertyEmptyState } from "./PropertyEmptyState";
 
 export default function AllProperties(){
-    const {
+  const {
     items: properties,
     isLoading,
     isFetchingNextPage,
@@ -21,7 +22,6 @@ export default function AllProperties(){
 
   if (error) return <div>Error loading properties</div>;
   console.log("next page fetching", isFetchingNextPage)
-  console.log("next page status", hasNextPage)
 
   return(
     <div>
@@ -32,15 +32,23 @@ export default function AllProperties(){
 
       {isLoading && <AllPropertyGridSkeleton/>}
 
+      {!isLoading && properties?.length === 0 && (
+        <PropertyEmptyState />
+      )}
+
       <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {properties.map((property) => (
           <PropertyCard key={property.id} property={property} />
         ))}
       </div>
 
-      <div className="mt-14 flex justify-center">
-        <Button variant="outline">View more</Button>
-      </div>
+      {hasNextPage && 
+        ( 
+          <div className="mt-14 flex justify-center">
+            <Button variant="outline">View more</Button>
+          </div>
+        )
+      }
       
     </div>
   )
