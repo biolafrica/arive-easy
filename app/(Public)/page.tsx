@@ -4,15 +4,13 @@ import { ArticleSection } from "@/components/sections/public/HomeArticle";
 import { HowItWorksSection } from "@/components/sections/public/HowItWorks";
 import { TestimonialsSection } from "@/components/sections/public/Testimonial";
 import { WhyChooseUs } from "@/components/sections/public/WhyChooseUs";
-
 import { articles } from "@/data/articles";
-import { FEATURED_PROPERTIES } from "@/data/property";
 import { testimonials } from "@/data/testimonial";
 
 export default function Home() {
   return (
     <div className="text-5xl">
-      <FeaturedProperties properties={FEATURED_PROPERTIES}/>
+      <FeaturedProperties/>
 
       <HowItWorksSection/>
 
@@ -34,7 +32,6 @@ export default function Home() {
         description="Stay informed with the latest trends, tips, and insights in global real estate."
         items={articles}
         ctaLabel="View all"
-        ctaHref="/articles"
       />
       
       <CTASection/>

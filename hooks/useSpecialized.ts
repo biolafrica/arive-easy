@@ -2,35 +2,15 @@ import { useCrud,} from './useCrud';
 import { useInfiniteList} from './useInfiniteList';
 import { queryKeys } from '../lib/query-keys';
 import { getEntityCacheConfig } from '../lib/cache-config';
-import { apiClient } from '../lib/api-client';
+import { ApiResponse, apiClient } from '../lib/api-client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { PropertyBase, PropertyData } from '@/type/pages/property';
+import { ApiError } from 'next/dist/server/api-utils';
 
-
-export interface Property {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  address: string;
-  city: string;
-  state: string;
-  zip: string;
-  bedrooms: number;
-  bathrooms: number;
-  sqft: number;
-  type: 'house' | 'apartment' | 'condo' | 'townhouse';
-  status: 'for_sale' | 'for_rent' | 'sold' | 'rented';
-  images: string[];
-  amenities: string[];
-  agent_id: string;
-  featured: boolean;
-  created_at: string;
-  updated_at: string;
-}
 
 export function useProperties(params?: any) {
-  const crud = useCrud<Property>({
+  const crud = useCrud<PropertyBase>({
     resource: 'properties',
     interfaceType: 'client',
     cacheConfig: getEntityCacheConfig('properties', 'list'),
@@ -48,7 +28,7 @@ export function useProperties(params?: any) {
 }
 
 export function useProperty(id: string) {
-  const crud = useCrud<Property>({
+  const crud = useCrud<PropertyBase>({
     resource: 'properties',
     interfaceType: 'client',
     cacheConfig: getEntityCacheConfig('properties', 'detail'),
@@ -65,28 +45,31 @@ export function useProperty(id: string) {
 }
 
 export function useInfiniteProperties(params?: any) {
-  return useInfiniteList<Property>({
+  return useInfiniteList<PropertyBase>({
     resource: 'properties',
     interfaceType: 'client',
     params,
-    limit: 20,
+    limit: 10,
     autoFetch: true,
   });
 }
 
 export function useFeaturedProperties() {
-  return useQuery({
+  return useQuery<PropertyData[], ApiError>({
     queryKey: queryKeys.properties.featured(),
-    queryFn: async () => {
-      const response:any = await apiClient.get('/api/properties', {
+    queryFn: async (): Promise<PropertyData[]> => {
+
+      const response = await apiClient.get<ApiResponse<PropertyData[]>>('/api/properties', {
         is_featured: true,
-        limit: 2,
+        limit: 3,
       });
-      return response.data;
+
+      return response.data ?? []; 
     },
     ...getEntityCacheConfig('properties', 'list'),
   });
 }
+
 
 
 export interface Article {

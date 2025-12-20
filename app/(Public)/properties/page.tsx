@@ -1,8 +1,5 @@
-import { PropertyCard } from "@/components/cards/public/property";
 import { SectionHeading } from "@/components/common/SectionHeading";
-import { Button } from "@/components/primitives/Button";
-import { PropertySearchWrapper } from "@/components/propertySearch/PropertySearchWraper";
-import { FEATURED_PROPERTIES } from "@/data/property";
+import AllProperties from "@/components/sections/public/property/AllProperties";
 
 
 export default function PropertiesPage() {
@@ -15,20 +12,8 @@ export default function PropertiesPage() {
           title="Featured Properties"
           description="Explore a curated selection of our finest properties, handpicked for their investment potential and unique appeal."
         />
+        <AllProperties/>
 
-        <div className="mt-10">
-          <PropertySearchWrapper/>
-        </div>
-
-        <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURED_PROPERTIES.map((property) => (
-            <PropertyCard key={property.id} property={property} />
-          ))}
-        </div>
-
-        <div className="mt-14 flex justify-center">
-          <Button variant="outline">View more</Button>
-        </div>
       </div>
     </section>
   );

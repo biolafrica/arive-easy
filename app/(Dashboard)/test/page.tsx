@@ -11,7 +11,6 @@ export default function Test(){
     loadMoreRef,
     error,
   } = useInfiniteProperties({
-    search:"emerald-height",
     sortBy: 'price',
     sortOrder: 'desc',
   });
