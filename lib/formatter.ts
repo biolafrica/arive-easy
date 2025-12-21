@@ -18,7 +18,6 @@ export function formatNumber(value:any) {
   }).format(value)
 }
 
-
 export function toNumber(
   value: unknown,
   options?: {
@@ -61,4 +60,26 @@ export function toNumber(
   if (typeof max === 'number' && num > max) return fallback;
 
   return num;
+}
+
+
+export function formatDate(
+  date: string | number | Date,
+  locale: string = "en-US",
+  options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }
+): string {
+  if (!date) return "";
+
+  const d = date instanceof Date ? date : new Date(date);
+
+  if (isNaN(d.getTime())) {
+    console.warn("Invalid date supplied to formatDate:", date);
+    return "";
+  }
+
+  return d.toLocaleDateString(locale, options);
 }

@@ -1,6 +1,6 @@
 export interface ArticleAuthor {
   name: string;
-  avatarUrl?: string;
+  email: string;
 }
 
 export interface ArticleBase{
@@ -11,13 +11,15 @@ export interface ArticleBase{
   category: string;
   image:string;
   images:string[]
-  author: ArticleAuthor;
+  author: string;
+  users:ArticleAuthor
   created_at: string
   updated_at: string
   read_time : number
+  slug: string
 }
 
-export type ArticleForm = Omit<ArticleBase, 'id' | 'created_at' | 'updated_at' | 'author'>
+export type ArticleForm = Omit<ArticleBase, 'id' | 'created_at' | 'updated_at' | 'author' | 'slug'>
 export type ArticleCardProps = Omit<ArticleBase, 'content' | 'images' | 'updated_at'>
 
 

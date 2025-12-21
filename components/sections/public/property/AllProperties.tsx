@@ -11,6 +11,7 @@ export default function AllProperties(){
   const {items: properties, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage, error } = useInfiniteProperties({
     sortBy: 'price',
     sortOrder: 'desc',
+  
   });
 
   if (error) return <div>Error loading properties</div>;

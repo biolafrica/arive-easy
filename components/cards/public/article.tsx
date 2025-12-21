@@ -3,13 +3,18 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { UserAvatar } from '@/components/primitives/UserAvatar';
 import { ArticleCardProps } from '@/type/pages/article';
+import { formatDate } from '@/lib/formatter';
 
 
-export const ArticleCard: React.FC<ArticleCardProps> = (article) => {
+interface Props {
+  article: ArticleCardProps;
+}
+
+export const ArticleCard = ({article}:Props) => {
   return (
     <article className="group flex flex-col">
       <Link
-        href={`/articles/${article.id}`}
+        href={`/articles/${article.slug}`}
         className="relative overflow-hidden rounded-xl bg-hover"
       >
         <Image
@@ -26,7 +31,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = (article) => {
         </span>
 
         <h3 className="text-lg font-semibold leading-snug text-heading group-hover:text-accent transition-colors">
-          <Link  href={`/articles/${article.id}`}>{article.title}</Link>
+          <Link  href={`/articles/${article.slug}`}>{article.slug}</Link>
         </h3>
 
         <p className="text-sm text-secondary line-clamp-2">
@@ -35,14 +40,14 @@ export const ArticleCard: React.FC<ArticleCardProps> = (article) => {
 
         <div className="mt-3 flex items-center gap-3 text-sm text-secondary">
           <UserAvatar
-            name={article.author.name}
+            name={article.users.name}
             size="sm"
           />
 
           <div className="flex items-center gap-2">
-            <span>{article.author.name}</span>
+            <span>{article.users.name}</span>
             <span>•</span>
-            <span>{article.created_at}</span>
+            <span>{formatDate(article.created_at)}</span>
             {article.read_time && (
               <>
                 <span>•</span>

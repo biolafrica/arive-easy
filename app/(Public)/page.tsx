@@ -1,6 +1,6 @@
 import { CTASection } from "@/components/sections/public/CTASection";
 import { FeaturedProperties } from "@/components/sections/public/property/FeaturedProperties";
-import { ArticleSection } from "@/components/sections/public/HomeArticle";
+import { ArticleSection } from "@/components/sections/public/article/HomeArticle";
 import { HowItWorksSection } from "@/components/sections/public/HowItWorks";
 import { TestimonialsSection } from "@/components/sections/public/Testimonial";
 import { WhyChooseUs } from "@/components/sections/public/WhyChooseUs";
@@ -26,13 +26,7 @@ export default function Home() {
 
       <TestimonialsSection testimonials={testimonials} />
 
-      <ArticleSection
-        eyebrow="Featured Post"
-        title="News and Articles"
-        description="Stay informed with the latest trends, tips, and insights in global real estate."
-        items={articles}
-        ctaLabel="View all"
-      />
+      <ArticleSection/>
       
       <CTASection/>
     </div>

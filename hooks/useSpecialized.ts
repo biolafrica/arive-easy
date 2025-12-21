@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { PropertyBase, PropertyData } from '@/type/pages/property';
 import { ApiError } from 'next/dist/server/api-utils';
 import { toNumber } from '@/lib/formatter';
+import { ArticleBase } from '@/type/pages/article';
 
 
 export function useProperties(params?: any) {
@@ -96,28 +97,8 @@ export function useSimilarProperties(
   });
 }
 
-
-
-export interface Article {
-  id: string;
-  title: string;
-  slug: string;
-  content: string;
-  excerpt: string;
-  author_id: string;
-  category: string;
-  tags: string[];
-  image_url?: string;
-  published_at: string;
-  view_count: number;
-  reading_time: number;
-  status: 'draft' | 'published' | 'archived';
-  created_at: string;
-  updated_at: string;
-}
-
 export function useArticles(params?: any) {
-  const crud = useCrud<Article>({
+  const crud = useCrud<ArticleBase>({
     resource: 'articles',
     interfaceType: 'client',
     cacheConfig: getEntityCacheConfig('articles', 'list'),
@@ -146,6 +127,18 @@ export function useArticle(slug: string) {
     ...getEntityCacheConfig('articles', 'detail'),
   });
 }
+
+export function useInfiniteArticles(params?: any) {
+  return useInfiniteList<ArticleBase>({
+    resource: 'articles',
+    interfaceType: 'client',
+    params,
+    limit: 15,
+    autoFetch: true,
+  });
+}
+
+
 
 
 export interface UserProfile {

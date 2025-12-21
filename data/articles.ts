@@ -1,13 +1,13 @@
 import { ArticleCardProps } from "@/type/pages/article";
 
-export const articles: ArticleCardProps[] = [
+export const articles = [
   {
     id: '1',
     title:'How to Save for a Down Payment Without Breaking Your Budget',
     excerpt:'Learn smart strategies to build your down payment while maintaining financial stability.',
     category: 'Home Ownership Tips',
     image: '/article-1.jpg',
-    author: { name: 'Abiodun Biobaku' },
+    author:'Abiodun Biobaku',
     created_at: '11 Jan 2022',
     read_time: 5,
   },
@@ -27,7 +27,7 @@ export const articles: ArticleCardProps[] = [
     excerpt:'A data-driven look at current housing market trends and what they mean for buyers.',
     category: 'Market Trends',
     image: '/article-3.jpg',
-    author: { name: 'Folaji Jamiu' },
+    author: 'Folaji Jamiu',
     created_at: '11 Jan 2022',
     read_time: 5,
   },

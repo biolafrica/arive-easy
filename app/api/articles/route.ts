@@ -2,7 +2,7 @@ import { ArticleForm } from "@/type/pages/article";
 import { createCRUDHandlers } from "@/utils/server/crudFactory";
 
 
-export const propertyHandlers = createCRUDHandlers<ArticleForm>({
+export const articlesHandlers = createCRUDHandlers<ArticleForm>({
   table: 'articles',
   requiredFields: ['title', 'description', 'category', 'image', 'images', 'read_time', 'excerpt'],
   searchFields: ['title'],
@@ -12,4 +12,4 @@ export const propertyHandlers = createCRUDHandlers<ArticleForm>({
   }
 });
 
-export const GET = propertyHandlers.GET;
+export const GET = articlesHandlers.GET;

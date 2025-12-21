@@ -546,7 +546,6 @@ export function createCRUDHandlers<T>({
   };
 }
 
-
 async function handleBulkCreate<T>(
   items: T[],
   queryBuilder: SupabaseQueryBuilder<T>,

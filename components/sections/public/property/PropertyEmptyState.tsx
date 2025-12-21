@@ -1,27 +1,13 @@
 
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-import { Button } from '@/components/primitives/Button';
+import { HomeModernIcon} from '@heroicons/react/24/solid';
 import { EmptyState } from '@/components/common/EmptyState';
 
-interface PropertyEmptyStateProps {
-  onResetFilters?: () => void;
-}
-
-export function PropertyEmptyState({
-  onResetFilters,
-}: PropertyEmptyStateProps) {
+export function PropertyEmptyState() {
   return (
     <EmptyState
-      icon={<MagnifyingGlassIcon className="h-6 w-6" />}
+      icon={<HomeModernIcon className="h-6 w-6" />}
       title="No properties found"
       description="Try adjusting your filters or explore other locations."
-      action={
-        onResetFilters && (
-          <Button variant="outline" onClick={onResetFilters}>
-            Reset filters
-          </Button>
-        )
-      }
     />
   );
 }
