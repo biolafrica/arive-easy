@@ -6,15 +6,15 @@ import PropertyDescription from "./PropertyDescription";
 import { PropertyDetails } from "./PropertyDetails";
 import { PropertyGallery } from "./PropertyGallery";
 import { PropertyPricing } from "./PropetyPricing";
-import { useProperty } from "@/hooks/useSpecialized";
+import { useProperty, useSimilarProperties } from "@/hooks/useSpecialized";
 import PropertyHead from "./PropertyHead";
+import { SectionHeading } from "@/components/common/SectionHeading";
+import { FEATURED_PROPERTIES } from "@/data/property";
+import { PropertyCard } from "@/components/cards/public/property";
 
 export default function PropertyClientView({id}:any){
-  const {
-    property,
-    isLoading,
-    error,
-  } = useProperty(id);
+  const {property,isLoading, error,} = useProperty(id);
+  const { data: similarProperties } = useSimilarProperties(property)
 
   if (isLoading) return <div>Loading properties...</div>;
   if (error) return <div>Error loading properties</div>;
@@ -61,6 +61,22 @@ export default function PropertyClientView({id}:any){
             </aside>
           </section>
         </div>
+      )}
+
+      {similarProperties && similarProperties.length > 0 && (
+        <section className="mt-20">
+          <SectionHeading
+            title="Similar Properties"
+            description="Discover other properties that might interest you"
+          />
+
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {similarProperties.map((property) => (
+              <PropertyCard key={property.id} property={property} />
+            ))}
+          </div>
+
+        </section>
       )}
 
     </div>

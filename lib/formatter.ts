@@ -17,3 +17,48 @@ export function formatNumber(value:any) {
     maximumFractionDigits: 20  // preserve decimals if present
   }).format(value)
 }
+
+
+export function toNumber(
+  value: unknown,
+  options?: {
+    fallback?: number;
+    allowFloat?: boolean;
+    min?: number;
+    max?: number;
+  }
+): number {
+  const {
+    fallback = 0,
+    allowFloat = true,
+    min,
+    max,
+  } = options ?? {};
+
+  if (value === null || value === undefined) {
+    return fallback;
+  }
+
+  let num: number;
+
+  if (typeof value === 'number') {
+    num = value;
+  } else if (typeof value === 'string') {
+    const cleaned = value.trim();
+
+    if (cleaned === '') return fallback;
+
+    num = allowFloat ? Number(cleaned) : parseInt(cleaned, 10);
+  } else {
+    return fallback;
+  }
+
+  if (!Number.isFinite(num)) {
+    return fallback;
+  }
+
+  if (typeof min === 'number' && num < min) return fallback;
+  if (typeof max === 'number' && num > max) return fallback;
+
+  return num;
+}

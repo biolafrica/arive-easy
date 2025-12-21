@@ -7,6 +7,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { PropertyBase, PropertyData } from '@/type/pages/property';
 import { ApiError } from 'next/dist/server/api-utils';
+import { toNumber } from '@/lib/formatter';
 
 
 export function useProperties(params?: any) {
@@ -49,7 +50,7 @@ export function useInfiniteProperties(params?: any) {
     resource: 'properties',
     interfaceType: 'client',
     params,
-    limit: 10,
+    limit: 15,
     autoFetch: true,
   });
 }
@@ -66,6 +67,31 @@ export function useFeaturedProperties() {
 
       return response.data ?? []; 
     },
+    ...getEntityCacheConfig('properties', 'list'),
+  });
+}
+
+export function useSimilarProperties(
+  currentProperty: PropertyBase | undefined,
+  limit = 4
+) {
+  return useQuery({
+    queryKey: queryKeys.properties.similar(currentProperty?.id || '', limit),
+    queryFn: async () => {
+      if (!currentProperty) return [];
+      
+      const response = await apiClient.get<ApiResponse<PropertyData[]>>('/api/properties', {
+        city: currentProperty.city,
+        property_type: currentProperty.property_type,
+        'price.gte': toNumber(currentProperty.price, { min: 0 }) * 0.8,
+        'price.lte': toNumber(currentProperty.price, { min: 0 }) * 1.2,  
+        'id.neq': currentProperty.id,  
+        limit,
+      });
+      
+      return response.data ;
+    },
+    enabled: !!currentProperty,
     ...getEntityCacheConfig('properties', 'list'),
   });
 }

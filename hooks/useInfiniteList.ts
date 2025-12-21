@@ -58,7 +58,7 @@ export function useInfiniteList<T>({
   onSuccess,
   onError,
   cacheConfig = {},
-  autoFetch = true,
+  autoFetch = false,
   threshold = 0.1,
 }: UseInfiniteListConfig<T>): UseInfiniteListReturn<T> {
   // 1. Declare variables before using them in the hook

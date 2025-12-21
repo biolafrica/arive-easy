@@ -8,20 +8,12 @@ import { useInfiniteProperties } from "@/hooks/useSpecialized";
 import { PropertyEmptyState } from "./PropertyEmptyState";
 
 export default function AllProperties(){
-  const {
-    items: properties,
-    isLoading,
-    isFetchingNextPage,
-    hasNextPage,
-    loadMoreRef,
-    error,
-  } = useInfiniteProperties({
+  const {items: properties, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage, error } = useInfiniteProperties({
     sortBy: 'price',
     sortOrder: 'desc',
   });
 
   if (error) return <div>Error loading properties</div>;
-  console.log("next page fetching", isFetchingNextPage)
 
   return(
     <div>
@@ -45,7 +37,9 @@ export default function AllProperties(){
       {hasNextPage && 
         ( 
           <div className="mt-14 flex justify-center">
-            <Button variant="outline">View more</Button>
+            <Button variant="outline" onClick={()=>fetchNextPage()} disabled={isFetchingNextPage}>
+              {isFetchingNextPage ? 'Loading...' : 'View more'}
+            </Button>
           </div>
         )
       }
