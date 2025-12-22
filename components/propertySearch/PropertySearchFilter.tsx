@@ -47,7 +47,7 @@ export function PropertySearchFilters({
     <div className="flex flex-col gap-3 rounded-2xl rounded-tl-none lg:border lg:border-border bg-white p-4 shadow-sm lg:flex-row lg:items-center lg:gap-0">
       <Select
         label="State"
-        placeholder="Select Your State"
+        placeholder="Select State"
         value={state}
         options={Object.keys(STATES)}
         onChange={(value) => {
@@ -60,7 +60,7 @@ export function PropertySearchFilters({
 
       <Select
         label="City"
-        placeholder="Select Your City"
+        placeholder="Select City"
         value={city}
         options={cities}
         disabled={!state}

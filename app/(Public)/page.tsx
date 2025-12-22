@@ -1,34 +1,43 @@
-import { CTASection } from "@/components/sections/public/CTASection";
+import { CTASection } from "@/components/sections/public/home/CTASection";
 import { FeaturedProperties } from "@/components/sections/public/property/FeaturedProperties";
 import { ArticleSection } from "@/components/sections/public/article/HomeArticle";
-import { HowItWorksSection } from "@/components/sections/public/HowItWorks";
-import { TestimonialsSection } from "@/components/sections/public/Testimonial";
-import { WhyChooseUs } from "@/components/sections/public/WhyChooseUs";
+import { HowItWorksSection } from "@/components/sections/public/home/HowItWorks";
+import { TestimonialsSection } from "@/components/sections/public/home/Testimonial";
+import { WhyChooseUs } from "@/components/sections/public/home/WhyChooseUs";
 import { testimonials } from "@/data/testimonial";
+import HeroSection from "@/components/sections/public/home/HeroSection";
+import { PropertySearchWrapper } from "@/components/propertySearch/PropertySearchWraper";
 
 export default function Home() {
   return (
-    <div className="text-5xl">
-      <FeaturedProperties/>
+    <main>
 
-      <HowItWorksSection/>
+      <HeroSection backgroundImage="/images/hero.jpg">
+        <PropertySearchWrapper />
+      </HeroSection>
 
-      <WhyChooseUs
-        image="/why-arive.jpg"
-        features={[
-          'Trusted Property Listings',
-          'Seamless Digital Process',
-          'Flexible Mortgage Plans',
-          'Low Interest Rates',
-        ]}
-      />
+      <div className="text-5xl">
+        <FeaturedProperties/>
 
-      <TestimonialsSection testimonials={testimonials} />
+        <HowItWorksSection/>
 
-      <ArticleSection/>
-      
-      <CTASection/>
-    </div>
-  );
+        <WhyChooseUs
+          image="/why-arive.jpg"
+          features={[
+            'Trusted Property Listings',
+            'Seamless Digital Process',
+            'Flexible Mortgage Plans',
+            'Low Interest Rates',
+          ]}
+        />
+
+        <TestimonialsSection testimonials={testimonials} />
+
+        <ArticleSection/>
+        
+        <CTASection/>
+      </div>
+
+    </main>
+  )
 }
-
