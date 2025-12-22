@@ -22,7 +22,7 @@ export default function PropertyClientView({id}:any){
 
   return(
     <div>
-      {!isLoading && (<PropertyDetailsPageSkeleton/>) }
+      {isLoading && (<PropertyDetailsPageSkeleton/>) }
       
       {!isLoading && property && (
         <div>

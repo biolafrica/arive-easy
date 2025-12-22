@@ -29,6 +29,7 @@ const config: Config = {
         card: 'var(--card-bg)',
         hover: 'var(--hover-bg)',
         active: 'var(--active-bg)',
+        muted: '#f3f4f6',
 
         btn: {
           primary: {

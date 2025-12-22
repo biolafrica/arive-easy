@@ -17,7 +17,7 @@ export default function ArticleViewClient({id}:any){
 
   return(
     <div>
-      {!isLoading && (<ArticlePageSkeleton/>) }
+      {isLoading && (<ArticlePageSkeleton/>) }
 
       {!isLoading && article && (
         <ArticleView article={transformArticle(article)}/>
