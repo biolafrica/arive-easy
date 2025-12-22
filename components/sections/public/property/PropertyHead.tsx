@@ -1,10 +1,18 @@
 'use client'
 
+import SharePost from "@/components/common/Share";
 import { Button } from "@/components/primitives/Button";
 import { PropertyHeadProps } from "@/type/pages/property";
 import { ArrowLeftIcon, BookmarkIcon, ShareIcon } from "@heroicons/react/24/outline";
 
-export default function PropertyHead({title,address_full}:PropertyHeadProps){
+export default function PropertyHead({title, address_full ,id, description}:PropertyHeadProps){
+
+  const propertyShareDetails ={
+    title,
+    id,
+    excerpt:description
+  }
+
   return(
     <>
       <header className="mb-8 flex flex-col gap-4">
@@ -26,7 +34,8 @@ export default function PropertyHead({title,address_full}:PropertyHeadProps){
 
           <div className="flex gap-2">
             <Button variant="outline" size="sm" leftIcon={<BookmarkIcon className="h-4 w-4" />}> Save </Button>
-            <Button variant="outline" size="sm" leftIcon={<ShareIcon className="h-4 w-4" />}> Share </Button>
+            
+            <SharePost article={propertyShareDetails}/>
           </div>
 
         </div>

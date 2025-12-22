@@ -23,7 +23,8 @@ export default function PropertyClientView({id}:any){
 
       {!isLoading && property && (
         <div>
-          <PropertyHead title={property.title} address_full={property.address_full}/>
+          <PropertyHead title={property.title} address_full={property.address_full} description={property.description} id={property.id}/>
+
           <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
               <PropertyGallery

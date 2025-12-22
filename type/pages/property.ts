@@ -75,4 +75,5 @@ export type PropertyTourCardProps = Pick<PropertyBase, 'images' | 'tours'> &{
 }
 export type PropertyGalleryProps =  Pick<PropertyBase, 'images' | 'tours'>
 export type PropertyAmenitiesProps = Pick<PropertyBase, 'amenities'>
-export type PropertyHeadProps = Pick<PropertyBase, 'address_full' | 'title'>
+export type PropertyHeadProps = Pick<PropertyBase, 'address_full' | 'title' | 'description' | 'id'>
+export type PropertShareProps = Pick<PropertyBase, 'id' | 'title' | 'description'>

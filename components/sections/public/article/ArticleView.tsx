@@ -17,6 +17,12 @@ export default function ArticleView({ article }: {
   const sections = parseContent(article.content || '');
   const contentWithImages = insertImagesIntoSections(sections, imageArray);
 
+  const propertyShareDetails ={
+    title: article.title,
+    id:`${article.slug}-${article.id}`,
+    excerpt: article.excerpt
+  }
+
   return (
     <article className="mx-auto max-w-4xl px-4 pb-20 pt-10">
 
@@ -47,7 +53,7 @@ export default function ArticleView({ article }: {
             <span>{article.read_time}</span>
           </div>
 
-          <SharePost article={article} />
+          <SharePost article={propertyShareDetails} />
 
         </div>
       </header>
@@ -66,7 +72,9 @@ export default function ArticleView({ article }: {
       </div>
 
         <footer className="mt-12 pt-8 border-t border-separator">
-          <div className="flex items-center justify-between flex-wrap gap-4">
+
+          <div className="flex items-end justify-between flex-wrap gap-4">
+
             <SharePost article={article} />
 
             <div className="mt-10 flex flex-wrap gap-2">

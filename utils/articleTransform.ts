@@ -1,5 +1,6 @@
 import { ArticleData, ArticleTransformData } from "@/type/pages/article";
 
+
 export function transformArticle(dbArticle: ArticleData): ArticleTransformData {
   const imagesObj = dbArticle.images && dbArticle.images.length > 0
   ? {
@@ -17,7 +18,8 @@ export function transformArticle(dbArticle: ArticleData): ArticleTransformData {
     images: imagesObj,
     created_at: dbArticle.created_at,
     users:dbArticle.users,
-    read_time:dbArticle.read_time
+    read_time:dbArticle.read_time,
+    excerpt:dbArticle.excerpt
 
   };
 }

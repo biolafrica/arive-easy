@@ -98,7 +98,7 @@ export default function SharePost({ article }: SharePostProps) {
     <div className="relative inline-block" ref={menuRef}>
       <button 
         onClick={handleNativeShare}
-        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-gray-900 hover:border-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-gray-900 hover:border-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
         aria-label="Share this post"
       >
         <ShareIcon className="w-4 h-4" />
