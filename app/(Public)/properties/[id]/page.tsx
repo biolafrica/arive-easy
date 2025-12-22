@@ -1,8 +1,4 @@
-import { PropertyCard } from '@/components/cards/public/property';
-import { SectionHeading } from '@/components/common/SectionHeading';
 import PropertyClientView from '@/components/sections/public/property/PropertyClientView';
-import { FEATURED_PROPERTIES} from '@/data/property';
-
 
 export default async function PropertyDetailPage({params}:any) {
   const {id} = await params;

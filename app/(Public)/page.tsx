@@ -4,7 +4,6 @@ import { ArticleSection } from "@/components/sections/public/article/HomeArticle
 import { HowItWorksSection } from "@/components/sections/public/HowItWorks";
 import { TestimonialsSection } from "@/components/sections/public/Testimonial";
 import { WhyChooseUs } from "@/components/sections/public/WhyChooseUs";
-import { articles } from "@/data/articles";
 import { testimonials } from "@/data/testimonial";
 
 export default function Home() {

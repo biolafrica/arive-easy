@@ -21,6 +21,14 @@ export interface ArticleBase{
 
 export type ArticleForm = Omit<ArticleBase, 'id' | 'created_at' | 'updated_at' | 'author' | 'slug'>
 export type ArticleCardProps = Omit<ArticleBase, 'content' | 'images' | 'updated_at'>
+export type ArticleData = Omit<ArticleBase, 'excerpt' | 'category' | 'author' | 'updated_at' | 'image'> 
+export type ArticleTransformData = Omit<ArticleBase, 'excerpt' | 'category' | 'author' | 'updated_at' | 'images' | 'image'> &{
+  images: {
+    image_1: string | "";
+    image_2: string | "";
+    image_3: string | "";
+  } | null;
+}
 
 
 export interface ArticleSectionProps {

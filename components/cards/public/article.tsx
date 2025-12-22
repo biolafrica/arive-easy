@@ -14,7 +14,7 @@ export const ArticleCard = ({article}:Props) => {
   return (
     <article className="group flex flex-col">
       <Link
-        href={`/articles/${article.slug}`}
+        href={`/articles/${article.slug}-${article.id}`}
         className="relative overflow-hidden rounded-xl bg-hover"
       >
         <Image
@@ -31,7 +31,7 @@ export const ArticleCard = ({article}:Props) => {
         </span>
 
         <h3 className="text-lg font-semibold leading-snug text-heading group-hover:text-accent transition-colors">
-          <Link  href={`/articles/${article.slug}`}>{article.slug}</Link>
+          <Link href={`/articles/${article.slug}-${article.id}`}>{article.slug}</Link>
         </h3>
 
         <p className="text-sm text-secondary line-clamp-2">

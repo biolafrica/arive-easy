@@ -9,14 +9,12 @@ import { PropertyPricing } from "./PropetyPricing";
 import { useProperty, useSimilarProperties } from "@/hooks/useSpecialized";
 import PropertyHead from "./PropertyHead";
 import { SectionHeading } from "@/components/common/SectionHeading";
-import { FEATURED_PROPERTIES } from "@/data/property";
 import { PropertyCard } from "@/components/cards/public/property";
 
 export default function PropertyClientView({id}:any){
   const {property,isLoading, error,} = useProperty(id);
   const { data: similarProperties } = useSimilarProperties(property)
 
-  if (isLoading) return <div>Loading properties...</div>;
   if (error) return <div>Error loading properties</div>;
   console.log("property:", property)
 

@@ -115,17 +115,22 @@ export function useArticles(params?: any) {
   };
 }
 
-export function useArticle(slug: string) {
-  return useQuery({
-    queryKey: queryKeys.articles.detail(slug),
-    queryFn: async () => {
-      const response = await apiClient.get(`/api/articles/${slug}`);
-      // Increment view count
-      await apiClient.post(`/api/articles/${slug}/view`);
-      return response;
-    },
-    ...getEntityCacheConfig('articles', 'detail'),
+
+export function useArticle(id: string) {
+  const crud = useCrud<ArticleBase>({
+    resource: 'articles',
+    interfaceType: 'client',
+    cacheConfig: getEntityCacheConfig('articles', 'detail'),
   });
+  
+  const { data, isLoading, error } = crud.useGetOne(id);
+  
+  return {
+    article: data,
+    isLoading,
+    error,
+    ...crud,
+  };
 }
 
 export function useInfiniteArticles(params?: any) {
@@ -137,7 +142,6 @@ export function useInfiniteArticles(params?: any) {
     autoFetch: true,
   });
 }
-
 
 
 
