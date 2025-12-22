@@ -12,13 +12,12 @@ export default function ArticleViewClient(){
     include: ['users'],
     sortBy: 'created_at',
     sortOrder: 'desc',
-  
   });
-  
+
   if (error) return <div>Error loading properties</div>;
 
   return(
-    <>
+    <div >
       {isLoading && ( <AllBlogGridSkeleton/>)}
 
       {!isLoading && articles?.length === 0 && (
@@ -41,6 +40,6 @@ export default function ArticleViewClient(){
         )}
       </div>
 
-    </>
+    </div>
   )
 }

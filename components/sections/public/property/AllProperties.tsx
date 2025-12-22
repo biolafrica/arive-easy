@@ -24,10 +24,8 @@ export default function AllProperties(){
   const handleFiltersApply = (newFilters: ProcessedFilters) => {
     console.log('Applying new filters:', newFilters);
     setAppliedFilters(newFilters);
-    // The query will automatically refetch with new filters
   };
 
-  // Show filter summary
   const getActiveFilterCount = () => {
     return Object.entries(appliedFilters).filter(([key, value]) => 
       value !== undefined && key !== 'status'
@@ -50,7 +48,6 @@ export default function AllProperties(){
         <PropertySearchWrapper onFiltersApply={handleFiltersApply}/>
       </div>
 
-
       {getActiveFilterCount() > 0 && (
         <div className="mt-4 flex items-center gap-2 text-sm text-gray-600">
           <span>{getActiveFilterCount()} filter{getActiveFilterCount() !== 1 ? 's' : ''} applied</span>
@@ -65,7 +62,6 @@ export default function AllProperties(){
           </button>
         </div>
       )}
-
 
       {isLoading && <AllPropertyGridSkeleton/>}
 

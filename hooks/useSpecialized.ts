@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import { PropertyBase, PropertyData } from '@/type/pages/property';
 import { ApiError } from 'next/dist/server/api-utils';
 import { toNumber } from '@/lib/formatter';
-import { ArticleBase } from '@/type/pages/article';
+import { ArticleBase} from '@/type/pages/article';
 
 
 export function useProperties(params?: any) {
@@ -74,7 +74,7 @@ export function useFeaturedProperties() {
 
 export function useSimilarProperties(
   currentProperty: PropertyBase | undefined,
-  limit = 4
+  limit = 3
 ) {
   return useQuery({
     queryKey: queryKeys.properties.similar(currentProperty?.id || '', limit),
@@ -143,7 +143,27 @@ export function useInfiniteArticles(params?: any) {
   });
 }
 
-
+export function useRelatedArticles(
+  currentArticle: ArticleBase | undefined,
+  limit = 3
+) {
+  return useQuery({
+    queryKey: queryKeys.articles.related(currentArticle?.id || '', limit),
+    queryFn: async () => {
+      if (!currentArticle) return [];
+      
+      const response = await apiClient.get<ApiResponse<ArticleBase[]>>('/api/articles', {
+        category: currentArticle.category,
+        'id.neq': currentArticle.id,  
+        limit,
+      });
+      
+      return response.data ;
+    },
+    enabled: !!currentArticle,
+    ...getEntityCacheConfig('articles', 'list'),
+  });
+}
 
 export interface UserProfile {
   id: string;

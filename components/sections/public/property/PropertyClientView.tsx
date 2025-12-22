@@ -10,17 +10,20 @@ import { useProperty, useSimilarProperties } from "@/hooks/useSpecialized";
 import PropertyHead from "./PropertyHead";
 import { SectionHeading } from "@/components/common/SectionHeading";
 import { PropertyCard } from "@/components/cards/public/property";
+import { PropertyDetailsPageSkeleton } from "@/components/skeleton/PropertyCardSkeleton";
+
 
 export default function PropertyClientView({id}:any){
   const {property,isLoading, error,} = useProperty(id);
+
   const { data: similarProperties } = useSimilarProperties(property)
 
   if (error) return <div>Error loading properties</div>;
-  console.log("property:", property)
 
   return(
     <div>
-
+      {!isLoading && (<PropertyDetailsPageSkeleton/>) }
+      
       {!isLoading && property && (
         <div>
           <PropertyHead title={property.title} address_full={property.address_full} description={property.description} id={property.id}/>
