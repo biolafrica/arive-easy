@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { dashboardForRole } from '../common/dashBoardForRole';
 
 type Role =  "seller" | "user" | "admin";
 
@@ -11,19 +12,6 @@ const PROTECTED: Record<string, Role[]> = {
 
 function findProtectedMatch(pathname: string) {
   return Object.entries(PROTECTED).find(([prefix]) => pathname.startsWith(prefix));
-}
-
-function dashboardForRole(role?: string | null) {
-  switch ((role || "").toLowerCase()) {
-    case "seller":
-      return "/seller-dashboard";
-    case "user":
-      return "/user-dashboard";
-    case "admin":
-      return "/admin";
-    default:
-      return null;
-  }
 }
 
 export async function updateSession(request: NextRequest) {
@@ -55,9 +43,15 @@ export async function updateSession(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser()
+  console.log("middleware",user)
 
   const pathname = request.nextUrl.pathname;
-
+ 
+  const AUTH_CALLBACKS = ['/auth/verify-email', '/auth/callback'];
+  if (AUTH_CALLBACKS.some(p => pathname.startsWith(p))) {
+    return supabaseResponse;
+  }
+  
   if (pathname === "/signin" || pathname === "/signup") {
     if (user) {
       const role =

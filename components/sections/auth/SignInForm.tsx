@@ -35,7 +35,7 @@ export default function SignInFormPage(){
     const supabase = createClient();
 
     try {
-      const {error} = await supabase.auth.signInWithPassword({
+      const {error, data} = await supabase.auth.signInWithPassword({
         email:values.email, 
         password:values.password
       });
@@ -43,17 +43,14 @@ export default function SignInFormPage(){
       if (error) {
         throw error;
       }
+      
       toast.success("Logged In Successfully");
-      setTimeout(() => {
-        toast.dismiss()
-      }, 1500)
-      router.push('/')
       
     } catch (error) {
       toast.warning(error instanceof Error ? error.message : "Error logging in, please try again.");
       console.error("Error submitting login form:", error);
-      
     }   
+
   }
 
   return(

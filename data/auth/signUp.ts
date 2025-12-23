@@ -9,7 +9,7 @@ export const sigupFields: FormField[] = [
   { name: 'role', label: 'Role', type: 'select',required: true,
     options: [
       { label: 'Select role', value: '' },
-      { label: 'Homebuyer', value: 'homebuyer' },
+      { label: 'Homebuyer', value: 'user' },
       { label: 'Seller', value: 'seller' },
     ],
   },

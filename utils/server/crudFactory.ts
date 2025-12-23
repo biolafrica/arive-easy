@@ -3,7 +3,6 @@ import * as response from "./serverResponse";
 import { SupabaseQueryBuilder } from "../supabase/queryBuilder";
 
 
-// Types for better type safety
 export interface CRUDConfig<T> {
   table: string;
   requiredFields?: string[];
@@ -54,8 +53,8 @@ export interface ValidationConfig<T> {
 
 export interface CachingConfig {
   enabled: boolean;
-  ttl?: number; // Time to live in seconds
-  invalidateOn?: CRUDAction[]; // Which actions invalidate the cache
+  ttl?: number; 
+  invalidateOn?: CRUDAction[];
   keyPrefix?: string;
 }
 
@@ -129,7 +128,6 @@ function extractFilters(request: NextRequest): Record<string, any> {
   return filters;
 }
 
-// Main CRUD factory function
 export function createCRUDHandlers<T>({
   table,
   requiredFields = [],
@@ -195,7 +193,6 @@ export function createCRUDHandlers<T>({
   };
 
   return {
-    // GET handler - Read single or list
     GET: async (request: NextRequest) => {
       // Rate limiting
       if (!applyRateLimit(request)) {
@@ -290,9 +287,8 @@ export function createCRUDHandlers<T>({
       }
     },
 
-    // POST handler - Create
     POST: async (request: NextRequest) => {
-      // Rate limiting
+  
       if (!applyRateLimit(request)) {
         return NextResponse.json(
           { error: 'Rate limit exceeded' },

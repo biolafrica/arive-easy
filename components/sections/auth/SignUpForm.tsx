@@ -2,11 +2,15 @@
 
 import Form from "@/components/form/Form";
 import { initialValues, sigupFields } from "@/data/auth/signUp";
+import { useUserRegistration } from "@/hooks/useSpecialized";
 import { SignUpForm } from "@/type/auth/signUp";
+import { useRouter } from "next/navigation";
 
 
 
 export default function SignUpFormPage(){
+  const router = useRouter();
+  const create = useUserRegistration()
 
   const validateProfile = (values: SignUpForm) => {
     const errors: Partial<Record<keyof SignUpForm, string>> = {};
@@ -33,7 +37,14 @@ export default function SignUpFormPage(){
   };
 
   const handleEventSubmit = async (values: SignUpForm) => {
-    console.log("submitted values", values)
+    const formData = {
+      name : values.name,
+      email: values.email,
+      password: values.password,
+      role: values.role
+    }
+    
+    await create(formData)
   }
 
   return(

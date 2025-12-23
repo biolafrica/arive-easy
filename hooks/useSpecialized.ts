@@ -9,6 +9,9 @@ import { PropertyBase, PropertyData } from '@/type/pages/property';
 import { ApiError } from 'next/dist/server/api-utils';
 import { toNumber } from '@/lib/formatter';
 import { ArticleBase} from '@/type/pages/article';
+import { useRouter } from 'next/navigation';
+import { UserBase } from '@/type/user';
+import { dashboardForRole } from '@/utils/common/dashBoardForRole';
 
 
 export function useProperties(params?: any) {
@@ -222,3 +225,35 @@ export function useUpdateProfile() {
     },
   });
 }
+
+export function useUserRegistration() {
+  const router = useRouter();
+  const {
+    create,
+  } = useCrud({
+    resource: 'user',
+    interfaceType: 'client', 
+    showNotifications: false,
+    optimisticUpdate: false,
+    onSuccess: {
+      create: (data:UserBase) => {
+        router.push('/auth/verify-email-sent')
+      },
+    },
+    onError: {
+      create: (error) => {
+        const message = error?.error?.message || "Registration failed";
+        
+        if (message.includes("already registered")) {
+          toast.error("This email is already registered. Please login instead.");
+        } else {
+          toast.error(message);
+        }
+      },
+    },
+  });
+
+
+  return create
+}
+

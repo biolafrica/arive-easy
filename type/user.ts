@@ -12,4 +12,5 @@ export interface UserBase {
 
 export type UserBackendFormProps = Pick<UserBase, 'email' | 'id' | 'name' | "role"> &{
   password: string;
+  email_verified : boolean;
 }
