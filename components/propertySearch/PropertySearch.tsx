@@ -21,13 +21,12 @@ export function PropertySearchDesktop({
 }: PropertySearchDesktopProps) {
   return (
     <>
-      {/* Status tabs */}
       <div className="flex gap-2">
         {(['Available', 'Sold', 'Pending'] as const).map((item) => (
           <button
             key={item}
             onClick={() => setStatus(item)}
-            className={`rounded-md rounded-b-none px-4 py-2 text-sm font-medium transition
+            className={`rounded-md text-black rounded-b-none px-4 py-2 text-sm font-medium transition
               ${
                 filters.status === item
                   ? 'bg-layout border border-b-0 text-heading shadow-sm'

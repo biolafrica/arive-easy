@@ -38,7 +38,7 @@ export function Select({
 
   return (
     <div className="flex flex-1 flex-col gap-1 px-1 lg:px-4">
-      <span className="text-sm font-medium text-heading">
+      <span className="text-sm font-medium text-heading text-left">
         {label}
       </span>
 
@@ -54,7 +54,7 @@ export function Select({
             disabled && 'cursor-not-allowed opacity-50'
           )}
         >
-          <span className={cn(!selected && 'text-muted')}>
+          <span className={cn(!selected && 'text-secondary')}>
             {selected?.label || placeholder}
           </span>
 
@@ -68,7 +68,7 @@ export function Select({
 
         {/* Dropdown */}
         {open && !disabled && (
-          <div className="absolute z-50 mt-2 w-full rounded-xl border border-border bg-white shadow-lg">
+          <div className="absolute z-50 mt-2 w-full rounded-xl border border-border bg-white shadow-lg text-black">
             {normalized.map((opt) => {
               const active = opt.value === value;
 

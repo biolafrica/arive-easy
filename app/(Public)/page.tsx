@@ -6,14 +6,14 @@ import { TestimonialsSection } from "@/components/sections/public/home/Testimoni
 import { WhyChooseUs } from "@/components/sections/public/home/WhyChooseUs";
 import { testimonials } from "@/data/testimonial";
 import HeroSection from "@/components/sections/public/home/HeroSection";
-import { PropertySearchWrapper } from "@/components/propertySearch/PropertySearchWraper";
+import { HomePropertySearchWrapper } from "@/components/propertySearch/PropertySearchWraper";
 
 export default function Home() {
   return (
     <main>
 
       <HeroSection backgroundImage="/images/hero.jpg">
-        <PropertySearchWrapper />
+        <HomePropertySearchWrapper />
       </HeroSection>
 
       <div className="text-5xl">
