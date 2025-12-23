@@ -20,7 +20,7 @@ export const DEFAULT_COLUMNS: FooterColumn[] = [
     links: [
       { label: 'Properties', href: '/properties' },
       { label: 'Mortgage Calculator', href: '/calculator' },
-      { label: 'How It Works', href: '/how-it-works' },
+      { label: 'Home', href: '/' },
     ],
   },
   {

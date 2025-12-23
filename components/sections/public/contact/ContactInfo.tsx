@@ -23,7 +23,7 @@ export function ContactInfo() {
             href="mailto:support@ariveasy.com"
             className="hover:underline"
           >
-            support@ariveasy.com
+            info@ariveasy.com
           </a>
         </li>
 

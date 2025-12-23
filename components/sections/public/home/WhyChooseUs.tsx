@@ -11,9 +11,9 @@ interface Props {
 }
 
 export const WhyChooseUs: React.FC<Props> = ({
-  title = 'Why you should choose Arive',
+  title = 'Why you should choose Us',
   description =
-    'Arive makes owning a home in Nigeria simple, secure, and within reach — no matter where you live.',
+    'Ariveasy makes owning a home simple, secure, and within reach, no matter where you live.',
   features,
   image,
 }) => {

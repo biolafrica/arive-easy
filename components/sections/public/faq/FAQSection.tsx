@@ -6,10 +6,14 @@ import { FAQ_CATEGORIES, FAQ_ITEMS } from '@/data/faq';
 import { FAQCategories } from './FAQCategories';
 import { Button } from '@/components/primitives/Button';
 import { FAQItem } from './FAQItem';
+import { useRouter } from 'next/navigation';
+
 
 
 
 export function FAQSection() {
+  const router = useRouter()
+
   const [activeCategory, setActiveCategory] = useState('general');
 
   const filteredFAQs = useMemo(() => {
@@ -53,7 +57,7 @@ export function FAQSection() {
                 Can&apos;t find what you&apos;re looking for?
                 Our support team is here to help.
               </p>
-              <Button className="mt-4" variant="outline">
+              <Button className="mt-4" variant="outline" onClick={()=>router.push("/support")} >
                 Contact
               </Button>
             </div>

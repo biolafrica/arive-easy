@@ -6,10 +6,13 @@ import { Button } from '@/components/primitives/Button';
 import { FeaturedBlogGridSkeleton } from '@/components/skeleton/BlogCardSkeleton';
 import { useArticles } from '@/hooks/useSpecialized';
 import { ArticleEmptyState } from './ArticleEmptyState';
+import { useRouter } from 'next/navigation';
 
 
 
 export const ArticleSection = () => {
+  const router = useRouter()
+
   const {articles, isLoading, error } = useArticles({
     include: ['users'],
     sortBy: 'created_at',
@@ -42,7 +45,7 @@ export const ArticleSection = () => {
         </div>
 
           <div className="mt-14 flex justify-center">
-            <Button variant="outline" size="md">
+            <Button variant="outline" size="md" onClick={()=>router.push("/articles")}>
             See all
             </Button>
           </div>
