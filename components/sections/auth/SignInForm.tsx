@@ -3,8 +3,12 @@
 import Form from "@/components/form/Form";
 import { initialValues, siginFields } from "@/data/auth/signIn";
 import { SignInForm } from "@/type/auth/signIn";
+import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function SignInFormPage(){
+  const router = useRouter();
 
   const validateProfile = (values: SignInForm) => {
     const errors: Partial<Record<keyof SignInForm, string>> = {};
@@ -26,8 +30,30 @@ export default function SignInFormPage(){
     
     return errors;
   };
+
   const handleEventSubmit = async (values: SignInForm) => {
-    console.log("submitted values", values)
+    const supabase = createClient();
+
+    try {
+      const {error} = await supabase.auth.signInWithPassword({
+        email:values.email, 
+        password:values.password
+      });
+
+      if (error) {
+        throw error;
+      }
+      toast.success("Logged In Successfully");
+      setTimeout(() => {
+        toast.dismiss()
+      }, 1500)
+      router.push('/')
+      
+    } catch (error) {
+      toast.warning(error instanceof Error ? error.message : "Error logging in, please try again.");
+      console.error("Error submitting login form:", error);
+      
+    }   
   }
 
   return(
