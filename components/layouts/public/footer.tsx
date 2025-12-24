@@ -10,12 +10,16 @@ import { validateNewsletter } from '@/utils/validate';
 import Form from '@/components/form/Form';
 import { NewsletterValues } from '@/type/newsletter';
 import { Facebook, Linkedin, Twitter } from '@/data/icons';
+import { useSubscriber } from '@/hooks/useSpecialized';
 
 
 export const Footer: React.FC<FooterProps> = ({
   columns = DEFAULT_COLUMNS,
 }) => {
+  const create = useSubscriber();
+
   const handleNewsletterSubmit = async (values: NewsletterValues) => {
+    create(values)
     console.log('Newsletter signup:', values.email);
   };
 

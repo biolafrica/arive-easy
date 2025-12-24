@@ -3,7 +3,7 @@ import { useInfiniteList} from './useInfiniteList';
 import { queryKeys } from '../lib/query-keys';
 import { getEntityCacheConfig } from '../lib/cache-config';
 import { ApiResponse, apiClient } from '../lib/api-client';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery} from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { PropertyBase, PropertyData } from '@/type/pages/property';
 import { ApiError } from 'next/dist/server/api-utils';
@@ -168,21 +168,6 @@ export function useRelatedArticles(
   });
 }
 
-export interface UserProfile {
-  id: string;
-  email: string;
-  name: string;
-  avatar_url?: string;
-  phone?: string;
-  address?: string;
-  bio?: string;
-  preferences?: Record<string, any>;
-  role: 'admin' | 'agent' | 'buyer' | 'seller';
-  verified: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
 export function useCurrentUsers() {
   const { user, loading: authLoading } = useAuthContext();
 
@@ -197,38 +182,6 @@ export function useCurrentUsers() {
     },
     enabled: !!user?.id && !authLoading,
     ...getEntityCacheConfig('profile', 'own'),
-  });
-}
-
-export function useUserProfile(userId?: string) {
-  const id = userId || 'me';
-  
-  return useQuery({
-    queryKey: queryKeys.users.profile(id),
-    queryFn: async () => {
-      const response = await apiClient.get(`/api/users/${id}`);
-      return response;
-    },
-    ...getEntityCacheConfig('profile', userId ? 'public' : 'own'),
-  });
-}
-
-export function useUpdateProfile() {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: async (data: Partial<UserProfile>) => {
-      const response = await apiClient.put('/api/users/me', data);
-      return response;
-    },
-    onSuccess: (data) => {
-      toast.success('Profile updated successfully');
-      queryClient.setQueryData(queryKeys.users.current(), data);
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.profile() });
-    },
-    onError: (error: any) => {
-      toast.error(error.error?.message || 'Failed to update profile');
-    },
   });
 }
 
@@ -252,6 +205,43 @@ export function useUserRegistration() {
         
         if (message.includes("already registered")) {
           toast.error("This email is already registered. Please login instead.");
+        } else {
+          toast.error(message);
+        }
+      },
+    },
+  });
+
+
+  return create
+}
+
+interface Subscriber {
+  id: string;
+  email: string;
+  is_active: boolean;
+}
+
+export function useSubscriber() {
+  const router = useRouter();
+  const {
+    create,
+  } = useCrud({
+    resource: 'subscribers',
+    interfaceType: 'client', 
+    showNotifications: false,
+    optimisticUpdate: false,
+    onSuccess: {
+      create: (data:Subscriber) => {
+        toast.success("successfully subscribed")
+      },
+    },
+    onError: {
+      create: (error) => {
+        const message = error?.error?.message || "Subscription failed, try again";
+        
+        if (message.includes("duplicate key value violates unique constraint")) {
+          toast.error("This email is already subscribed.");
         } else {
           toast.error(message);
         }
