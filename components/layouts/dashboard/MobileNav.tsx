@@ -38,9 +38,9 @@ export function MobileNav({ role, open, onClose }: Props) {
         <hr />
 
         <div className="space-y-3 text-sm">
-          <button className="block">Your profile</button>
-          <button className="block">Settings</button>
-          <button className="block text-red-600">Sign out</button>
+          <Link href={`${process.env.NEXT_PUBLIC_API_URL}/${role}-dashboard/settings`} className="block">profile Settings</Link>
+          <Link href={`${process.env.NEXT_PUBLIC_API_URL}/${role}-dashboard/support`} className="block">Support</Link>
+          <button className="block text-red-600" >Sign out</button>
         </div>
       </div>
     </div>

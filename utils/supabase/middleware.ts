@@ -7,7 +7,7 @@ type Role =  "seller" | "user" | "admin";
 const PROTECTED: Record<string, Role[]> = {
   "/seller-dashboard": ["seller", "admin"],
   "/user-dashboard": ["user", "admin"],
-  "/admin": ["admin"],
+  "/admin-dashboard": ["admin"],
 };
 
 function findProtectedMatch(pathname: string) {

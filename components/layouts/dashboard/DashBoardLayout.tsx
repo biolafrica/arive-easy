@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import { DashboardHeader } from './DashboardHeader';
-import { getPageTitle } from './getPageTitle';
+import { getPageTitle } from '../../../utils/layout/getPageTitle';
 import { DashboardRole } from '@/type/layout/dashboard';
 
 interface Props {

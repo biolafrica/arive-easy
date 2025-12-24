@@ -15,8 +15,8 @@ export const NAV_ITEMS: Record<DashboardRole, NavItem[]> = {
     { label: 'Transactions', href: '/seller-dashboard/transactions' },
   ],
   admin: [
-    { label: 'Dashboard', href: '/admin' },
-    { label: 'Users', href: '/admin/users' },
-    { label: 'Properties', href: '/admin/properties' },
+    { label: 'Dashboard', href: '/admin-dashboard' },
+    { label: 'Users', href: '/admin-dashboard/users' },
+    { label: 'Properties', href: '/admin-dashboard/properties' },
   ],
 };

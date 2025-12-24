@@ -29,7 +29,7 @@ export function DashboardHeader({ role }: { role: DashboardRole }) {
 
           {/* Right */}
           <div className="flex items-center gap-3">
-            <UserMenu />
+            <UserMenu role={role} />
 
             <button
               onClick={() => setMobileOpen(true)}

@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { BellIcon } from '@heroicons/react/24/outline';
+import Link from 'next/link';
 
-export function UserMenu() {
+export function UserMenu({role}:any) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -25,20 +26,20 @@ export function UserMenu() {
 
       {open && (
         <div className="absolute right-0 mt-2 w-48 rounded-lg border bg-white shadow-md">
-          {['Your profile', 'Settings'].map((item) => (
-            <button
-              key={item}
-              className="block w-full px-4 py-2 text-sm text-left hover:bg-muted"
-            >
-              {item}
-            </button>
-          ))}
+          <Link href={`${process.env.NEXT_PUBLIC_API_URL}/${role}-dashboard/settings`} className="block px-4 py-2 text-sm hover:bg-muted">
+            Profile settings
+          </Link>
+
+          <Link href={`${process.env.NEXT_PUBLIC_API_URL}/${role}-dashboard/support`} className="block px-4 py-2 text-sm hover:bg-muted">
+            Support
+          </Link>
 
           <button className="block w-full px-4 py-2 text-sm text-left text-red-600 hover:bg-muted">
             Sign out
           </button>
         </div>
       )}
+
     </div>
   );
 }

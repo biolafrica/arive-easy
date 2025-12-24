@@ -2,6 +2,7 @@
 
 import { NAV_ITEMS } from '@/data/layout/dashboard';
 import { DashboardRole } from '@/type/layout/dashboard';
+import { isUtilityRoute } from '@/utils/layout/dashboard';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -13,7 +14,7 @@ export function DesktopNav({ role }: { role: DashboardRole }) {
   return (
     <nav className="hidden lg:flex gap-8">
       {items.map((item) => {
-        const active = pathname === item.href;
+        const active = !isUtilityRoute(pathname) && (pathname === item.href);
 
         return (
           <Link
@@ -42,3 +43,6 @@ export function DesktopNav({ role }: { role: DashboardRole }) {
     </nav>
   );
 }
+
+
+

@@ -5,6 +5,9 @@ export function getPageTitle(
   pathname: string,
   role: DashboardRole
 ) {
+  if (pathname.endsWith('/settings')) return 'Settings';
+  if (pathname.endsWith('/support')) return 'Support';
+
   const items = [...NAV_ITEMS[role]].sort(
     (a, b) => b.href.length - a.href.length
   );
@@ -21,4 +24,5 @@ export function getPageTitle(
 
   return prefixMatch?.label ?? '';
 }
+
 

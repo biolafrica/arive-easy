@@ -5,7 +5,7 @@ export function dashboardForRole(role: string) {
     case "user":
       return "/user-dashboard";
     case "admin":
-      return "/admin";
+      return "/admin-dashboard";
     default:
       return "/";
   }
@@ -18,7 +18,7 @@ export function getDashboardForRole(role: string) {
     case 'user':
       return '/user-dashboard';
     case 'admin':
-      return '/admin';
+      return '/admin-dashboard';
     default:
       return '/user-dashboard'; 
   }
