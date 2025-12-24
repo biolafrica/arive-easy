@@ -163,7 +163,7 @@ const ImageField: React.FC<ImageFieldProps> = ({
         className={`
           relative border-2 border-dashed rounded-lg transition-all duration-200
           ${isDragging 
-            ? 'border-accent bg-accent/5' 
+            ? 'border-accent bg-btn-secondary-active' 
             : displayError
             ? 'border-red-500 bg-red-50 dark:bg-red-900/10'
             : 'border-border hover:border-secondary bg-card'

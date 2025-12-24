@@ -22,7 +22,7 @@ export function FAQSection({
   const { active, setActive, filtered, counts } = useFAQ(items);
 
   return (
-    <section className="py-24 bg-background">
+    <section className="py-24 ">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
         <SectionHeading
@@ -31,7 +31,6 @@ export function FAQSection({
           description={description}
         />
 
-        {/* TAB VARIANT (Dashboard / Support) */}
         {variant === 'tabs' && (
           <div className="mt-8">
             <FAQTabs
@@ -48,7 +47,6 @@ export function FAQSection({
           </div>
         )}
 
-        {/* SIDEBAR VARIANT (Public page) */}
         {variant === 'sidebar' && (
           <div className="mt-16 grid gap-12 lg:grid-cols-4">
             <div className="lg:col-span-1">
