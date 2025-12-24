@@ -2,7 +2,7 @@ import { PropertyForm } from "@/type/pages/property";
 import { createCRUDHandlers } from "@/utils/server/crudFactory";
 
 
-export const propertyHandlers = createCRUDHandlers<PropertyForm>({
+const propertyHandlers = createCRUDHandlers<PropertyForm>({
   table: 'properties',
   requiredFields: ['title', 'description', 'property-type', 'price', 'city'],
   searchFields: ['title'],
@@ -12,4 +12,4 @@ export const propertyHandlers = createCRUDHandlers<PropertyForm>({
   },
 });
 
-export const GET = propertyHandlers.GET;
+export const { GET } = propertyHandlers;

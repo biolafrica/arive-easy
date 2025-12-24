@@ -48,7 +48,7 @@ const handlers = createCRUDHandlers<UserBackendFormProps>({
       return data
     },
 
-    afterCreate: async (createdUser, body, context) => {
+    afterCreate: async (createdUser, _, context) => {
 
       const tempPassword = context.metadata?.tempPassword;
 
@@ -106,23 +106,5 @@ const handlers = createCRUDHandlers<UserBackendFormProps>({
     },
   },
 });
-
-
-export async function PATCH(request: Request) {
-  const { userId, email_verified } = await request.json();
-
-  const { data, error } = await supabaseAdmin
-    .from('users')
-    .update({ email_verified, updated_at: new Date().toISOString() })
-    .eq('id', userId)
-    .select()
-    .single();
-    
-  if (error) {
-    return Response.json({ error: error.message }, { status: 400 });
-  }
-  
-  return Response.json({ data });
-}
 
 export const { GET, POST, PUT, DELETE } = handlers;

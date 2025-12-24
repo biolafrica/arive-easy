@@ -3,7 +3,7 @@
 import SharePost from "@/components/common/Share";
 import { Button } from "@/components/primitives/Button";
 import { PropertyHeadProps } from "@/type/pages/property";
-import { ArrowLeftIcon, BookmarkIcon, ShareIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, BookmarkIcon} from "@heroicons/react/24/outline";
 
 export default function PropertyHead({title, address_full ,id, description}:PropertyHeadProps){
 
