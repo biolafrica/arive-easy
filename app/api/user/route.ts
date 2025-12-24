@@ -10,9 +10,6 @@ const handlers = createCRUDHandlers<UserBackendFormProps>({
   hooks: {
     beforeCreate: async (data, context) => {
 
-      console.log("context", context)
-      console.log('data received before create', data)
-
       if (data.password) {
         try {
           const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
@@ -43,8 +40,6 @@ const handlers = createCRUDHandlers<UserBackendFormProps>({
         ...context.metadata,
         tempPassword: data.password,
       };
-
-      console.log("upgraded context", context)
       
       delete (data as any).password;
       
@@ -54,10 +49,6 @@ const handlers = createCRUDHandlers<UserBackendFormProps>({
     },
 
     afterCreate: async (createdUser, body, context) => {
-
-      console.log("context after create", context)
-      console.log('body received after create', body)
-      console.log('created user after create', createdUser)
 
       const tempPassword = context.metadata?.tempPassword;
 

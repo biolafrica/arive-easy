@@ -45,9 +45,10 @@ export default function SignInFormPage(){
       }
       
       toast.success("Logged In Successfully");
+      router.push('/')
       
     } catch (error) {
-      toast.warning(error instanceof Error ? error.message : "Error logging in, please try again.");
+      toast.error(error instanceof Error ? error.message : "Error logging in, please try again.");
       console.error("Error submitting login form:", error);
     }   
 

@@ -6,20 +6,22 @@ import { useRouter } from 'next/navigation';
 import { HomeModernIcon,Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/primitives/Button';
-import { DASHBOARD_BY_ROLE, DEFAULT_NAV } from '@/data/layout/public';
+import {  DEFAULT_NAV } from '@/data/layout/public';
 import { HeaderProps } from '@/type/layout/public';
+import { useCurrentUsers } from '@/hooks/useSpecialized';
+import { getDashboardForRole } from '@/utils/common/dashBoardForRole';
 
 export const Header: React.FC<HeaderProps> = ({
   navItems = DEFAULT_NAV,
-  isAuthenticated = false,
-  userRole = 'buyer',
   className,
 }) => {
+  const { data: profile} = useCurrentUsers()
+
   const [mobileOpen, setMobileOpen] = useState(false);
   const router = useRouter();
 
-  const ctaLabel = isAuthenticated ? 'Dashboard' : 'Get Started';
-  const ctaHref = isAuthenticated ? DASHBOARD_BY_ROLE[userRole] : '/signup';
+  const ctaLabel = profile ? 'Dashboard' : 'Get Started';
+  const ctaHref = profile ? getDashboardForRole(profile.role) : '/signup';
 
   const handleCTAClick = () => {
     setMobileOpen(false);

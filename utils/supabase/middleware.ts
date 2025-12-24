@@ -47,7 +47,8 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
  
-  const AUTH_CALLBACKS = ['/auth/verify-email', '/auth/callback'];
+  const AUTH_CALLBACKS = ['/auth/verify-email', '/auth/callback', '/auth/reset-password', '/auth/forgot-password', '/auth/check-email' ];
+
   if (AUTH_CALLBACKS.some(p => pathname.startsWith(p))) {
     return supabaseResponse;
   }

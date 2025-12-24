@@ -11,7 +11,7 @@ import { toNumber } from '@/lib/formatter';
 import { ArticleBase} from '@/type/pages/article';
 import { useRouter } from 'next/navigation';
 import { UserBase } from '@/type/user';
-import { dashboardForRole } from '@/utils/common/dashBoardForRole';
+import { useAuthContext } from '@/providers/auth-provider';
 
 
 export function useProperties(params?: any) {
@@ -183,13 +183,19 @@ export interface UserProfile {
   updated_at: string;
 }
 
-export function useCurrentUser() {
+export function useCurrentUsers() {
+  const { user, loading: authLoading } = useAuthContext();
+
   return useQuery({
     queryKey: queryKeys.users.current(),
     queryFn: async () => {
-      const response = await apiClient.get('/api/users/me');
+      if (!user?.id) {
+        throw new Error('No user logged in');
+      }
+      const response = await apiClient.get<UserBase>(`/api/user/me?id=${user.id}`);
       return response;
     },
+    enabled: !!user?.id && !authLoading,
     ...getEntityCacheConfig('profile', 'own'),
   });
 }
