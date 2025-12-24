@@ -28,12 +28,12 @@ export function FAQCategories({
               className={cn(
                 'flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition',
                 active === cat.id
-                  ? 'bg-hover text-heading'
+                  ? 'bg-orange-500 text-white'
                   : 'text-secondary hover:bg-hover'
               )}
             >
               <span>{cat.label}</span>
-              <span className="rounded-full bg-hover px-2 text-xs">
+              <span className="rounded-full bg-hover px-2 text-xs text-black">
                 {counts[cat.id] ?? 0}
               </span>
             </button>

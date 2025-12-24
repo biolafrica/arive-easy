@@ -9,3 +9,13 @@ export interface FAQItem {
   question: string;
   answer: string;
 }
+
+export type FAQVariant = 'sidebar' | 'tabs';
+
+export interface FAQSectionProps {
+  items?: FAQItem[];
+  categories?: FAQCategory[];
+  variant?: 'sidebar' | 'tabs';
+  title?: string;
+  description?: string;
+}

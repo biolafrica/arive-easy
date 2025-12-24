@@ -1,85 +1,98 @@
 'use client';
 
-import { useMemo, useState } from 'react';
 import { SectionHeading } from '@/components/common/SectionHeading';
 import { FAQ_CATEGORIES, FAQ_ITEMS } from '@/data/faq';
 import { FAQCategories } from './FAQCategories';
 import { Button } from '@/components/primitives/Button';
 import { FAQItem } from './FAQItem';
 import { useRouter } from 'next/navigation';
+import { useFAQ } from '@/hooks/useFAQ';
+import { FAQSectionProps } from '@/type/faq';
+import { FAQTabs } from './FAQTab';
 
 
-
-
-export function FAQSection() {
-  const router = useRouter()
-
-  const [activeCategory, setActiveCategory] = useState('general');
-
-  const filteredFAQs = useMemo(() => {
-    if (activeCategory === 'all') return FAQ_ITEMS;
-    return FAQ_ITEMS.filter(
-      (faq) => faq.category === activeCategory
-    );
-  }, [activeCategory]);
-
-  const counts = useMemo(() => {
-    return FAQ_ITEMS.reduce<Record<string, number>>((acc, faq) => {
-      acc.all = (acc.all || 0) + 1;
-      acc[faq.category] = (acc[faq.category] || 0) + 1;
-      return acc;
-    }, {});
-  }, []);
+export function FAQSection({
+  items = FAQ_ITEMS,
+  categories = FAQ_CATEGORIES,
+  variant = 'sidebar',
+  title = 'Frequently Asked Questions',
+  description = 'Find answers to common questions about Ariveasy.',
+}: FAQSectionProps) {
+  const router = useRouter();
+  const { active, setActive, filtered, counts } = useFAQ(items);
 
   return (
     <section className="py-24 bg-background">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
         <SectionHeading
           eyebrow="FAQs"
-          title="Frequently Asked Questions"
-          description="Find answers to common questions about buying property through Ariveasy."
+          title={title}
+          description={description}
         />
 
-        <div className="mt-16 grid gap-12 lg:grid-cols-4">
-          <div className="lg:col-span-1">
-            <FAQCategories
-              categories={FAQ_CATEGORIES}
-              active={activeCategory}
-              counts={counts}
-              onChange={setActiveCategory}
+        {/* TAB VARIANT (Dashboard / Support) */}
+        {variant === 'tabs' && (
+          <div className="mt-8">
+            <FAQTabs
+              categories={categories}
+              active={active}
+              onChange={setActive}
             />
 
-            <div className="mt-10">
-              <h4 className="font-medium text-heading">
-                Still have questions?
-              </h4>
-              <p className="mt-2 text-sm text-secondary">
-                Can&apos;t find what you&apos;re looking for?
-                Our support team is here to help.
-              </p>
-              <Button className="mt-4" variant="outline" onClick={()=>router.push("/support")} >
-                Contact
-              </Button>
-            </div>
-          </div>
-
-
-          <div className="lg:col-span-3">
-            <h3 className="text-xl font-semibold text-heading mb-2">
-              {FAQ_CATEGORIES.find(c => c.id === activeCategory)?.label}
-            </h3>
-            <p className="text-sm text-secondary mb-6">
-              {filteredFAQs.length} Questions
-            </p>
-
-            <div>
-              {filteredFAQs.map((faq) => (
+            <div className="mt-6">
+              {filtered.map((faq) => (
                 <FAQItem key={faq.id} item={faq} />
               ))}
             </div>
           </div>
-        </div>
+        )}
+
+        {/* SIDEBAR VARIANT (Public page) */}
+        {variant === 'sidebar' && (
+          <div className="mt-16 grid gap-12 lg:grid-cols-4">
+            <div className="lg:col-span-1">
+              <FAQCategories
+                categories={categories}
+                active={active}
+                counts={counts}
+                onChange={setActive}
+              />
+
+              <div className="mt-10">
+                <h4 className="font-medium text-heading">
+                  Still have questions?
+                </h4>
+                <p className="mt-2 text-sm text-secondary">
+                  Can&apos;t find what you&apos;re looking for? Our support team
+                  is here to help.
+                </p>
+                <Button
+                  className="mt-4"
+                  variant="outline"
+                  onClick={() => router.push('/support')}
+                >
+                  Contact
+                </Button>
+              </div>
+            </div>
+
+            <div className="lg:col-span-3">
+              <h3 className="text-xl font-semibold text-heading mb-2">
+                {categories.find((c) => c.id === active)?.label}
+              </h3>
+              <p className="text-sm text-secondary mb-6">
+                {filtered.length} Questions
+              </p>
+
+              {filtered.map((faq) => (
+                <FAQItem key={faq.id} item={faq} />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
 }
+

@@ -10,7 +10,6 @@ export const FAQ_CATEGORIES: FAQCategory[] = [
 ];
 
 export const FAQ_ITEMS: FAQItem[] = [
-  /* -------------------- GETTING STARTED -------------------- */
   {
     id: 'faq-general-1',
     category: 'general',
