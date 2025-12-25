@@ -2,10 +2,29 @@
 
 import SharePost from "@/components/common/Share";
 import { Button } from "@/components/primitives/Button";
+import { useFavorites } from "@/hooks/useSpecialized";
+import { useAuthContext } from "@/providers/auth-provider";
 import { PropertyHeadProps } from "@/type/pages/property";
-import { ArrowLeftIcon, BookmarkIcon} from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, BookmarkIcon as BookMarkOutline} from "@heroicons/react/24/outline";
+import { BookmarkIcon as BookMarkSolid } from '@heroicons/react/24/solid';
+import { toast } from "sonner";
 
 export default function PropertyHead({title, address_full ,id, description}:PropertyHeadProps){
+  const { user } = useAuthContext();
+  const { isFavorited, toggleFavorite, isToggling } = useFavorites()
+  const favorited = isFavorited(id)
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!user) {
+      toast.error('Please login to save properties');
+      return;
+    }
+    
+    toggleFavorite(id);
+  };
 
   const propertyShareDetails ={
     title,
@@ -33,7 +52,12 @@ export default function PropertyHead({title, address_full ,id, description}:Prop
           </div>
 
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" leftIcon={<BookmarkIcon className="h-4 w-4" />}> Save </Button>
+            <Button variant="outline" size="sm" onClick={handleFavoriteClick} disabled={isToggling} leftIcon=
+              {favorited ? ( <BookMarkSolid className="h-4 w-4 text-orange-500" />) : 
+                (<BookMarkOutline className="h-4 w-4 text-secondary hover:text-orange-500" />)
+              }>
+               Save 
+            </Button>
             
             <SharePost article={propertyShareDetails}/>
           </div>

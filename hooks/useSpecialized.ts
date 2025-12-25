@@ -3,7 +3,7 @@ import { useInfiniteList} from './useInfiniteList';
 import { queryKeys } from '../lib/query-keys';
 import { getEntityCacheConfig } from '../lib/cache-config';
 import { ApiResponse, apiClient } from '../lib/api-client';
-import { useQuery} from '@tanstack/react-query';
+import {useQuery} from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { PropertyBase, PropertyData } from '@/type/pages/property';
 import { ApiError } from 'next/dist/server/api-utils';
@@ -12,6 +12,7 @@ import { ArticleBase} from '@/type/pages/article';
 import { useRouter } from 'next/navigation';
 import { UserBase } from '@/type/user';
 import { useAuthContext } from '@/providers/auth-provider';
+import { FavoriteBase } from '@/type/pages/dashboard/favorite';
 
 
 export function useProperties(params?: any) {
@@ -117,7 +118,6 @@ export function useArticles(params?: any) {
     ...crud,
   };
 }
-
 
 export function useArticle(id: string) {
   const crud = useCrud<ArticleBase>({
@@ -251,5 +251,63 @@ export function useSubscriber() {
 
 
   return create
+}
+
+
+export function useFavorites() {
+  const { user } = useAuthContext();
+
+  const {
+    useGetAll,
+    create,
+    remove,
+    isCreating,
+    isDeleting,
+  } = useCrud<FavoriteBase>({
+    resource: 'favorites',
+    interfaceType: 'client',
+    showNotifications: false, 
+  });
+
+  const { data: favoritesData, isLoading } = useGetAll({
+    filters:{user_id : user?.id} 
+  });
+
+  const favorites = favoritesData?.data || [];
+  
+
+  const toggleFavorite = async (propertyId: string) => {
+    if (!user) {
+      toast.error('Please login to save properties');
+      return;
+    }
+    
+    const existing = favorites.find(f => f.property_id === propertyId);
+    
+    try {
+      if (existing) {
+        await remove(existing.id);
+        toast.success('Removed from favorites');
+      } else {
+        await create({ property_id: propertyId , user_id: user.id});
+        toast.success('Added to favorites');
+      }
+    } catch (error) {
+      console.error("error toggling")
+      // Error already handled by CRUD hook
+    }
+  };
+  
+  const isFavorited = (propertyId: string) => {
+    return favorites.some(f => f.property_id === propertyId);
+  };
+  
+  return {
+    favorites,
+    isLoading,
+    toggleFavorite,
+    isFavorited,
+    isToggling: isCreating || isDeleting,
+  };
 }
 

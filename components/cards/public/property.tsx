@@ -1,14 +1,34 @@
 import { PropertyImageCarousel } from '@/components/common/PropertyImageCarousel';
+import { useFavorites } from '@/hooks/useSpecialized';
 import { formatNaira, formatNumber } from '@/lib/formatter';
+import { useAuthContext } from '@/providers/auth-provider';
 import { PropertyData } from '@/type/pages/property';
-import { HeartIcon } from '@heroicons/react/24/outline';
+import { HeartIcon as HeartOutline } from '@heroicons/react/24/outline';
+import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 interface Props {
   property: PropertyData;
 }
 
 export function PropertyCard({ property }: Props) {
+  const { user } = useAuthContext();
+  const { isFavorited, toggleFavorite, isToggling } = useFavorites()
+  const favorited = isFavorited(property.id)
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!user) {
+      toast.error('Please login to save properties');
+      return;
+    }
+    
+    toggleFavorite(property.id);
+  };
+
   return (
     <Link href={`/properties/${property.id}`}>
       <div className="rounded-xl border border-border bg-card shadow-sm hover:shadow-md transition">
@@ -34,7 +54,15 @@ export function PropertyCard({ property }: Props) {
             <h3 className="text-lg font-semibold text-heading">
               {property.title}
             </h3>
-            <HeartIcon className="h-5 w-5 text-secondary hover:text-accent cursor-pointer" />
+
+            <button onClick={handleFavoriteClick} disabled={isToggling} className="transition-all hover:scale-110" >
+              {favorited ? (
+                <HeartSolid className="h-5 w-5 text-red-500" />
+              ) : (
+                <HeartOutline className="h-5 w-5 text-secondary hover:text-red-500" />
+              )}
+            </button>
+
           </div>
 
           <div className="mt-4 space-y-2 text-sm">
