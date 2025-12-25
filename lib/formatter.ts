@@ -97,3 +97,16 @@ export function parseCurrencyInput(value: string): number {
   const cleanedValue = value.replace(/[^0-9.]/g, '');
   return parseFloat(cleanedValue) || 0;
 }
+
+export function formatNumberDate(dateString?: string | null): string {
+  if (!dateString) return "";
+
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return "";
+
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+
+  return `${day}-${month}-${year}`;
+}
