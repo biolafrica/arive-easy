@@ -4,7 +4,7 @@ import { ArticleSection } from "@/components/sections/public/article/HomeArticle
 import { HowItWorksSection } from "@/components/sections/public/home/HowItWorks";
 import { TestimonialsSection } from "@/components/sections/public/home/Testimonial";
 import { WhyChooseUs } from "@/components/sections/public/home/WhyChooseUs";
-import { testimonials } from "@/data/testimonial";
+import { testimonials } from "@/data/pages/public/testimonial";
 import HeroSection from "@/components/sections/public/home/HeroSection";
 import { HomePropertySearchWrapper } from "@/components/propertySearch/PropertySearchWraper";
 

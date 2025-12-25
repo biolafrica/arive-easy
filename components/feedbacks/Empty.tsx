@@ -1,27 +1,56 @@
-'use client'
+import { ReactNode } from 'react';
+import { Button } from '@/components/primitives/Button';
 
-import { FolderIcon } from '@heroicons/react/24/outline';
-
-interface EmptyStateProps {
-  title?: string;
-  message?: string;
-  icon?: React.ReactNode;
+export interface EmptyStateAction {
+  label: string;
+  onClick: () => void;
+  variant?: 'filled' | 'outline' | 'ghost';
 }
 
-export default function EmptyState({
-  title = 'Nothing here yet',
-  message = 'There is no content to display.',
+export interface EmptyStateProps {
+  icon: ReactNode;
+  title: string;
+  description?: string;
+  actions?: EmptyStateAction[]; 
+  minHeight?: string;
+}
+
+export function EmptyState({
   icon,
+  title,
+  description,
+  actions,
+  minHeight = 'min-h-[400px]',
 }: EmptyStateProps) {
   return (
-    <div className="w-full flex flex-col items-center justify-center py-20 text-center">
-      <div className="mb-4 text-gray-400">
-        {icon || <FolderIcon className="w-12 h-12" />}
-      </div>
-      <h2 className="text-xl font-semibold text-gray-700">{title}</h2>
-      <p className="text-gray-500 mt-2 text-sm max-w-md">
-        {message}
-      </p>
+    <div
+      className={`flex flex-col items-center justify-center text-center ${minHeight}`}
+    >
+      <div className="mb-6 text-gray-300">{icon}</div>
+
+      <h3 className="mb-2 text-xl font-semibold text-heading">
+        {title}
+      </h3>
+
+      {description && (
+        <p className="mb-6 max-w-md text-secondary">
+          {description}
+        </p>
+      )}
+
+      {actions && actions.length > 0 && (
+        <div className="flex flex-wrap justify-center gap-3">
+          {actions.map((action) => (
+            <Button
+              key={action.label}
+              variant={action.variant ?? 'outline'}
+              onClick={action.onClick}
+            >
+              {action.label}
+            </Button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

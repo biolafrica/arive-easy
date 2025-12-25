@@ -70,3 +70,9 @@ export const DEVELOPER_STEPS: HowItWorksStep[] = [
     icon: HomeRequestIcon,
   },
 ];
+
+export const TABS = [
+  { id: 'homebuyer', label: 'Home Buyer' },
+  { id: 'developer', label: 'Developer' },
+
+];
