@@ -27,7 +27,7 @@ export default function UserDashboardProperties (){
       <div className="mt-5">
         {tab === 'my' ? 
           (<MyPropertyClientView/>) : tab === 'saved' ? 
-          (<SavedPropertyClientView/>) :
+          (<SavedPropertyClientView setTab ={setTab} />) :
           (<BrowsePropertyClientView/>) 
         }
       </div>

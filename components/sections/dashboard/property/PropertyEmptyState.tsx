@@ -1,5 +1,6 @@
 import { EmptyState } from '@/components/feedbacks/Empty';
 import { HeartIcon, HomeIcon, RectangleStackIcon } from '@heroicons/react/24/outline';
+import { useRouter } from 'next/navigation';
 
 export function NoActiveMortgageState() {
   return (
@@ -11,7 +12,8 @@ export function NoActiveMortgageState() {
   );
 }
 
-export function NoSavedPropertiesState() {
+export function NoSavedPropertiesState({setTab}:any) {
+  const router = useRouter();
   return (
     <EmptyState
       icon={<HeartIcon className="h-24 w-24" />}
@@ -21,7 +23,7 @@ export function NoSavedPropertiesState() {
         {
           label: 'Browse properties',
           onClick: () => {
-            // router.push('/properties')
+            setTab('browse')
           },
         },
       ]}

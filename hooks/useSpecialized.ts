@@ -12,7 +12,7 @@ import { ArticleBase} from '@/type/pages/article';
 import { useRouter } from 'next/navigation';
 import { UserBase } from '@/type/user';
 import { useAuthContext } from '@/providers/auth-provider';
-import { FavoriteBase } from '@/type/pages/dashboard/favorite';
+import { FavoriteBase, PropertyFavorite } from '@/type/pages/dashboard/favorite';
 
 
 export function useProperties(params?: any) {
@@ -269,9 +269,11 @@ export function useFavorites() {
     showNotifications: false, 
   });
 
-  const { data: favoritesData, isLoading } = useGetAll({
+  const { data: favoritesData, isLoading,  } = useGetAll({
     filters:{user_id : user?.id} 
   });
+
+
 
   const favorites = favoritesData?.data || [];
   
@@ -309,5 +311,15 @@ export function useFavorites() {
     isFavorited,
     isToggling: isCreating || isDeleting,
   };
+}
+
+export function useInfiniteFavoriteProperties(params?: any) {
+  return useInfiniteList<PropertyFavorite>({
+    resource: 'favorites',
+    interfaceType: 'client',
+    params,
+    limit: 15,
+    autoFetch: true,
+  });
 }
 
