@@ -1,5 +1,5 @@
 import { formatCurrency,formatNumberDate } from '@/lib/formatter';
-import { CalendarDaysIcon, LockClosedIcon, CreditCardIcon,
+import { CalendarDaysIcon, LockClosedIcon, CreditCardIcon, HomeModernIcon, FolderIcon,
 } from '@heroicons/react/24/outline';
 
 export const MOCK_MORTGAGE_STATS = [
@@ -31,13 +31,13 @@ export const MOCK_BUYER_DASHBOARD_STATS = [
     id: 'application',
     title: 'All Application',
     value: '5',
-    icon: CalendarDaysIcon,
+    icon: FolderIcon,
   },
   {
     id: 'property',
     title: 'Property Owned',
     value: '2',
-    icon: CreditCardIcon,
+    icon: HomeModernIcon,
   },
   {
     id: 'balance',
