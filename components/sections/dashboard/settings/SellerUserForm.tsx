@@ -1,6 +1,7 @@
 'use client'
 
 import Form from "@/components/form/Form";
+import { PageContainer } from "@/components/layouts/dashboard/PageContainer";
 import { sellerUserFields } from "@/data/pages/dashboard/users";
 import { SellerProfileUserForm,} from "@/type/user"
 
@@ -33,10 +34,8 @@ export default function SellerUserForm (){
   const handleSubmitUser = (values:SellerProfileUserForm)=>{
     console.log(values)
   }
-
   return(
-    <div>
-
+    <PageContainer>
       <Form
         fields={sellerUserFields}
         initialValues={initialValues}
@@ -44,8 +43,7 @@ export default function SellerUserForm (){
         onSubmit={handleSubmitUser}
         submitLabel= "Save Profile"
       />
-
-    </div>
+    </PageContainer>
   )
 
 }

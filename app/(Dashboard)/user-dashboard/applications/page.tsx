@@ -1,6 +1,7 @@
 'use client'
 
 import DataTable from "@/components/common/DataTable";
+import { PageContainer } from "@/components/layouts/dashboard/PageContainer";
 import { columns, data, statusConfig } from "@/data/pages/dashboard/home";
 import { useState } from "react";
 
@@ -27,7 +28,8 @@ export default function UserDashboardApplication (){
   }
 
   return(
-    <div className="md:border rounded-lg md:bg-white p-1 md:p-10">
+    <PageContainer>
+
       <DataTable
         title="All Applications"
         columns={columns}
@@ -56,6 +58,6 @@ export default function UserDashboardApplication (){
         }}
       />
 
-    </div>
+    </PageContainer>
   )
 }

@@ -166,7 +166,7 @@ const ImageField: React.FC<ImageFieldProps> = ({
             ? 'border-accent bg-btn-secondary-active' 
             : displayError
             ? 'border-red-500 bg-red-50 dark:bg-red-900/10'
-            : 'border-border hover:border-secondary bg-card'
+            : 'border-border hover:border-btn-secondary bg-card'
           }
           ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
         `}

@@ -1,6 +1,7 @@
 "use client"
 
 import { SegmentedTabs } from "@/components/common/SegmentedTabs";
+import { PageContainer } from "@/components/layouts/dashboard/PageContainer";
 import BrowsePropertyClientView from "@/components/sections/dashboard/property/BrowsePropertyClientView";
 import MyPropertyClientView from "@/components/sections/dashboard/property/MyPropertyClientView";
 import SavedPropertyClientView from "@/components/sections/dashboard/property/SavedPropertyClientView";
@@ -16,8 +17,7 @@ export default function UserDashboardProperties (){
   const [tab, setTab] = useState('my');
 
   return(
-    <div className="md:border rounded-lg md:bg-white p-1 md:p-10">
-
+    <PageContainer>
       <SegmentedTabs
         tabs={TABS}
         active={tab}
@@ -31,8 +31,7 @@ export default function UserDashboardProperties (){
           (<BrowsePropertyClientView/>) 
         }
       </div>
-
-    </div>
+    </PageContainer>
 
   )
 }

@@ -1,9 +1,10 @@
 import { PaymentMortgageStats } from "@/components/cards/dashboard/UserTransaction";
+import { PageContainer } from "@/components/layouts/dashboard/PageContainer";
 
 export default function UserDashboardPayment (){
   return(
-    <div className="md:border rounded-lg md:bg-white p-1 md:p-10">
+    <PageContainer>
       <PaymentMortgageStats/>
-    </div>
+    </PageContainer>
   )
 }
