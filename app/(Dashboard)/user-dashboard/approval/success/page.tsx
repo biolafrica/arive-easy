@@ -1,7 +1,14 @@
+'use client'
+
+import { PageContainer } from "@/components/layouts/dashboard/PageContainer";
+import { PreApprovalSuccess } from "@/components/sections/dashboard/approval/PreApprovalSuccess";
+import { useRouter } from "next/navigation";
+
 export default function UserApprovalSuccessPage(){
+    const router = useRouter()
   return(
-    <div>
-      <h4>Approval Success Page</h4>
-    </div>
+    <PageContainer>
+      <PreApprovalSuccess onDashboard={()=>router.push("/user-dashboard/applications")}/>
+    </PageContainer>
   )
 }
