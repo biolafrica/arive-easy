@@ -5,6 +5,7 @@ import { Button } from '../primitives/Button';
 import ImageField from './ImageField'; 
 import RichTextEditor from './RichTextEditor';
 import { FormField, FormProps } from '@/type/form';
+import { DatePicker } from '../ui/DatePicker';
 
 
 function Form<T extends Record<string, any>>({
@@ -246,6 +247,19 @@ function Form<T extends Record<string, any>>({
               {required && <span className="text-red-500 ml-1">*</span>}
             </label>
           </div>
+        );
+      case 'date':
+        return (
+          <DatePicker
+            value={values[name] ? new Date(values[name]) : undefined}
+            onChange={(date) => {
+              setFieldValue(name as keyof T, date?.toISOString().split('T')[0] as any);
+              setFieldTouched(name as keyof T, true);
+            }}
+            placeholder={placeholder}
+            disabled={disabled}
+            className={showError ? 'border-red-500 focus:ring-red-500' : ''}
+          />
         );
 
       default:
