@@ -1,18 +1,9 @@
-'use client'
-
-import { useInfiniteFavoriteProperties } from "@/hooks/useSpecialized"
-import { useAuthContext } from "@/providers/auth-provider";
+import { generateApplicationRefNo } from "@/utils/common/generateApplicationRef";
 
 export default function Test(){
-  const {items:properties, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage, error, refresh } = useInfiniteFavoriteProperties(
-    {include: ['properties']}
-  )
-  const { user } = useAuthContext();
-
-  console.log("my favorites", properties)
-  console.log("user details", user)
+ const reference = generateApplicationRefNo();
+  console.log("year", reference)
  
-
   return(
     <div>
       <h4>Test page</h4>

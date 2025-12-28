@@ -7,6 +7,7 @@ export interface PersonalInfoType {
   residence_country:string;
   marital_status:string;
   dependant:string;
+  visa_status:string;
 };
 
 export interface EmploymentInfoType {
@@ -17,29 +18,18 @@ export interface EmploymentInfoType {
   employment_type:string;
   gross_income:string;
   other_income:string;
-  frequency_of_income:string;
+  income_frequency:string;
   business_type:string;
   incorporation_years:string;
 };
 
 export interface PropertyPreferenceType {
   property_type:string;
-  estimated_property_value:string;
+  property_value:string;
   down_payment_amount:string;
-  preffered_loan_amount:string;
+  preffered_loan_term:string;
   other_loan_amount:string;
   existing_mortgage:string;
-};
-
-export interface DocumentUploadType {
-  identity_proof: File | string | null;
-  income_proof_1: File | string | null;
-  income_proof_2: File | string | null;
-  income_proof_3: File | string | null;
-  bank_statement_1: File | string | null;
-  bank_statement_2: File | string | null;
-  bank_statement_3: File | string | null;
-  other_document: File | string | null;
 };
 
 export const personalInfoInitialValues:PersonalInfoType= {
@@ -50,7 +40,8 @@ export const personalInfoInitialValues:PersonalInfoType= {
   date_of_birth:"",
   residence_country:"",
   marital_status:"",
-  dependant:""
+  dependant:"",
+  visa_status: ""
 };
 
 export const employmentInfoInitialValues:EmploymentInfoType= {
@@ -61,7 +52,7 @@ export const employmentInfoInitialValues:EmploymentInfoType= {
   employment_type:"",
   gross_income:"",
   other_income:"",
-  frequency_of_income:"",
+  income_frequency:"",
   business_type:"",
   incorporation_years:""
 
@@ -69,21 +60,69 @@ export const employmentInfoInitialValues:EmploymentInfoType= {
 
 export const propertyPreferenceInitialValues:PropertyPreferenceType ={
   property_type:"",
-  estimated_property_value:"",
+  property_value:"",
   down_payment_amount:"",
-  preffered_loan_amount:"",
+  preffered_loan_term:"",
   other_loan_amount:"",
   existing_mortgage:""
 };
 
 export const documentUploadInitialValues:DocumentUploadType ={
   identity_proof:"",
-  income_proof_1:"",
-  income_proof_2:"",
-  income_proof_3:"",
-  bank_statement_1:"",
-  bank_statement_2:"",
-  bank_statement_3:"",
-  other_document:""
+  identity_type:"",
+  payslip_start_date:"",
+  payslip_end_date:"",
+  payslip_image:"",
+  bank_statement_start_date:"",
+  bank_statement_end_date:"",
+  bank_statement_image:"",
+  other_document_name:"",
+  other_document_image:""
 
 }
+
+
+export interface PreApprovalBase{
+  id:string;
+  reference_number:string;
+  user_id:string;
+  current_step: number;
+  completed_steps:number;
+  is_complete:boolean;
+  personal_info:PersonalInfoType;
+  employment_info:EmploymentInfoType;
+  property_info:PropertyPreferenceType;
+  documents_uploaded:boolean;
+  documents_id:string;
+  status:string;
+  conditions:string;
+  rejection_reasons:string;
+  guidance_notes:string;
+  reviewed_by:string;
+  reviewed_at:string;
+  created_at:string;
+  updated_at:string
+}
+
+export interface PreApprovalDocumentBase {
+  id:string;
+  pre_approval_id:string;
+  user_id:string;
+  status:string;
+  identity_type:string;
+  identity_proof: File | string | null;
+  payslip_start_date:string;
+  payslip_end_date:string;
+  payslip_image: File | string | null;
+  bank_statement_start_date:string;
+  bank_statement_end_date:string;
+  bank_statement_image: File | string | null;
+  other_document_name:string;
+  other_document_image: File | string | null;
+  created_at:string;
+  updated_at:string;
+};
+
+export type DocumentUploadType = Omit<PreApprovalDocumentBase, 'id' | 'pre_approval_id' | 'user_id' | 'status' |'created_at' | 'updated_at'>
+
+export type BackendPreApprovalForm = Omit<PreApprovalBase, 'id' | 'created_at' | 'updated_at'>
