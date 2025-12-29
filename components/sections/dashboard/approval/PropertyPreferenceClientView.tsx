@@ -35,7 +35,7 @@ export default function PropertyPreferenceClientView({id}:{id:string}){
     await updatePropertyInfo({
       property_info: values,
       current_step: 4,
-      completed_steps: Math.max(preApproval?.completed_steps || 1, 1, 1,)
+      completed_steps: Math.max(preApproval?.completed_steps || 0, 3,)
     });
   };
  

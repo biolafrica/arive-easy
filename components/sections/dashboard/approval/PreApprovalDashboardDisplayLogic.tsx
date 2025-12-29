@@ -5,7 +5,7 @@ import { getStepPath, useCreatePreApproval, usePreApprovals } from "@/hooks/useS
 import { useAuthContext } from "@/providers/auth-provider";
 import { generateApplicationRefNo } from "@/utils/common/generateApplicationRef";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 export default function PreApprovalDashboardDisplayLogic() {
@@ -21,7 +21,7 @@ export default function PreApprovalDashboardDisplayLogic() {
 
   const { submitPreApproval } = useCreatePreApproval();
 
-  const handleGetPreApproved =async() => {
+  const handleGetPreApproved = useCallback(async() => {
     if (isCreating) return;
     
     try {
@@ -30,7 +30,8 @@ export default function PreApprovalDashboardDisplayLogic() {
       const existingDraft = preApprovals?.find(p => p.status === 'draft');
       
       if (existingDraft) {
-        router.push(`/user-dashboard/applications/${existingDraft.id}/pre-approval`);
+        const path = getStepPath(existingDraft.current_step, existingDraft.id);
+        router.push(path);
         return;
       }
       
@@ -57,11 +58,24 @@ export default function PreApprovalDashboardDisplayLogic() {
     } finally {
       setIsCreating(false);
     }
-  };
+  }, [isCreating, preApprovals, router, submitPreApproval, user?.id]);
 
-  const handleGoToApplication =async()=>{
+
+  const handleGoToApplication = useCallback(async()=>{
     return router.push('/user-dashboard/applications')
-  }
+  },[router])
+
+
+  const handleReapply = useCallback(() => {
+    handleGetPreApproved();
+  }, [handleGetPreApproved]);
+
+  const checkIfExpired = useCallback((createdAt: string): boolean => {
+    const createdDate = new Date(createdAt);
+    const threeMonthsAgo = new Date();
+    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+    return createdDate < threeMonthsAgo;
+  }, []);
 
   const preApprovalDisplay = useMemo(() => {
     if (!preApprovals || preApprovals.length === 0) {
@@ -80,13 +94,6 @@ export default function PreApprovalDashboardDisplayLogic() {
     const latestPreApproval = sortedPreApprovals[0];
     const isExpired = checkIfExpired(latestPreApproval.created_at);
 
-
-    const handleContinueApproval =()=>{
-      const id = latestPreApproval.id;
-      const currentStep = latestPreApproval.current_step
-      const url = getStepPath(currentStep, id)
-      return router.push(url)
-    }
     
     if (latestPreApproval.status === 'approved' && isExpired) {
       return {
@@ -109,7 +116,10 @@ export default function PreApprovalDashboardDisplayLogic() {
         return {
           status: 'incomplete' as const,
           data: latestPreApproval,
-          onPrimaryAction: handleContinueApproval
+          onPrimaryAction:() => {
+            const url = getStepPath(latestPreApproval.current_step, latestPreApproval.id);
+            router.push(url);
+          }
         };
 
       case 'approved':
@@ -118,7 +128,8 @@ export default function PreApprovalDashboardDisplayLogic() {
             status: 'approved_with_conditions' as const,
             data: latestPreApproval,
             conditions: latestPreApproval.conditions,
-            amount:latestPreApproval.max_loan_amount
+            amount:latestPreApproval.max_loan_amount,
+            onPrimaryAction:handleGoToApplication
           };
         } else {
           return {
@@ -135,25 +146,22 @@ export default function PreApprovalDashboardDisplayLogic() {
           guidance: [
             ...(latestPreApproval.rejection_reasons || []),
             ...(latestPreApproval.guidance_notes ? [latestPreApproval.guidance_notes] : [])
-          ]
+          ],
+          onPrimaryAction: handleReapply
         };
 
       default:
         return {
           status: 'incomplete' as const,
           data: latestPreApproval,
-          onPrimaryAction:handleContinueApproval
+          onPrimaryAction:() => {
+            const url = getStepPath(latestPreApproval.current_step, latestPreApproval.id);
+            router.push(url);
+          }
         };
     }
-  }, [preApprovals]);
+  }, [preApprovals, checkIfExpired, handleGetPreApproved, handleGoToApplication, handleReapply, isCreating]);
 
-
-  function checkIfExpired(createdAt: string): boolean {
-    const createdDate = new Date(createdAt);
-    const threeMonthsAgo = new Date();
-    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-    return createdDate < threeMonthsAgo;
-  }
 
   if (isLoading) {
     return (

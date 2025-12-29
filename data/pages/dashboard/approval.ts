@@ -88,7 +88,7 @@ export const DocumentUploadFields:FormField[] = [
 
   { name: 'payslip_start_date', label: 'Payslip Start Date', type: 'date', placeholder: 'Select start date', required: true },
   { name: 'payslip_end_date', label: 'Payslip End Date', type: 'date', placeholder: 'Select end date', required: true },
-  { name: 'pyaslip_image', label: 'Payslip Image', type: 'file', required: true, accept:'image/jpeg,image/png', aspectRatio: '4:3', helperText:"UPLOAD 12 MONTHS PAYSLIP" },
+  { name: 'payslip_image', label: 'Payslip Image', type: 'file', required: true, accept:'image/jpeg,image/png', aspectRatio: '4:3', helperText:"UPLOAD 12 MONTHS PAYSLIP" },
 
   { name: 'bank_statement_start_date', label: 'Bank Statement Start Date', type: 'date', placeholder: 'Select start date', required: true },
   { name: 'bank_statement_end_date', label: 'Bank Statement End Date', type: 'date', placeholder: 'Select end date', required: true },

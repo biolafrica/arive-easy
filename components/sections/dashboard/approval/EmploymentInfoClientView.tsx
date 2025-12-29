@@ -1,3 +1,4 @@
+'use client'
 
 import { EmploymentInfoType} from "@/type/pages/dashboard/approval";
 import { usePreApprovalStages, usePreApprovalState } from "@/hooks/useSpecialized/usePreApproval";
@@ -38,7 +39,7 @@ export default function EmploymentInfoClientView({id}:{id:string}){
     await updateEmploymentInfo({
       employment_info: values,
       current_step: 3,
-      completed_steps: Math.max(preApproval?.completed_steps || 1, 1, 1)
+      completed_steps: Math.max(preApproval?.completed_steps || 0, 2)
     });
   };
  

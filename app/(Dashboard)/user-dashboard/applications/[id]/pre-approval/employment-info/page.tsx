@@ -1,5 +1,3 @@
-"use client"
-
 import { PageContainer } from "@/components/layouts/dashboard/PageContainer";
 import EmploymentInfoClientView from "@/components/sections/dashboard/approval/EmploymentInfoClientView";
 import { SettingsSection } from "@/components/sections/dashboard/settings/settingsSection";

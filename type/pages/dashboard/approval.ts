@@ -45,6 +45,17 @@ export interface DocumentInfoType {
   other_document_image?: File | string | null;
 };
 
+
+export type DocumentInfoFormData = Omit<DocumentInfoType, 'other_document_image' | 'bank_statement_image' | 'payslip_image' | 'identity_proof'> & {
+  other_document_image: File | string | null,
+  bank_statement_image: File | string | null,
+  payslip_image: File | string | null,
+  identity_proof: File | string | null
+}
+
+export type DocumentFileFields = 'identity_proof' | 'payslip_image' | 'bank_statement_image' | 'other_document_image';
+
+
 export const personalInfoInitialValues:PersonalInfoType= {
   first_name:"",
   last_name:"",

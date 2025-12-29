@@ -1,6 +1,6 @@
 'use client'
 
-import { DocumentInfoType } from "@/type/pages/dashboard/approval";
+import { DocumentInfoFormData, } from "@/type/pages/dashboard/approval";
 import { usePreApprovalStages, usePreApprovalState } from "@/hooks/useSpecialized/usePreApproval";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -11,7 +11,7 @@ export default function DocumentInfoClientView({id}:{id:string}){
   const router = useRouter();
   const { preApproval, isLoading, validateStepAccess} = usePreApprovalState(id);
   const { updateDocumentInfo} = usePreApprovalStages(id);
-  const [initialValues, setInitialValues] = useState<DocumentInfoType | null>(null);
+  const [initialValues, setInitialValues] = useState<DocumentInfoFormData | null>(null);
 
 
   useEffect(() => {
@@ -35,11 +35,13 @@ export default function DocumentInfoClientView({id}:{id:string}){
     }
   }, [isLoading, preApproval]);
 
-  const handleSubmit = async (values: DocumentInfoType) => {
+  const handleSubmit = async (values: DocumentInfoFormData) => {
     await updateDocumentInfo({
       document_info: values,
       current_step: 5,
-      completed_steps: Math.max(preApproval?.completed_steps || 1, 1, 1, 1)
+      completed_steps: 4,
+      is_complete:true,
+      status:"pending",
     });
   };
  

@@ -4,7 +4,6 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/primitives/Button';
 import { PreApprovalStatus } from '@/type/pages/dashboard/home';
 import { PRE_APPROVAL_UI_CONFIG } from '@/data/pages/dashboard/home';
-import { useRouter } from 'next/navigation';
 import { formatCurrency } from '@/lib/formatter';
 
 
@@ -13,7 +12,7 @@ interface Props {
   amount?: number;
   conditions?: string[];
   guidance?: string[];
-  onPrimaryAction?: ()=>void;
+  onPrimaryAction?: () => void | Promise<void>;
 }
 
 export function PreApprovalCard({
@@ -23,8 +22,12 @@ export function PreApprovalCard({
   guidance,
   onPrimaryAction
 }: Props) {
-  const router = useRouter();
   const config = PRE_APPROVAL_UI_CONFIG[status];
+  const handlePrimaryAction = () => {
+    if (onPrimaryAction) {
+      onPrimaryAction();
+    }
+  };
 
   return (
     <div
@@ -71,7 +74,7 @@ export function PreApprovalCard({
       )}
 
       <div className="pt-4">
-        <Button onClick={onPrimaryAction} >
+        <Button onClick={handlePrimaryAction} >
           {config.primaryAction}
         </Button>
       </div>

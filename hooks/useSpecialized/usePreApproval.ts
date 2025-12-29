@@ -4,7 +4,7 @@ import { getEntityCacheConfig } from '@/lib/cache-config';
 import { useInfiniteList, useState } from '../useInfiniteList';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
-import apiClient, { ApiResponse } from '@/lib/api-client';
+import apiClient, { ApiResponse,} from '@/lib/api-client';
 import { useAuthContext } from '@/providers/auth-provider';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -116,7 +116,6 @@ export function usePreApprovalEligibility(propertyId?: string) {
     ...getEntityCacheConfig('preApprovals', 'eligibility'),
   });
 }
-
 
 // Infinite list with property details (if you need joined data)
 export function useInfinitePreApprovalsWithProperties(params?: any) {
@@ -231,7 +230,6 @@ export function useUpdatePreApproval() {
     }
 
     const { 
-      status, 
       conditions, 
       rejection_reasons,
       guidance_notes,
@@ -313,6 +311,7 @@ export function useAdminUpdatePreApproval() {
 
 export function usePreApprovalStages(preApprovalId: string) {
   const { updatePreApproval, isUpdating } = useUpdatePreApproval();
+  const [isUploading, setIsUploading] = useState(false);
 
   const updatePersonalInfo = async (data: { 
     personal_info: stage.PersonalInfoType; 
@@ -351,15 +350,37 @@ export function usePreApprovalStages(preApprovalId: string) {
   };
 
   const updateDocumentInfo = async (data: { 
-    document_info: stage.DocumentInfoType; 
+    document_info: stage.DocumentInfoFormData; 
     current_step: number; 
-    completed_steps: number 
+    completed_steps: number ;
+    is_complete: boolean;
+    status:string;
   }) => {
-    return updatePreApproval(preApprovalId, data, {
-      successMessage: 'Document information saved',
-      redirectOnSuccess: true,
-      redirectPath: `/user-dashboard/applications/${preApprovalId}/pre-approval/success`
-    });
+    try {
+      setIsUploading(true)
+      const documentInfoWithUrls = await processDocumentFiles(
+        data.document_info,
+        (files) => apiClient.uploadMultipleToSupabase(files, 'media', 'pre-approval-documents')
+      );
+
+      return updatePreApproval(preApprovalId, {
+        ...data,
+        document_info: documentInfoWithUrls
+      }, {
+        successMessage: 'Application Submitted Successfully!',
+        redirectOnSuccess: true,
+        redirectPath: `/user-dashboard/applications/${preApprovalId}/pre-approval/success`
+      });
+
+    } catch (error) {
+      console.error('Document upload error:', error);
+      toast.error('Failed to upload documents');
+      throw error;
+
+    } finally {
+      setIsUploading(false);
+    }
+  
   };
   
   
@@ -369,6 +390,7 @@ export function usePreApprovalStages(preApprovalId: string) {
     updatePropertyInfo,
     updateDocumentInfo,
     isUpdating,
+    isUploading
   };
 }
 
@@ -407,26 +429,42 @@ export function usePreApprovalState(preApprovalId: string) {
   const validateStepAccess = (requiredStep: number): boolean => {
     if (!preApproval) return false;
 
-    const canAccess = requiredStep <= preApproval.current_step || preApproval.completed_steps >= requiredStep;
+    if (requiredStep === 5) {
+      return preApproval.is_complete || preApproval.completed_steps === 4;
+    }
+
+    const canAccess = requiredStep <= preApproval.current_step || requiredStep <= preApproval.completed_steps;
     
     if (!canAccess) {
-      const nextStep = getStepPath(preApproval.current_step, preApprovalId);
-      router.push(nextStep);
+      const targetStep = preApproval.current_step;
+      const nextPath = getStepPath(targetStep, preApprovalId);
+      router.push(nextPath);
       return false;
     }
     
     return true;
   };
 
+  const isStepCompleted = (step: number): boolean => {
+    return preApproval ? preApproval.completed_steps >= step : false;
+  };
+
+  const getNextIncompleteStep = (): number => {
+    if (!preApproval) return 1;
+    return Math.min(preApproval.completed_steps + 1, 4);
+  };
+
+
 
   return {
     preApproval,
     isLoading,
     validateStepAccess,
-    getStepPath
+    getStepPath,
+    isStepCompleted,
+    getNextIncompleteStep
   };
 }
-
 
 export const getStepPath = (step: number, id: string): string => {
   const basePath = `/user-dashboard/applications/${id}/pre-approval`;
@@ -442,8 +480,54 @@ export const getStepPath = (step: number, id: string): string => {
       return `${basePath}/property-info`;
     case 4:
       return `${basePath}/document-info`;
+    case 5:
+      return `${basePath}/success`;
     default:
       return basePath;
   }
 };
+
+export async function processDocumentFiles(
+  formData: stage.DocumentInfoFormData,
+  uploadFn: (files: Record<string, File | null>) => Promise<Record<string, string | null>>
+): Promise<stage.DocumentInfoType> {
+  const fileFields = ['identity_proof', 'payslip_image', 'bank_statement_image', 'other_document_image'] as const;
+  
+  const filesToUpload: Record<string, File | null> = {};
+  const existingUrls: Record<string, string | null> = {};
+  
+  fileFields.forEach(field => {
+    const value = formData[field];
+    if (value instanceof File) {
+      filesToUpload[field] = value;
+      existingUrls[field] = null;
+    } else if (typeof value === 'string') {
+      filesToUpload[field] = null;
+      existingUrls[field] = value;
+    } else {
+      filesToUpload[field] = null;
+      existingUrls[field] = null;
+    }
+  });
+  
+  const uploadedUrls = await uploadFn(filesToUpload);
+
+  const finalUrls: Record<string, string | null> = {};
+  fileFields.forEach(field => {
+    finalUrls[field] = uploadedUrls[field] || existingUrls[field];
+  });
+
+  return {
+    identity_type: formData.identity_type,
+    identity_proof: finalUrls.identity_proof,
+    payslip_start_date: formData.payslip_start_date,
+    payslip_end_date: formData.payslip_end_date,
+    payslip_image: finalUrls.payslip_image,
+    bank_statement_start_date: formData.bank_statement_start_date,
+    bank_statement_end_date: formData.bank_statement_end_date,
+    bank_statement_image: finalUrls.bank_statement_image,
+    other_document_name: formData.other_document_name,
+    other_document_image: finalUrls.other_document_image,
+  };
+}
 

@@ -1,3 +1,4 @@
+import { createClient } from '@/utils/supabase/client';
 import { toast } from 'sonner';
 
 // API Response types matching our backend
@@ -230,7 +231,92 @@ class ApiClient {
     });
   }
 
-  // File upload
+  async uploadToSupabase(
+    file: File,
+    bucket: string = 'media',
+    folder: string = 'uploads'
+  ): Promise<string | null> {
+    if (!file) return null;
+
+    try {
+      const supabase = createClient()
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+      const filePath = `${folder}/${fileName}`;
+
+      const { error } = await supabase.storage
+        .from(bucket)
+        .upload(filePath, file);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from(bucket)
+        .getPublicUrl(filePath);
+
+      return publicUrl;
+    } catch (error: any) {
+      console.error('Supabase upload error:', error);
+      throw {
+        error: {
+          code: 'UPLOAD_ERROR',
+          message: error.message || 'Failed to upload file',
+        },
+      };
+    }
+  }
+
+  async uploadMultipleToSupabase(
+    files: Record<string, File | null | undefined>,
+    bucket: string = 'media',
+    folder: string = 'uploads'
+  ): Promise<Record<string, string | null>> {
+    const uploadPromises = Object.entries(files).map(async ([key, file]) => {
+      if (!file) return [key, null];
+      const url = await this.uploadToSupabase(file, bucket, folder);
+      return [key, url];
+    });
+
+    const results = await Promise.all(uploadPromises);
+    return Object.fromEntries(results);
+  }
+
+  async uploadFile<T>(
+    file: File,
+    options: {
+      useSupabase?: boolean;
+      bucket?: string;
+      folder?: string;
+      endpoint?: string;
+      additionalData?: Record<string, any>;
+      onProgress?: (progress: number) => void;
+    } = {}
+  ): Promise<T | string> {
+    const {
+      useSupabase = true,
+      bucket = 'media',
+      folder = 'uploads',
+      endpoint,
+      additionalData,
+      onProgress,
+    } = options;
+
+    // Use Supabase by default
+    if (useSupabase) {
+      return this.uploadToSupabase(file, bucket, folder) as Promise<T>;
+    }
+
+    // Fallback to API endpoint upload
+    if (!endpoint) {
+      throw new Error('Endpoint required for API upload');
+    }
+
+    return this.upload<T>(endpoint, file, additionalData, onProgress);
+  }
+
   async upload<T>(
     endpoint: string,
     file: File,
@@ -253,13 +339,13 @@ class ApiClient {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    // Note: Don't set Content-Type for FormData, let the browser set it
     return this.request<T>(endpoint, {
       method: 'POST',
       headers,
       body: formData,
     });
   }
+
 }
 
 // Create singleton instance with error handling
@@ -287,3 +373,5 @@ export const apiClient = new ApiClient({
 // Export types
 export type { ApiClient };
 export default apiClient;
+
+

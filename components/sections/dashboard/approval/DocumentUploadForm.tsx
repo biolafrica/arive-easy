@@ -1,17 +1,17 @@
 import Form from "@/components/form/Form";
 import { DocumentUploadFields } from "@/data/pages/dashboard/approval";
-import { DocumentInfoType} from "@/type/pages/dashboard/approval";
+import { DocumentInfoFormData,} from "@/type/pages/dashboard/approval";
 
 
 export default function DocumentUploadForm({initialValues, handleSubmit, handleCancel,}:{
-  initialValues:DocumentInfoType;
-  handleSubmit:(values: DocumentInfoType) => Promise<void> | void;
+  initialValues:DocumentInfoFormData;
+  handleSubmit:(values: DocumentInfoFormData) => Promise<void> | void;
   handleCancel:()=> void;
 
 }){
   
-  const validate = (values:DocumentInfoType)=>{
-    const errors: Partial<Record<keyof DocumentInfoType, string>> = {};
+  const validate = (values:DocumentInfoFormData)=>{
+    const errors: Partial<Record<keyof DocumentInfoFormData, string>> = {};
 
     return errors
 

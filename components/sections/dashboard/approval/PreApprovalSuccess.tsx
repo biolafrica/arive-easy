@@ -1,11 +1,34 @@
-import { Button } from '@/components/primitives/Button';
-import { CheckBadgeIcon } from '@heroicons/react/24/outline';
+'use client'
 
-export function PreApprovalSuccess({
-  onDashboard,
-}: {
-  onDashboard: () => void;
-}) {
+import { Button } from '@/components/primitives/Button';
+import { getStepPath, usePreApprovalState } from '@/hooks/useSpecialized/usePreApproval';
+import { Skeleton } from '@/utils/skeleton';
+import { CheckBadgeIcon } from '@heroicons/react/24/outline';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+
+export function PreApprovalSuccess({id}:{id:string}) {
+  const router = useRouter()
+  const {preApproval,isLoading, validateStepAccess, } = usePreApprovalState(id);
+
+  useEffect(() => {
+    if (!isLoading && preApproval) {
+      if (!preApproval.is_complete || preApproval.completed_steps < 4) {
+        const path = getStepPath(preApproval.current_step, preApproval.id, )
+        router.push(path);
+      }
+    }
+  }, [isLoading, preApproval]);
+
+  if (isLoading) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-16">
+        <Skeleton className="h-96 w-full" />
+      </div>
+    );
+  }
+
+  
   return (
     <div className="mx-auto max-w-2xl px-4 py-20 text-center">
       <div className="mx-auto mb-8 flex h-28 w-28 items-center justify-center rounded-full bg-orange-50">
@@ -36,7 +59,7 @@ export function PreApprovalSuccess({
       </div>
 
       <div className="mt-10">
-        <Button size="lg" onClick={onDashboard}>
+        <Button size="lg" onClick={()=>router.push('/user-dashboard')}>
           Go to Dashboard
         </Button>
       </div>

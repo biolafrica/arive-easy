@@ -38,7 +38,7 @@ export default function PersonalInfoClientView({id}:{id:string}){
     await updatePersonalInfo({
       personal_info: values,
       current_step: 2,
-      completed_steps: Math.max(preApproval?.completed_steps || 1, 1)
+      completed_steps: Math.max(preApproval?.completed_steps || 0, 1)
     });
   };
  
