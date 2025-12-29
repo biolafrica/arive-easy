@@ -44,7 +44,6 @@ export const PRE_APPROVAL_UI_CONFIG = {
     description:
       "You're yet to complete your pre-approval. Finish your application to unlock property access and lender review.",
     primaryAction: 'Continue application',
-    primaryButtonAction: '/application/pre-approval'
   },
 
   under_review: {
@@ -53,7 +52,6 @@ export const PRE_APPROVAL_UI_CONFIG = {
     description:
       "Your pre-approval application is currently being reviewed. We'll notify you once a decision has been made.",
     primaryAction: 'View status',
-    primaryButtonAction: '/application'
   },
 
   approved: {
@@ -62,7 +60,6 @@ export const PRE_APPROVAL_UI_CONFIG = {
     description:
       "You're pre-approved up to the amount below. Click below to proceed with your full mortgage application.",
     primaryAction: 'Create application',
-    primaryButtonAction: '/application'
   },
 
   approved_with_conditions: {
@@ -71,7 +68,6 @@ export const PRE_APPROVAL_UI_CONFIG = {
     description:
       "You're pre-approved, subject to the conditions listed below. Please address these conditions in your application.",
     primaryAction: 'Fix conditions & apply',
-    primaryButtonAction: '/application'
   },
 
   rejected_with_guidance: {
@@ -80,7 +76,6 @@ export const PRE_APPROVAL_UI_CONFIG = {
     description:
       "You're not pre-approved at this time. See guidance below to improve your chances.",
     primaryAction: 'Reapply for pre-approval',
-    primaryButtonAction: '/application/pre-approval'
   },
 
   expired: {
@@ -89,6 +84,5 @@ export const PRE_APPROVAL_UI_CONFIG = {
     description:
       'Your pre-approval has expired after 3 months. Please apply again to get an updated pre-approval.',
     primaryAction: 'Get new pre-approval',
-    primaryButtonAction: '/application/pre-approval'
   }
 } as const;

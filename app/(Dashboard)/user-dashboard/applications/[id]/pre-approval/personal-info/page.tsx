@@ -1,11 +1,10 @@
-"use client"
-
 import { PageContainer } from "@/components/layouts/dashboard/PageContainer";
-import PersonalInfoForm from "@/components/sections/dashboard/approval/PersonalInfoForm";
+import PersonalInfoClientView from "@/components/sections/dashboard/approval/PersonalInfoClientView";
 import { SettingsSection } from "@/components/sections/dashboard/settings/settingsSection";
 import { StepProgress } from "@/components/ui/ProgressBar";
 
-export default function UserApprovalPersonalInfoPage(){
+export default async function UserApprovalPersonalInfoPage({params}:{params:{id:string}}){
+  const {id}= await params
   return(
     <PageContainer className="gap-y-4">
 
@@ -15,7 +14,7 @@ export default function UserApprovalPersonalInfoPage(){
         title="Personal and Contact Information"
         description="Your personal and contact information section"
       >
-        <PersonalInfoForm/>
+        <PersonalInfoClientView id={id}/>
       </SettingsSection>
 
     </PageContainer>

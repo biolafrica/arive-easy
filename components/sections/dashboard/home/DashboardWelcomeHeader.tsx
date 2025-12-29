@@ -1,4 +1,7 @@
+'use client'
+
 import { Button } from '@/components/primitives/Button';
+import Image from 'next/image';
 
 interface DashboardWelcomeHeaderProps {
   name: string;
@@ -59,11 +62,13 @@ export function DashboardWelcomeHeader({
           </div>
 
           {illustrationSrc && (
-            <div className="hidden lg:flex justify-end">
-              <img
+            <div className="hidden lg:flex justify-end h-full">
+              <Image
                 src={illustrationSrc}
                 alt="Dashboard illustration"
-                className="max-h-52 w-auto"
+                priority
+                width={300}
+                height={100}
               />
             </div>
           )}

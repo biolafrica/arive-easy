@@ -1,11 +1,10 @@
-'use client'
-
 import { PageContainer } from "@/components/layouts/dashboard/PageContainer"
-import DocumentUploadForm from "@/components/sections/dashboard/approval/DocumentUploadForm"
+import DocumentInfoClientView from "@/components/sections/dashboard/approval/DocumentInfoClientView"
 import { SettingsSection } from "@/components/sections/dashboard/settings/settingsSection"
 import { StepProgress } from "@/components/ui/ProgressBar"
 
-export default function UserApprovalDocumentPage(){
+export default async function UserApprovalDocumentPage({params}:{params:{id:string}}){
+   const {id}= await params
   return(
     <PageContainer className="gap-y-4">
 
@@ -14,7 +13,7 @@ export default function UserApprovalDocumentPage(){
         title="Document Upload"
         description="Please upload the following documents to support your mortgage application "
       >
-        <DocumentUploadForm/>
+        <DocumentInfoClientView id={id}/>
       </SettingsSection>
     </PageContainer>
   )

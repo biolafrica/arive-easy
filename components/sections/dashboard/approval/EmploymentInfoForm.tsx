@@ -1,9 +1,15 @@
 import Form from "@/components/form/Form";
 import { employmentInfoFields } from "@/data/pages/dashboard/approval";
-import { EmploymentInfoType, employmentInfoInitialValues } from "@/type/pages/dashboard/approval";
+import { EmploymentInfoType} from "@/type/pages/dashboard/approval";
 
 
-export default function EmploymentInfoForm(){
+export default function EmploymentInfoForm({initialValues, handleSubmit, handleCancel}:{
+  initialValues:EmploymentInfoType;
+  handleSubmit:(values: EmploymentInfoType) => Promise<void> | void;
+  handleCancel:()=> void;
+
+}){
+
   const validate = (values:EmploymentInfoType)=>{
     const errors: Partial<Record<keyof EmploymentInfoType, string>> = {};
 
@@ -22,19 +28,12 @@ export default function EmploymentInfoForm(){
 
   }
   
-  const handleSubmit = (values:EmploymentInfoType)=>{
-    console.log(values)
-  }
-
-  const handleCancel =()=>{
-    console.log('taye')
-  }
 
   return(
     <div>
       <Form
         fields={employmentInfoFields}
-        initialValues={employmentInfoInitialValues}
+        initialValues={initialValues}
         validate={validate}
         onSubmit={handleSubmit}
         submitLabel= "Save"

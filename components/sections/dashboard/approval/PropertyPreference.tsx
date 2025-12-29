@@ -1,29 +1,26 @@
 import Form from "@/components/form/Form";
 import { propertyPreferenceFields } from "@/data/pages/dashboard/approval";
-import {  PropertyPreferenceType, propertyPreferenceInitialValues} from "@/type/pages/dashboard/approval";
+import {  PropertyPreferenceType} from "@/type/pages/dashboard/approval";
 
 
-export default function PropertyPreferenceForm(){
+export default function PropertyPreferenceForm({initialValues, handleSubmit, handleCancel,}:{
+  initialValues:PropertyPreferenceType;
+  handleSubmit:(values: PropertyPreferenceType) => Promise<void> | void;
+  handleCancel:()=> void;
+
+}){
   const validate = (values:PropertyPreferenceType)=>{
     const errors: Partial<Record<keyof PropertyPreferenceType, string>> = {};
 
     return errors
 
   }
-  
-  const handleSubmit = (values:PropertyPreferenceType)=>{
-    console.log(values)
-  }
-
-  const handleCancel =()=>{
-    console.log('taye')
-  }
 
   return(
     <div>
       <Form
         fields={propertyPreferenceFields}
-        initialValues={propertyPreferenceInitialValues}
+        initialValues={initialValues}
         validate={validate}
         onSubmit={handleSubmit}
         submitLabel= "Save"

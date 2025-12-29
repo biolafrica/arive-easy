@@ -1,63 +1,118 @@
 "use client"
 
 import { PreApprovalCard } from "@/components/cards/dashboard/preApprovalCard";
-import { usePreApprovals } from "@/hooks/useSpecialized/usePreApproval";
+import { getStepPath, useCreatePreApproval, usePreApprovals } from "@/hooks/useSpecialized/usePreApproval";
 import { useAuthContext } from "@/providers/auth-provider";
-import { useMemo } from "react";
+import { generateApplicationRefNo } from "@/utils/common/generateApplicationRef";
+import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
+import { toast } from "sonner";
 
 export default function PreApprovalDashboardDisplayLogic() {
   const { user } = useAuthContext();
+  const router = useRouter();
+  const [isCreating, setIsCreating] = useState(false);
+
   const { preApprovals, isLoading } = usePreApprovals({
     filters: {
       user_id: user?.id,
     }
   });
 
+  const { submitPreApproval } = useCreatePreApproval();
+
+  const handleGetPreApproved =async() => {
+    if (isCreating) return;
+    
+    try {
+      setIsCreating(true);
+      
+      const existingDraft = preApprovals?.find(p => p.status === 'draft');
+      
+      if (existingDraft) {
+        router.push(`/user-dashboard/applications/${existingDraft.id}/pre-approval`);
+        return;
+      }
+      
+      const referenceNumber = generateApplicationRefNo();
+      
+      const newPreApproval = await submitPreApproval({
+        reference_number: referenceNumber,
+        user_id: user?.id,
+        current_step: 0,
+        completed_steps: 0,
+        is_complete: false,
+        status: 'draft',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      });
+      
+      if (newPreApproval) {
+        router.push(`/user-dashboard/applications/${newPreApproval.id}/pre-approval`);
+      }
+
+    } catch (error) {
+      console.error('Failed to create pre-approval:', error);
+      toast.error('Failed to start pre-approval. Please try again.');
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const handleGoToApplication =async()=>{
+    return router.push('/user-dashboard/applications')
+  }
+
   const preApprovalDisplay = useMemo(() => {
-    // No pre-approvals - show not started
     if (!preApprovals || preApprovals.length === 0) {
       return {
         status: 'not_started' as const,
-        data: null
+        data: null,
+        onPrimaryAction:handleGetPreApproved
       };
     }
 
-    // Sort by created_at to get the most recent
+
     const sortedPreApprovals = [...preApprovals].sort((a, b) => 
       new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     );
     
-    // Get the most recent pre-approval
     const latestPreApproval = sortedPreApprovals[0];
-
-    // Check if pre-approval is expired (3 months old)
     const isExpired = checkIfExpired(latestPreApproval.created_at);
+
+
+    const handleContinueApproval =()=>{
+      const id = latestPreApproval.id;
+      const currentStep = latestPreApproval.current_step
+      const url = getStepPath(currentStep, id)
+      return router.push(url)
+    }
     
-    // If approved but expired, show expired status
     if (latestPreApproval.status === 'approved' && isExpired) {
       return {
         status: 'expired' as const,
-        data: latestPreApproval
+        data: latestPreApproval,
+        onPrimaryAction:handleGetPreApproved
       };
     }
 
-    // Check status and determine what to display
     switch (latestPreApproval.status) {
       case 'pending':
         return {
           status: 'under_review' as const,
-          data: latestPreApproval
+          data: latestPreApproval,
+          onPrimaryAction:handleGoToApplication
+
         };
 
       case 'draft':
-        // Draft means incomplete
         return {
           status: 'incomplete' as const,
-          data: latestPreApproval
+          data: latestPreApproval,
+          onPrimaryAction: handleContinueApproval
         };
 
       case 'approved':
-        // Check if there are conditions
         if (latestPreApproval.conditions && latestPreApproval.conditions.length > 0) {
           return {
             status: 'approved_with_conditions' as const,
@@ -68,7 +123,8 @@ export default function PreApprovalDashboardDisplayLogic() {
         } else {
           return {
             status: 'approved' as const,
-            data: latestPreApproval
+            data: latestPreApproval,
+            onPrimaryAction:handleGoToApplication
           };
         }
 
@@ -83,15 +139,15 @@ export default function PreApprovalDashboardDisplayLogic() {
         };
 
       default:
-        // Default to incomplete if status is unclear
         return {
           status: 'incomplete' as const,
-          data: latestPreApproval
+          data: latestPreApproval,
+          onPrimaryAction:handleContinueApproval
         };
     }
   }, [preApprovals]);
 
-  // Helper function to check if pre-approval is expired
+
   function checkIfExpired(createdAt: string): boolean {
     const createdDate = new Date(createdAt);
     const threeMonthsAgo = new Date();
@@ -99,7 +155,6 @@ export default function PreApprovalDashboardDisplayLogic() {
     return createdDate < threeMonthsAgo;
   }
 
-  // Show loading state if needed
   if (isLoading) {
     return (
       <div className="animate-pulse">
@@ -115,6 +170,7 @@ export default function PreApprovalDashboardDisplayLogic() {
         amount={preApprovalDisplay.amount}
         conditions={preApprovalDisplay.conditions}
         guidance={preApprovalDisplay.guidance}
+        onPrimaryAction={preApprovalDisplay.onPrimaryAction}
       />
     </div>
   );

@@ -1,37 +1,20 @@
 
 import { useCrud } from '../useCrud';
 import { getEntityCacheConfig } from '@/lib/cache-config';
-import { useInfiniteList } from '../useInfiniteList';
+import { useInfiniteList, useState } from '../useInfiniteList';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
 import apiClient, { ApiResponse } from '@/lib/api-client';
 import { useAuthContext } from '@/providers/auth-provider';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { PreApprovalBase, PreApprovalWithProperty } from '@/type/pages/dashboard/approval';
+import * as stage from '@/type/pages/dashboard/approval';
+import { useEffect } from 'react';
 
-// Basic CRUD operations for pre-approvals
-export function usePreApprovals(params?: any) {
-  const crud = useCrud<PreApprovalBase>({
-    resource: 'pre-approvals',
-    interfaceType: 'buyer',
-    cacheConfig: getEntityCacheConfig('preApprovals', 'list'),
-  });
-  
-  const { data, isLoading, error } = crud.useGetAll(params);
-  
-  return {
-    preApprovals: data?.data || [],
-    pagination: data?.pagination,
-    isLoading,
-    error,
-    ...crud,
-  };
-}
 
 // Single pre-approval detail
 export function usePreApproval(id: string) {
-  const crud = useCrud<PreApprovalBase>({
+  const crud = useCrud<stage.PreApprovalBase>({
     resource: 'pre-approvals',
     interfaceType: 'buyer',
     cacheConfig: getEntityCacheConfig('preApprovals', 'detail'),
@@ -49,7 +32,7 @@ export function usePreApproval(id: string) {
 
 // Infinite scroll for pre-approvals
 export function useInfinitePreApprovals(params?: any) {
-  return useInfiniteList<PreApprovalBase>({
+  return useInfiniteList<stage.PreApprovalBase>({
     resource: 'pre-approvals',
     interfaceType: 'buyer',
     params,
@@ -63,7 +46,7 @@ export function usePreApprovalsByStatus(status: string, params?: any) {
   return useQuery({
     queryKey: queryKeys.preApprovals.byStatus(status, params),
     queryFn: async () => {
-      const response = await apiClient.get<ApiResponse<PreApprovalBase[]>>('/api/pre-approvals', {
+      const response = await apiClient.get<ApiResponse<stage.PreApprovalBase[]>>('/api/pre-approvals', {
         status,
         ...params,
       });
@@ -78,7 +61,7 @@ export function usePreApprovalsByProperty(propertyId: string, params?: any) {
   return useQuery({
     queryKey: queryKeys.preApprovals.byProperty(propertyId, params),
     queryFn: async () => {
-      const response = await apiClient.get<ApiResponse<PreApprovalBase[]>>('/api/pre-approvals', {
+      const response = await apiClient.get<ApiResponse<stage.PreApprovalBase[]>>('/api/pre-approvals', {
         property_id: propertyId,
         ...params,
       });
@@ -134,20 +117,51 @@ export function usePreApprovalEligibility(propertyId?: string) {
   });
 }
 
-// Create pre-approval with custom success handling
+
+// Infinite list with property details (if you need joined data)
+export function useInfinitePreApprovalsWithProperties(params?: any) {
+  return useInfiniteList<stage.PreApprovalWithProperty>({
+    resource: 'pre-approvals',
+    interfaceType: 'buyer',
+    params: {
+      ...params,
+      include: ['property'], // Request to include property data
+    },
+    limit: 15,
+    autoFetch: true,
+  });
+}
+
+export function usePreApprovals(params?: any) {
+  const crud = useCrud<stage.PreApprovalBase>({
+    resource: 'pre-approvals',
+    interfaceType: 'buyer',
+    cacheConfig: getEntityCacheConfig('preApprovals', 'list'),
+  });
+  
+  const { data, isLoading, error } = crud.useGetAll(params);
+  
+  return {
+    preApprovals: data?.data || [],
+    pagination: data?.pagination,
+    isLoading,
+    error,
+    ...crud,
+  };
+}
+
 export function useCreatePreApproval() {
   const router = useRouter();
   const { user } = useAuthContext();
   
-  const { create, isCreating } = useCrud<PreApprovalBase>({
+  const { create, isCreating } = useCrud<stage.PreApprovalBase>({
     resource: 'pre-approvals',
     interfaceType: 'buyer',
-    showNotifications: true,
+    showNotifications: false,
     optimisticUpdate: false,
     onSuccess: {
-      create: (data: PreApprovalBase) => {
-        toast.success('Pre-approval submitted successfully!');
-        router.push(`/dashboard/pre-approvals/${data.id}`);
+      create: (data: stage.PreApprovalBase) => {
+        router.push(`/user-dashboard/applications/${data.id}/pre-approvals`);
       },
     },
     onError: {
@@ -158,7 +172,7 @@ export function useCreatePreApproval() {
     },
   });
   
-  const submitPreApproval = async (data: Partial<PreApprovalBase>) => {
+  const submitPreApproval = async (data: Partial<stage.PreApprovalBase>) => {
     if (!user?.id) {
       toast.error('Please login to submit a pre-approval');
       return;
@@ -173,44 +187,263 @@ export function useCreatePreApproval() {
   };
 }
 
-// Update pre-approval status (for admin use)
-export function useUpdatePreApprovalStatus() {
-  const { update, isUpdating } = useCrud<PreApprovalBase>({
+export function useUpdatePreApproval() {
+  const router = useRouter();
+  const { user } = useAuthContext();
+  
+  const { update, isUpdating } = useCrud<stage.PreApprovalBase>({
     resource: 'pre-approvals',
-    interfaceType: 'admin',
+    interfaceType: 'buyer',
     showNotifications: true,
+    optimisticUpdate: false,
     onSuccess: {
-      update: (data: PreApprovalBase) => {
-        toast.success(`Pre-approval ${data.status}`);
+      update: (data: stage.PreApprovalBase) => {
+        toast.success('Pre-approval updated successfully!');
       },
     },
     onError: {
       update: (error) => {
-        toast.error(error?.error?.message || 'Failed to update status');
+        const message = error?.error?.message || 'Failed to update pre-approval';
+        
+        if (message.includes('cannot update')) {
+          toast.error('This pre-approval can no longer be edited');
+        } else if (message.includes('missing required')) {
+          toast.error('Please fill in all required fields');
+        } else {
+          toast.error(message);
+        }
       },
     },
   });
   
-  const updateStatus = async (id: string, status: string, notes?: string) => {
-    return update(id, { status, guidance_notes: notes });
+  const updatePreApproval = async (
+    id: string, 
+    data: Partial<stage.PreApprovalBase>,
+    options?: {
+      redirectOnSuccess?: boolean;
+      redirectPath?: string;
+      successMessage?: string;
+    }
+  ) => {
+    if (!user?.id) {
+      toast.error('Please login to update pre-approval');
+      return;
+    }
+
+    const { 
+      status, 
+      conditions, 
+      rejection_reasons,
+      guidance_notes,
+      reviewed_at,
+      reviewed_by,
+      ...allowedData 
+    } = data as any;
+    
+    const result = await update(id, allowedData);
+
+
+    if (options?.redirectOnSuccess && result) {
+      const stages = result.current_step === 1 ?'employment-info':result.current_step === 2 ?'property-info':result.current_step === 3?'document-info':'success';
+      const path = options.redirectPath || `/user-dashboard/applications/${id}/pre-approval/${stages}`;
+      router.push(path);
+    }
+
+    
+    if (options?.successMessage) {
+      toast.success(options.successMessage);
+    }
+    
+    return result;
   };
   
   return {
-    updateStatus,
+    updatePreApproval,
     isUpdating,
   };
 }
 
-// Infinite list with property details (if you need joined data)
-export function useInfinitePreApprovalsWithProperties(params?: any) {
-  return useInfiniteList<PreApprovalWithProperty>({
+export function useAdminUpdatePreApproval() {
+
+  const { update, isUpdating } = useCrud<stage.PreApprovalBase>({
     resource: 'pre-approvals',
-    interfaceType: 'buyer',
-    params: {
-      ...params,
-      include: ['property'], // Request to include property data
+    interfaceType: 'admin',
+    showNotifications: true,
+    optimisticUpdate: false,
+    onSuccess: {
+      update: (data: stage.PreApprovalBase) => {
+        const statusMessage = data.status === 'approved' 
+          ? 'Pre-approval approved successfully!' 
+          : data.status === 'rejected'
+          ? 'Pre-approval rejected'
+          : 'Pre-approval updated successfully!';
+        
+        toast.success(statusMessage);
+      },
     },
-    limit: 15,
-    autoFetch: true,
+    onError: {
+      update: (error) => {
+        toast.error(error?.error?.message || 'Failed to update pre-approval');
+      },
+    },
   });
+  
+  const adminUpdatePreApproval = async (
+    id: string,
+    data: Partial<stage.PreApprovalBase> & {
+      conditions?: string[];
+      rejection_reasons?: string[];
+      guidance_notes?: string;
+      status?: string;
+      max_loan_amount?:number;
+    }
+
+  ) => {
+    return update(id, {
+      ...data,
+      reviewed_at: new Date().toISOString(),
+    });
+  };
+  
+  return {
+    adminUpdatePreApproval,
+    isUpdating,
+  };
 }
+
+export function usePreApprovalStages(preApprovalId: string) {
+  const { updatePreApproval, isUpdating } = useUpdatePreApproval();
+
+  const updatePersonalInfo = async (data: { 
+    personal_info: stage.PersonalInfoType; 
+    current_step: number; 
+    completed_steps: number 
+  }) => {
+    return updatePreApproval(preApprovalId, data, {
+      successMessage: 'Personal information saved',
+      redirectOnSuccess: true,
+      redirectPath: `/user-dashboard/applications/${preApprovalId}/pre-approval/employment-info`
+    });
+  };
+
+  const updateEmploymentInfo = async (data: { 
+    employment_info: stage.EmploymentInfoType; 
+    current_step: number; 
+    completed_steps: number 
+  }) => {
+    return updatePreApproval(preApprovalId, data, {
+      successMessage: 'Employment information saved',
+      redirectOnSuccess: true,
+      redirectPath: `/user-dashboard/applications/${preApprovalId}/pre-approval/property-info`
+    });
+  };
+
+  const updatePropertyInfo = async (data: { 
+    property_info: stage.PropertyPreferenceType; 
+    current_step: number; 
+    completed_steps: number 
+  }) => {
+    return updatePreApproval(preApprovalId, data, {
+      successMessage: 'Property information saved',
+      redirectOnSuccess: true,
+      redirectPath: `/user-dashboard/applications/${preApprovalId}/pre-approval/document-info`
+    });
+  };
+
+  const updateDocumentInfo = async (data: { 
+    document_info: stage.DocumentInfoType; 
+    current_step: number; 
+    completed_steps: number 
+  }) => {
+    return updatePreApproval(preApprovalId, data, {
+      successMessage: 'Document information saved',
+      redirectOnSuccess: true,
+      redirectPath: `/user-dashboard/applications/${preApprovalId}/pre-approval/success`
+    });
+  };
+  
+  
+  return {
+    updatePersonalInfo,
+    updateEmploymentInfo,
+    updatePropertyInfo,
+    updateDocumentInfo,
+    isUpdating,
+  };
+}
+
+export function usePreApprovalState(preApprovalId: string) {
+  const router = useRouter();
+  const [preApproval, setPreApproval] = useState<stage.PreApprovalBase | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  const { preApprovals, isLoading: fetchingPreApprovals } = usePreApprovals({
+    filters: {
+      id: preApprovalId
+    }
+  });
+
+  useEffect(() => {
+    if (!fetchingPreApprovals) {
+      if (!preApprovals || preApprovals.length === 0) {
+        toast.error('Invalid pre-approval application');
+        router.push('/user-dashboard');
+        return;
+      }
+
+      const currentPreApproval = preApprovals[0];
+      
+      if (currentPreApproval.status !== 'draft') {
+        toast.error('This pre-approval has already been submitted');
+        router.push('/user-dashboard');
+        return;
+      }
+
+      setPreApproval(currentPreApproval);
+      setIsLoading(false);
+    }
+  }, [preApprovals, fetchingPreApprovals, router, preApprovalId]);
+
+  const validateStepAccess = (requiredStep: number): boolean => {
+    if (!preApproval) return false;
+
+    const canAccess = requiredStep <= preApproval.current_step || preApproval.completed_steps >= requiredStep;
+    
+    if (!canAccess) {
+      const nextStep = getStepPath(preApproval.current_step, preApprovalId);
+      router.push(nextStep);
+      return false;
+    }
+    
+    return true;
+  };
+
+
+  return {
+    preApproval,
+    isLoading,
+    validateStepAccess,
+    getStepPath
+  };
+}
+
+
+export const getStepPath = (step: number, id: string): string => {
+  const basePath = `/user-dashboard/applications/${id}/pre-approval`;
+  
+  switch(step) {
+    case 0:
+      return `/user-dashboard/applications/${id}/pre-approval`;
+    case 1:
+      return `${basePath}/personal-info`;
+    case 2:
+      return `${basePath}/employment-info`;
+    case 3:
+      return `${basePath}/property-info`;
+    case 4:
+      return `${basePath}/document-info`;
+    default:
+      return basePath;
+  }
+};
+

@@ -13,6 +13,7 @@ interface Props {
   amount?: number;
   conditions?: string[];
   guidance?: string[];
+  onPrimaryAction?: ()=>void;
 }
 
 export function PreApprovalCard({
@@ -20,6 +21,7 @@ export function PreApprovalCard({
   amount,
   conditions,
   guidance,
+  onPrimaryAction
 }: Props) {
   const router = useRouter();
   const config = PRE_APPROVAL_UI_CONFIG[status];
@@ -69,7 +71,7 @@ export function PreApprovalCard({
       )}
 
       <div className="pt-4">
-        <Button onClick={()=>router.push(config. primaryButtonAction)} >
+        <Button onClick={onPrimaryAction} >
           {config.primaryAction}
         </Button>
       </div>

@@ -1,8 +1,13 @@
 import Form from "@/components/form/Form";
 import { personalInfoFields } from "@/data/pages/dashboard/approval";
-import { PersonalInfoType, personalInfoInitialValues } from "@/type/pages/dashboard/approval";
+import { PersonalInfoType} from "@/type/pages/dashboard/approval";
 
-export default function PersonalInfoForm(){
+export default function PersonalInfoForm({initialValues, handleSubmit, handleCancel,}:{
+  initialValues:PersonalInfoType;
+  handleSubmit:(values: PersonalInfoType) => Promise<void> | void;
+  handleCancel:()=> void;
+
+}){
 
   const validate = (values:PersonalInfoType)=>{
     const errors: Partial<Record<keyof PersonalInfoType, string>> = {};
@@ -32,19 +37,11 @@ export default function PersonalInfoForm(){
 
   }
 
-  const handleSubmit = (values:PersonalInfoType)=>{
-    console.log(values)
-  }
-
-  const handleCancel =()=>{
-    console.log('taye')
-  }
-
   return(
     <div>
       <Form
         fields={personalInfoFields}
-        initialValues={personalInfoInitialValues}
+        initialValues={initialValues}
         validate={validate}
         onSubmit={handleSubmit}
         submitLabel= "Save"

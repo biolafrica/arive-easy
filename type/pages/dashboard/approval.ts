@@ -17,10 +17,10 @@ export interface EmploymentInfoType {
   current_job_years:string;
   employment_type:string;
   gross_income:string;
-  other_income:string;
+  other_income?:string;
   income_frequency:string;
-  business_type:string;
-  incorporation_years:string;
+  business_type?:string;
+  incorporation_years?:string;
 };
 
 export interface PropertyPreferenceType {
@@ -28,8 +28,8 @@ export interface PropertyPreferenceType {
   property_value:string;
   down_payment_amount:string;
   preffered_loan_term:string;
-  other_loan_amount:string;
-  existing_mortgage:string;
+  other_loan_amount?:string;
+  existing_mortgage?:string;
 };
 
 export interface DocumentInfoType {
@@ -41,8 +41,8 @@ export interface DocumentInfoType {
   bank_statement_start_date:string;
   bank_statement_end_date:string;
   bank_statement_image: File | string | null;
-  other_document_name:string;
-  other_document_image: File | string | null;
+  other_document_name?:string;
+  other_document_image?: File | string | null;
 };
 
 export const personalInfoInitialValues:PersonalInfoType= {
@@ -120,6 +120,7 @@ export interface PreApprovalBase{
   affordability_score:string;
   debt_to_income_ration:string;
 }
+
 
 
 export type BackendPreApprovalForm = Omit<PreApprovalBase, 'id' | 'created_at' | 'updated_at'>
