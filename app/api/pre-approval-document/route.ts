@@ -1,10 +1,10 @@
-import { DocumentUploadType,} from "@/type/pages/dashboard/approval";
+
 import { requireAuth } from "@/utils/server/authMiddleware";
 import { createCRUDHandlers } from "@/utils/server/crudFactory";
 import { sendEmail } from "@/utils/server/sendEmail";
 import { NextRequest } from "next/server";
 
-const propertyHandlers = createCRUDHandlers<DocumentUploadType>({
+const propertyHandlers = createCRUDHandlers<any>({
   table: 'pre_approval-documents',
   requiredFields: ['identity_type', 'identity_proof', 'payslip_start_date', 'payslip_end_date', 'payslip_image', 
     ' bank_statement_start_date', 'bank_statement_end_date','bank_statement_image',

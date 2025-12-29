@@ -32,6 +32,19 @@ export interface PropertyPreferenceType {
   existing_mortgage:string;
 };
 
+export interface DocumentInfoType {
+  identity_type:string;
+  identity_proof: File | string | null;
+  payslip_start_date:string;
+  payslip_end_date:string;
+  payslip_image: File | string | null;
+  bank_statement_start_date:string;
+  bank_statement_end_date:string;
+  bank_statement_image: File | string | null;
+  other_document_name:string;
+  other_document_image: File | string | null;
+};
+
 export const personalInfoInitialValues:PersonalInfoType= {
   first_name:"",
   last_name:"",
@@ -67,7 +80,7 @@ export const propertyPreferenceInitialValues:PropertyPreferenceType ={
   existing_mortgage:""
 };
 
-export const documentUploadInitialValues:DocumentUploadType ={
+export const documentUploadInitialValues:DocumentInfoType ={
   identity_proof:"",
   identity_type:"",
   payslip_start_date:"",
@@ -81,7 +94,6 @@ export const documentUploadInitialValues:DocumentUploadType ={
 
 }
 
-
 export interface PreApprovalBase{
   id:string;
   reference_number:string;
@@ -92,37 +104,33 @@ export interface PreApprovalBase{
   personal_info:PersonalInfoType;
   employment_info:EmploymentInfoType;
   property_info:PropertyPreferenceType;
+  document_info:DocumentInfoType;
   documents_uploaded:boolean;
   documents_id:string;
   status:string;
-  conditions:string;
-  rejection_reasons:string;
+  conditions:string[];
+  rejection_reasons:string[];
   guidance_notes:string;
   reviewed_by:string;
   reviewed_at:string;
   created_at:string;
   updated_at:string
+  recommended_monthly_payment:string;
+  max_loan_amount:number;
+  affordability_score:string;
+  debt_to_income_ration:string;
 }
 
-export interface PreApprovalDocumentBase {
-  id:string;
-  pre_approval_id:string;
-  user_id:string;
-  status:string;
-  identity_type:string;
-  identity_proof: File | string | null;
-  payslip_start_date:string;
-  payslip_end_date:string;
-  payslip_image: File | string | null;
-  bank_statement_start_date:string;
-  bank_statement_end_date:string;
-  bank_statement_image: File | string | null;
-  other_document_name:string;
-  other_document_image: File | string | null;
-  created_at:string;
-  updated_at:string;
-};
-
-export type DocumentUploadType = Omit<PreApprovalDocumentBase, 'id' | 'pre_approval_id' | 'user_id' | 'status' |'created_at' | 'updated_at'>
 
 export type BackendPreApprovalForm = Omit<PreApprovalBase, 'id' | 'created_at' | 'updated_at'>
+
+export interface PreApprovalWithProperty extends PreApprovalBase {
+  property: {
+    id: string;
+    title: string;
+    price: number;
+    address: string;
+    city: string;
+    image_url?: string;
+  };
+}

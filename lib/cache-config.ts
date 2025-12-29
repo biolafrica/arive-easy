@@ -226,6 +226,26 @@ export const ENTITY_CACHE_CONFIGS = {
       cacheTime: 2 * HOUR,
     },
   },
+
+  preApprovals: {
+    list: {
+      staleTime: 30 * 1000,         // 30 seconds (frequently updated)
+      cacheTime: 5 * MINUTE,
+    },
+    detail: {
+      staleTime: 1 * MINUTE,
+      cacheTime: 5 * MINUTE,
+    },
+    statistics: {
+      staleTime: 2 * MINUTE,
+      cacheTime: 10 * MINUTE,
+    },
+    eligibility: {
+      staleTime: 5 * MINUTE,        // Can cache longer
+      cacheTime: 15 * MINUTE,
+    },
+  },
+  
 } as const;
 
 // Export type for entity cache configs

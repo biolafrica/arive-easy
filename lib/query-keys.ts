@@ -86,6 +86,104 @@ export const queryKeys = {
     preferences: () => [...queryKeys.users.all, 'preferences'] as const,
   },
 
+  // Documents (buyer dashboard)
+  documents: {
+    all: ['documents'] as const,
+    lists: () => [...queryKeys.documents.all, 'list'] as const,
+    list: (params?: FilterParams) => 
+      [...queryKeys.documents.lists(), params] as const,
+    details: () => [...queryKeys.documents.all, 'detail'] as const,
+    detail: (id: string) => 
+      [...queryKeys.documents.details(), id] as const,
+    byType: (type: string, params?: PaginationParams) =>
+      [...queryKeys.documents.all, 'by-type', type, params] as const,
+    recent: (limit?: number) =>
+      [...queryKeys.documents.all, 'recent', { limit }] as const,
+    shared: (params?: PaginationParams) =>
+      [...queryKeys.documents.all, 'shared', params] as const,
+  },
+
+  preApprovals: {
+    all: ['pre-approvals'] as const,
+    lists: () => [...queryKeys.preApprovals.all, 'list'] as const,
+    list: (params?: FilterParams) => 
+      [...queryKeys.preApprovals.lists(), params] as const,
+    details: () => [...queryKeys.preApprovals.all, 'detail'] as const,
+    detail: (id: string) => 
+      [...queryKeys.preApprovals.details(), id] as const,
+    byStatus: (status: string, params?: PaginationParams) =>
+      [...queryKeys.preApprovals.all, 'by-status', status, params] as const,
+    byProperty: (propertyId: string, params?: PaginationParams) =>
+      [...queryKeys.preApprovals.all, 'by-property', propertyId, params] as const,
+    statistics: () => [...queryKeys.preApprovals.all, 'statistics'] as const,
+    eligibility: (propertyId?: string) =>
+      [...queryKeys.preApprovals.all, 'eligibility', propertyId] as const,
+  },
+
+  // Applications
+  applications: {
+    all: ['applications'] as const,
+    lists: () => [...queryKeys.applications.all, 'list'] as const,
+    list: (params?: FilterParams) => 
+      [...queryKeys.applications.lists(), params] as const,
+    details: () => [...queryKeys.applications.all, 'detail'] as const,
+    detail: (id: string) => 
+      [...queryKeys.applications.details(), id] as const,
+    byStatus: (status: string, params?: PaginationParams) =>
+      [...queryKeys.applications.all, 'by-status', status, params] as const,
+    statistics: () => [...queryKeys.applications.all, 'statistics'] as const,
+  },
+
+  // Payments
+  payments: {
+    all: ['payments'] as const,
+    lists: () => [...queryKeys.payments.all, 'list'] as const,
+    list: (params?: FilterParams) => 
+      [...queryKeys.payments.lists(), params] as const,
+    details: () => [...queryKeys.payments.all, 'detail'] as const,
+    detail: (id: string) => 
+      [...queryKeys.payments.details(), id] as const,
+    history: (userId?: string, params?: PaginationParams) =>
+      [...queryKeys.payments.all, 'history', userId, params] as const,
+    summary: (period?: string) =>
+      [...queryKeys.payments.all, 'summary', period] as const,
+    methods: () => [...queryKeys.payments.all, 'methods'] as const,
+  },
+
+  // Notifications
+  notifications: {
+    all: ['notifications'] as const,
+    lists: () => [...queryKeys.notifications.all, 'list'] as const,
+    list: (params?: FilterParams) => 
+      [...queryKeys.notifications.lists(), params] as const,
+    unread: () => [...queryKeys.notifications.all, 'unread'] as const,
+    count: () => [...queryKeys.notifications.all, 'count'] as const,
+  },
+
+  // Analytics (admin dashboard)
+  analytics: {
+    all: ['analytics'] as const,
+    dashboard: (period?: string) => 
+      [...queryKeys.analytics.all, 'dashboard', period] as const,
+    revenue: (startDate?: string, endDate?: string) =>
+      [...queryKeys.analytics.all, 'revenue', { startDate, endDate }] as const,
+    users: (period?: string) =>
+      [...queryKeys.analytics.all, 'users', period] as const,
+    properties: (period?: string) =>
+      [...queryKeys.analytics.all, 'properties', period] as const,
+    performance: (metric?: string, period?: string) =>
+      [...queryKeys.analytics.all, 'performance', metric, period] as const,
+  },
+
+  // Settings
+  settings: {
+    all: ['settings'] as const,
+    general: () => [...queryKeys.settings.all, 'general'] as const,
+    notifications: () => [...queryKeys.settings.all, 'notifications'] as const,
+    privacy: () => [...queryKeys.settings.all, 'privacy'] as const,
+    billing: () => [...queryKeys.settings.all, 'billing'] as const,
+  },
+
   // Generic CRUD factory for any resource
   resource: <T extends string>(resource: T) => ({
     all: [resource] as const,
@@ -149,6 +247,68 @@ export type UserKeys =
   | ReturnType<typeof queryKeys.users.current>
   | ReturnType<typeof queryKeys.users.profile>
   | ReturnType<typeof queryKeys.users.preferences>;
+
+export type DocumentKeys=
+  | typeof queryKeys.documents.all
+  | ReturnType<typeof queryKeys.documents.lists>
+  | ReturnType<typeof queryKeys.documents.list>
+  | ReturnType<typeof queryKeys.documents.details>
+  | ReturnType<typeof queryKeys.documents.detail>
+  | ReturnType<typeof queryKeys.documents.byType>
+  | ReturnType<typeof queryKeys.documents.recent>
+  | ReturnType<typeof queryKeys.documents.shared>
+
+export type ApplicationKeys= 
+  |typeof queryKeys.applications.all
+  |ReturnType<typeof queryKeys.applications.lists>
+  |ReturnType<typeof queryKeys.applications.list>
+  |ReturnType<typeof queryKeys.applications.details>
+  |ReturnType<typeof queryKeys.applications.detail>
+  |ReturnType<typeof queryKeys.applications.byStatus>
+  |ReturnType<typeof queryKeys.applications.statistics>
+
+export type PaymentKeys= 
+  |typeof queryKeys.payments.all
+  |ReturnType<typeof queryKeys.payments.lists>
+  |ReturnType<typeof queryKeys.payments.list>
+  |ReturnType<typeof queryKeys.payments.details>
+  |ReturnType<typeof queryKeys.payments.detail>
+  |ReturnType<typeof queryKeys.payments.history>
+  |ReturnType<typeof queryKeys.payments.summary>
+  |ReturnType<typeof queryKeys.payments.methods>
+
+export type NotificationKeys= 
+  |typeof queryKeys.notifications.all
+  |ReturnType<typeof queryKeys.notifications.lists>
+  |ReturnType<typeof queryKeys.notifications.list>
+  |ReturnType<typeof queryKeys.notifications.unread>
+  |ReturnType<typeof queryKeys.notifications.count>
+
+export type AnalyticsKeys= 
+  |typeof queryKeys.analytics.all
+  |ReturnType<typeof queryKeys.analytics.dashboard>
+  |ReturnType<typeof queryKeys.analytics.revenue>
+  |ReturnType<typeof queryKeys.analytics.users>
+  |ReturnType<typeof queryKeys.analytics.properties>
+  |ReturnType<typeof queryKeys.analytics.performance>
+
+export type SettingsKeys= 
+  |typeof queryKeys.settings.all
+  |ReturnType<typeof queryKeys.settings.general>
+  |ReturnType<typeof queryKeys.settings.notifications>
+  |ReturnType<typeof queryKeys.settings.privacy>
+  |ReturnType<typeof queryKeys.settings.billing>
+
+export type PreApprovalKeys = 
+  | typeof queryKeys.preApprovals.all
+  | ReturnType<typeof queryKeys.preApprovals.lists>
+  | ReturnType<typeof queryKeys.preApprovals.list>
+  | ReturnType<typeof queryKeys.preApprovals.details>
+  | ReturnType<typeof queryKeys.preApprovals.detail>
+  | ReturnType<typeof queryKeys.preApprovals.byStatus>
+  | ReturnType<typeof queryKeys.preApprovals.byProperty>
+  | ReturnType<typeof queryKeys.preApprovals.statistics>
+  | ReturnType<typeof queryKeys.preApprovals.eligibility>;
 
 // Export for use in queries
 export type QueryKeysType = typeof queryKeys;

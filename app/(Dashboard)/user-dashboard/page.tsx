@@ -3,6 +3,7 @@
 import { UserDashboadStats } from "@/components/cards/dashboard/UserDashboard";
 import { PreApprovalCard } from "@/components/cards/dashboard/preApprovalCard";
 import { PageContainer } from "@/components/layouts/dashboard/PageContainer";
+import PreApprovalDashboardDisplayLogic from "@/components/sections/dashboard/approval/PreApprovalDashboardDisplayLogic";
 import { DashboardWelcomeHeader } from "@/components/sections/dashboard/home/DashboardWelcomeHeader";
 import { useAuthContext } from "@/providers/auth-provider";
 import { useRouter } from "next/navigation";
@@ -14,6 +15,7 @@ export default function UserDashboardPage() {
 
   return (
     <PageContainer>
+
       <DashboardWelcomeHeader
         name={user?.user_metadata?.name || "Pamela"}
         primaryAction={{ label: 'Explore Properties', onClick: () => router.push('/user-dashboard/properties') }}
@@ -23,7 +25,8 @@ export default function UserDashboardPage() {
 
       <UserDashboadStats/>
 
-      <PreApprovalCard status= 'not_started'/>
+      <PreApprovalDashboardDisplayLogic/>
+
     </PageContainer>
   );
 }

@@ -296,7 +296,7 @@ export function useFavorites() {
       }
     } catch (error) {
       console.error("error toggling")
-      // Error already handled by CRUD hook
+  
     }
   };
   
@@ -322,4 +322,5 @@ export function useInfiniteFavoriteProperties(params?: any) {
     autoFetch: true,
   });
 }
+
 

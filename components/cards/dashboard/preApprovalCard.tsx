@@ -4,6 +4,8 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/primitives/Button';
 import { PreApprovalStatus } from '@/type/pages/dashboard/home';
 import { PRE_APPROVAL_UI_CONFIG } from '@/data/pages/dashboard/home';
+import { useRouter } from 'next/navigation';
+import { formatCurrency } from '@/lib/formatter';
 
 
 interface Props {
@@ -19,6 +21,7 @@ export function PreApprovalCard({
   conditions,
   guidance,
 }: Props) {
+  const router = useRouter();
   const config = PRE_APPROVAL_UI_CONFIG[status];
 
   return (
@@ -44,7 +47,7 @@ export function PreApprovalCard({
         <div className="rounded-lg bg-white p-4 border">
           <p className="text-sm text-secondary">Approved Amount</p>
           <p className="text-2xl font-semibold text-heading">
-            ₦{amount.toLocaleString()}
+            {formatCurrency(amount)}
           </p>
         </div>
       )}
@@ -66,7 +69,7 @@ export function PreApprovalCard({
       )}
 
       <div className="pt-4">
-        <Button>
+        <Button onClick={()=>router.push(config. primaryButtonAction)} >
           {config.primaryAction}
         </Button>
       </div>

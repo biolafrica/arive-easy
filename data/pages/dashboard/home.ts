@@ -35,38 +35,60 @@ export const PRE_APPROVAL_UI_CONFIG = {
     description:
       'Ready to get pre-approved? Start your mortgage application with Ariveasy and get pre-approved in as little as 48 hours.',
     primaryAction: 'Get Pre-approved',
+    primaryButtonAction: '/application/pre-approval'
   },
 
   incomplete: {
     tone: 'warning',
     title: 'Your pre-approval is incomplete',
     description:
-      'You’re yet to complete your pre-approval. Finish your application to unlock property access and lender review.',
+      "You're yet to complete your pre-approval. Finish your application to unlock property access and lender review.",
     primaryAction: 'Continue application',
+    primaryButtonAction: '/application/pre-approval'
+  },
+
+  under_review: {
+    tone: 'info',
+    title: 'Application under review',
+    description:
+      "Your pre-approval application is currently being reviewed. We'll notify you once a decision has been made.",
+    primaryAction: 'View status',
+    primaryButtonAction: '/application'
   },
 
   approved: {
     tone: 'success',
-    title: 'You’re pre-approved',
+    title: "You're pre-approved",
     description:
-      'You’re pre-approved up to the amount below, subject to final checks.',
+      "You're pre-approved up to the amount below. Click below to proceed with your full mortgage application.",
     primaryAction: 'Create application',
+    primaryButtonAction: '/application'
   },
 
   approved_with_conditions: {
     tone: 'info',
     title: 'Pre-approved with conditions',
     description:
-      'You’re pre-approved, subject to the conditions listed below. You may proceed.',
-    primaryAction: 'View conditions',
+      "You're pre-approved, subject to the conditions listed below. Please address these conditions in your application.",
+    primaryAction: 'Fix conditions & apply',
+    primaryButtonAction: '/application'
   },
 
   rejected_with_guidance: {
     tone: 'error',
     title: 'Not pre-approved yet',
     description:
-      'You’re not pre-approved at this time. See guidance below to improve your chances.',
-    primaryAction: 'Improve eligibility',
+      "You're not pre-approved at this time. See guidance below to improve your chances.",
+    primaryAction: 'Reapply for pre-approval',
+    primaryButtonAction: '/application/pre-approval'
   },
-  
+
+  expired: {
+    tone: 'warning',
+    title: 'Pre-approval expired',
+    description:
+      'Your pre-approval has expired after 3 months. Please apply again to get an updated pre-approval.',
+    primaryAction: 'Get new pre-approval',
+    primaryButtonAction: '/application/pre-approval'
+  }
 } as const;
