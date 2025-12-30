@@ -1,31 +1,52 @@
 import { StatusConfig, TableColumn } from "@/components/common/DataTable";
+import { ApplicationBase, } from "@/type/pages/dashboard/application";
 
-interface Transactiontype{
-  application_id : string;
-  property_name : string;
-  current_step: string;
-  progress : string;
-}
 
-export const columns: TableColumn<Transactiontype>[] = [
-  { key: 'application_id', header: 'Application ID', sortable: true,},
-  { key: 'property_name', header: 'Property Name', sortable: true},
-  { key: 'current_step', header: 'Current Step', sortable: false},
-  { key: 'progress', header: 'Progress', sortable: false},
+export const columns: TableColumn<ApplicationBase>[] = [
+  { key: 'application_number', header: 'Application ID', sortable: true,},
+  { key: 'property_name', header: 'Property Name', sortable: true, accessor:(row)=>row.properties.title},
+  { key: 'current_stage', header: 'Current Step', sortable: false},
+  { key: 'progress', header: 'Progress', sortable: false, accessor:(row)=>getStagePercentage(row.current_stage)},
 ];
 
 export const statusConfig: StatusConfig[] = [
   { value: 'active', label: 'Active', variant: 'green' },
-  { value: 'pending', label: 'Pending', variant: 'yellow' },
-  { value: 'inactive', label: 'Inactive', variant: 'red' },
-  { value: 'verified', label: 'Verified', variant: 'blue' },
+  { value: 'in_progress', label: 'Pending', variant: 'yellow' },
+  { value: 'rejected', label: 'Inactive', variant: 'red' },
+  { value: 'active', label: 'Verified', variant: 'blue' },
 ];
 
+
+export const getStagePercentage = (stage:string): string => {
+  switch (stage) {
+    case 'property_selection':
+      return '15%'
+    case 'identity_verification':
+      return '25%'
+    case 'seller_review':
+      return '45%'
+    case 'bank_underwriting':
+      return '50%'
+    case 'terms_agreement':
+      return '65%'
+    case 'payment_setup':
+      return '80%'
+    case 'down_payment':
+      return '90%'
+    case 'active':
+      return '100%'
+    default:
+      return '10%';
+  }
+  
+};
+
+
 export const data = [
-  { id: '1', application_id:'APP-001', property_name:'Maplewood Garden', current_step: 'Pre Approval', progress: '50%', status:'pending'},
-  { id: '2', application_id:'APP-002', property_name:'Mary Keyes Residence', current_step: 'Application', progress: '100%', status:'active'},
-  { id: '3', application_id:'APP-003', property_name:'Sunnyvale Heights', current_step: 'Financing', progress: '80%', status:'inactive'},
-  { id: '4', application_id:'APP-004', property_name:'Cedar Point Retreat', current_step: 'Credit Check', progress: '70%', status:'verified'},
+  { id: '1', application_number:'APP-001', properties:'Maplewood Garden', current_stage: 'Pre Approval', progress: '50%', status:'pending'},
+  { id: '2', application_number:'APP-002', property_name:'Mary Keyes Residence', current_stage: 'Application', progress: '100%', status:'active'},
+  { id: '3', application_number:'APP-003', property_name:'Sunnyvale Heights', current_stage: 'Financing', progress: '80%', status:'inactive'},
+  { id: '4', application_number:'APP-004', property_name:'Cedar Point Retreat', current_stage: 'Credit Check', progress: '70%', status:'verified'},
 ];
 
 export const PRE_APPROVAL_UI_CONFIG = {

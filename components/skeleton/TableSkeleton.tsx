@@ -6,6 +6,12 @@ interface TableSkeletonProps {
   showActions?: boolean;
 }
 
+export const SKELETON_WIDTHS = [72, 58, 42, 78, 74];
+
+export function getSkeletonWidth(index: number) {
+  return `${SKELETON_WIDTHS[index % SKELETON_WIDTHS.length]}%`;
+}
+
 export default function TableSkeleton({ 
   columns, 
   rows = 5, 
@@ -20,9 +26,7 @@ export default function TableSkeleton({
               <div className="animate-pulse">
                 <div 
                   className="h-4 bg-hover rounded"
-                  style={{
-                    width: `${Math.random() * (80 - 40) + 40}%`
-                  }}
+                  style={{ width: getSkeletonWidth(colIndex) }}
                 ></div>
               </div>
             </td>

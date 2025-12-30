@@ -1,77 +1,165 @@
-'use client'
+'use client';
 
-import DataTable from "@/components/common/DataTable";
-import { PageContainer } from "@/components/layouts/dashboard/PageContainer";
-import ApplicationDetails from "@/components/sections/dashboard/application/ApplicationDetail";
-import SidePanel from "@/components/ui/SidePanel";
-import { columns, data, statusConfig } from "@/data/pages/dashboard/home";
-import { useSidePanel } from "@/hooks/useSidePanel";
-import { useState } from "react";
+import { useState, useMemo, useEffect } from 'react';
+import DataTable from '@/components/common/DataTable';
+import { PageContainer } from '@/components/layouts/dashboard/PageContainer';
+import ApplicationDetails from '@/components/sections/dashboard/application/ApplicationDetail';
+import SidePanel from '@/components/ui/SidePanel';
+import { columns, statusConfig } from '@/data/pages/dashboard/home';
+import { useSidePanel } from '@/hooks/useSidePanel';
+import { useApplications } from '@/hooks/useSpecialized/useApplications';
+import TableFilters from '@/components/common/TableFilter';
+import { applicationFilterConfigs } from '@/components/sections/dashboard/application/ApplicationFilters';
 
-export default function UserDashboardApplication (){
+export default function UserDashboardApplication() {
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [sortBy, setSortBy] = useState<string>('');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | null>(null);
   const [searchValue, setSearchValue] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  
+  // Filter state
+  const [filters, setFilters] = useState<Record<string, string>>({
+    status: '',
+    current_stage: '',
+  });
 
-  const sidePanel = useSidePanel<any>();
+  const detailPanel = useSidePanel<any>();
 
-  const handleFilter = () => {
-    console.log('Opening filter...');
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchValue);
+      setPage(1);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchValue]);
+
+  // Build query params
+  const queryParams = useMemo(() => {
+    const params: any = {
+      include: ['properties'],
+      page,
+      limit,
+    };
+
+    // Add sorting
+    if (sortOrder && sortBy) {
+      params.sortBy = sortBy;
+      params.sortOrder = sortOrder;
+    }
+
+    // Add search
+    if (debouncedSearch) {
+      params.search = debouncedSearch;
+      params.searchFields = ['properties.title', 'application_number'];
+    }
+
+    // Add filters
+    const activeFilters: Record<string, any> = {};
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) {
+        activeFilters[key] = value;
+      }
+    });
+
+    if (Object.keys(activeFilters).length > 0) {
+      params.filters = activeFilters;
+    }
+
+    return params;
+  }, [page, limit, sortBy, sortOrder, debouncedSearch, filters]);
+
+  const { applications, pagination, isLoading } = useApplications(queryParams);
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
   };
 
-  const handlePageChange= ()=>{
-    console.log("page change")
+  const handleItemsPerPageChange = (newLimit: number) => {
+    setLimit(newLimit);
+    setPage(1);
   };
 
-  const handleItemsPerPageChange= ()=>{
-    console.log("page item change")
+  const handleSort = (key: string, direction: 'asc' | 'desc' | null) => {
+    setSortBy(key);
+    setSortOrder(direction);
+    setPage(1);
   };
 
-  const pagination = {
-    page: 1,
-    limit: 10,
-    total: 15,
-    totalPages: 2,
-  }
+  const handleFilterChange = (newFilters: Record<string, string>) => {
+    setFilters(newFilters);
+    setPage(1);
+  };
 
-  return(
+  // Check if any filters are active
+  const hasActiveFilters = useMemo(() => {
+    return Object.values(filters).some(value => value !== '') || debouncedSearch !== '';
+  }, [filters, debouncedSearch]);
+
+  // Empty message based on filter state
+  const emptyMessage = useMemo(() => {
+    if (hasActiveFilters) {
+      return {
+        title: 'No applications found',
+        message: 'Try adjusting your filters or search query',
+      };
+    }
+    return {
+      title: 'No applications found',
+      message: 'Your applications will appear here',
+    };
+  }, [hasActiveFilters]);
+
+  return (
     <>
       <SidePanel
-        isOpen={sidePanel.isOpen}
-        onClose={sidePanel.close}
-        title={sidePanel.mode = "edit"}
+        isOpen={detailPanel.isOpen}
+        onClose={detailPanel.close}
+        title="Application Details"
       >
-        <ApplicationDetails/>
-      
+        <ApplicationDetails />
       </SidePanel>
-   
+
       <PageContainer>
         <DataTable
           title="All Applications"
           columns={columns}
-          data={data}
-          pagination={pagination}
-
+          data={applications}
+          pagination={pagination || {
+            page: 1,
+            limit: 10,
+            total: 0,
+            totalPages: 0,
+            hasNextPage: false,
+            hasPreviousPage: false,
+          }}
+          loading={isLoading}
           searchValue={searchValue}
           onSearchChange={setSearchValue}
-          searchPlaceholder="Search users..."
-          
-          showFilter={true}
-          onFilter={handleFilter}
-          
+          searchPlaceholder="Search by property name or application ID..."
+          showFilterSection={true}
+          filterSlot={
+            <TableFilters
+              filters={filters}
+              filterConfigs={applicationFilterConfigs}
+              onFilterChange={handleFilterChange}
+            />
+          }
           statusConfig={statusConfig}
           getStatus={(row) => row.status}
-          
-  
-          onMore={sidePanel.openEdit}
-      
+          onMore={detailPanel.openEdit}
           onPageChange={handlePageChange}
           onItemsPerPageChange={handleItemsPerPageChange}
-          emptyMessage={{
-            title: "No application found",
-            message: "Your application will appear here"
-          }}
+          onSort={handleSort}
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          emptyMessage={emptyMessage}
+          skeletonRows={5}
         />
       </PageContainer>
-
     </>
-  )
+  );
 }

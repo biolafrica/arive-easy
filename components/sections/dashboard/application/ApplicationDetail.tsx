@@ -1,7 +1,4 @@
 import { ApplicationAccordion } from "./ApplicationAccordion";
-import EmploymentInfoForm from "../approval/EmploymentInfoForm";
-import PropertyPreferenceForm from "../approval/PropertyPreference";
-import PersonalInfoForm from "../approval/PersonalInfoForm";
 import { APPLICATION_STAGES } from "@/data/pages/dashboard/application";
 import { StepProgress } from "@/components/ui/ProgressBar";
 import { ApplicationStageHeader } from "./ApplicationStageHeader";
@@ -24,9 +21,9 @@ export default function ApplicationDetails(){
         renderEditable={(key) => {
           switch (key) {
             case 'employment_income':
-              return <EmploymentInfoForm />;
+              return (<h4>Employment income</h4>);
             case 'property_details':
-              return <PropertyPreferenceForm />;
+              return (<h4>Property details</h4>);
             default:
               return null;
           }
@@ -34,7 +31,7 @@ export default function ApplicationDetails(){
         renderReadOnly={(key) => {
           switch (key) {
             case 'personal_details':
-              return <PersonalInfoForm />;
+              return (<h4>Personal Details</h4>);
             default:
               return <p className="text-sm text-secondary">No changes allowed.</p>;
           }

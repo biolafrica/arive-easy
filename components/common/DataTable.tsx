@@ -1,16 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useMemo } from 'react';
-import {
-  PencilIcon,
-  TrashIcon,
-  ChevronUpDownIcon,
-  ChevronUpIcon,
-  ChevronDownIcon,
-  EllipsisVerticalIcon,
-  MagnifyingGlassIcon,
-  FunnelIcon,
-} from '@heroicons/react/24/outline';
+import * as icon from '@heroicons/react/24/outline';
 import TableSkeleton from '../skeleton/TableSkeleton';
 import EmptyState from './EmptyTable';
 
@@ -49,6 +40,8 @@ export interface DataTableProps<T> {
   searchPlaceholder?: string;
   onFilter?: () => void;
   showFilter?: boolean;
+  filterSlot?:React.ReactNode;
+  showFilterSection?: boolean;
 
   statusConfig?: StatusConfig[];
   getStatus?: (row: T) => string;
@@ -86,6 +79,8 @@ function DataTable<T extends { id?: string | number }>({
   searchPlaceholder = 'Search...',
   onFilter,
   showFilter = false,
+  showFilterSection,
+  filterSlot,
   statusConfig,
   getStatus,
   onPageChange,
@@ -175,13 +170,13 @@ function DataTable<T extends { id?: string | number }>({
     const isActive = sortBy === column.key;
     
     if (!isActive || !sortOrder) {
-      return <ChevronUpDownIcon className="h-4 w-4 text-secondary" />;
+      return <icon.ChevronUpDownIcon className="h-4 w-4 text-secondary" />;
     }
 
     return sortOrder === 'asc' ? (
-      <ChevronUpIcon className="h-4 w-4 text-accent" />
+      <icon.ChevronUpIcon className="h-4 w-4 text-accent" />
     ) : (
-      <ChevronDownIcon className="h-4 w-4 text-accent" />
+      <icon.ChevronDownIcon className="h-4 w-4 text-accent" />
     );
   };
 
@@ -209,7 +204,7 @@ function DataTable<T extends { id?: string | number }>({
             className="p-2 hover:bg-hover rounded-lg transition-colors group"
             title="Edit"
           >
-            <PencilIcon className="h-4 w-4 text-secondary group-hover:text-accent" />
+            <icon.PencilIcon className="h-4 w-4 text-secondary group-hover:text-accent" />
           </button>
         ) : null;
       
@@ -220,7 +215,7 @@ function DataTable<T extends { id?: string | number }>({
             className="p-2 hover:bg-hover rounded-lg transition-colors group"
             title="Delete"
           >
-            <TrashIcon className="h-4 w-4 text-secondary group-hover:text-[var(--btn-danger-bg)]" />
+            <icon.TrashIcon className="h-4 w-4 text-secondary group-hover:text-[var(--btn-danger-bg)]" />
           </button>
         ) : null;
       
@@ -232,7 +227,7 @@ function DataTable<T extends { id?: string | number }>({
             className="p-2 hover:bg-hover rounded-lg transition-colors group"
             title="More options"
           >
-            <EllipsisVerticalIcon className="h-4 w-4 text-secondary group-hover:text-accent" />
+            <icon.EllipsisVerticalIcon className="h-4 w-4 text-secondary group-hover:text-accent" />
           </button>
         ) : null;
     }
@@ -254,7 +249,7 @@ function DataTable<T extends { id?: string | number }>({
               <div className="flex items-center gap-3 w-full sm:w-auto">
                 {onSearchChange && (
                   <div className="relative flex-1 sm:flex-initial">
-                    <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-secondary" />
+                    <icon.MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-secondary" />
                     <input
                       type="text"
                       value={searchValue}
@@ -270,12 +265,18 @@ function DataTable<T extends { id?: string | number }>({
                     onClick={onFilter}
                     className="inline-flex items-center gap-2 px-4 py-2 bg-background border border-border rounded-lg text-sm text-text hover:bg-hover focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-background"
                   >
-                    <FunnelIcon className="h-4 w-4" />
+                    <icon.FunnelIcon className="h-4 w-4" />
                     Filter
                   </button>
                 )}
               </div>
             </div>
+          </div>
+        )}
+
+        {showFilterSection && filterSlot && (
+          <div className="px-6 py-4 border-b border-separator bg-background">
+            {filterSlot}
           </div>
         )}
 

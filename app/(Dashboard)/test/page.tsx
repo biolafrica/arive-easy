@@ -1,14 +1,14 @@
 "use client"
 
-import { usePreApprovals } from "@/hooks/useSpecialized/usePreApproval";
-import { generateApplicationRefNo } from "@/utils/common/generateApplicationRef";
+import { useApplications } from "@/hooks/useSpecialized/useApplications";
 
 export default function Test(){
- const reference = generateApplicationRefNo();
- const {preApprovals} = usePreApprovals();
+ const {applications, pagination} = useApplications({
+  include:['properties'],
+ })
 
-  console.log("year", reference)
-  console.log('pre-approvals', preApprovals)
+  console.log("year", applications)
+  console.log("pagination", pagination)
  
   return(
     <div>
