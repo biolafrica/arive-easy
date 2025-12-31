@@ -1,5 +1,5 @@
 import { useApplicationStageManager } from "@/hooks/useApplicationStageManager";
-import { ApplicationBase, StageStatus } from "@/type/pages/dashboard/application";
+import { ApplicationBase,} from "@/type/pages/dashboard/application";
 import { ApplicationAccordion } from "./ApplicationAccordion";
 import { ApplicationStageHeader } from "./ApplicationStageHeader";
 import { StepProgress } from "@/components/ui/ProgressBar";
@@ -8,7 +8,7 @@ import PersonalInfoStage from "./stages/PersonalInfoStage";
 import EmploymentInfoStage from "./stages/EmploymentInfoStage";
 import DocumentsStage from "./stages/DocumentsStage";
 import PropertySelectionStage from "./stages/PropertySelectionStage";
-import IdentityVerificationStage from "./stages/IdentityVerificationStage";
+import IdentityVerificationStage from "./stages/verification/IdentityVerificationStage";
 import TermsAgreementStage from "./stages/TermsAgreementStage";
 import PaymentSetupStage from "./stages/PaymentSetupStage";
 import MortgageActivationStage from "./stages/MortgageActivationStage";

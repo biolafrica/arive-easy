@@ -1,4 +1,6 @@
 import { ApplicationBase } from "@/type/pages/dashboard/application";
+import { VerificationFeeInfo } from "./InfoBanner";
+import VerificationClientView from "./VerificationClientView";
 
 interface Props {
   application: ApplicationBase;
@@ -16,8 +18,11 @@ export default function IdentityVerificationStage({
   isUpdating
 }: Props){
   return(
-    <div>
-      <h4>Identity Verification Page</h4>
+    <div className="space-y-8">
+      
+      <VerificationFeeInfo />
+
+      <VerificationClientView hasPaid={false} />
     </div>
   )
 }
