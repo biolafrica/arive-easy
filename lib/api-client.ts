@@ -61,9 +61,9 @@ function serializeParams(params: Record<string, any>): string {
       });
     } else if (Array.isArray(value)) {
       // For arrays, append each item with the same key
-      value.forEach(item => {
-        searchParams.append(key, String(item));
-      });
+      if (value.length > 0) {
+        searchParams.append(key, value.join(','));
+      }
     } else {
       // For primitive values
       searchParams.append(key, String(value));

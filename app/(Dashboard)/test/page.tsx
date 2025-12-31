@@ -4,7 +4,7 @@ import { useApplications } from "@/hooks/useSpecialized/useApplications";
 
 export default function Test(){
  const {applications, pagination} = useApplications({
-  include:['properties'],
+  include:['properties','pre_approvals' ],
  })
 
   console.log("year", applications)

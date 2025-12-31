@@ -3,13 +3,14 @@
 import { useState, useMemo, useEffect } from 'react';
 import DataTable from '@/components/common/DataTable';
 import { PageContainer } from '@/components/layouts/dashboard/PageContainer';
-import ApplicationDetails from '@/components/sections/dashboard/application/ApplicationDetail';
 import SidePanel from '@/components/ui/SidePanel';
 import { columns, statusConfig } from '@/data/pages/dashboard/home';
 import { useSidePanel } from '@/hooks/useSidePanel';
 import { useApplications } from '@/hooks/useSpecialized/useApplications';
 import TableFilters from '@/components/common/TableFilter';
 import { applicationFilterConfigs } from '@/components/sections/dashboard/application/ApplicationFilters';
+import { ApplicationBase } from '@/type/pages/dashboard/application';
+import { ApplicationDetails } from '@/components/sections/dashboard/application/ApplicationDetail';
 
 export default function UserDashboardApplication() {
   const [page, setPage] = useState(1);
@@ -19,13 +20,12 @@ export default function UserDashboardApplication() {
   const [searchValue, setSearchValue] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   
-  // Filter state
   const [filters, setFilters] = useState<Record<string, string>>({
     status: '',
     current_stage: '',
   });
 
-  const detailPanel = useSidePanel<any>();
+  const detailPanel = useSidePanel<ApplicationBase>();
 
   // Debounce search input
   useEffect(() => {
@@ -40,7 +40,7 @@ export default function UserDashboardApplication() {
   // Build query params
   const queryParams = useMemo(() => {
     const params: any = {
-      include: ['properties'],
+      include: ['properties', 'pre_approvals'],
       page,
       limit,
     };
@@ -120,7 +120,7 @@ export default function UserDashboardApplication() {
         onClose={detailPanel.close}
         title="Application Details"
       >
-        <ApplicationDetails />
+        { detailPanel.selectedItem &&(<ApplicationDetails application={detailPanel.selectedItem} />)}
       </SidePanel>
 
       <PageContainer>

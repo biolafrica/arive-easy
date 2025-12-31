@@ -3,9 +3,19 @@
 import { useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
-import { ApplicationStage } from '@/type/pages/dashboard/application';
 import { StageStatusBadge } from './StageStatuses';
 
+export type ApplicationStageStatus = | 'completed' | 'current' | 'upcoming' | 'rejected';
+
+export interface ApplicationStage {
+  step: number;
+  key: string;
+  title: string;
+  status: ApplicationStageStatus;
+
+  completedAt?: string; 
+  errorMessage?: string; 
+}
 
 
 interface AccordionProps {

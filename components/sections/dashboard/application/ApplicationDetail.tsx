@@ -1,43 +1,185 @@
+import { useApplicationStageManager } from "@/hooks/useApplicationStageManager";
+import { ApplicationBase, StageStatus } from "@/type/pages/dashboard/application";
 import { ApplicationAccordion } from "./ApplicationAccordion";
-import { APPLICATION_STAGES } from "@/data/pages/dashboard/application";
-import { StepProgress } from "@/components/ui/ProgressBar";
 import { ApplicationStageHeader } from "./ApplicationStageHeader";
+import { StepProgress } from "@/components/ui/ProgressBar";
 
-export default function ApplicationDetails(){
+import PersonalInfoStage from "./stages/PersonalInfoStage";
+import EmploymentInfoStage from "./stages/EmploymentInfoStage";
+import DocumentsStage from "./stages/DocumentsStage";
+import PropertySelectionStage from "./stages/PropertySelectionStage";
+import IdentityVerificationStage from "./stages/IdentityVerificationStage";
+import TermsAgreementStage from "./stages/TermsAgreementStage";
+import PaymentSetupStage from "./stages/PaymentSetupStage";
+import MortgageActivationStage from "./stages/MortgageActivationStage";
+import { useState } from "react";
+import { useApplicationStageUpdates } from "@/hooks/useSpecialized/useApplications";
+import PropertyPreferencesStage from "./stages/PropertyPreferencesStage";
 
-  return(
-    <div className="gap-y-4">
 
-      <StepProgress currentStep={3} totalSteps={8} className="mb-8" />
 
-      <ApplicationStageHeader
-        title='Developer Review'
-        description='The property developer is reviewing your application and confirming availability and terms.'
+interface Props {
+  application: ApplicationBase;
+}
+
+export function ApplicationDetails({ application: initialApplication }: Props) {
+  const [application, setApplication] = useState<ApplicationBase>(initialApplication);
+
+  const { 
+    updatePropertySelection, updateIdentityVerification, updateTermsAgreement, updatePaymentSetup, updateMortgageActivation, isUpdating
+  } = useApplicationStageUpdates(application);
+  
+  const { progressData, headerContent, accordionStages, stageStatuses } = useApplicationStageManager(application);
+  
+  // Handle stage updates
+  const handleStageUpdate = async (stageKey: string, data: any) => {
+    let updatedApplication: ApplicationBase | undefined;
+    
+    switch (stageKey) {
+      case 'property_selection':
+        updatedApplication = await updatePropertySelection(data);
+        break;
+      case 'identity_verification':
+        updatedApplication = await updateIdentityVerification(data);
+        break;
+      case 'terms_agreement':
+        updatedApplication = await updateTermsAgreement(data);
+        break;
+      case 'payment_setup':
+        updatedApplication = await updatePaymentSetup(data);
+        break;
+      case 'mortgage_activation':
+        updatedApplication = await updateMortgageActivation(data);
+        break;
+    }
+    
+    if (updatedApplication) {
+      setApplication(updatedApplication);
+    }
+  };
+  
+  // Get stage data (from pre-approval for stages 1-4, from application for 5-9)
+  const getStageData = (stageKey: string) => {
+    const preApprovalStages = ['personal_info', 'employment_info', 'property_preferences', 'documents_upload'];
+    
+    if (preApprovalStages.includes(stageKey)) {
+      switch (stageKey) {
+        case 'personal_info':
+          return application?.pre_approvals?.personal_info;
+        case 'employment_info':
+          return application?.pre_approvals?.employment_info;
+        case 'property_preferences':
+          return application?.pre_approvals?.property_info;
+        case 'documents_upload':
+          return application?.pre_approvals?.document_info;
+      }
+    }
+    
+    // Get from stages_completed for stages 5-9
+    return application?.stages_completed?.[stageKey as keyof typeof application.stages_completed]?.data
+  };
+  
+  // Render editable stage content
+  const renderEditableStage = (stageKey: string) => {
+    const props = {
+      application,
+      stageData: getStageData(stageKey),
+      onUpdate: (data: any) => handleStageUpdate(stageKey, data),
+      isReadOnly: false,
+      isUpdating
+    };
+    
+    switch (stageKey) {
+      case 'personal_info':
+        return <PersonalInfoStage {...props} />;
+      case 'employment_info':
+        return <EmploymentInfoStage {...props} />;
+      case 'property_preferences':
+        return <PropertyPreferencesStage {...props} />;
+      case 'documents_upload':
+        return <DocumentsStage {...props} />;
+      case 'property_selection':
+        return <PropertySelectionStage {...props} />;
+      case 'identity_verification':
+        return <IdentityVerificationStage {...props} />;
+      case 'terms_agreement':
+        return <TermsAgreementStage {...props} />;
+      case 'payment_setup':
+        return <PaymentSetupStage {...props} />;
+      case 'mortgage_activation':
+        return <MortgageActivationStage {...props} />;
+      default:
+        return <div>Stage not implemented</div>;
+    }
+  };
+  
+  // Render read-only stage content
+  const renderReadOnlyStage = (stageKey: string) => {
+    const props = {
+      application,
+      stageData: getStageData(stageKey),
+      onUpdate: () => {},
+      isReadOnly: true,
+      isUpdating: false
+    };
+    
+    return renderEditableStage(stageKey);
+  };
+  
+  return (
+    <div className="max-w-5xl mx-auto p-6 space-y-8">
+      {/* Progress Bar */}
+      <StepProgress 
+        currentStep={progressData.currentStep} 
+        totalSteps={progressData.totalSteps} 
+        className="mb-8" 
       />
-
-
+      
+      {/* Stage Header */}
+      {headerContent && (
+        <ApplicationStageHeader
+          title={headerContent.title}
+          description={headerContent.description}
+        />
+      )}
+      
+      {/* Action Button (if required) */}
+      {headerContent?.requiresAction && (
+        <div className="text-center mb-8">
+          <button className="px-6 py-3 bg-primary text-white rounded-lg font-medium">
+            {headerContent.actionLabel}
+          </button>
+        </div>
+      )}
+      
+      {/* Application Info Card */}
+      <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div>
+            <p className="text-sm text-gray-500">Application Number</p>
+            <p className="font-medium">{application?.application_number}</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-500">Property</p>
+            <p className="font-medium">{application?.properties?.title || 'Not Selected'}</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-500">Loan Amount</p>
+            <p className="font-medium">${application?.loan_amount?.toLocaleString() || '0'}</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-500">Status</p>
+            <p className="font-medium capitalize">{application?.status}</p>
+          </div>
+        </div>
+      </div>
+      
+      {/* Accordion with all stages */}
       <ApplicationAccordion
-        stages={APPLICATION_STAGES}
-        renderEditable={(key) => {
-          switch (key) {
-            case 'employment_income':
-              return (<h4>Employment income</h4>);
-            case 'property_details':
-              return (<h4>Property details</h4>);
-            default:
-              return null;
-          }
-        }}
-        renderReadOnly={(key) => {
-          switch (key) {
-            case 'personal_details':
-              return (<h4>Personal Details</h4>);
-            default:
-              return <p className="text-sm text-secondary">No changes allowed.</p>;
-          }
-        }}
+        stages={accordionStages}
+        renderEditable={renderEditableStage}
+        renderReadOnly={renderReadOnlyStage}
       />
-
     </div>
-  )
+  );
 }

@@ -1,82 +1,101 @@
-export interface ApplicationStage {
+import { ApplicationBase, ApplicationStageKey } from "@/type/pages/dashboard/application";
+
+export interface ValidationRule {
+  field: string;
+  rule: 'required' | 'min' | 'max' | 'pattern' | 'custom';
+  value?: any;
+  message: string;
+  validator?: (value: any) => boolean;
+}
+
+export interface StageConfig {
   step: number;
-  key: string;
+  key: ApplicationStageKey;
   title: string;
   description: string;
   requiresAction: boolean;
   actionLabel?: string;
+  validationRules?: ValidationRule[];
+  requiredFields?: string[];
+  nextStageCondition?: (data: ApplicationBase) => boolean;
 }
 
-export const APPLICATION_STAGE: ApplicationStage[] = [
+export const STAGE_CONFIGURATIONS: StageConfig[] = [
   {
     step: 1,
-    key: 'pre_approval_submitted',
-    title: 'Pre-Approval Submitted',
-    description:
-      'We’ve received your pre-approval application and are currently reviewing your information.',
+    key: 'personal_info',
+    title: 'Personal Information',
+    description: 'Basic personal and contact information from pre-approval',
     requiresAction: false,
+    requiredFields: ['legal_full_name', 'date_of_birth', 'citizenship_country']
   },
   {
     step: 2,
-    key: 'pre_approved',
-    title: 'Pre-Approved',
-    description:
-      'Your pre-approval has been approved. You can now select a property of your choice and submit it to continue.',
-    requiresAction: true,
-    actionLabel: 'Select Property',
+    key: 'employment_info',
+    title: 'Employment Information',
+    description: 'Employment and income details from pre-approval',
+    requiresAction: false,
+    requiredFields: ['employment_status', 'monthly_gross_income']
   },
   {
     step: 3,
-    key: 'developer_review',
-    title: 'Developer Review',
-    description:
-      'The property developer is reviewing your application and confirming availability and terms.',
+    key: 'property_preferences',
+    title: 'Property Preferences',
+    description: 'Property preferences and financial capacity',
     requiresAction: false,
+    requiredFields: ['max_property_price', 'down_payment_amount']
   },
   {
     step: 4,
-    key: 'verification_required',
-    title: 'Verification Required',
-    description:
-      'Please complete document verification and credit checks. Upload the required documents and submit for review.',
-    requiresAction: true,
-    actionLabel: 'Complete Verification',
-  },
-  {
-    step: 5,
-    key: 'verification_completed',
-    title: 'Verification Completed',
-    description:
-      'Your documents have been verified successfully. The bank is now reviewing everything.',
+    key: 'documents_upload',
+    title: 'Document Information',
+    description: 'Pre-approval documents have been submitted',
     requiresAction: false,
   },
   {
-    step: 6,
-    key: 'offer_letter',
-    title: 'Offer Letter Available',
-    description:
-      'The bank has issued an offer letter. Please review the terms and accept or decline to proceed.',
+    step: 5,
+    key: 'property_selection',
+    title: 'Property Selection',
+    description: 'Select and confirm your property choice',
     requiresAction: true,
-    actionLabel: 'Review Offer Letter',
+    actionLabel: 'Select Property',
+    nextStageCondition: (app) => !!app.property_id && app.developer_status === 'approved'
+  },
+  {
+    step: 6,
+    key: 'identity_verification',
+    title: 'Identity Verification (KYC)',
+    description: 'Complete identity verification with our partners',
+    requiresAction: true,
+    actionLabel: 'Complete Verification',
+    nextStageCondition: (app) => app.kyc_status === 'verified'
   },
   {
     step: 7,
-    key: 'down_payment',
-    title: 'Down Payment Required',
-    description:
-      'Thank you for accepting the offer. Please proceed to make your required down payment.',
+    key: 'terms_agreement',
+    title: 'Terms Agreement & Signing',
+    description: 'Review and accept the mortgage terms',
     requiresAction: true,
-    actionLabel: 'Make Down Payment',
+    actionLabel: 'Review Offer Letter',
+    nextStageCondition: (app) => !!app.terms_accepted_at && !!app.contract_signed_at
   },
   {
     step: 8,
-    key: 'final_confirmation',
-    title: 'Final Review & Confirmation',
-    description:
-      'Your payment was successful. Review final documents, repayment schedule, and confirm to complete your mortgage setup.',
+    key: 'payment_setup',
+    title: 'Payment Setup & Down Payment',
+    description: 'Setup payment method and make down payment',
+    requiresAction: true,
+    actionLabel: 'Make Down Payment',
+    nextStageCondition: (app) => !!app.stripe_payment_method_id
+  },
+  {
+    step: 9,
+    key: 'mortgage_activation',
+    title: 'Mortgage Activation',
+    description: 'Final review and mortgage activation',
     requiresAction: true,
     actionLabel: 'Confirm & Submit',
-  },
+    nextStageCondition: (app) => app.status === 'active'
+  }
 ];
-
 
