@@ -12,7 +12,6 @@ import * as stage from '@/type/pages/dashboard/approval';
 import { useEffect } from 'react';
 
 
-// Single pre-approval detail
 export function usePreApproval(id: string) {
   const crud = useCrud<stage.PreApprovalBase>({
     resource: 'pre-approvals',

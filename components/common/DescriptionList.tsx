@@ -1,9 +1,10 @@
+import { PaperClipIcon } from '@heroicons/react/24/outline';
+
 export type DescriptionValue = | { type: 'text'; value: string } | { type: 'paragraph'; value: string }
 | { type: 'attachments';
     files: {
       name: string;
       size?: string;
-      onDownload?: () => void;
     }[];
   }
 | { type: 'custom'; node: React.ReactNode };
@@ -12,8 +13,6 @@ export interface DescriptionItem {
   label: string;
   value: DescriptionValue;
 }
-
-import { PaperClipIcon } from '@heroicons/react/24/outline';
 
 interface DescriptionListProps {
   title?: string;
@@ -104,15 +103,6 @@ function DescriptionValueRenderer({
                   )}
                 </div>
               </div>
-
-              {file.onDownload && (
-                <button
-                  onClick={file.onDownload}
-                  className="text-sm font-medium text-primary hover:underline"
-                >
-                  Download
-                </button>
-              )}
             </div>
           ))}
         </div>
