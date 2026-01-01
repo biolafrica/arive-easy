@@ -132,22 +132,41 @@ export class SupabaseQueryBuilder<T> {
     }
   }
 
-  async findOneByCondition(column: string, value: any, options?: { select?: string; joins?: JoinConfig[] }) {
+  async findOneByCondition(
+    columnOrConditions: string | Record<string, any>,
+    valueOrOptions?: any,
+    optionsOrUndefined?: { select?: string; joins?: JoinConfig[] }
+  ) {
     try {
+      let conditions: Record<string, any>;
+      let options: { select?: string; joins?: JoinConfig[] } | undefined;
+
+      if (typeof columnOrConditions === 'string') {
+        conditions = { [columnOrConditions]: valueOrOptions };
+        options = optionsOrUndefined;
+      } else {
+        conditions = columnOrConditions;
+        options = valueOrOptions;
+      }
+
       if (options?.joins) {
         options.joins.forEach(join => this.join(join));
       }
-      
+
       const selectQuery = this.buildSelectQuery(options?.select);
-      
-      const { data, error } = await supabaseAdmin
-        .from(this.table)
-        .select(selectQuery)
-        .eq(column, value)
-        .maybeSingle();
+      let query = supabaseAdmin
+      .from(this.table)
+      .select(selectQuery);
+
+
+      Object.entries(conditions).forEach(([column, value]) => {
+        query = query.eq(column, value);
+      });
+
+      const { data, error } = await query.maybeSingle();
 
       this.reset();
-      
+
       if (error) throw error;
       return data as T | null;
     } catch (error) {

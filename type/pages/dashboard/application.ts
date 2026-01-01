@@ -87,6 +87,8 @@ export interface  ApplicationBase{
   monthly_payment:number;
 
   processing_fee:number;
+  processing_fee_payment_status:string;
+  processing_fee_payement_day:string;
   valuation_fee:number;
   legal_fee:number;
   total_fee:number;

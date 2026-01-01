@@ -235,3 +235,40 @@ export function useApplicationStageUpdates(application: ApplicationBase) {
     isUpdating
   };
 }
+
+interface PaymentStatus {
+  status: 'pending' | 'processing' | 'succeeded' | 'failed' | 'cancelled';
+  amount: number;
+  receipt_url: string | null;
+  transaction_id?: string;
+  payment_date?: string;
+}
+
+export function usePaymentStatus(sessionId: string | null) {
+  return useQuery<PaymentStatus>({
+    queryKey: ['payment-status', sessionId],
+    queryFn: async () => {
+      if (!sessionId) throw new Error('No session ID provided');
+      
+      const response = await fetch(`/api/stripe/verify-payment?session_id=${sessionId}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to verify payment status');
+      }
+      
+      const data = await response.json();
+      return data;
+    },
+    enabled: !!sessionId,
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      if (!data) return 2000; 
+      
+      return data.status === 'succeeded' || data.status === 'failed' || data.status === 'cancelled' 
+        ? false
+        : 2000;
+    },
+    staleTime: 1000,
+    retry: 3,
+  });
+}

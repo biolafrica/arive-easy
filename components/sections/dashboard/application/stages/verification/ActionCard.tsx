@@ -1,3 +1,5 @@
+import { Button } from "@/components/primitives/Button";
+
 interface VerificationActionCardProps {
   title: string;
   description: string;
@@ -31,20 +33,12 @@ export function VerificationActionCard({
           {description}
         </p>
 
-        <button
+        <Button
           disabled={disabled}
           onClick={onAction}
-          className={`
-            mt-4 w-full rounded-lg px-4 py-2 text-sm font-medium
-            ${
-              disabled
-                ? 'cursor-not-allowed bg-gray-200 text-gray-500'
-                : 'bg-orange-600 text-white hover:bg-orange-700'
-            }
-          `}
         >
           {actionLabel}
-        </button>
+        </Button>
       </div>
     </div>
   );

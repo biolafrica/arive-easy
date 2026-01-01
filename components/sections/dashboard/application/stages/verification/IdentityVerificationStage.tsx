@@ -10,6 +10,10 @@ interface Props {
   isUpdating: boolean;
 }
 
+const getHasPaid=(status:string)=>{
+  return status === "paid" ? true : false
+}
+
 export default function IdentityVerificationStage({ 
   application, 
   stageData,
@@ -19,10 +23,14 @@ export default function IdentityVerificationStage({
 }: Props){
   return(
     <div className="space-y-8">
+
       
       <VerificationFeeInfo />
 
-      <VerificationClientView hasPaid={false} />
+      <VerificationClientView 
+        hasPaid={getHasPaid(application.processing_fee_payment_status)} 
+        application_id={application.id}
+      />
     </div>
   )
 }
