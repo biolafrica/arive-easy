@@ -34,9 +34,17 @@ export interface StageMetadata {
   retry_count?: number;
   data?: any;
 }
+export interface VerificationStageMetadata {
+  completed: boolean;
+  completed_at?: string;
+  status: KYCStatus;
+  error_message?: string;
+  retry_count?: number;
+  data?: any;
+}
 
 
-export type KYCStatus = | "pending" | "in_progress" | "verified" | "failed" ;
+export type KYCStatus = | "pending" | "success" | "expired" | "failed" | "canceled" ;
 export type DeveloperStatus = | "pending" | "reviewing" | "approved" | "rejected" ;
 export type UnderwritingStatus = | "pending" | "document_review" | "risk_assessment" | "approved" | "conditional" | "rejected" ;
 
@@ -64,7 +72,7 @@ export interface  ApplicationBase{
     property_preferences?: StageMetadata;
     documents_upload?: StageMetadata;
     property_selection?: StageMetadata;
-    identity_verification?: StageMetadata;
+    identity_verification?: VerificationStageMetadata;
     terms_agreement?: StageMetadata;
     payment_setup?: StageMetadata;
     mortgage_activation?: StageMetadata;
@@ -115,6 +123,9 @@ export interface  ApplicationBase{
   stripe_payment_method_id:string;
   bank_account_details:string;
 
+  identity_verification_status:string;
+  identity_verification_completed_at:string;
+  
   mortgage_start_date:string;
   created_at: string;
   updated_at:string;

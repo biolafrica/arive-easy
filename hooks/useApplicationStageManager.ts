@@ -1,9 +1,11 @@
+import { useState, useEffect, useMemo } from 'react';
 import { STAGE_CONFIGURATIONS } from '@/data/pages/dashboard/applicationStages';
 import { ApplicationBase, ApplicationStageKey, ApplicationStageStatus, StageStatus } from '@/type/pages/dashboard/application';
-import { useState, useEffect, useMemo } from 'react';
+
 
 
 export function useApplicationStageManager(application: ApplicationBase | null) {
+  
   const [currentStage, setCurrentStage] = useState<number>(5);
   const [stageStatuses, setStageStatuses] = useState<Record<ApplicationStageKey, StageStatus>>({
     personal_info: 'completed',
@@ -17,7 +19,7 @@ export function useApplicationStageManager(application: ApplicationBase | null) 
     mortgage_activation: 'upcoming',
   });
   
-  // Calculate stage statuses based on application data
+
   useEffect(() => {
     if (!application) return;
     
@@ -36,7 +38,6 @@ export function useApplicationStageManager(application: ApplicationBase | null) 
       } else if (foundCurrent) {
         statuses[config.key] = 'upcoming';
       } else {
-        // Check if this is a pre-approval stage (1-4) that should be completed
         if (config.step <= 4 && application.pre_approvals) {
           statuses[config.key] = 'completed';
         } else {
@@ -50,11 +51,10 @@ export function useApplicationStageManager(application: ApplicationBase | null) 
   
 
 
-  // Get display data for progress bar
+
   const progressData = useMemo(() => {
     if (!application) return { currentStep: 1, totalSteps: 9 };
     
-    // Find the highest completed step
     let highestCompleted = 0;
     STAGE_CONFIGURATIONS.forEach((config) => {
       if (stageStatuses[config.key] === 'completed') {
@@ -62,7 +62,6 @@ export function useApplicationStageManager(application: ApplicationBase | null) 
       }
     });
     
-    // Current step is either the current stage or highest completed + 1
     const currentStep = stageStatuses[application.current_stage as ApplicationStageKey] === 'current' 
       ? STAGE_CONFIGURATIONS.find(c => c.key === application.current_stage)?.step || highestCompleted + 1
       : highestCompleted + 1;
@@ -75,12 +74,10 @@ export function useApplicationStageManager(application: ApplicationBase | null) 
   
 
 
-  // Get header content based on current stage
   const headerContent = useMemo(() => {
     const config = STAGE_CONFIGURATIONS.find(c => c.step === currentStage);
     if (!config) return null;
     
-    // Check if action is needed
     const needsAction = config.requiresAction && stageStatuses[config.key] === 'current';
     
     return {
@@ -93,7 +90,6 @@ export function useApplicationStageManager(application: ApplicationBase | null) 
   
 
 
-  // Transform data for accordion
   const accordionStages = useMemo(() => {
     return STAGE_CONFIGURATIONS.map(config => ({
       step: config.step,

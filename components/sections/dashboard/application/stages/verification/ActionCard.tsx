@@ -1,12 +1,15 @@
 import { Button } from "@/components/primitives/Button";
+import {CheckCircleIcon } from "@heroicons/react/24/outline";
 
 interface VerificationActionCardProps {
   title: string;
   description: string;
   actionLabel: string;
-  onAction?: () => void;
+  onAction: () => void | Promise<void>;
   disabled?: boolean;
-  status?: 'ready' | 'locked' | 'completed';
+  isLoading?: boolean;
+  isCompleted?: boolean;
+  icon?: React.ReactNode;
 }
 
 export function VerificationActionCard({
@@ -14,29 +17,38 @@ export function VerificationActionCard({
   description,
   actionLabel,
   onAction,
-  disabled,
-  status = 'ready',
+  disabled = false,
+  isLoading = false,
+  isCompleted = false,
 }: VerificationActionCardProps) {
+
   return (
-    <div
-      className={`
-        rounded-xl border p-6 transition
-        ${disabled ? 'bg-muted opacity-60' : 'bg-white'}
-      `}
-    >
-      <div className="space-y-3">
-        <h4 className="font-semibold text-heading">
-          {title}
-        </h4>
-
-        <p className="text-sm text-secondary">
-          {description}
-        </p>
-
+    <div className={`
+      border rounded-lg p-6 transition-all
+      ${isCompleted ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'}
+      ${disabled && !isCompleted ? 'opacity-60' : ''}
+    `}>
+      <div className="space-y-4">
+        {isCompleted && (
+          <CheckCircleIcon className="h-6 w-6 text-green-600" />
+        )}
+        
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900">
+            {title}
+          </h3>
+          <p className="mt-1 text-sm text-gray-600">
+            {description}
+          </p>
+        </div>
+        
         <Button
-          disabled={disabled}
           onClick={onAction}
-        >
+          disabled={disabled || isLoading}
+          className="w-full"
+          variant={isCompleted ? "outline" : "filled"}
+          loading={isLoading}
+        >   
           {actionLabel}
         </Button>
       </div>

@@ -1,3 +1,12 @@
+export interface Address {
+  street: string;
+  street2?: string;
+  city: string;
+  state: string;
+  postal_code: string;
+  country: string;
+}
+
 export interface PersonalInfoType {
   first_name:string;
   last_name:string;
@@ -8,6 +17,7 @@ export interface PersonalInfoType {
   marital_status:string;
   dependant:string;
   visa_status:string;
+  address?: Address;
 };
 
 export interface EmploymentInfoType {

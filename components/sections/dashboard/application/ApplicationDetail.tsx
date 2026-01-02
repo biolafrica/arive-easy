@@ -1,3 +1,6 @@
+import { useState } from "react";
+
+import { useApplicationStageUpdates } from "@/hooks/useSpecialized/useApplications";
 import { useApplicationStageManager } from "@/hooks/useApplicationStageManager";
 import { ApplicationBase,} from "@/type/pages/dashboard/application";
 import { ApplicationAccordion } from "./ApplicationAccordion";
@@ -12,8 +15,6 @@ import IdentityVerificationStage from "./stages/verification/IdentityVerificatio
 import TermsAgreementStage from "./stages/TermsAgreementStage";
 import PaymentSetupStage from "./stages/PaymentSetupStage";
 import MortgageActivationStage from "./stages/MortgageActivationStage";
-import { useState } from "react";
-import { useApplicationStageUpdates } from "@/hooks/useSpecialized/useApplications";
 import PropertyPreferencesStage from "./stages/PropertyPreferencesStage";
 
 
@@ -23,6 +24,7 @@ interface Props {
 }
 
 export function ApplicationDetails({ application: initialApplication }: Props) {
+  
   const [application, setApplication] = useState<ApplicationBase>(initialApplication);
 
   const { 
@@ -31,7 +33,7 @@ export function ApplicationDetails({ application: initialApplication }: Props) {
   
   const { progressData, headerContent, accordionStages, stageStatuses } = useApplicationStageManager(application);
   
-  // Handle stage updates
+
   const handleStageUpdate = async (stageKey: string, data: any) => {
     let updatedApplication: ApplicationBase | undefined;
     
@@ -58,7 +60,7 @@ export function ApplicationDetails({ application: initialApplication }: Props) {
     }
   };
   
-  // Get stage data (from pre-approval for stages 1-4, from application for 5-9)
+
   const getStageData = (stageKey: string) => {
     const preApprovalStages = ['personal_info', 'employment_info', 'property_preferences', 'documents_upload'];
     
@@ -79,7 +81,6 @@ export function ApplicationDetails({ application: initialApplication }: Props) {
     return application?.stages_completed?.[stageKey as keyof typeof application.stages_completed]?.data
   };
   
-  // Render editable stage content
   const renderEditableStage = (stageKey: string) => {
     const props = {
       application,
@@ -113,7 +114,6 @@ export function ApplicationDetails({ application: initialApplication }: Props) {
     }
   };
   
-  // Render read-only stage content
   const renderReadOnlyStage = (stageKey: string) => {
     const props = {
       application,
@@ -128,14 +128,13 @@ export function ApplicationDetails({ application: initialApplication }: Props) {
   
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-8">
-      {/* Progress Bar */}
+
       <StepProgress 
         currentStep={progressData.currentStep} 
         totalSteps={progressData.totalSteps} 
         className="mb-8" 
       />
       
-      {/* Stage Header */}
       {headerContent && (
         <ApplicationStageHeader
           title={headerContent.title}
@@ -143,7 +142,6 @@ export function ApplicationDetails({ application: initialApplication }: Props) {
         />
       )}
       
-      {/* Action Button (if required) */}
       {headerContent?.requiresAction && (
         <div className="text-center mb-8">
           <button className="px-6 py-3 bg-primary text-white rounded-lg font-medium">
@@ -152,7 +150,6 @@ export function ApplicationDetails({ application: initialApplication }: Props) {
         </div>
       )}
       
-      {/* Application Info Card */}
       <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div>
@@ -174,7 +171,6 @@ export function ApplicationDetails({ application: initialApplication }: Props) {
         </div>
       </div>
       
-      {/* Accordion with all stages */}
       <ApplicationAccordion
         stages={accordionStages}
         renderEditable={renderEditableStage}
