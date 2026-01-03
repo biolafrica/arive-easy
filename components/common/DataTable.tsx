@@ -1,6 +1,5 @@
 'use client';
 
-import React, { useState, useCallback, useMemo } from 'react';
 import * as icon from '@heroicons/react/24/outline';
 import TableSkeleton from '../skeleton/TableSkeleton';
 import EmptyState from './EmptyTable';
@@ -38,10 +37,11 @@ export interface DataTableProps<T> {
   searchValue?: string;
   onSearchChange?: (value: string) => void;
   searchPlaceholder?: string;
+
   onFilter?: () => void;
   showFilter?: boolean;
-  filterSlot?:React.ReactNode;
-  showFilterSection?: boolean;
+  filterDropdown?: React.ReactNode;
+  activeFiltersSlot?: React.ReactNode;
 
   statusConfig?: StatusConfig[];
   getStatus?: (row: T) => string;
@@ -77,10 +77,12 @@ function DataTable<T extends { id?: string | number }>({
   searchValue = '',
   onSearchChange,
   searchPlaceholder = 'Search...',
+
   onFilter,
   showFilter = false,
-  showFilterSection,
-  filterSlot,
+  filterDropdown,
+  activeFiltersSlot,
+
   statusConfig,
   getStatus,
   onPageChange,
@@ -225,58 +227,64 @@ function DataTable<T extends { id?: string | number }>({
           <button
             onClick={() => onMore(row)}
             className="p-2 hover:bg-hover rounded-lg transition-colors group"
-            title="More options"
+            title="Expand row"
           >
-            <icon.EllipsisVerticalIcon className="h-4 w-4 text-secondary group-hover:text-accent" />
+            <icon.ArrowsPointingOutIcon className="h-4 w-4 text-secondary group-hover:text-accent" />
           </button>
         ) : null;
     }
   };
 
   return (
-    <div className={`w-full ${className}`}>
-      <div className="bg-card rounded-lg border border-border overflow-hidden">
+    <div className={`w-full  ${className}`}>
+      <div className="bg-card rounded-lg border border-border overflow-hidden min-h-96">
 
-        {(title || onSearchChange || showFilter) && (
+        {(title || onSearchChange || filterDropdown) && (
           <div className="px-6 py-4 border-b border-separator">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+
               {title && (
                 <h2 className="text-lg font-semibold text-heading">
                   {title}
                 </h2>
               )}
 
-              <div className="flex items-center gap-3 w-full sm:w-auto">
-                {onSearchChange && (
-                  <div className="relative flex-1 sm:flex-initial">
-                    <icon.MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-secondary" />
-                    <input
-                      type="text"
-                      value={searchValue}
-                      onChange={(e) => onSearchChange(e.target.value)}
-                      placeholder={searchPlaceholder}
-                      className="pl-10 pr-3 py-2 w-full sm:w-64 bg-background border border-border rounded-lg text-sm text-text placeholder:text-secondary focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-background"
-                    />
-                  </div>
-                )}
-                
-                {showFilter && onFilter && (
-                  <button
-                    onClick={onFilter}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-background border border-border rounded-lg text-sm text-text hover:bg-hover focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-background"
-                  >
-                    <icon.FunnelIcon className="h-4 w-4" />
-                    Filter
-                  </button>
-                )}
+              <div className='flex gap-4'>
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  {onSearchChange && (
+                    <div className="relative flex-1 sm:flex-initial">
+                      <icon.MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-secondary" />
+                      <input
+                        type="text"
+                        value={searchValue}
+                        onChange={(e) => onSearchChange(e.target.value)}
+                        placeholder={searchPlaceholder}
+                        className="pl-10 pr-3 py-2 w-full sm:w-64 bg-background border border-border rounded-lg text-sm text-text placeholder:text-secondary focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-background"
+                      />
+                    </div>
+                  )}
+                  
+                  {showFilter && onFilter && (
+                    <button
+                      onClick={onFilter}
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-background border border-border rounded-lg text-sm text-text hover:bg-hover focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-background"
+                    >
+                      <icon.FunnelIcon className="h-4 w-4" />
+                      Filter
+                    </button>
+                  )}
+                </div>
+
+                {filterDropdown}
               </div>
+
             </div>
           </div>
         )}
-
-        {showFilterSection && filterSlot && (
-          <div className="px-6 py-4 border-b border-separator bg-background">
-            {filterSlot}
+        
+        {activeFiltersSlot && (
+          <div className="px-6 border-b border-separator">
+            {activeFiltersSlot}
           </div>
         )}
 
@@ -379,7 +387,7 @@ function DataTable<T extends { id?: string | number }>({
           </table>
         </div>
 
-        {(total > 0 || loading) && (
+        {(total > 10 || loading) && (
           <div className="px-6 py-4 bg-background border-t border-separator">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-2">

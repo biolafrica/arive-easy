@@ -1,4 +1,6 @@
-import { formatCurrency,formatNumberDate } from '@/lib/formatter';
+import { StatusConfig, TableColumn } from '@/components/common/DataTable';
+import { formatCurrency,formatNumberDate, formatUSD } from '@/lib/formatter';
+import { TransactionBase } from '@/type/pages/dashboard/transactions';
 import { CalendarDaysIcon, LockClosedIcon, CreditCardIcon, HomeModernIcon, FolderIcon,
 } from '@heroicons/react/24/outline';
 
@@ -45,4 +47,19 @@ export const MOCK_BUYER_DASHBOARD_STATS = [
     value: `${formatCurrency(41000000)}`,
     icon: LockClosedIcon,
   },
+];
+
+
+export const columns: TableColumn<TransactionBase>[] = [
+  { key: 'id', header: 'Transaction ID', sortable: false},
+  { key: 'type', header: 'Description', sortable: false},
+  { key: 'created_at', header: 'Date', sortable: false, accessor: (row) => formatNumberDate(row.created_at)},
+  { key: 'amount', header: 'Amount', sortable: false, accessor: (row) => formatUSD({ amount: row.amount, fromCents: true, decimals: 2 })},
+];
+
+export const statusConfig: StatusConfig[] = [
+  { value: 'succeeded', label: 'Active', variant: 'green' },
+  { value: 'pending', label: 'Pending', variant: 'yellow' },
+  { value: 'failed', label: 'Inactive', variant: 'red' },
+  { value: 'cancelled', label: 'Verified', variant: 'blue' },
 ];

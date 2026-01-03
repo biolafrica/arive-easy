@@ -13,7 +13,7 @@ export const statusConfig: StatusConfig[] = [
   { value: 'active', label: 'Active', variant: 'green' },
   { value: 'in_progress', label: 'Pending', variant: 'yellow' },
   { value: 'rejected', label: 'Inactive', variant: 'red' },
-  { value: 'active', label: 'Verified', variant: 'blue' },
+  { value: 'completed', label: 'Verified', variant: 'blue' },
 ];
 
 
@@ -40,14 +40,6 @@ export const getStagePercentage = (stage:string): string => {
   }
   
 };
-
-
-export const data = [
-  { id: '1', application_number:'APP-001', properties:'Maplewood Garden', current_stage: 'Pre Approval', progress: '50%', status:'pending'},
-  { id: '2', application_number:'APP-002', property_name:'Mary Keyes Residence', current_stage: 'Application', progress: '100%', status:'active'},
-  { id: '3', application_number:'APP-003', property_name:'Sunnyvale Heights', current_stage: 'Financing', progress: '80%', status:'inactive'},
-  { id: '4', application_number:'APP-004', property_name:'Cedar Point Retreat', current_stage: 'Credit Check', progress: '70%', status:'verified'},
-];
 
 export const PRE_APPROVAL_UI_CONFIG = {
   not_started: {

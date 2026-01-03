@@ -1,11 +1,11 @@
-import { FilterConfig } from "@/components/common/TableFilter";
-
+import { FilterConfig } from '@/components/common/FilterDropdown';
 
 export const applicationFilterConfigs: FilterConfig[] = [
   {
     key: 'status',
     label: 'Status',
     placeholder: 'All Statuses',
+    type: 'select', 
     options: [
       { value: '', label: 'All Statuses' },
       { value: 'active', label: 'Active' },
@@ -18,8 +18,8 @@ export const applicationFilterConfigs: FilterConfig[] = [
     key: 'current_stage',
     label: 'Current Stage',
     placeholder: 'All Stages',
+    type: 'select',
     options: [
-      { value: '', label: 'All Stages' },
       { value: 'property_selection', label: 'Property Selection' },
       { value: 'identity_verification', label: 'Identity Verification' },
       { value: 'seller_review', label: 'Seller Review' },

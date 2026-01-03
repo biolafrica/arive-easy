@@ -14,7 +14,7 @@ export const formatNaira =(amount:any)=>{
 export function formatNumber(value:any) {
   if (value == null || isNaN(value)) return 'Inavlid Number'
   return new Intl.NumberFormat('en-US', {
-    maximumFractionDigits: 20  // preserve decimals if present
+    maximumFractionDigits: 20 
   }).format(value)
 }
 
@@ -92,6 +92,26 @@ export function formatCurrency(amount: number): string {
     maximumFractionDigits: 0,
   }).format(amount);
 }
+
+export function formatUSD({
+  amount,
+  fromCents = false,
+  decimals = 0,
+}: {
+  amount: number;
+  fromCents?: boolean;
+  decimals?: 0 | 2;
+}): string {
+  const value = fromCents ? amount / 100 : amount;
+
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(value);
+}
+
 
 export function parseCurrencyInput(value: string): number {
   const cleanedValue = value.replace(/[^0-9.]/g, '');

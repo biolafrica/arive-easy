@@ -40,7 +40,6 @@ export function useInfinitePreApprovals(params?: any) {
   });
 }
 
-// Pre-approvals filtered by status
 export function usePreApprovalsByStatus(status: string, params?: any) {
   return useQuery({
     queryKey: queryKeys.preApprovals.byStatus(status, params),
@@ -55,7 +54,7 @@ export function usePreApprovalsByStatus(status: string, params?: any) {
   });
 }
 
-// Pre-approvals for a specific property
+
 export function usePreApprovalsByProperty(propertyId: string, params?: any) {
   return useQuery({
     queryKey: queryKeys.preApprovals.byProperty(propertyId, params),
@@ -71,7 +70,7 @@ export function usePreApprovalsByProperty(propertyId: string, params?: any) {
   });
 }
 
-// Pre-approval statistics
+
 export function usePreApprovalStatistics() {
   const { user } = useAuthContext();
   
@@ -93,7 +92,7 @@ export function usePreApprovalStatistics() {
   });
 }
 
-// Check eligibility for pre-approval
+
 export function usePreApprovalEligibility(propertyId?: string) {
   const { user } = useAuthContext();
   
@@ -116,14 +115,13 @@ export function usePreApprovalEligibility(propertyId?: string) {
   });
 }
 
-// Infinite list with property details (if you need joined data)
 export function useInfinitePreApprovalsWithProperties(params?: any) {
   return useInfiniteList<stage.PreApprovalWithProperty>({
     resource: 'pre-approvals',
     interfaceType: 'buyer',
     params: {
       ...params,
-      include: ['property'], // Request to include property data
+      include: ['property'], 
     },
     limit: 15,
     autoFetch: true,

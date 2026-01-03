@@ -3,9 +3,10 @@ import { useCrud } from "../useCrud";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
 import apiClient from "@/lib/api-client";
-import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useAuthContext } from "@/providers/auth-provider";
+import { useMemo } from "react";
 
 
 export function useApplicationStatistics() {
@@ -20,11 +21,7 @@ export function useApplicationStatistics() {
 }
 
 export function useApplications(params?: any) {
-  const [filters, setFilters] = useState({
-    status: '',
-    current_stage: '',
-    search: '',
-  });
+  const { user } = useAuthContext();
 
   const crud = useCrud<ApplicationBase>({
     resource: 'applications',
@@ -34,8 +31,17 @@ export function useApplications(params?: any) {
   });
 
   const queryParams = useMemo(() => {
-    return { ...params };
-  }, [params]);
+    const mergedParams = { ...params };
+    
+    if (user?.id) {
+      mergedParams.filters = {
+        ...mergedParams.filters,
+        user_id: user.id,
+      };
+    }
+    
+    return mergedParams;
+  }, [params, user?.id]);
 
   const { data, isLoading, error } = crud.useGetAll(queryParams);
 
@@ -44,12 +50,9 @@ export function useApplications(params?: any) {
     pagination: data?.pagination,
     isLoading,
     error,
-    filters,
-    setFilters,
     ...crud,
   };
 }
-
 
 export function useUpdateApplication() {
   const router = useRouter();
