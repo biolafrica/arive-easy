@@ -19,7 +19,6 @@ export function useApplicationStageManager(application: ApplicationBase | null) 
     mortgage_activation: 'upcoming',
   });
   
-
   useEffect(() => {
     if (!application) return;
     
@@ -48,9 +47,6 @@ export function useApplicationStageManager(application: ApplicationBase | null) 
     
     setStageStatuses(statuses);
   }, [application]);
-  
-
-
 
   const progressData = useMemo(() => {
     if (!application) return { currentStep: 1, totalSteps: 9 };
@@ -72,8 +68,6 @@ export function useApplicationStageManager(application: ApplicationBase | null) 
     };
   }, [application, stageStatuses]);
   
-
-
   const headerContent = useMemo(() => {
     const config = STAGE_CONFIGURATIONS.find(c => c.step === currentStage);
     if (!config) return null;
@@ -88,8 +82,6 @@ export function useApplicationStageManager(application: ApplicationBase | null) 
     };
   }, [currentStage, stageStatuses]);
   
-
-
   const accordionStages = useMemo(() => {
     return STAGE_CONFIGURATIONS.map(config => ({
       step: config.step,
@@ -102,8 +94,6 @@ export function useApplicationStageManager(application: ApplicationBase | null) 
       errorMessage: application?.stages_completed?.[config.key as keyof typeof application.stages_completed]?.error_message,
     }));
   }, [application, stageStatuses]);
-  
-
   
   return {
     currentStage,

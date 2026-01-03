@@ -3,7 +3,7 @@
 import SidePanel from "@/components/ui/SidePanel";
 import { useSidePanel } from "@/hooks/useSidePanel";
 import { useTransactions } from "@/hooks/useSpecialized/useTransaction";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import UserTransactionDetails from "./UserTransactionDetails";
 import DataTable from "@/components/common/DataTable";
 import { columns, statusConfig } from "@/data/pages/dashboard/transaction";
@@ -11,93 +11,36 @@ import FilterDropdown from "@/components/common/FilterDropdown";
 import ActiveFilters from "@/components/common/ActiveFilters";
 import { transactionFilterConfigs } from "./TransactionFilter";
 import { TransactionBase } from "@/type/pages/dashboard/transactions";
+import { useTableFilters } from "@/hooks/useTableQuery";
+
 
 export default function UserTransactionClientView() {
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-  const [sortBy, setSortBy] = useState<string>('');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | null>(null);
-  const [searchValue, setSearchValue] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-
-  const [filters, setFilters] = useState<Record<string, string | string[]>>({
-    status: '',
-  });
-
   const detailPanel = useSidePanel<TransactionBase>();
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(searchValue);
-      setPage(1);
-    }, 500);
+  const {
+    sortBy,
+    sortOrder,
+    searchValue,
+    filters,
+    queryParams: baseQueryParams,
+    hasActiveFilters,
+    handlePageChange,
+    handleItemsPerPageChange,
+    handleSort,
+    handleFilterChange,
+    handleSearchChange,
+  } = useTableFilters({
+    initialFilters: { status: '' },
+    searchFields: ['type'],
+    defaultLimit: 10,
+  });
 
-    return () => clearTimeout(timer);
-  }, [searchValue]);
-
-
-  const queryParams = useMemo(() => {
-    const params: any = {
-      include: ['applications'],
-      page,
-      limit,
-    };
-
-    if (sortOrder && sortBy) {
-      params.sortBy = sortBy;
-      params.sortOrder = sortOrder;
-    }
-
-    if (debouncedSearch) {
-      params.search = debouncedSearch;
-      params.searchFields = ['type'];
-    }
-
-    const activeFilters: Record<string, any> = {};
-    Object.entries(filters).forEach(([key, value]) => {
-      if (Array.isArray(value) && value.length > 0) {
-        activeFilters[key] = value;
-      } else if (value && !Array.isArray(value)) {
-        activeFilters[key] = value;
-      }
-    });
-
-    if (Object.keys(activeFilters).length > 0) {
-      params.filters = activeFilters;
-    }
-
-    return params;
-  }, [page, limit, sortBy, sortOrder, debouncedSearch, filters]);
-
+  const queryParams = useMemo(() => ({
+    ...baseQueryParams,
+    include: ['applications'],
+  }), [baseQueryParams]);
 
   const { transactions, pagination, isLoading } = useTransactions(queryParams);
-
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleItemsPerPageChange = (newLimit: number) => {
-    setLimit(newLimit);
-    setPage(1);
-  };
-
-  const handleSort = (key: string, direction: 'asc' | 'desc' | null) => {
-    setSortBy(key);
-    setSortOrder(direction);
-    setPage(1);
-  };
-
-    const handleFilterChange = (newFilters: Record<string, string | string[]>) => {
-    setFilters(newFilters);
-    setPage(1);
-  };
-
-  const hasActiveFilters = useMemo(() => {
-    return Object.values(filters).some(value => {
-      if (Array.isArray(value)) return value.length > 0;
-      return value !== '';
-    }) || debouncedSearch !== '';
-  }, [filters, debouncedSearch]);
 
   const emptyMessage = useMemo(() => {
     if (hasActiveFilters) {
@@ -119,7 +62,9 @@ export default function UserTransactionClientView() {
         onClose={detailPanel.close}
         title="Transaction Details"
       >
-        <UserTransactionDetails />
+      {detailPanel.selectedItem && (
+        <UserTransactionDetails transaction={detailPanel.selectedItem} />
+      )}
       </SidePanel>
 
       <DataTable
@@ -136,8 +81,8 @@ export default function UserTransactionClientView() {
         }}
         loading={isLoading}
         searchValue={searchValue}
-        onSearchChange={setSearchValue}
-        searchPlaceholder="Search by property name or application ID..."
+        onSearchChange={handleSearchChange}
+        searchPlaceholder="Search by descriptionx"
         filterDropdown={
           <FilterDropdown
             filters={filters}

@@ -13,7 +13,7 @@ export interface TransactionBase{
   amount:number;
   currency:string;
   status:string;
-  payement_method:string;
+  payment_method:string;
   receipt_url:string;
   created_at:string;
   updated_at:string;
