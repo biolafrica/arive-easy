@@ -3,7 +3,7 @@
 import SidePanel from "@/components/ui/SidePanel";
 import { useSidePanel } from "@/hooks/useSidePanel";
 import { useTransactions } from "@/hooks/useSpecialized/useTransaction";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import UserTransactionDetails from "./UserTransactionDetails";
 import DataTable from "@/components/common/DataTable";
 import { columns, statusConfig } from "@/data/pages/dashboard/transaction";
@@ -12,6 +12,7 @@ import ActiveFilters from "@/components/common/ActiveFilters";
 import { transactionFilterConfigs } from "./TransactionFilter";
 import { TransactionBase } from "@/type/pages/dashboard/transactions";
 import { useTableFilters } from "@/hooks/useTableQuery";
+import { CompositeDatePicker } from "@/components/ui/DatePicker";
 
 
 export default function UserTransactionClientView() {
@@ -57,6 +58,7 @@ export default function UserTransactionClientView() {
 
   return (
     <div>
+     
       <SidePanel
         isOpen={detailPanel.isOpen}
         onClose={detailPanel.close}
@@ -65,6 +67,7 @@ export default function UserTransactionClientView() {
       {detailPanel.selectedItem && (
         <UserTransactionDetails transaction={detailPanel.selectedItem} />
       )}
+
       </SidePanel>
 
       <DataTable

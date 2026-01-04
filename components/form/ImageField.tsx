@@ -195,7 +195,7 @@ const ImageField: React.FC<ImageFieldProps> = ({
             <img
               src={previewUrl}
               alt="Preview"
-              className="w-full h-full object-cover rounded-lg"
+              className="w-full h-full object-cover rounded-lg border"
             />
             {!disabled && (
               <button

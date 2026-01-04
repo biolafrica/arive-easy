@@ -5,7 +5,7 @@ import { Button } from '../primitives/Button';
 import ImageField from './ImageField'; 
 import RichTextEditor from './RichTextEditor';
 import { FormField, FormProps } from '@/type/form';
-import { DatePicker } from '../ui/DatePicker';
+import { CompositeDatePicker} from '../ui/DatePicker';
 
 
 function Form<T extends Record<string, any>>({
@@ -161,8 +161,8 @@ function Form<T extends Record<string, any>>({
               file:mr-4 file:py-2 file:px-4
               file:rounded-lg file:border-0
               file:text-sm file:font-semibold
-              file:bg-accent file:text-white
-              hover:file:bg-accent-hover
+              file:bg-btn-primary file:text-white
+              hover:file:bg-btn-primary-hover
               file:cursor-pointer
               ${showError ? 'text-red-500' : ''}
             `}
@@ -248,20 +248,30 @@ function Form<T extends Record<string, any>>({
             </label>
           </div>
         );
+
       case 'date':
         return (
-          <DatePicker
-            value={values[name] ? new Date(values[name]) : undefined}
+          <CompositeDatePicker
+            value={values[name]}
             onChange={(date) => {
-              setFieldValue(name as keyof T, date?.toISOString().split('T')[0] as any);
+              setFieldValue(name as keyof T, date as any);
               setFieldTouched(name as keyof T, true);
             }}
-            placeholder={placeholder}
+            onBlur={() => setFieldTouched(name as keyof T, true)}
+            placeholder={placeholder || "Select date"}
             disabled={disabled}
-            className={showError ? 'border-red-500 focus:ring-red-500' : ''}
+            required={required}
+            error={!!showError}
+            min={min as string}
+            max={max as string}
+            format="DMY" 
+            yearRange={{ 
+              start: 1900, 
+              end: new Date().getFullYear() 
+            }}
           />
         );
-
+        
       default:
         return (
           <input

@@ -7,6 +7,7 @@ export default function UserDashboardPayment (){
     <PageContainer className="space-y-4">
       <PaymentMortgageStats/>
       <UserTransactionClientView/>
+
     </PageContainer>
   )
 }

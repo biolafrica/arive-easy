@@ -1,7 +1,7 @@
 import { FormField } from "@/type/form";
 
 export const buyerUserFields:FormField[] = [
-  { name: 'avatar', label: 'Avatar', type: 'file', required: true, accept:'image/jpeg,image/png', aspectRatio: "1:1", helperText: 'Recommended size: 1MB max' },
+  { name: 'avatar', label: 'Photo', type: 'file', required: true, accept:'image/jpeg,image/png', aspectRatio: "1:1", helperText: 'Recommended size: 1MB max' },
   { name: 'name', label: 'Name', type: 'text', placeholder: 'name', required: true},
   { name: 'email', label: 'Email Address', type: 'email', placeholder: "email", required: true ,disabled:true },
   { name: 'phone', label: 'Phone Number', type: 'text', placeholder: 'Enter phone number', required: false },

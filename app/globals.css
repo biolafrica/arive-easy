@@ -148,6 +148,18 @@
     filter: invert(0.5);
     cursor: pointer;
   }
+
+  .date-select select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+
+  @media (max-width: 640px) {
+    .date-select select {
+      font-size: 16px;
+    }
+  }
 }
 
 @keyframes shimmer {
