@@ -2,6 +2,9 @@
 
 import Form from "@/components/form/Form";
 import { passwordFields } from "@/data/pages/dashboard/users";
+import { useAuthContext } from "@/providers/auth-provider";
+import { createClient } from "@/utils/supabase/client";
+import { toast } from "sonner";
 
 interface ChangePasswordFormData {
   password: string;
@@ -10,6 +13,7 @@ interface ChangePasswordFormData {
 }
 
 export default function ResetPasswordForm (){
+  const { user } = useAuthContext();
 
   const initialValues ={
     password: '',
@@ -44,9 +48,53 @@ export default function ResetPasswordForm (){
     return errors;
   };
 
-  const handleSubmitPassword = (values: ChangePasswordFormData)=>{
-    console.log(values)
-  }
+  const handleChangePasswordSubmit = async (
+    values: ChangePasswordFormData
+  ): Promise<void> => {
+    const supabase = createClient();
+
+    try {
+      if (!user || !user.email) {
+        toast.error("User not authenticated.");
+        return;
+      }
+
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: values.password,
+      });
+
+      if (signInError) {
+        console.error("Error verifying current password:", signInError);
+        toast.error("Current password is incorrect");
+        return;
+      }
+
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: values.new_password,
+      });
+
+      if (updateError) {
+        console.error("Error updating password:", updateError);
+        toast.error(
+          updateError instanceof Error
+            ? updateError.message
+            : "Error updating, please try again."
+        );
+        return;
+      }
+
+      toast.success("Password changed successfully.");
+    } catch (error) {
+      console.error("Unexpected error changing password:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Unexpected error changing password."
+      );
+    }
+  };
+
 
   return(
     <div>
@@ -54,7 +102,7 @@ export default function ResetPasswordForm (){
         fields={passwordFields}
         initialValues={initialValues}
         validate={validateChangePassword}
-        onSubmit={handleSubmitPassword}
+        onSubmit={handleChangePasswordSubmit}
         submitLabel= "Change Password"
       />
     </div>
