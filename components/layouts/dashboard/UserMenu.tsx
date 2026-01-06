@@ -5,7 +5,13 @@ import Image from 'next/image';
 import { BellIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
-export function UserMenu({role}:any) {
+export function UserMenu({
+  role,
+  onLogout,
+}: {
+  role: any;
+  onLogout: () => void;
+}) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -34,7 +40,7 @@ export function UserMenu({role}:any) {
             Support
           </Link>
 
-          <button className="block w-full px-4 py-2 text-sm text-left text-red-600 hover:bg-muted">
+          <button onClick={onLogout} className="block w-full px-4 py-2 text-sm text-left text-red-600 hover:bg-muted">
             Sign out
           </button>
         </div>

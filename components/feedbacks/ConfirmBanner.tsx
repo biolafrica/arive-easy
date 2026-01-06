@@ -133,23 +133,15 @@ const ConfirmBanner: React.FC<ConfirmBannerProps> = ({
         )}
 
         <div className="p-6">
-          {/* Title */}
-          <h3 
-            id="dialog-title"
-            className="text-lg font-semibold text-gray-900 dark:text-white text-center mb-2"
-          >
+          
+          <h3 id="dialog-title" className="text-lg font-semibold text-gray-900 dark:text-white text-center mb-2">
             {title}
           </h3>
           
-          {/* Message */}
-          <p 
-            id="dialog-description"
-            className="text-sm text-gray-600 dark:text-gray-400 text-center mb-6"
-          >
+          <p id="dialog-description" className="text-sm text-gray-600 dark:text-gray-400 text-center mb-6">
             {message}
           </p>
           
-          {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-3">
             <Button
               variant="outline"

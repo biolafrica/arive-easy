@@ -5,16 +5,22 @@ import { DashboardRole } from '@/type/layout/dashboard';
 import { XMarkIcon, HomeIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
-interface Props {
+export function MobileNav({
+  role,
+  open,
+  onClose,
+  onLogout,
+}: {
   role: DashboardRole;
   open: boolean;
   onClose: () => void;
-}
+  onLogout: () => void;
+}) {
 
-export function MobileNav({ role, open, onClose }: Props) {
   if (!open) return null;
 
   return (
+  
     <div className="fixed inset-0 z-50 bg-white">
       <div className="flex items-center justify-between p-4 border-b">
         <HomeIcon className="h-7 w-7 text-orange-600" />
@@ -40,7 +46,7 @@ export function MobileNav({ role, open, onClose }: Props) {
         <div className="space-y-3 text-sm">
           <Link href={`${process.env.NEXT_PUBLIC_API_URL}/${role}-dashboard/settings`} className="block">profile Settings</Link>
           <Link href={`${process.env.NEXT_PUBLIC_API_URL}/${role}-dashboard/support`} className="block">Support</Link>
-          <button className="block text-red-600" >Sign out</button>
+          <button onClick={onLogout} className="block text-red-600" >Sign out</button>
         </div>
       </div>
     </div>
