@@ -3,14 +3,14 @@ import { useInfiniteList} from './useInfiniteList';
 import { queryKeys } from '../lib/query-keys';
 import { getEntityCacheConfig } from '../lib/cache-config';
 import { ApiResponse, apiClient } from '../lib/api-client';
-import {useQuery} from '@tanstack/react-query';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { PropertyBase, PropertyData } from '@/type/pages/property';
 import { ApiError } from 'next/dist/server/api-utils';
 import { toNumber } from '@/lib/formatter';
 import { ArticleBase} from '@/type/pages/article';
 import { useRouter } from 'next/navigation';
-import { UserBase } from '@/type/user';
+import { UserAvatarForm, UserBase, } from '@/type/user';
 import { useAuthContext } from '@/providers/auth-provider';
 import { FavoriteBase, PropertyFavorite } from '@/type/pages/dashboard/favorite';
 
@@ -101,6 +101,8 @@ export function useSimilarProperties(
   });
 }
 
+
+
 export function useArticles(params?: any) {
   const crud = useCrud<ArticleBase>({
     resource: 'articles',
@@ -168,6 +170,7 @@ export function useRelatedArticles(
   });
 }
 
+
 export function useCurrentUsers() {
   const { user, loading: authLoading } = useAuthContext();
 
@@ -214,6 +217,47 @@ export function useUserRegistration() {
 
 
   return create
+}
+
+export function useUpdateProfile() {
+  const { user } = useAuthContext();
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (data: UserAvatarForm) => {
+      let updateData: Partial<UserBase> = { ...data };
+      
+      if (data.avatarFile) {
+        try {
+          const avatarUrl = await apiClient.uploadToSupabase(
+            data.avatarFile,
+            'media', 
+            `users/${user?.id}`
+          );
+          
+          if (avatarUrl) {
+            updateData.avatar = avatarUrl;
+          }
+        } catch (error) {
+          console.error('Avatar upload failed:', error);
+          throw new Error('Failed to upload avatar');
+        }
+        
+        delete (updateData as any).avatarFile;
+      }
+      
+      const response = await apiClient.put(`/api/user/me?id=${user?.id}`, updateData);
+      return response;
+    },
+    onSuccess: (data) => {
+      toast.success('Profile updated successfully');
+      queryClient.setQueryData(queryKeys.users.current(), data);
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.profile() });
+    },
+    onError: (error: any) => {
+      toast.error(error.error?.message || 'Failed to update profile');
+    },
+  });
 }
 
 interface Subscriber {

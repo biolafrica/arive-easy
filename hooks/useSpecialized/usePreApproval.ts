@@ -4,7 +4,7 @@ import { getEntityCacheConfig } from '@/lib/cache-config';
 import { useInfiniteList, useState } from '../useInfiniteList';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
-import apiClient, { ApiResponse,} from '@/lib/api-client';
+import apiClient, { ApiResponse,} from '@/lib/api-client'; 
 import { useAuthContext } from '@/providers/auth-provider';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';

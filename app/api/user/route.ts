@@ -9,7 +9,6 @@ const handlers = createCRUDHandlers<UserBackendFormProps>({
   
   hooks: {
     beforeCreate: async (data, context) => {
-
       if (data.password) {
         try {
           const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({

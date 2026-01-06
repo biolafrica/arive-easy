@@ -9,10 +9,6 @@ export default function PersonalInfoForm({initialValues, handleSubmit, handleCan
 
 }){
 
-  const CANADA_POSTAL_CODE_REGEX =
-  /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ ]?\d[ABCEGHJ-NPRSTV-Z]\d$/i;
-
-
   const validate = (values:PersonalInfoFormValues)=>{
     const errors: Partial<Record<keyof PersonalInfoFormValues, string>> = {};
 

@@ -165,6 +165,7 @@ function Form<T extends Record<string, any>>({
             {label}
             {required && <span className="text-red-500 ml-1">*</span>}
           </label>
+
           <input
             id={fieldId}
             name={name}
@@ -189,6 +190,7 @@ function Form<T extends Record<string, any>>({
             aria-invalid={!!showError}
             aria-describedby={showError ? `${fieldId}-error` : undefined}
           />
+
           {values[name] && values[name] instanceof File ? (
             <p className="mt-1 text-xs text-secondary">
               Selected: {(values[name] as File).name}
@@ -388,6 +390,7 @@ function Form<T extends Record<string, any>>({
                 {field.required && <span className="text-red-500 ml-1">*</span>}
               </label>
             )}
+            
             {renderField(field)}
             {field.helperText && !showError && (
               <p className="mt-1 text-xs text-secondary">{field.helperText}</p>
