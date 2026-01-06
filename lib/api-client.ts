@@ -1,7 +1,7 @@
 import { createClient } from '@/utils/supabase/client';
 import { toast } from 'sonner';
 
-// API Response types matching our backend
+
 export interface ApiResponse<T = any> {
   data?: T;
   message?: string;
@@ -34,7 +34,6 @@ export interface PaginatedResponse<T> {
   };
 }
 
-// API Client configuration
 export interface ApiClientConfig {
   baseURL?: string;
   timeout?: number;
@@ -55,17 +54,14 @@ function serializeParams(params: Record<string, any>): string {
     if (typeof value === 'object' && !Array.isArray(value)) {
       Object.entries(value).forEach(([nestedKey, nestedValue]) => {
         if (nestedValue !== undefined && nestedValue !== null) {
-          // Use dot notation for nested params (e.g., filters.status=active)
           searchParams.append(`${key}.${nestedKey}`, String(nestedValue));
         }
       });
     } else if (Array.isArray(value)) {
-      // For arrays, append each item with the same key
       if (value.length > 0) {
         searchParams.append(key, value.join(','));
       }
     } else {
-      // For primitive values
       searchParams.append(key, String(value));
     }
   });
@@ -196,7 +192,6 @@ class ApiClient {
     }
   }
 
-  // HTTP methods
   async get<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
     const searchParams = params ? `?${serializeParams(params)}` : '';
     return this.request<T>(`${endpoint}${searchParams}`, {
@@ -348,10 +343,9 @@ class ApiClient {
 
 }
 
-// Create singleton instance with error handling
+
 export const apiClient = new ApiClient({
   onError: (error) => {
-    // Global error handling
     console.error('API Error:', error);
     
     // Show toast notification for user-facing errors
@@ -370,7 +364,7 @@ export const apiClient = new ApiClient({
   },
 });
 
-// Export types
+
 export type { ApiClient };
 export default apiClient;
 

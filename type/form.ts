@@ -49,6 +49,7 @@ export interface FormProps<T extends Record<string, any>> {
   validate?: (values: T) => Partial<Record<keyof T, string>>;
   onSubmit: (values: T) => Promise<void> | void;
   submitLabel?: string;
+  onFieldChange?: (name: keyof T, value: any) => void; 
   cancelLabel?: string;
   onCancel?: () => void;
   showCancel?: boolean;

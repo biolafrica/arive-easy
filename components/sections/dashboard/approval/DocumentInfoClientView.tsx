@@ -1,6 +1,6 @@
 'use client'
 
-import { DocumentInfoFormData, } from "@/type/pages/dashboard/approval";
+import { DocumentInfoTypes, } from "@/type/pages/dashboard/approval";
 import { usePreApprovalStages, usePreApprovalState } from "@/hooks/useSpecialized/usePreApproval";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -11,7 +11,7 @@ export default function DocumentInfoClientView({id}:{id:string}){
   const router = useRouter();
   const { preApproval, isLoading, validateStepAccess} = usePreApprovalState(id);
   const { updateDocumentInfo} = usePreApprovalStages(id);
-  const [initialValues, setInitialValues] = useState<DocumentInfoFormData | null>(null);
+  const [initialValues, setInitialValues] = useState<DocumentInfoTypes | null>(null);
 
 
   useEffect(() => {
@@ -20,22 +20,16 @@ export default function DocumentInfoClientView({id}:{id:string}){
       
       if (canAccess) {
         setInitialValues({
-          identity_type: preApproval.document_info?.identity_type|| "",
-          identity_proof: preApproval.document_info?.identity_proof|| "",
-          payslip_start_date: preApproval.document_info?.payslip_start_date|| "",
-          payslip_end_date: preApproval.document_info?.payslip_end_date|| "",
-          payslip_image: preApproval.document_info?.payslip_image|| "",
-          bank_statement_start_date: preApproval.document_info?.bank_statement_start_date|| "",
-          bank_statement_end_date: preApproval.document_info?.bank_statement_end_date|| "",
-          bank_statement_image: preApproval.document_info?.bank_statement_image|| "",
-          other_document_name: preApproval.document_info?.other_document_name|| "",
-          other_document_image:preApproval.document_info?.other_document_image|| ""
+          pay_stubs: preApproval.document_info?.pay_stubs || '',
+          tax_returns: preApproval.document_info?.tax_returns || '',
+          bank_statements: preApproval.document_info?.bank_statements || '',
+          employment_verification: preApproval.document_info?.employment_verification || '',
         });
       }
     }
   }, [isLoading, preApproval]);
 
-  const handleSubmit = async (values: DocumentInfoFormData) => {
+  const handleSubmit = async (values: DocumentInfoTypes) => {
     await updateDocumentInfo({
       document_info: values,
       current_step: 5,

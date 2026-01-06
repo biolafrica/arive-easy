@@ -1,17 +1,20 @@
 'use client'
 
-import { PersonalInfoType } from "@/type/pages/dashboard/approval";
+import { PersonalInfoFormValues, PersonalInfoType } from "@/type/pages/dashboard/approval";
 import PersonalInfoForm from "./PersonalInfoForm";
 import { usePreApprovalStages, usePreApprovalState } from "@/hooks/useSpecialized/usePreApproval";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/utils/skeleton";
+import { useAuthContext } from "@/providers/auth-provider";
 
 export default function PersonalInfoClientView({id}:{id:string}){
+  const [initialValues, setInitialValues] = useState<PersonalInfoFormValues | null>(null);
   const router = useRouter();
+  const { user } = useAuthContext();
+
   const { preApproval, isLoading, validateStepAccess} = usePreApprovalState(id);
   const { updatePersonalInfo} = usePreApprovalStages(id);
-  const [initialValues, setInitialValues] = useState<PersonalInfoType | null>(null);
 
 
   useEffect(() => {
@@ -22,21 +25,48 @@ export default function PersonalInfoClientView({id}:{id:string}){
         setInitialValues({
           first_name: preApproval.personal_info?.first_name || "",
           last_name: preApproval.personal_info?.last_name || "",
-          email: preApproval.personal_info?.email || "",
+          email: user?.email || "",
           phone_number: preApproval.personal_info?.phone_number || "",
           date_of_birth: preApproval.personal_info?.date_of_birth || "",
           residence_country: preApproval.personal_info?.residence_country || "",
           marital_status: preApproval.personal_info?.marital_status || "",
           dependant: preApproval.personal_info?.dependant || "",
-          visa_status: preApproval.personal_info?.visa_status || ""
+          visa_status: preApproval.personal_info?.visa_status || "",
+          state:preApproval.personal_info.address?.state || "",
+          street: preApproval.personal_info.address?.street || "",
+          street2: preApproval.personal_info.address?.street2 || "",
+          city: preApproval.personal_info.address?.city || "",
+          postal_code: preApproval.personal_info.address?.postal_code || "",
+          country: preApproval.personal_info.address?.country || "",
+        
         });
       }
     }
   }, [isLoading, preApproval]);
 
-  const handleSubmit = async (values: PersonalInfoType) => {
+  const handleSubmit = async (values:PersonalInfoFormValues) => {
+    const personalData:PersonalInfoType = { 
+      first_name: values.first_name,
+      last_name: values.last_name,
+      email: values.email,
+      phone_number: values.phone_number,
+      date_of_birth: values.date_of_birth,
+      residence_country: values.residence_country,
+      marital_status: values.marital_status,
+      dependant: values.dependant,
+      visa_status: values.visa_status,
+      address: {
+        street: values.street,
+        street2: values.street2,
+        city: values.city,
+        state: values.state,
+        postal_code: values.postal_code,
+        country: values.residence_country,
+      },
+    };
+
     await updatePersonalInfo({
-      personal_info: values,
+      personal_info: personalData,
       current_step: 2,
       completed_steps: Math.max(preApproval?.completed_steps || 0, 1)
     });

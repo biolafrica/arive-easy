@@ -3,7 +3,7 @@
 import SidePanel from "@/components/ui/SidePanel";
 import { useSidePanel } from "@/hooks/useSidePanel";
 import { useTransactions } from "@/hooks/useSpecialized/useTransaction";
-import { useMemo, useState } from "react";
+import { useMemo} from "react";
 import UserTransactionDetails from "./UserTransactionDetails";
 import DataTable from "@/components/common/DataTable";
 import { columns, statusConfig } from "@/data/pages/dashboard/transaction";
@@ -12,7 +12,6 @@ import ActiveFilters from "@/components/common/ActiveFilters";
 import { transactionFilterConfigs } from "./TransactionFilter";
 import { TransactionBase } from "@/type/pages/dashboard/transactions";
 import { useTableFilters } from "@/hooks/useTableQuery";
-import { CompositeDatePicker } from "@/components/ui/DatePicker";
 
 
 export default function UserTransactionClientView() {
@@ -85,7 +84,7 @@ export default function UserTransactionClientView() {
         loading={isLoading}
         searchValue={searchValue}
         onSearchChange={handleSearchChange}
-        searchPlaceholder="Search by descriptionx"
+        searchPlaceholder="Search by description"
         filterDropdown={
           <FilterDropdown
             filters={filters}

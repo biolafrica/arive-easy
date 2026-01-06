@@ -6,6 +6,7 @@ import ImageField from './ImageField';
 import RichTextEditor from './RichTextEditor';
 import { FormField, FormProps } from '@/type/form';
 import { CompositeDatePicker} from '../ui/DatePicker';
+import { useCallback } from 'react';
 
 
 function Form<T extends Record<string, any>>({
@@ -20,24 +21,43 @@ function Form<T extends Record<string, any>>({
   className = '',
   submitButtonVariant = 'filled',
   fullWidthSubmit = true,
+  onFieldChange
 }: FormProps<T>) {
-  const {
-    values,
-    errors,
-    touched,
-    isSubmitting,
-    globalError,
-    handleChange,
-    handleSubmit,
-    setGlobalError,
-    setFieldValue,
-    setFieldTouched,
+  const { 
+    values, 
+    errors, 
+    touched, 
+    isSubmitting, 
+    globalError, 
+    handleChange, 
+    handleSubmit, 
+    setGlobalError, 
+    setFieldValue, 
+    setFieldTouched, 
     isValid,
-  } = useForm<T>({ 
-    initialValues, 
-    validate, 
-    onSubmit 
-  });
+  } = useForm<T>({  initialValues, validate, onSubmit });
+
+  const handleChangeWithCallback = useCallback((
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    handleChange(e);
+    
+    if (onFieldChange) {
+      const { name, value, type } = e.target;
+      const fieldValue = type === 'checkbox' 
+        ? (e.target as HTMLInputElement).checked 
+        : value;
+      onFieldChange(name as keyof T, fieldValue);
+    }
+  }, [handleChange, onFieldChange]);
+
+  const setFieldValueWithCallback = useCallback((name: keyof T, value: any) => {
+    setFieldValue(name, value);
+    if (onFieldChange) {
+      onFieldChange(name, value);
+    }
+  }, [setFieldValue, onFieldChange]);
+
 
   const isFormValid = isValid && fields
   .filter(f => f.required)
@@ -189,7 +209,7 @@ function Form<T extends Record<string, any>>({
             id={fieldId}
             name={name}
             value={values[name] ?? ''}
-            onChange={handleChange}
+            onChange={handleChangeWithCallback}
             disabled={disabled}
             required={required}
             className={getInputClassName(!!showError)}
@@ -280,7 +300,7 @@ function Form<T extends Record<string, any>>({
             type={type}
             placeholder={placeholder}
             value={values[name] ?? ''}
-            onChange={handleChange}
+            onChange={handleChangeWithCallback}
             min={min}
             max={max}
             step={step}

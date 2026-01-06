@@ -1,27 +1,24 @@
 import Form from "@/components/form/Form";
-import { DocumentUploadFields } from "@/data/pages/dashboard/approval";
-import { DocumentInfoFormData,} from "@/type/pages/dashboard/approval";
+import { DocumentInfoFields } from "@/data/pages/dashboard/approval";
+import { DocumentInfoTypes } from "@/type/pages/dashboard/approval";
 
 
-export default function DocumentUploadForm({initialValues, handleSubmit, handleCancel,}:{
-  initialValues:DocumentInfoFormData;
-  handleSubmit:(values: DocumentInfoFormData) => Promise<void> | void;
+export default function DocumentUploadForm({initialValues, handleSubmit, handleCancel}:{
+  initialValues:DocumentInfoTypes
+  handleSubmit:(values: DocumentInfoTypes) => Promise<void> | void;
   handleCancel:()=> void;
-
 }){
   
-  const validate = (values:DocumentInfoFormData)=>{
-    const errors: Partial<Record<keyof DocumentInfoFormData, string>> = {};
-
+  const validate = (values:DocumentInfoTypes)=>{
+    const errors: Partial<Record<keyof DocumentInfoTypes, string>> = {};
     return errors
-
   }
   
 
   return(
     <div>      
       <Form
-        fields={DocumentUploadFields}
+        fields={DocumentInfoFields}
         initialValues={initialValues}
         validate={validate}
         onSubmit={handleSubmit}
@@ -30,6 +27,7 @@ export default function DocumentUploadForm({initialValues, handleSubmit, handleC
         onCancel={handleCancel}
         fullWidthSubmit={false}
         showCancel={true}
+        className="grid grid-cols-1 md:grid-cols-2 gap-4 space-y-0"  
       />
     </div>
 

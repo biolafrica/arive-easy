@@ -8,12 +8,15 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export function PreApprovalSuccess({id}:{id:string}) {
+  console.log('PreApprovalSuccess id:', id);
   const router = useRouter()
-  const {preApproval,isLoading, validateStepAccess, } = usePreApprovalState(id);
+  const {preApproval, isLoading } = usePreApprovalState(id);
+  console.log('PreApprovalSuccess preApproval:', preApproval);
 
   useEffect(() => {
     if (!isLoading && preApproval) {
       if (!preApproval.is_complete || preApproval.completed_steps < 4) {
+        console.log('yes Redirecting to current step');
         const path = getStepPath(preApproval.current_step, preApproval.id, )
         router.push(path);
       }

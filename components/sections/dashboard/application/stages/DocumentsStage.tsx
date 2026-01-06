@@ -22,21 +22,15 @@ export default function DocumentsStage({
         title="Documents Information"
         subtitle="Your Pre Approvals Submitted Documents."
         items={[
-          { label: 'Identity Type', value: { type: 'text', value: stageData.identity_type }},
-          { label: 'Payslip Start Date', value: { type: 'text', value: stageData.payslip_start_date }},
-          { label: 'Payslip End Date', value: { type: 'text', value: stageData.payslip_end_date }},
-          { label: 'Bank Statement Start Date', value: { type: 'text', value: stageData.bank_statement_start_date }},
-          { label: 'Bank Statement End Date', value: { type: 'text', value: stageData.bank_statement_end_date }},
-          { label: 'Other Documents', value: { type: 'text', value: stageData.other_document_name || "--:--" }},
           {
             label: 'Attachments',
             value: {
               type: 'attachments',
               files: [
-                { name: 'identity_proof'},
-                { name: 'payslip'},
-                { name: 'bank_statement'},
-                {name: 'other_documents'}
+                { name: 'pay_stubs'},
+                { name: 'tax_returns'},
+                { name: 'bank_statements'},
+                {name: 'employment_verification'}
               ],
             },
           },

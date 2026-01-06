@@ -20,12 +20,15 @@ export interface PersonalInfoType {
   address?: Address;
 };
 
+export type PersonalInfoFormValues = Omit<PersonalInfoType, 'address'> & Address;
+
+
 export interface EmploymentInfoType {
   employment_status:string;
-  employer_name:string;
-  job_title:string;
-  current_job_years:string;
-  employment_type:string;
+  employer_name?:string;
+  job_title?:string;
+  current_job_years?:string;
+  employment_type?:string;
   gross_income:string;
   other_income?:string;
   income_frequency:string;
@@ -40,31 +43,7 @@ export interface PropertyPreferenceType {
   preffered_loan_term:string;
   other_loan_amount?:string;
   existing_mortgage?:string;
-};
-
-export interface DocumentInfoType {
-  identity_type:string;
-  identity_proof: File | string | null;
-  payslip_start_date:string;
-  payslip_end_date:string;
-  payslip_image: File | string | null;
-  bank_statement_start_date:string;
-  bank_statement_end_date:string;
-  bank_statement_image: File | string | null;
-  other_document_name?:string;
-  other_document_image?: File | string | null;
-};
-
-
-export type DocumentInfoFormData = Omit<DocumentInfoType, 'other_document_image' | 'bank_statement_image' | 'payslip_image' | 'identity_proof'> & {
-  other_document_image: File | string | null,
-  bank_statement_image: File | string | null,
-  payslip_image: File | string | null,
-  identity_proof: File | string | null
 }
-
-export type DocumentFileFields = 'identity_proof' | 'payslip_image' | 'bank_statement_image' | 'other_document_image';
-
 
 export const personalInfoInitialValues:PersonalInfoType= {
   first_name:"",
@@ -75,7 +54,15 @@ export const personalInfoInitialValues:PersonalInfoType= {
   residence_country:"",
   marital_status:"",
   dependant:"",
-  visa_status: ""
+  visa_status: "",
+  address: {
+    street: "",
+    street2: "",
+    city: "",
+    state: "",
+    postal_code: "",
+    country: ""
+  }
 };
 
 export const employmentInfoInitialValues:EmploymentInfoType= {
@@ -89,7 +76,6 @@ export const employmentInfoInitialValues:EmploymentInfoType= {
   income_frequency:"",
   business_type:"",
   incorporation_years:""
-
 };
 
 export const propertyPreferenceInitialValues:PropertyPreferenceType ={
@@ -101,19 +87,6 @@ export const propertyPreferenceInitialValues:PropertyPreferenceType ={
   existing_mortgage:""
 };
 
-export const documentUploadInitialValues:DocumentInfoType ={
-  identity_proof:"",
-  identity_type:"",
-  payslip_start_date:"",
-  payslip_end_date:"",
-  payslip_image:"",
-  bank_statement_start_date:"",
-  bank_statement_end_date:"",
-  bank_statement_image:"",
-  other_document_name:"",
-  other_document_image:""
-
-}
 
 export interface PreApprovalBase{
   id:string;
@@ -125,7 +98,7 @@ export interface PreApprovalBase{
   personal_info:PersonalInfoType;
   employment_info:EmploymentInfoType;
   property_info:PropertyPreferenceType;
-  document_info:DocumentInfoType;
+  document_info:DocumentInfoTypes;
   documents_uploaded:boolean;
   documents_id:string;
   status:string;
@@ -142,8 +115,6 @@ export interface PreApprovalBase{
   debt_to_income_ration:string;
 }
 
-
-
 export type BackendPreApprovalForm = Omit<PreApprovalBase, 'id' | 'created_at' | 'updated_at'>
 
 export interface PreApprovalWithProperty extends PreApprovalBase {
@@ -155,4 +126,21 @@ export interface PreApprovalWithProperty extends PreApprovalBase {
     city: string;
     image_url?: string;
   };
+}
+
+
+export interface DocumentInfoTypes {
+  pay_stubs: File | string | null;
+  tax_returns: File | string | null;
+  bank_statements: File | string | null;
+  employment_verification: File | string | null;
+};
+
+export const documentInfoInitialValues:DocumentInfoTypes ={
+  pay_stubs: '',
+  tax_returns: '',
+  bank_statements: '',
+  employment_verification: '',
+ 
+
 }

@@ -161,7 +161,7 @@ const ImageField: React.FC<ImageFieldProps> = ({
 
       <div
         className={`
-          relative border-2 border-dashed rounded-lg transition-all duration-200
+          relative border border-dashed flex items-center justify-center rounded-xl transition-all ${getAspectRatioClass()} duration-200
           ${isDragging 
             ? 'border-accent bg-btn-secondary-active' 
             : displayError
@@ -219,7 +219,7 @@ const ImageField: React.FC<ImageFieldProps> = ({
           </div>
         ) : (
           <div className="p-8 text-center">
-            <div className="flex justify-center mb-4">
+            <div className="flex justify-center items-center mb-4">
               {isDragging ? (
                 <CloudArrowUpIcon className="h-12 w-12 text-accent animate-bounce" />
               ) : (

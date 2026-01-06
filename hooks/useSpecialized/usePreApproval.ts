@@ -347,7 +347,7 @@ export function usePreApprovalStages(preApprovalId: string) {
   };
 
   const updateDocumentInfo = async (data: { 
-    document_info: stage.DocumentInfoFormData; 
+    document_info: stage.DocumentInfoTypes; 
     current_step: number; 
     completed_steps: number ;
     is_complete: boolean;
@@ -412,8 +412,8 @@ export function usePreApprovalState(preApprovalId: string) {
 
       const currentPreApproval = preApprovals[0];
       
-      if (currentPreApproval.status !== 'draft') {
-        toast.error('This pre-approval has already been submitted');
+      if (currentPreApproval.status !== 'draft' && currentPreApproval.status !== 'pending') {
+        toast.error('This pre-approval has already been completed');
         router.push('/user-dashboard');
         return;
       }
@@ -485,10 +485,10 @@ export const getStepPath = (step: number, id: string): string => {
 };
 
 export async function processDocumentFiles(
-  formData: stage.DocumentInfoFormData,
+  formData: stage.DocumentInfoTypes,
   uploadFn: (files: Record<string, File | null>) => Promise<Record<string, string | null>>
-): Promise<stage.DocumentInfoType> {
-  const fileFields = ['identity_proof', 'payslip_image', 'bank_statement_image', 'other_document_image'] as const;
+): Promise<stage.DocumentInfoTypes> {
+  const fileFields = ['pay_stubs', 'tax_returns', 'bank_statements', 'employment_verification'] as const;
   
   const filesToUpload: Record<string, File | null> = {};
   const existingUrls: Record<string, string | null> = {};
@@ -515,16 +515,10 @@ export async function processDocumentFiles(
   });
 
   return {
-    identity_type: formData.identity_type,
-    identity_proof: finalUrls.identity_proof,
-    payslip_start_date: formData.payslip_start_date,
-    payslip_end_date: formData.payslip_end_date,
-    payslip_image: finalUrls.payslip_image,
-    bank_statement_start_date: formData.bank_statement_start_date,
-    bank_statement_end_date: formData.bank_statement_end_date,
-    bank_statement_image: finalUrls.bank_statement_image,
-    other_document_name: formData.other_document_name,
-    other_document_image: finalUrls.other_document_image,
+    pay_stubs: finalUrls.pay_stubs,
+    tax_returns: finalUrls.tax_returns,
+    bank_statements: finalUrls.bank_statements,
+    employment_verification: finalUrls.employment_verification,
   };
 }
 
