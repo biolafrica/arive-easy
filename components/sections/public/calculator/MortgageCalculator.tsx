@@ -77,7 +77,7 @@ export default function MortgageCalculator() {
     <section className="mx-auto max-w-7xl px-4 py-12">
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
-        {/* LEFT – INPUTS */}
+
         <div className="lg:col-span-3 space-y-6">
           <div className="rounded-xl border border-border bg-white p-6">
             <h3 className="mb-6 text-lg font-semibold text-heading">
@@ -154,30 +154,10 @@ export default function MortgageCalculator() {
               </Field>
             </div>
 
-            {/* Advanced Settings */}
-            <details className="mt-6">
-              <summary className="cursor-pointer text-sm font-medium text-secondary hover:text-heading">
-                Advanced Settings
-              </summary>
-              <div className="mt-4 space-y-3 text-sm text-secondary">
-                <div className="flex justify-between">
-                  <span>Property Tax Rate:</span>
-                  <span>{(propertyTaxRate * 100).toFixed(2)}% annually</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Home Insurance:</span>
-                  <span>{formatCurrency(homeInsurance)}/month</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>PMI Rate:</span>
-                  <span>{(pmiRate * 100).toFixed(1)}% annually</span>
-                </div>
-              </div>
-            </details>
+
           </div>
         </div>
 
-        {/* RIGHT – OUTPUTS */}
         <div className="lg:col-span-2 space-y-6">
           <div className="rounded-xl bg-orange-600 p-6 text-white">
             <p className="text-sm opacity-90">Total Monthly Payment</p>

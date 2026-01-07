@@ -364,6 +364,8 @@ export function useInfiniteFavoriteProperties(params?: any) {
     params,
     limit: 15,
     autoFetch: true,
+    
+
   });
 }
 

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-export type ArticleCategory = 'all' | 'market-trend' | 'financial-planning' | 'advice';
+export type ArticleCategory = 'all' | 'market-trends' | 'financial-planning' ;
 
 export interface ArticleFilterState {
   category: ArticleCategory;
@@ -12,7 +12,6 @@ export const ARTICLE_CATEGORIES = [
   { value: 'all', label: 'All Articles' },
   { value: 'market-trends', label: 'Market Trends' },
   { value: 'financial-planning', label: 'Financial Planning' },
-  { value: 'advice', label: 'Advice' },
 ] as const;
 
 export function useArticleFilter() {
@@ -24,9 +23,8 @@ export function useArticleFilter() {
     }
     
     const categoryMap: Record<string, string> = {
-      'market-trend': 'Market Trends',
+      'market-trends': 'Market Trends',
       'financial-planning': 'Financial Planning',
-      'advice': 'Home Advice',
     };
 
     return {

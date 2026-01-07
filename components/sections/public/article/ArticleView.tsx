@@ -25,8 +25,6 @@ export default function ArticleView({ article }: {
 
   return (
     <article className="mx-auto max-w-4xl px-4 pb-20 pt-10">
-
-      {/* Breadcrumb */}
       <Button
         variant="text"
         size="sm"
@@ -36,8 +34,7 @@ export default function ArticleView({ article }: {
       >
         Back to articles
       </Button>
-
-      {/* Header */}
+      
       <header className="mb-8 space-y-4">
         <h1 className="text-3xl font-semibold text-heading sm:text-4xl">
          {article.title}

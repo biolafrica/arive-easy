@@ -28,7 +28,7 @@ export default function ArticleViewClient(){
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px]">
         <p className="text-red-500 mb-4">Error loading articles</p>
-        <Button onClick={() => window.location.reload()}>Try Again</Button>
+        <Button onClick={() => refresh()}>Try Again</Button>
       </div>
     );
   }

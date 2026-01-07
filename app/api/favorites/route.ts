@@ -1,5 +1,5 @@
 import { FavoriteForm } from "@/type/pages/dashboard/favorite";
-import { requireAuth } from "@/utils/server/authMiddleware";
+import { optionalAuth,} from "@/utils/server/authMiddleware";
 import { createCRUDHandlers } from "@/utils/server/crudFactory";
 import { NextRequest } from "next/server";
 
@@ -9,7 +9,7 @@ const propertyHandlers = createCRUDHandlers<FavoriteForm>({
   searchFields: ['property_id'],
   middleware:{
     auth: async(request:NextRequest)=>{
-      const user = await requireAuth();
+      const user = await optionalAuth();
       return user ? {
         userId: user.id,
         email: user.email,

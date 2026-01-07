@@ -11,6 +11,7 @@ import Link from 'next/link';
 import ConfirmBanner from '@/components/feedbacks/ConfirmBanner';
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 export function DashboardHeader({ role }: { role: DashboardRole }) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -27,11 +28,23 @@ export function DashboardHeader({ role }: { role: DashboardRole }) {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) {
+        toast.error('Failed to logout. Please try again.', {
+          description: error.message,
+        });
         console.error('Error logging out:', error);
+
       } else {
-        router.push('/login');
+        toast.success('Successfully logged out.', {
+          description: 'You have been logged out of your account.',
+        });
+        router.push('/signin');
       }
+
     } catch (err) {
+      toast.error('An unexpected error occurred during logout.', {
+        description: String(err),
+      });
+
       console.error('Unexpected error during logout:', err);
     } finally {
       setShowLogoutDialog(false);

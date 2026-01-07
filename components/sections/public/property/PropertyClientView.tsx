@@ -16,9 +16,16 @@ import { PropertyDetailsPageSkeleton } from "@/components/skeleton/PropertyCardS
 export default function PropertyClientView({id}:any){
   const {property,isLoading, error,} = useProperty(id);
 
-  const { data: similarProperties } = useSimilarProperties(property)
+  const { data: similarProperties, refetch } = useSimilarProperties(property)
 
-  if (error) return <div>Error loading properties</div>;
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px]">
+        <p className="text-red-500 mb-4">Error loading property details</p>
+        <button onClick={() => refetch()} className="px-4 py-2 bg-blue-600 text-white rounded">Try Again</button>
+      </div>
+    );
+  }
 
   return(
     <div>
