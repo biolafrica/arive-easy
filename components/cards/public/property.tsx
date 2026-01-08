@@ -17,7 +17,7 @@ export function PropertyCard({ property }: Props) {
   
   const { isFavorited, toggleFavorite, isToggling } = useFavorites()
 
-  const favorited = isFavorited(property.id)
+  const favorited = user ? isFavorited(property.id) : false;
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();

@@ -24,10 +24,12 @@ export default function SellerUserForm (){
       errors.phone_number = 'Password must be at least 8 characters';
     } 
 
-    if (values.bio.length < 200) {
-      errors.bio = 'Bio must be at least 200 characters';
-    } 
-
+    if(values.bio){
+      if (values.bio.length > 200) {
+        errors.bio = 'Bio must be less than 200 characters';
+      }
+    }
+    
     return errors
   }
 

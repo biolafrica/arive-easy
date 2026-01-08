@@ -12,7 +12,8 @@ import { toast } from "sonner";
 export default function PropertyHead({title, address_full ,id, description}:PropertyHeadProps){
   const { user } = useAuthContext();
   const { isFavorited, toggleFavorite, isToggling } = useFavorites()
-  const favorited = isFavorited(id)
+
+  const favorited = user ? isFavorited(id) : false;
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();

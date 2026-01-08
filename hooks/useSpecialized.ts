@@ -345,6 +345,7 @@ export function useFavorites() {
   };
   
   const isFavorited = (propertyId: string) => {
+    if (!user) return []
     return favorites.some(f => f.property_id === propertyId);
   };
   
