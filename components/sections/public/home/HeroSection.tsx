@@ -22,7 +22,7 @@ export default function HeroSection({
       <div className="relative z-10 flex min-h-[85vh] items-center pt-24">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
 
-          <div className="mx-auto flex max-w-5xl flex-col items-center space-y-6 text-center text-white">
+          <div className="mx-auto flex max-w-5xl flex-col items-center space-y-6 text-center">
 
             <HeroRotatingHeadline />
 

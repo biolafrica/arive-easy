@@ -2,7 +2,7 @@ import { RotatingWords } from './RotatingWords';
 
 export function HeroRotatingHeadline() {
   return (
-    <h1 className="text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
+    <h1 className="text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl text-white">
       Your gateway to&nbsp;
       <RotatingWords
         words={[

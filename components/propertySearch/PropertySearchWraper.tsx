@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 
 interface PropertySearchWrapperProps {
   onFiltersApply?: (filters: any) => void;
+  home?: boolean;
 }
 
 export function PropertySearchWrapper({ onFiltersApply }: PropertySearchWrapperProps) {
@@ -42,7 +43,7 @@ export function PropertySearchWrapper({ onFiltersApply }: PropertySearchWrapperP
   );
 }
 
-export function HomePropertySearchWrapper({ onFiltersApply }: PropertySearchWrapperProps) {
+export function HomePropertySearchWrapper({ onFiltersApply, home=true }: PropertySearchWrapperProps) {
   const router = useRouter()
 
   const search = usePropertySearchFilters((filters) => {
@@ -62,6 +63,7 @@ export function HomePropertySearchWrapper({ onFiltersApply }: PropertySearchWrap
         <PropertySearchDesktop 
           {...search} 
           submit={handleSubmit}
+          home={home}
         />
       </div>
 

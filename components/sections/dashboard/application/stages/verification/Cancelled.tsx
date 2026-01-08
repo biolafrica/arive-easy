@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from "@/components/primitives/Button";
 import { XCircleIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";

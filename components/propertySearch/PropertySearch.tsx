@@ -8,6 +8,7 @@ interface PropertySearchDesktopProps {
   setPropertyType: (v?: string) => void;
   setPriceRange: (v?: string) => void;
   submit: () => void;
+  home?: boolean;
 }
 
 export function PropertySearchDesktop({
@@ -18,6 +19,7 @@ export function PropertySearchDesktop({
   setPropertyType,
   setPriceRange,
   submit,
+  home = false,
 }: PropertySearchDesktopProps) {
   return (
     <>
@@ -26,11 +28,11 @@ export function PropertySearchDesktop({
           <button
             key={item}
             onClick={() => setStatus(item)}
-            className={`rounded-md text-black rounded-b-none px-4 py-2 text-sm font-medium transition
+            className={`rounded-md rounded-b-none px-4 py-2 text-sm font-medium transition
               ${
                 filters.status === item
-                  ? 'bg-layout border border-b-0 text-heading shadow-sm'
-                  : 'text-secondary hover:text-heading'
+                  ? `bg-layout border border-b-0 ${home? 'text-black' : 'text-black'} shadow-sm`
+                  : `  ${home? 'text-white' : 'text-black'}`
               }`}
           >
             {item}

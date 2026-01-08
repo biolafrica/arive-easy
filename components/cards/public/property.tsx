@@ -14,7 +14,9 @@ interface Props {
 
 export function PropertyCard({ property }: Props) {
   const { user } = useAuthContext();
+  
   const { isFavorited, toggleFavorite, isToggling } = useFavorites()
+
   const favorited = isFavorited(property.id)
 
   const handleFavoriteClick = (e: React.MouseEvent) => {

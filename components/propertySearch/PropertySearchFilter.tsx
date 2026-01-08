@@ -4,11 +4,7 @@ import { useMemo } from 'react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { Select } from './Select';
 import { Divider } from './Divider';
-import {
-  STATES,
-  PROPERTY_TYPES,
-  PRICE_RANGES,
-} from '@/data/propertyFilters';
+import { STATES, PROPERTY_TYPES, PRICE_RANGES} from '@/data/propertyFilters';
 
 interface PropertySearchFiltersProps {
   state?: string;
@@ -44,7 +40,7 @@ export function PropertySearchFilters({
   }, [state]);
 
   return (
-    <div className="flex flex-col gap-3 rounded-2xl rounded-tl-none lg:border lg:border-border bg-white p-4 shadow-sm lg:flex-row lg:items-center lg:gap-0">
+    <div className="flex flex-col gap-3 rounded-2xl rounded-tl-none lg:border lg:border-border bg-white p-4 shadow-sm lg:flex-row lg:items-center lg:gap-0 ">
       <Select
         label="State"
         placeholder="Select State"
@@ -87,7 +83,6 @@ export function PropertySearchFilters({
         onChange={onPriceRangeChange}
       />
 
-      {/* Search Button */}
       <button
         onClick={onSearch}
         className="mt-2 flex h-12 w-full items-center justify-center rounded-xl bg-btn-secondary text-white transition hover:bg-primary/90 lg:mt-0 lg:ml-3 lg:w-12"

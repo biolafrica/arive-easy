@@ -43,14 +43,13 @@ export function Select({
       </span>
 
       <div className="relative">
-        {/* Trigger */}
         <button
           type="button"
           disabled={disabled}
           onClick={() => setOpen((o) => !o)}
           className={cn(
-            'flex h-10 w-full items-center justify-between rounded-md bg-transparent pr-8 text-sm transition',
-            'text-secondary focus:outline-none',
+            'flex h-10 w-full items-center justify-between rounded-md bg-transparent text-sm transition',
+            'text-heading focus:outline-none',
             disabled && 'cursor-not-allowed opacity-50'
           )}
         >
@@ -66,7 +65,6 @@ export function Select({
           />
         </button>
 
-        {/* Dropdown */}
         {open && !disabled && (
           <div className="absolute z-50 mt-2 w-full rounded-xl border border-border bg-white shadow-lg text-black">
             {normalized.map((opt) => {
@@ -81,15 +79,15 @@ export function Select({
                   }}
                   className={cn(
                     'flex w-full items-center justify-between px-4 py-3 text-sm transition',
-                    'hover:bg-hover',
-                    active && 'bg-accent/10 text-accent'
+                    'hover:bg-hover text-secondary ',
+                    active && ' text-heading font-medium'
                   )}
                 >
                   {opt.label}
                   {active && (
                     <CheckIcon className="h-4 w-4" />
                   )}
-                </button>
+                </button> 
               );
             })}
           </div>
