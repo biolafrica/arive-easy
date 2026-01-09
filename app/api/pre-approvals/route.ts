@@ -33,15 +33,20 @@ const propertyHandlers = createCRUDHandlers<PreApprovalBase>({
   hooks:{
     afterUpdate:async(created,_,context)=>{
       if(created.is_complete === true){
-        console.log("creating email")
-        await sendEmail({
-          to:  `${context.auth?.email}`,
-          subject: 'Pre-Approval Application Received',
-          html: preApprovalReceivedBody({
-            userName: `${context?.auth?.name}`,
-            referenceNumber: `${created.reference_number}`,
-          }),
-        });
+        try {
+          console.log("creating email")
+          await sendEmail({
+            to:  `${context.auth?.email}`,
+            subject: 'Pre-Approval Application Received',
+            html: preApprovalReceivedBody({
+              userName: `${context?.auth?.name}`,
+              referenceNumber: `${created.reference_number}`,
+            }),
+          });
+        } catch (error) {
+          console.error('Failed to send pre-approval received email:', error);
+        }
+       
       }
 
     }
