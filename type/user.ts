@@ -11,6 +11,7 @@ export interface UserBase {
   residence_country: string;
   address?:string;
   bio?:string;
+  provider?: string;
 }
 
 

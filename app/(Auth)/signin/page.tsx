@@ -1,8 +1,7 @@
-import { Button } from '@/components/primitives/Button';
 import { AuthCard } from '@/components/sections/auth/AuthLayout';
+import { GoogleSignInButton } from '@/components/sections/auth/GoogleSignInButton';
 import SignInFormPage from '@/components/sections/auth/SignInForm';
-import { AuthTabs } from '@/components/sections/auth/TabHeader';
-import { EnvelopeIcon } from '@heroicons/react/24/solid';
+import { AuthTabs, Divider } from '@/components/sections/auth/TabHeader';
 import Link from 'next/link';
 
 export default function LoginPage() {
@@ -11,10 +10,15 @@ export default function LoginPage() {
       <AuthTabs active="signin" />
 
       <div className="space-y-4">
+
         <SignInFormPage/>
-        <Button variant="outline" fullWidth leftIcon={<EnvelopeIcon className="h-4 w-4 text-blue-600" />}>
-          Sign in with Google
-        </Button>
+
+        <Divider />
+
+        <GoogleSignInButton
+          variant="signin"
+          redirectTo="/"
+        />
 
         <div className="text-right">
           <Link href="/forgot-password" className="text-blue-600 text-sm">

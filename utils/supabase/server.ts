@@ -15,7 +15,7 @@ export async function createClient(): Promise<SupabaseClient> {
         },
         setAll(cookiesToSet) {
           try {
-            cookiesToSet.forEach(({ name, value }) => cookieStore.set(name, value))
+            cookiesToSet.forEach(({ name, value,options }) => cookieStore.set(name, value,options))
           } catch {
             // safe to ignore on Server Components
           }

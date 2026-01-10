@@ -1,8 +1,7 @@
-import { Button } from '@/components/primitives/Button';
 import { AuthCard } from '@/components/sections/auth/AuthLayout';
+import { GoogleSignInButton } from '@/components/sections/auth/GoogleSignInButton';
 import SignUpFormPage from '@/components/sections/auth/SignUpForm';
-import { AuthTabs } from '@/components/sections/auth/TabHeader';
-import { EnvelopeIcon } from '@heroicons/react/24/solid';
+import { AuthTabs, Divider } from '@/components/sections/auth/TabHeader';
 import Link from 'next/link';
 
 export default function SignUpPage() {
@@ -12,16 +11,24 @@ export default function SignUpPage() {
       <AuthTabs active="signup" />
 
       <div className="space-y-4">
+
         <SignUpFormPage/>
-        <Button variant="outline" fullWidth  leftIcon={<EnvelopeIcon className="h-4 w-4 text-blue-600" />}>
-          Sign up with Google
-        </Button>
+
+        <Divider />
+
+        <GoogleSignInButton
+          variant="signup"
+          redirectTo="/onboarding"
+        />
+
       </div>
+
       <h4 className='text-sm mt-2 text-secondary'>
-        By clicking “Create Account”, you agree to the  and Privacy Policy
-        <Link href="/terms" className="text-blue-600 text-sm"> Terms and Services</Link> and
-        <Link href="/privacy" className="text-blue-600 text-sm"> Privacy Policy</Link>.
+        By clicking "Create Account" or "Sign up with Google", you agree to the{' '}
+        <Link href="/terms" className="text-blue-600 hover:underline">Terms of Service</Link>{' '} and{' '}
+        <Link href="/privacy" className="text-blue-600 hover:underline">Privacy Policy </Link>.
       </h4>
+
     </AuthCard>
   );
 }
