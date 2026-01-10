@@ -10,6 +10,7 @@ interface Props {
 }
 
 export const ArticleCard = ({article}:Props) => {
+  console.log("article", article);
   return (
     <article className="group flex flex-col">
       <Link
@@ -39,12 +40,12 @@ export const ArticleCard = ({article}:Props) => {
 
         <div className="mt-3 flex items-center gap-3 text-sm text-secondary">
           <UserAvatar
-            name={article.users.name}
+            name={article?.users?.name || ''}
             size="sm"
           />
 
           <div className="flex items-center gap-2">
-            <span>{article.users.name}</span>
+            <span>{article?.users?.name || ""}</span>
             <span>•</span>
             <span>{formatDate(article.created_at)}</span>
             {article.read_time && (

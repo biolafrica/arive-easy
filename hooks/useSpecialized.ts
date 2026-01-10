@@ -101,8 +101,6 @@ export function useSimilarProperties(
   });
 }
 
-
-
 export function useArticles(params?: any) {
   const crud = useCrud<ArticleBase>({
     resource: 'articles',
@@ -301,12 +299,7 @@ export function useSubscriber() {
 export function useFavorites() {
   const { user } = useAuthContext();
 
-  const {
-    useGetAll,
-    create,
-    remove,
-    isCreating,
-    isDeleting,
+  const { useGetAll, create, remove, isCreating, isDeleting,
   } = useCrud<FavoriteBase>({
     resource: 'favorites',
     interfaceType: 'client',
