@@ -53,7 +53,7 @@ export async function POST(request:NextRequest){
       customer_email:user.email
     })
 
-    const transaction = await queryBuilder.create({
+    await queryBuilder.create({
       user_id:user.id,
       application_id: application_id,
       stripe_session_id: session.id,

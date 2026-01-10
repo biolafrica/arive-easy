@@ -14,6 +14,12 @@ interface UserProfile {
   role?: string;
 }
 
+const ROLE_OPTIONS = [
+  { value: 'user', title: 'Homebuyer', description: 'Looking to buy property', icon: '🏠', activeClassName: 'border-border bg-background text-heading'},
+  { value: 'seller', title: 'Seller', description: 'Listing properties', icon: '🏢', activeClassName: 'border-accent bg-accent/5 text-accent'},
+] as const;
+
+
 export default function OnboardingComponent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -110,7 +116,7 @@ export default function OnboardingComponent() {
       } else {
         router.push('/user-dashboard/');
       }
-      
+
     } catch (error) {
       console.error('Error updating profile:', error);
       toast.error('Failed to complete profile', {description: error instanceof Error ? error.message : ''});
@@ -170,42 +176,20 @@ export default function OnboardingComponent() {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               I am a:
             </label>
+
             <div className="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => setSelectedRole('user')}
-                className={`
-                  p-4 border-2 rounded-lg text-center transition-all
-                  ${selectedRole === 'user' 
-                    ? 'border-border bg-background text-heading' 
-                    : 'border-gray-200 hover:border-gray-300'
-                  }
-                `}
-              >
-                <div className="text-2xl mb-1">🏠</div>
-                <div className="font-medium">Homebuyer</div>
-                <div className="text-xs text-gray-500 mt-1">
-                  Looking to buy property
-                </div>
-              </button>
-              
-              <button
-                type="button"
-                onClick={() => setSelectedRole('seller')}
-                className={`
-                  p-4 border-2 rounded-lg text-center transition-all
-                  ${selectedRole === 'seller' 
-                    ? 'border-accent bg-accent/5 text-accent' 
-                    : 'border-gray-200 hover:border-gray-300'
-                  }
-                `}
-              >
-                <div className="text-2xl mb-1">🏢</div>
-                <div className="font-medium">Seller</div>
-                <div className="text-xs text-gray-500 mt-1">
-                  Listing properties
-                </div>
-              </button>
+              {ROLE_OPTIONS.map((role) => (
+                <RoleOptionCard
+                  key={role.value}
+                  value={role.value}
+                  selected={selectedRole === role.value}
+                  onSelect={setSelectedRole}
+                  icon={role.icon}
+                  title={role.title}
+                  description={role.description}
+                  activeClassName={role.activeClassName}
+                />
+              ))}
             </div>
           </div>
           
@@ -221,5 +205,46 @@ export default function OnboardingComponent() {
         </div>
       </div>
     </div>
+  );
+}
+
+
+interface RoleOptionCardProps {
+  value: string;
+  selected: boolean;
+  onSelect: (value: string) => void;
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  activeClassName?: string;
+}
+
+export function RoleOptionCard({
+  value,
+  selected,
+  onSelect,
+  icon,
+  title,
+  description,
+  activeClassName = 'border-border bg-background text-heading',
+}: RoleOptionCardProps) {
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(value)}
+      className={`
+        p-4 border-2 rounded-lg text-center transition-all
+        ${selected
+          ? activeClassName
+          : 'border-gray-200 hover:border-gray-300'
+        }
+      `}
+    >
+      <div className="text-2xl mb-1">{icon}</div>
+      <div className="font-medium">{title}</div>
+      <div className="text-xs text-gray-500 mt-1">
+        {description}
+      </div>
+    </button>
   );
 }
