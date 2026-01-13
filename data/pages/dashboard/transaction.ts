@@ -49,7 +49,6 @@ export const MOCK_BUYER_DASHBOARD_STATS = [
   },
 ];
 
-
 export const columns: TableColumn<TransactionBase>[] = [
   { key: 'id', header: 'Transaction ID', sortable: false},
   { key: 'type', header: 'Description', sortable: false},

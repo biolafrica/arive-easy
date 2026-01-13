@@ -47,15 +47,10 @@ export default function UserApplicationClientView() {
 
   const emptyMessage = useMemo(() => {
     if (hasActiveFilters) {
-      return {
-        title: 'No applications found',
-        message: 'Try adjusting your filters or search query',
-      };
+      return { title: 'No applications found', message: 'Try adjusting your filters or search query'};
     }
-    return {
-      title: 'No applications found',
-      message: 'Your applications will appear here',
-    };
+    return { title: 'No applications found', message: 'Your applications will appear here'};
+
   }, [hasActiveFilters]);
 
   return (

@@ -76,6 +76,7 @@ export default function VerifyEmailPage() {
 
   return (
     <main style={{ padding: 24, textAlign: 'center', paddingTop: 100 }}>
+      
       {status === 'loading' && (
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
@@ -85,6 +86,7 @@ export default function VerifyEmailPage() {
           </div>
         </div>
       )}
+
       {status === 'success' && (
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
@@ -94,6 +96,7 @@ export default function VerifyEmailPage() {
           </div>
         </div>
       )}
+
       {status === 'error' && (
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center max-w-md">

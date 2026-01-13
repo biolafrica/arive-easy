@@ -1,60 +1,60 @@
-"use client"
+'use client';
 
-import SidePanel from "@/components/ui/SidePanel";
-import { useSidePanel } from "@/hooks/useSidePanel";
-import { useTransactions } from "@/hooks/useSpecialized/useTransaction";
-import { useMemo} from "react";
-import UserTransactionDetails from "./UserTransactionDetails";
-import DataTable from "@/components/common/DataTable";
-import { columns, statusConfig } from "@/data/pages/dashboard/transaction";
 import FilterDropdown from "@/components/common/FilterDropdown";
-import ActiveFilters from "@/components/common/ActiveFilters";
-import { transactionFilterConfigs } from "./TransactionFilter";
-import { TransactionBase } from "@/type/pages/dashboard/transactions";
+import SidePanel from "@/components/ui/SidePanel";
+import { columns, statusConfig, useOffers } from "@/data/pages/dashboard/offer";
+import { useSidePanel } from "@/hooks/useSidePanel";
 import { useTableFilters } from "@/hooks/useTableQuery";
+import { useMemo } from "react";
+import { offerFilterConfigs } from "./OfferFilter";
+import ActiveFilters from "@/components/common/ActiveFilters";
+import DataTable from "@/components/common/DataTable";
+import OfferDetails from "./OfferDetails";
 
-
-export default function UserTransactionClientView() {
-  const detailPanel = useSidePanel<TransactionBase>();
+export default function OfferClientView (){
+  const detailPanel = useSidePanel<any>();
 
   const { sortBy, sortOrder, searchValue, filters, queryParams: baseQueryParams,     
     hasActiveFilters, handlePageChange, handleItemsPerPageChange, handleSort,
     handleFilterChange, handleSearchChange,
   } = useTableFilters({
-    initialFilters: { status: '' },searchFields: ['type'], defaultLimit: 10,
+    initialFilters: { status: '' },searchFields: ['property'], defaultLimit: 10,
   });
 
-  const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['applications'],
+  const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['properties','users'],
   }), [baseQueryParams]);
 
-  const { transactions, pagination, isLoading } = useTransactions(queryParams);
+  const {offers, isLoading} = useOffers(queryParams);
 
   const emptyMessage = useMemo(() => {
     if (hasActiveFilters) {
-      return { title: 'No transaction found', message: 'Try adjusting your filters or search query',};
+      return { title: 'No offers yet', message: 'Try adjusting your filters or search query',};
     }
-    return {title: 'No transaction found', message: 'Your applications will appear here'};
+    return {title: 'No offers found', message: 'Your offers will appear here'};
   }, [hasActiveFilters]);
 
-  return (
+
+
+  return(
     <div>
-     
       <SidePanel
         isOpen={detailPanel.isOpen}
         onClose={detailPanel.close}
-        title="Transaction Details"
+        title="Offers Details"
       >
         {detailPanel.selectedItem && (
-          <UserTransactionDetails transaction={detailPanel.selectedItem} />
+          <div>
+            <OfferDetails offer={detailPanel.selectedItem} />
+          </div>
         )}
 
       </SidePanel>
 
       <DataTable
-        title="Payment History"
+        title="Offers and Interests"
         columns={columns}
-        data={transactions}
-        pagination={pagination || {
+        data={offers}
+        pagination={ {
           page: 1,
           limit: 10,
           total: 0,
@@ -67,14 +67,14 @@ export default function UserTransactionClientView() {
         filterDropdown={
           <FilterDropdown
             filters={filters}
-            filterConfigs={transactionFilterConfigs}
+            filterConfigs={offerFilterConfigs}
             onFilterChange={handleFilterChange}
           />
         }
         activeFiltersSlot={
           <ActiveFilters
             filters={filters}
-            filterConfigs={transactionFilterConfigs}
+            filterConfigs={offerFilterConfigs}
             onFilterChange={handleFilterChange}
           />
         }
@@ -87,7 +87,8 @@ export default function UserTransactionClientView() {
         sortBy={sortBy}
         sortOrder={sortOrder}
         emptyMessage={emptyMessage}
-      />
+        skeletonRows={5}
+      /> 
     </div>
-  );
+  )
 }
