@@ -1,21 +1,20 @@
-"use client"
+'use client';
 
 import SidePanel from "@/components/ui/SidePanel";
+import { SellerTransactionscolumns, SellerTransactionstatusConfig, useSellerTransactions } from "@/data/pages/dashboard/transaction";
 import { useSidePanel } from "@/hooks/useSidePanel";
-import { useTransactions } from "@/hooks/useSpecialized/useTransaction";
-import { useMemo} from "react";
-import UserTransactionDetails from "./UserTransactionDetails";
-import DataTable from "@/components/common/DataTable";
-import { columns, statusConfig } from "@/data/pages/dashboard/transaction";
-import FilterDropdown from "@/components/common/FilterDropdown";
-import ActiveFilters from "@/components/common/ActiveFilters";
-import { transactionFilterConfigs } from "./TransactionFilter";
-import { TransactionBase } from "@/type/pages/dashboard/transactions";
 import { useTableFilters } from "@/hooks/useTableQuery";
+import { SellerTransactionBase } from "@/type/pages/dashboard/transactions";
+import { useMemo } from "react";
+import SellerTransactionDetail from "./SellerTransactionDetails";
+import DataTable from "@/components/common/DataTable";
+import FilterDropdown from "@/components/common/FilterDropdown";
+import { sellerTransactionFilterConfigs } from "./TransactionFilter";
+import ActiveFilters from "@/components/common/ActiveFilters";
 
+export default function SellerTransactionClientView (){
 
-export default function UserTransactionClientView() {
-  const detailPanel = useSidePanel<TransactionBase>();
+  const detailPanel = useSidePanel<SellerTransactionBase>();
 
   const { sortBy, sortOrder, searchValue, filters, queryParams: baseQueryParams,     
     hasActiveFilters, handlePageChange, handleItemsPerPageChange, handleSort,
@@ -24,10 +23,10 @@ export default function UserTransactionClientView() {
     initialFilters: { status: '' },searchFields: ['type'], defaultLimit: 10,
   });
 
-  const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['applications'],
+  const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['properties'],
   }), [baseQueryParams]);
 
-  const { transactions, pagination, isLoading } = useTransactions(queryParams);
+  const {transactions, isLoading} = useSellerTransactions(queryParams);
 
   const emptyMessage = useMemo(() => {
     if (hasActiveFilters) {
@@ -36,25 +35,25 @@ export default function UserTransactionClientView() {
     return {title: 'No transaction found', message: 'Your applications will appear here'};
   }, [hasActiveFilters]);
 
-  return (
+
+  return(
     <div>
-     
       <SidePanel
         isOpen={detailPanel.isOpen}
         onClose={detailPanel.close}
         title="Transaction Details"
       >
         {detailPanel.selectedItem && (
-          <UserTransactionDetails transaction={detailPanel.selectedItem} />
+          <SellerTransactionDetail transaction={detailPanel.selectedItem} />
         )}
 
       </SidePanel>
 
       <DataTable
         title="Payment History"
-        columns={columns}
+        columns={SellerTransactionscolumns}
         data={transactions}
-        pagination={pagination || {
+        pagination={ {
           page: 1,
           limit: 10,
           total: 0,
@@ -63,22 +62,22 @@ export default function UserTransactionClientView() {
         loading={isLoading}
         searchValue={searchValue}
         onSearchChange={handleSearchChange}
-        searchPlaceholder="Search description"
+        searchPlaceholder="Search property"
         filterDropdown={
           <FilterDropdown
             filters={filters}
-            filterConfigs={transactionFilterConfigs}
+            filterConfigs={sellerTransactionFilterConfigs}
             onFilterChange={handleFilterChange}
           />
         }
         activeFiltersSlot={
           <ActiveFilters
             filters={filters}
-            filterConfigs={transactionFilterConfigs}
+            filterConfigs={sellerTransactionFilterConfigs}
             onFilterChange={handleFilterChange}
           />
         }
-        statusConfig={statusConfig}
+        statusConfig={SellerTransactionstatusConfig}
         getStatus={(row) => row.status}
         onMore={detailPanel.openEdit}
         onPageChange={handlePageChange}
@@ -89,5 +88,5 @@ export default function UserTransactionClientView() {
         emptyMessage={emptyMessage}
       />
     </div>
-  );
+  )
 }

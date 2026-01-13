@@ -17,5 +17,16 @@ export interface TransactionBase{
   receipt_url:string;
   created_at:string;
   updated_at:string;
-  metadata:Metadata
+  metadata?:Metadata
 }
+
+export type SellerTransactionBase = Omit<TransactionBase, 'application_id' >& {
+  property_id:string;
+  properties:{
+    title:string;
+    price:string;
+
+  }
+}
+
+

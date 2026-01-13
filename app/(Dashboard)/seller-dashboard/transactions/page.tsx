@@ -1,7 +1,11 @@
+import { SellerTransactionStats } from "@/components/cards/dashboard/SellerTransaction";
+import SellerTransactionClientView from "@/components/sections/dashboard/transaction/SellerTransactionClientView";
+
 export default function SellerDashboardTransaction (){
   return(
-    <div>
-      <h4>Seller Dashboard Transactions</h4>
+    <div className="space-y-5">
+      <SellerTransactionStats/>
+      <SellerTransactionClientView/> 
     </div>
   )
 }

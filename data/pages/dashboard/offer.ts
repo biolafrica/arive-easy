@@ -1,5 +1,5 @@
 import { StatusConfig, TableColumn } from "@/components/common/DataTable";
-import { formatUSD, toNumber } from "@/lib/formatter";
+import { formatNumberDate, formatUSD, toNumber } from "@/lib/formatter";
 import { OffersBase } from "@/type/pages/dashboard/offer";
 
 export const MOCK_DATA:OffersBase[] = [
@@ -61,15 +61,14 @@ export const MOCK_DATA:OffersBase[] = [
 export const columns: TableColumn<OffersBase>[] = [
   { key: 'property', header: 'Property', sortable: false, accessor: (row) => row.listings.title},
   { key: 'buyer', header: 'Buyer', sortable: false, accessor: (row) => row.users.name},
-  { key: 'created_at', header: 'Date', sortable: false, accessor: (row) => new Date(row.created_at).toLocaleDateString() },
+  { key: 'created_at', header: 'Date', sortable: false, accessor: (row) => formatNumberDate(row.created_at)},
   {key:'offer_amount', header:'Offer Amount', sortable:false, accessor:(row) => formatUSD({ amount: toNumber(row.listings.price), fromCents: false, decimals: 0 })},
-  { key: 'status', header: 'Status', sortable: false,}
 ];
 
 export const statusConfig: StatusConfig[] = [
-  { label: 'Success', value: 'accepted', variant: 'green' },
+  { label: 'Accepted', value: 'accepted', variant: 'green' },
   { label: 'Pending', value: 'pending', variant: 'yellow' },
-  { label: 'Failed', value: 'rejected', variant: 'red' }
+  { label: 'Decline', value: 'rejected', variant: 'red' }
 ];
 
 export function useOffers(queryParams?: Record<string, any>) {

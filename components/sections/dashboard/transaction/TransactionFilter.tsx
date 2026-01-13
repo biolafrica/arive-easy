@@ -15,3 +15,18 @@ export const transactionFilterConfigs: FilterConfig[] = [
     ],
   },
 ];
+
+export const sellerTransactionFilterConfigs: FilterConfig[] = [
+  {
+    key: 'status',
+    label: 'Status',
+    placeholder: 'All Statuses',
+    type: 'select', 
+    options: [
+      { value: '', label: 'All Statuses' },
+      { value: 'succeeded', label: 'Credited' },
+      { value: 'pending', label: 'Pending' },
+      { value: 'failed', label: 'Released' },
+    ],
+  },
+];

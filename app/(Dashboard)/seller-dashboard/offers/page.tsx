@@ -3,7 +3,6 @@ import OfferClientView from "@/components/sections/dashboard/offers/OfferClientV
 export default function SellerDashboardOffers (){
   return(
     <div>
-      <h4>Seller Dashboard Application</h4>
       <OfferClientView/>
     </div>
   )

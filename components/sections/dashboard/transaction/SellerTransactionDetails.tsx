@@ -1,15 +1,11 @@
-
-'use client';
-
 import { DescriptionList } from "@/components/common/DescriptionList";
 import { Button } from "@/components/primitives/Button";
-import { formatDate, formatUSD } from "@/lib/formatter";
-import { TransactionBase } from "@/type/pages/dashboard/transactions";
+import { formatDate, formatUSD, toNumber } from "@/lib/formatter";
+import { SellerTransactionBase } from "@/type/pages/dashboard/transactions";
 import { useRouter } from "next/navigation";
 
-
 interface Props {
-  transaction: TransactionBase;
+  transaction: SellerTransactionBase;
 }
 
 export const getStatusBadge = (status:string): string => {
@@ -18,31 +14,39 @@ export const getStatusBadge = (status:string): string => {
       return 'badge badge-green'
     case 'pending':
       return 'badge badge-yellow'
-    case 'failed':
+    case 'released':
       return 'badge badge-red'
-    case 'cancelled':
-      return 'badge blue'
     default:
       return 'badge';
   }
   
 };
 
-export default function UserTransactionDetails({ transaction }: Props) {  
+export default function SellerTransactionDetail({ transaction }: Props){
   const router = useRouter();
 
-  return (
-    <div className="space-y-8">
+  return(
+    <div className="space-y-8" >
 
       <div>
-        <h4 className=" text-base font-medium mb-2">Amount</h4>
+        <h4 className=" text-base font-medium mb-2">Deposit Amount</h4>
         <div className="flex items-center justify-between border border-border p-5 rounded-xl">
-          <span className="font-bold text-2xl" >{formatUSD({amount:transaction.amount,fromCents: true, decimals:2 })}</span>
+          <span className="font-bold text-2xl">{formatUSD({amount:transaction.amount,fromCents: true, decimals:2 })}</span>
           <span className={`${getStatusBadge(transaction.status)}`}>{transaction.status}</span>
         </div>
       </div>
 
-      <div>
+      <div className="space-y-8 ">
+        <DescriptionList
+          title="Property Details"
+          subtitle="Details and information about this property"
+          items={[
+            { label: 'Property ID', value: { type: 'text', value: transaction.property_id}},
+            { label: 'Property Name', value: { type: 'text', value: transaction.properties.title}},
+            { label: 'Property Price', value: { type: 'text', value: formatUSD({ amount: toNumber(transaction.properties.price), fromCents: false, decimals: 2 })}},
+          ]}
+        />
+
         <DescriptionList
           title="Transaction Summary"
           subtitle="Details and information about this transaction"
@@ -52,9 +56,10 @@ export default function UserTransactionDetails({ transaction }: Props) {
             { label: 'Time', value: { type: 'text', value: formatDate(transaction.created_at,)}},
             { label: 'type', value: { type: 'text', value: transaction.type}},
             { label: 'Payment Method', value: { type: 'text', value: transaction.payment_method }},
-            { label: 'Application ID', value: { type: 'text', value: transaction.application_id }}
           ]}
         />
+
+    
       </div>
 
       <Button onClick={()=>router.push(`${transaction.receipt_url}`)} fullWidth={true} >
@@ -62,6 +67,5 @@ export default function UserTransactionDetails({ transaction }: Props) {
       </Button>
 
     </div>
-
-  );
+  )
 }

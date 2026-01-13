@@ -38,7 +38,7 @@ export default function OfferDetails({ offer }: Props) {
           items={[
             { label: 'Offered Amount', value: { type: 'text', value: formatUSD({ amount: toNumber(offer.listings.price), fromCents: false, decimals: 2 }) } },
             { label: 'Financing', value: { type: 'text', value: "Mortgage" } },
-            { label: 'date', value: { type: 'text', value: new Date(offer.created_at).toLocaleDateString()} },
+            { label: 'Date', value: { type: 'text', value: new Date(offer.created_at).toLocaleDateString()} },
           ]}
         />
 
