@@ -8,7 +8,6 @@ interface UseTableFiltersOptions {
 }
 
 interface UseTableFiltersReturn {
-  // State values
   page: number;
   limit: number;
   sortBy: string;
@@ -17,18 +16,15 @@ interface UseTableFiltersReturn {
   debouncedSearch: string;
   filters: Record<string, string | string[]>;
   
-  // Computed values
   queryParams: any;
   hasActiveFilters: boolean;
   
-  // Handler functions
   handlePageChange: (newPage: number) => void;
   handleItemsPerPageChange: (newLimit: number) => void;
   handleSort: (key: string, direction: 'asc' | 'desc' | null) => void;
   handleFilterChange: (newFilters: Record<string, string | string[]>) => void;
   handleSearchChange: (value: string) => void;
   
-  // Reset functions
   resetFilters: () => void;
   resetPagination: () => void;
 }
@@ -43,7 +39,6 @@ export function useTableFilters(
     searchDebounceMs = 500,
   } = options;
 
-  // State management
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(defaultLimit);
   const [sortBy, setSortBy] = useState<string>('');
@@ -52,30 +47,27 @@ export function useTableFilters(
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [filters, setFilters] = useState<Record<string, string | string[]>>(initialFilters);
 
-  // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchValue);
-      setPage(1); // Reset to first page on search
+      setPage(1);
     }, searchDebounceMs);
 
     return () => clearTimeout(timer);
   }, [searchValue, searchDebounceMs]);
 
-  // Build query parameters
+
   const queryParams = useMemo(() => {
     const params: any = {
       page,
       limit,
     };
 
-    // Add sorting
     if (sortOrder && sortBy) {
       params.sortBy = sortBy;
       params.sortOrder = sortOrder;
     }
 
-    // Add search
     if (debouncedSearch) {
       params.search = debouncedSearch;
       if (searchFields.length > 0) {
@@ -83,7 +75,6 @@ export function useTableFilters(
       }
     }
 
-    // Add filters
     const activeFilters: Record<string, any> = {};
     Object.entries(filters).forEach(([key, value]) => {
       if (Array.isArray(value) && value.length > 0) {
@@ -100,7 +91,6 @@ export function useTableFilters(
     return params;
   }, [page, limit, sortBy, sortOrder, debouncedSearch, filters, searchFields]);
 
-  // Check if any filters are active
   const hasActiveFilters = useMemo(() => {
     return Object.values(filters).some(value => {
       if (Array.isArray(value)) return value.length > 0;
@@ -108,32 +98,30 @@ export function useTableFilters(
     }) || debouncedSearch !== '';
   }, [filters, debouncedSearch]);
 
-  // Handler functions
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
   };
 
   const handleItemsPerPageChange = (newLimit: number) => {
     setLimit(newLimit);
-    setPage(1); // Reset to first page when changing limit
+    setPage(1);
   };
 
   const handleSort = (key: string, direction: 'asc' | 'desc' | null) => {
     setSortBy(key);
     setSortOrder(direction);
-    setPage(1); // Reset to first page when sorting changes
+    setPage(1);
   };
 
   const handleFilterChange = (newFilters: Record<string, string | string[]>) => {
     setFilters(newFilters);
-    setPage(1); // Reset to first page when filters change
+    setPage(1);
   };
 
   const handleSearchChange = (value: string) => {
     setSearchValue(value);
   };
 
-  // Reset functions
   const resetFilters = () => {
     setFilters(initialFilters);
     setSearchValue('');
@@ -146,7 +134,6 @@ export function useTableFilters(
   };
 
   return {
-    // State values
     page,
     limit,
     sortBy,
@@ -155,18 +142,15 @@ export function useTableFilters(
     debouncedSearch,
     filters,
     
-    // Computed values
     queryParams,
     hasActiveFilters,
     
-    // Handler functions
     handlePageChange,
     handleItemsPerPageChange,
     handleSort,
     handleFilterChange,
     handleSearchChange,
     
-    // Reset functions
     resetFilters,
     resetPagination,
   };

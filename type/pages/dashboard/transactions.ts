@@ -6,7 +6,7 @@ export interface Metadata{
 export interface TransactionBase{
   id:string;
   user_id:string;
-  application_id:string;
+  application_id?:string;
   stripe_session_id:string;
   type:string;
   stripe_payment_intent_id:string;
@@ -27,6 +27,14 @@ export type SellerTransactionBase = Omit<TransactionBase, 'application_id' >& {
     price:string;
 
   }
+}
+
+export type AdminTransactionBase = TransactionBase & {
+  users:{
+    id:string;
+    name:string;
+    email:string;
+  };
 }
 
 

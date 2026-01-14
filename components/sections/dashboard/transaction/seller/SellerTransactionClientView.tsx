@@ -9,8 +9,9 @@ import { useMemo } from "react";
 import SellerTransactionDetail from "./SellerTransactionDetails";
 import DataTable from "@/components/common/DataTable";
 import FilterDropdown from "@/components/common/FilterDropdown";
-import { sellerTransactionFilterConfigs } from "./TransactionFilter";
+import { sellerTransactionFilterConfigs } from "../common/TransactionFilter";
 import ActiveFilters from "@/components/common/ActiveFilters";
+import { getTableEmptyMessage } from "@/components/common/TableEmptyMessage";
 
 export default function SellerTransactionClientView (){
 
@@ -20,7 +21,7 @@ export default function SellerTransactionClientView (){
     hasActiveFilters, handlePageChange, handleItemsPerPageChange, handleSort,
     handleFilterChange, handleSearchChange,
   } = useTableFilters({
-    initialFilters: { status: '' },searchFields: ['type'], defaultLimit: 10,
+    initialFilters: { status: '' },searchFields: [''], defaultLimit: 10,
   });
 
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['properties'],
@@ -28,13 +29,10 @@ export default function SellerTransactionClientView (){
 
   const {transactions, isLoading} = useSellerTransactions(queryParams);
 
-  const emptyMessage = useMemo(() => {
-    if (hasActiveFilters) {
-      return { title: 'No transaction found', message: 'Try adjusting your filters or search query',};
-    }
-    return {title: 'No transaction found', message: 'Your transactions will appear here'};
-  }, [hasActiveFilters]);
-
+  const emptyMessage = useMemo(
+    () => getTableEmptyMessage(hasActiveFilters, 'transactions'),
+    [hasActiveFilters]
+  );
 
   return(
     <div>

@@ -1,6 +1,6 @@
 import { PaymentMortgageStats } from "@/components/cards/dashboard/UserTransaction";
 import { PageContainer } from "@/components/layouts/dashboard/PageContainer";
-import UserTransactionClientView from "@/components/sections/dashboard/transaction/UserTransactionClientView";
+import UserTransactionClientView from "@/components/sections/dashboard/transaction/user/UserTransactionClientView";
 
 export default function UserDashboardPayment (){
   return(

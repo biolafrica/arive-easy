@@ -1,6 +1,6 @@
 import { SellerTransactionStats } from "@/components/cards/dashboard/SellerTransaction";
 import { PageContainer } from "@/components/layouts/dashboard/PageContainer";
-import SellerTransactionClientView from "@/components/sections/dashboard/transaction/SellerTransactionClientView";
+import SellerTransactionClientView from "@/components/sections/dashboard/transaction/seller/SellerTransactionClientView";
 
 export default function SellerDashboardTransaction (){
   return(

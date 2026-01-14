@@ -1,5 +1,5 @@
 import { PageContainer } from "@/components/layouts/dashboard/PageContainer";
-import UserApplicationClientView from "@/components/sections/dashboard/application/UserApplicationClientView";
+import UserApplicationClientView from "@/components/sections/dashboard/application/user/UserApplicationClientView";
 
 export default function UserDashboardApplication() {
   return (
