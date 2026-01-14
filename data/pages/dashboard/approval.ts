@@ -1,4 +1,8 @@
+import { StatusConfig, TableColumn } from "@/components/common/DataTable";
+import { formatDate } from "@/lib/formatter";
 import { FormField } from "@/type/form";
+import { AdminPreApprovalBase, MockPreApprovals } from "@/type/pages/dashboard/approval";
+
 
 export const personalInfoFields:FormField[] = [
   { name:'first_name', label:'First Name', type:'text', required:true, placeholder:'Enter first name', helperText:'AS IT APPEARS ON YOUR ID' },
@@ -137,7 +141,6 @@ export const DocumentInfoFields:FormField[] = [
   { name: 'employment_verification', label: 'Employment Verification', type: 'image', required: true, accept:'image/jpeg,image/png', aspectRatio: '16:9'},
 ]
 
-
 export const getEmploymentInfoFields = (employmentStatus: string): FormField[] => {
 
   const baseFields: FormField[] = [
@@ -200,3 +203,50 @@ export const getEmploymentInfoFields = (employmentStatus: string): FormField[] =
     },
   ];
 };
+
+export const columns: TableColumn<MockPreApprovals>[] = [
+  { key: 'id', header: 'Approval ID', sortable: false},
+  { key: 'user', header: 'User', sortable: false, accessor: (row) => row.users.name},
+  { key: 'current_step', header: 'Current stage', sortable: false,},
+  { key: 'created_at', header: 'Date Created', sortable: false, accessor: (row) => formatDate(row.created_at)},
+];
+
+export const statusConfig: StatusConfig[] = [
+  { value: 'approved', label: 'Approved', variant: 'green' },
+  { value: 'submitted', label: 'Submitted', variant: 'yellow' },
+  { value: 'rejected', label: 'Rejected', variant: 'red' },
+  { value: 'draft', label: 'Draft', variant: 'blue' },
+];
+
+export const MOCK_DATA: MockPreApprovals[] = [
+  {id: "PA-1001",
+    user_id: "U-2001",
+    users:{
+      name:"John Doe",
+      email:"john@gmail.com"
+    },
+    current_step: 4,
+    created_at: "2024-01-15T10:30:00Z",
+    updated_at: "2024-01-16T12:00:00Z",
+    status: "submitted",
+  },
+  {
+    id: "PA-1002",
+    user_id: "U-2002",
+    users:{
+      name:"Jane Smith",
+      email:"jane@gmail.com"
+    },
+    current_step: 4,
+    created_at: "2024-02-20T14:45:00Z",
+    updated_at: "2024-02-21T09:15:00Z",
+    status: "approved",
+  }
+]
+
+export function usePreApprovals(queryParams?: Record<string, any>) {
+  return {
+    pre_approvals:MOCK_DATA,
+    isLoading: false,
+  }
+}

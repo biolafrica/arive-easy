@@ -1,13 +1,13 @@
 import { StatsGrid } from "@/components/layouts/dashboard/StatGrid";
-import { MOCK_BUYER_DASHBOARD_STATS} from "@/data/pages/dashboard/home";
+import { MOCK_SELLER_DASHBOARD_STATS } from "@/data/pages/dashboard/home";
 import { StatsCard } from "./StatsCard";
 
 
-export function UserDashboadStats() {
+export function SellerDashboadStats() {
   return (
     <div className="mb-5">
       <StatsGrid>
-        {MOCK_BUYER_DASHBOARD_STATS.map((stat) => {
+        {MOCK_SELLER_DASHBOARD_STATS.map((stat) => {
           const Icon = stat.icon;
           return (
             <StatsCard

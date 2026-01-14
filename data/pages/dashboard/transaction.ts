@@ -1,8 +1,7 @@
 import { StatusConfig, TableColumn } from '@/components/common/DataTable';
 import { formatCurrency,formatNumberDate, formatUSD, toNumber } from '@/lib/formatter';
 import { SellerTransactionBase, TransactionBase } from '@/type/pages/dashboard/transactions';
-import { CalendarDaysIcon, LockClosedIcon, CreditCardIcon, HomeModernIcon, FolderIcon, ExclamationCircleIcon, CheckCircleIcon,
-} from '@heroicons/react/24/outline';
+import { CalendarDaysIcon, LockClosedIcon, CreditCardIcon, ExclamationCircleIcon, CheckCircleIcon,} from '@heroicons/react/24/outline';
 
 export const MOCK_MORTGAGE_STATS = [
   {
@@ -25,27 +24,6 @@ export const MOCK_MORTGAGE_STATS = [
     value: 'Direct Debit',
     subText: '**** **** 5679',
     icon: CreditCardIcon,
-  },
-];
-
-export const MOCK_BUYER_DASHBOARD_STATS = [
-  {
-    id: 'application',
-    title: 'All Application',
-    value: '5',
-    icon: FolderIcon,
-  },
-  {
-    id: 'property',
-    title: 'Property Owned',
-    value: '2',
-    icon: HomeModernIcon,
-  },
-  {
-    id: 'balance',
-    title: 'Escrow Balance',
-    value: `${formatCurrency(41000000)}`,
-    icon: LockClosedIcon,
   },
 ];
 

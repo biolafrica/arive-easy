@@ -7,14 +7,8 @@ interface DashboardWelcomeHeaderProps {
   name: string;
   title?: string;
   description?: string;
-  primaryAction?: {
-    label: string;
-    onClick: () => void;
-  };
-  secondaryAction?: {
-    label: string;
-    onClick: () => void;
-  };
+  primaryAction?: { label: string; onClick: () => void };
+  secondaryAction?: { label: string; onClick: () => void };
   illustrationSrc?: string;
 }
 

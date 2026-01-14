@@ -74,5 +74,4 @@ export const DEVELOPER_STEPS: HowItWorksStep[] = [
 export const TABS = [
   { id: 'homebuyer', label: 'Home Buyer' },
   { id: 'developer', label: 'Developer' },
-
 ];

@@ -1,7 +1,6 @@
 "use client"
 
 import { UserDashboadStats } from "@/components/cards/dashboard/UserDashboard";
-import { PreApprovalCard } from "@/components/cards/dashboard/preApprovalCard";
 import { PageContainer } from "@/components/layouts/dashboard/PageContainer";
 import PreApprovalDashboardDisplayLogic from "@/components/sections/dashboard/approval/PreApprovalDashboardDisplayLogic";
 import { DashboardWelcomeHeader } from "@/components/sections/dashboard/home/DashboardWelcomeHeader";
@@ -17,7 +16,7 @@ export default function UserDashboardPage() {
     <PageContainer>
 
       <DashboardWelcomeHeader
-        name={user?.user_metadata?.name || "Pamela"}
+        name={user?.user_metadata?.name || ""}
         primaryAction={{ label: 'Explore Properties', onClick: () => router.push('/user-dashboard/properties') }}
         secondaryAction={{ label: 'Get Pre-approved', onClick: () => router.push('/user-dashboard/applications') }}
         illustrationSrc="/images/dashboard-welcome.svg"

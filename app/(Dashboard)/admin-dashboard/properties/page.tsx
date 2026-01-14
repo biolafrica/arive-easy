@@ -1,7 +1,9 @@
+import { PageContainer } from "@/components/layouts/dashboard/PageContainer"
+
 export default function AdminDashboardProperties (){
   return(
-    <div>
+    <PageContainer>
       <h4>Admin Dashboard Properties</h4>
-    </div>
+    </PageContainer>
   )
 }

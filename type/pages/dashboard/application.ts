@@ -34,6 +34,7 @@ export interface StageMetadata {
   retry_count?: number;
   data?: any;
 }
+
 export interface VerificationStageMetadata {
   completed: boolean;
   completed_at?: string;
@@ -131,4 +132,22 @@ export interface  ApplicationBase{
   updated_at:string;
 
 }
+
+export interface MockApplications {
+  id: string;
+  property_id: string;
+  application_number: string;
+  status: string;
+  properties: MockProperties;
+  current_stage: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MockProperties {
+  title: string;
+  address: string;
+}
+
+
 

@@ -1,59 +1,38 @@
-'use client';
-
-import FilterDropdown from "@/components/common/FilterDropdown";
-import SidePanel from "@/components/ui/SidePanel";
-import { columns, statusConfig, useOffers } from "@/data/pages/dashboard/offer";
-import { useSidePanel } from "@/hooks/useSidePanel";
 import { useTableFilters } from "@/hooks/useTableQuery";
 import { useMemo } from "react";
-import { offerFilterConfigs } from "./OfferFilter";
-import ActiveFilters from "@/components/common/ActiveFilters";
 import DataTable from "@/components/common/DataTable";
-import OfferDetails from "./OfferDetails";
+import { columns, statusConfig, usePreApprovals } from "@/data/pages/dashboard/approval";
+import FilterDropdown from "@/components/common/FilterDropdown";
+import { adminPreApprovalConfigs } from "./AdminApplicationsFilters";
+import ActiveFilters from "@/components/common/ActiveFilters";
 
-export default function OfferClientView (){
-  const detailPanel = useSidePanel<any>();
-
+export default function AdminPreApprovalClientView ({detailPanel}:any){
   const { sortBy, sortOrder, searchValue, filters, queryParams: baseQueryParams,     
     hasActiveFilters, handlePageChange, handleItemsPerPageChange, handleSort,
     handleFilterChange, handleSearchChange,
   } = useTableFilters({
-    initialFilters: { status: '' },searchFields: ['property'], defaultLimit: 10,
+    initialFilters: { status: '' },searchFields: ['name'], defaultLimit: 10,
   });
 
-  const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['properties','users'],
+  const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['users'],
   }), [baseQueryParams]);
 
-  const {offers, isLoading} = useOffers(queryParams);
+  const{pre_approvals, isLoading}= usePreApprovals(queryParams)
 
   const emptyMessage = useMemo(() => {
     if (hasActiveFilters) {
-      return { title: 'No offers yet', message: 'Try adjusting your filters or search query',};
+      return { title: 'No pre-approval found', message: 'Try adjusting your filters or search query',};
     }
-    return {title: 'No offers found', message: 'Your offers will appear here'};
+    return {title: 'No pre_approval found', message: 'Your pre_approvals will appear here'};
   }, [hasActiveFilters]);
-
 
 
   return(
     <div>
-      <SidePanel
-        isOpen={detailPanel.isOpen}
-        onClose={detailPanel.close}
-        title="Offers Details"
-      >
-        {detailPanel.selectedItem && (
-          <div>
-            <OfferDetails offer={detailPanel.selectedItem} />
-          </div>
-        )}
-
-      </SidePanel>
-
       <DataTable
-        title="Offers and Interests"
+        title="Pre-Approvals"
         columns={columns}
-        data={offers}
+        data={pre_approvals}
         pagination={ {
           page: 1,
           limit: 10,
@@ -63,18 +42,18 @@ export default function OfferClientView (){
         loading={isLoading}
         searchValue={searchValue}
         onSearchChange={handleSearchChange}
-        searchPlaceholder="Search by description"
+        searchPlaceholder="Search user"
         filterDropdown={
           <FilterDropdown
             filters={filters}
-            filterConfigs={offerFilterConfigs}
+            filterConfigs={adminPreApprovalConfigs}
             onFilterChange={handleFilterChange}
           />
         }
         activeFiltersSlot={
           <ActiveFilters
             filters={filters}
-            filterConfigs={offerFilterConfigs}
+            filterConfigs={adminPreApprovalConfigs}
             onFilterChange={handleFilterChange}
           />
         }
@@ -87,7 +66,8 @@ export default function OfferClientView (){
         sortBy={sortBy}
         sortOrder={sortOrder}
         emptyMessage={emptyMessage}
-      /> 
+      />
+      
     </div>
   )
 }

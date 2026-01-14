@@ -32,7 +32,7 @@ export default function SellerTransactionClientView (){
     if (hasActiveFilters) {
       return { title: 'No transaction found', message: 'Try adjusting your filters or search query',};
     }
-    return {title: 'No transaction found', message: 'Your applications will appear here'};
+    return {title: 'No transaction found', message: 'Your transactions will appear here'};
   }, [hasActiveFilters]);
 
 

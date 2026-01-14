@@ -1,9 +1,10 @@
 import { PageContainer } from "@/components/layouts/dashboard/PageContainer";
 
-export default function AdminDashboardSettings (){
+export default function AdminDashboardTransactions (){
   return(
     <PageContainer>
-      <h4>Admin Dashboard Settings</h4>
+      <h4>Admin Dashboard Transactions</h4>
     </PageContainer>
+    
   )
 }

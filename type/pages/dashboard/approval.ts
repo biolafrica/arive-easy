@@ -1,3 +1,5 @@
+import { UserBase } from "@/type/user";
+
 export interface Address {
   street: string;
   street2?: string;
@@ -115,7 +117,25 @@ export interface PreApprovalBase{
   debt_to_income_ration:string;
 }
 
-export type BackendPreApprovalForm = Omit<PreApprovalBase, 'id' | 'created_at' | 'updated_at'>
+export type BackendPreApprovalForm = Omit<PreApprovalBase, 'id' | 'created_at' | 'updated_at'>;
+
+export type AdminPreApprovalBase = PreApprovalBase & {users: UserBase};
+
+export interface MockPreApprovals {
+  id: string;
+  user_id: string;
+  status: string;
+  users: MockUsers;
+  current_step: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MockUsers {
+  name: string;
+  email: string;
+}
+
 
 export interface PreApprovalWithProperty extends PreApprovalBase {
   property: {
