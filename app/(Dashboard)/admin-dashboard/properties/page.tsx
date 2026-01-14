@@ -1,9 +1,10 @@
 import { PageContainer } from "@/components/layouts/dashboard/PageContainer"
+import AdminPropertyClientView from "@/components/sections/dashboard/property/admin/AdminPropertyClientView"
 
 export default function AdminDashboardProperties (){
   return(
     <PageContainer>
-      <h4>Admin Dashboard Properties</h4>
+      <AdminPropertyClientView />
     </PageContainer>
   )
 }
