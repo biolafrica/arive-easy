@@ -33,6 +33,11 @@ const propertyHandlers = createCRUDHandlers<TransactionBase>({
     }
 
   },
+  hooks:{
+    beforeRead:async(context,)=>{
+      console.log('Transaction read context:', context.request.url);
+    }
+  }
 });
 
-export const { GET, PUT, POST, PATCH } = propertyHandlers;
+export const { GET } = propertyHandlers;

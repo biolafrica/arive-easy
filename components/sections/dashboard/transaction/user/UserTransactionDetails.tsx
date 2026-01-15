@@ -52,7 +52,7 @@ export default function UserTransactionDetails({ transaction }: Props) {
             { label: 'Time', value: { type: 'text', value: formatDate(transaction.created_at,)}},
             { label: 'type', value: { type: 'text', value: transaction.type}},
             { label: 'Payment Method', value: { type: 'text', value: transaction.payment_method }},
-            { label: 'Application ID', value: { type: 'text', value: transaction.application_id }}
+            { label: 'Application ID', value: { type: 'text', value: transaction.application_id || '' }},
           ]}
         />
       </div>

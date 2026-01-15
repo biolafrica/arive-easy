@@ -1,7 +1,7 @@
 import { StatusConfig, TableColumn } from "@/components/common/DataTable";
 import { formatDate } from "@/lib/formatter";
 import { FormField } from "@/type/form";
-import { AdminPreApprovalBase, MockPreApprovals } from "@/type/pages/dashboard/approval";
+import { MockPreApprovals, PreApprovalBase } from "@/type/pages/dashboard/approval";
 
 
 export const personalInfoFields:FormField[] = [
@@ -204,16 +204,16 @@ export const getEmploymentInfoFields = (employmentStatus: string): FormField[] =
   ];
 };
 
-export const columns: TableColumn<MockPreApprovals>[] = [
-  { key: 'id', header: 'Approval ID', sortable: false},
-  { key: 'user', header: 'User', sortable: false, accessor: (row) => row.users.name},
+export const columns: TableColumn<PreApprovalBase>[] = [
+  { key: 'reference_number', header: 'Approval ID', sortable: false},
+  { key: 'user', header: 'User', sortable: false, accessor: (row) => row.users?.name || ''},
   { key: 'current_step', header: 'Current stage', sortable: false,},
   { key: 'created_at', header: 'Date Created', sortable: false, accessor: (row) => formatDate(row.created_at)},
 ];
 
 export const statusConfig: StatusConfig[] = [
   { value: 'approved', label: 'Approved', variant: 'green' },
-  { value: 'submitted', label: 'Submitted', variant: 'yellow' },
+  { value: 'pending', label: 'Submitted', variant: 'yellow' },
   { value: 'rejected', label: 'Rejected', variant: 'red' },
   { value: 'draft', label: 'Draft', variant: 'blue' },
 ];

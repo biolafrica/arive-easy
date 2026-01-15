@@ -2,19 +2,20 @@
 
 import { getTableEmptyMessage } from "@/components/common/TableEmptyMessage";
 import SidePanel from "@/components/ui/SidePanel";
-import { adminTransactionscolumns, statusConfig, useAdminTransactions } from "@/data/pages/dashboard/transaction";
+import { adminTransactionscolumns, statusConfig, } from "@/data/pages/dashboard/transaction";
 import { useSidePanel } from "@/hooks/useSidePanel";
 import { useTableFilters } from "@/hooks/useTableQuery";
-import { AdminTransactionBase } from "@/type/pages/dashboard/transactions";
+import { AdminTransactionBase, TransactionBase } from "@/type/pages/dashboard/transactions";
 import { useMemo } from "react";
 import AdminTransactionDetail from "./AdminTransactionDetails";
 import DataTable from "@/components/common/DataTable";
 import FilterDropdown from "@/components/common/FilterDropdown";
 import ActiveFilters from "@/components/common/ActiveFilters";
 import { adminTransactionFilterConfigs } from "../common/TransactionFilter";
+import { useAdminTransactions } from "@/hooks/useSpecialized/useTransaction";
 
 export default function AdminTransactionClientView() {
-  const detailPanel = useSidePanel<AdminTransactionBase>();
+  const detailPanel = useSidePanel<TransactionBase>();
 
   const { sortBy, sortOrder, searchValue, filters, queryParams: baseQueryParams,     
     hasActiveFilters, handlePageChange, handleItemsPerPageChange, handleSort,
@@ -26,7 +27,7 @@ export default function AdminTransactionClientView() {
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['users'],
   }), [baseQueryParams]);
 
-  const {transactions, isLoading} = useAdminTransactions(queryParams);
+  const {transactions, isLoading, pagination} = useAdminTransactions(queryParams);
 
 
   const emptyMessage = useMemo(
@@ -51,7 +52,7 @@ export default function AdminTransactionClientView() {
         title="Payment History"
         columns={adminTransactionscolumns}
         data={transactions}
-        pagination={ {
+        pagination={pagination || {
           page: 1,
           limit: 10,
           total: 0,

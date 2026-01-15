@@ -4,8 +4,8 @@ import { useAuthContext } from "@/providers/auth-provider";
 import { useMemo } from "react";
 
 export function useTransactions(params?: any) {
-  const { user } = useAuthContext();
-
+  const { user, loading: isUserLoading } = useAuthContext();
+  
   const crud = useCrud<TransactionBase>({
     resource: 'transactions',
     interfaceType: 'buyer',
@@ -13,26 +13,66 @@ export function useTransactions(params?: any) {
     invalidateOnMutation: true,
   });
 
-
   const queryParams = useMemo(() => {
-    const mergedParams = { ...params };
-    if (user?.id) {
-      mergedParams.filters = {
-        ...mergedParams.filters,
-        user_id: user.id,
-      };
-    }
+    if (!user?.id) return null; 
     
-    return mergedParams;
+    return {
+      ...params,
+      filters: {
+        ...params?.filters,
+        user_id: user.id,
+      },
+    };
   }, [params, user?.id]);
 
-  const { data, isLoading, error } = crud.useGetAll(queryParams);
+
+  const { data, isLoading, error } = crud.useGetAll(
+    queryParams || undefined, 
+    !isUserLoading && !!user?.id 
+  );
 
   return {
     transactions: data?.data || [],
     pagination: data?.pagination,
-    isLoading,
+    isLoading: isLoading || isUserLoading,
     error,
     ...crud,
   };
 }
+export function useAdminTransactions(params?: any) {
+  const { user, loading: isUserLoading } = useAuthContext();
+  
+  const crud = useCrud<TransactionBase>({
+    resource: 'transactions',
+    interfaceType: 'admin',
+    optimisticUpdate: true,
+    invalidateOnMutation: true,
+  });
+
+  const queryParams = useMemo(() => {
+    if (!user?.id) return null; 
+    
+    return {
+      ...params,
+      filters: {
+        ...params?.filters,
+        user_id: user.id,
+      },
+    };
+  }, [params, user?.id]);
+
+
+  const { data, isLoading, error } = crud.useGetAll(
+    queryParams || undefined, 
+    !isUserLoading && !!user?.id 
+  );
+
+  return {
+    transactions: data?.data || [],
+    pagination: data?.pagination,
+    isLoading: isLoading || isUserLoading,
+    error,
+    ...crud,
+  };
+}
+

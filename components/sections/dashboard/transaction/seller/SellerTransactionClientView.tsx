@@ -1,10 +1,10 @@
 'use client';
 
 import SidePanel from "@/components/ui/SidePanel";
-import { SellerTransactionscolumns, SellerTransactionstatusConfig, useSellerTransactions } from "@/data/pages/dashboard/transaction";
+import { SellerTransactionscolumns, SellerTransactionstatusConfig} from "@/data/pages/dashboard/transaction";
 import { useSidePanel } from "@/hooks/useSidePanel";
 import { useTableFilters } from "@/hooks/useTableQuery";
-import { SellerTransactionBase } from "@/type/pages/dashboard/transactions";
+import { TransactionBase } from "@/type/pages/dashboard/transactions";
 import { useMemo } from "react";
 import SellerTransactionDetail from "./SellerTransactionDetails";
 import DataTable from "@/components/common/DataTable";
@@ -12,10 +12,12 @@ import FilterDropdown from "@/components/common/FilterDropdown";
 import { sellerTransactionFilterConfigs } from "../common/TransactionFilter";
 import ActiveFilters from "@/components/common/ActiveFilters";
 import { getTableEmptyMessage } from "@/components/common/TableEmptyMessage";
+import { useTransactions } from "@/hooks/useSpecialized/useTransaction";
+
 
 export default function SellerTransactionClientView (){
 
-  const detailPanel = useSidePanel<SellerTransactionBase>();
+  const detailPanel = useSidePanel<TransactionBase>();
 
   const { sortBy, sortOrder, searchValue, filters, queryParams: baseQueryParams,     
     hasActiveFilters, handlePageChange, handleItemsPerPageChange, handleSort,
@@ -27,7 +29,8 @@ export default function SellerTransactionClientView (){
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['properties'],
   }), [baseQueryParams]);
 
-  const {transactions, isLoading} = useSellerTransactions(queryParams);
+ 
+  const { transactions, pagination, isLoading } = useTransactions(queryParams);
 
   const emptyMessage = useMemo(
     () => getTableEmptyMessage(hasActiveFilters, 'transactions'),
@@ -51,7 +54,7 @@ export default function SellerTransactionClientView (){
         title="Payment History"
         columns={SellerTransactionscolumns}
         data={transactions}
-        pagination={ {
+        pagination={pagination || {
           page: 1,
           limit: 10,
           total: 0,

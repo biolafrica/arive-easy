@@ -134,20 +134,20 @@ export const queryKeys = {
     statistics: () => [...queryKeys.applications.all, 'statistics'] as const,
   },
 
-  // Payments
-  payments: {
-    all: ['payments'] as const,
-    lists: () => [...queryKeys.payments.all, 'list'] as const,
+  // transactions
+  transactions: {
+    all: ['transactions'] as const,
+    lists: () => [...queryKeys.transactions.all, 'list'] as const,
     list: (params?: FilterParams) => 
-      [...queryKeys.payments.lists(), params] as const,
-    details: () => [...queryKeys.payments.all, 'detail'] as const,
+      [...queryKeys.transactions.lists(), params] as const,
+    details: () => [...queryKeys.transactions.all, 'detail'] as const,
     detail: (id: string) => 
-      [...queryKeys.payments.details(), id] as const,
+      [...queryKeys.transactions.details(), id] as const,
     history: (userId?: string, params?: PaginationParams) =>
-      [...queryKeys.payments.all, 'history', userId, params] as const,
+      [...queryKeys.transactions.all, 'history', userId, params] as const,
     summary: (period?: string) =>
-      [...queryKeys.payments.all, 'summary', period] as const,
-    methods: () => [...queryKeys.payments.all, 'methods'] as const,
+      [...queryKeys.transactions.all, 'summary', period] as const,
+    methods: () => [...queryKeys.transactions.all, 'methods'] as const,
   },
 
   // Notifications
@@ -267,15 +267,15 @@ export type ApplicationKeys=
   |ReturnType<typeof queryKeys.applications.byStatus>
   |ReturnType<typeof queryKeys.applications.statistics>
 
-export type PaymentKeys= 
-  |typeof queryKeys.payments.all
-  |ReturnType<typeof queryKeys.payments.lists>
-  |ReturnType<typeof queryKeys.payments.list>
-  |ReturnType<typeof queryKeys.payments.details>
-  |ReturnType<typeof queryKeys.payments.detail>
-  |ReturnType<typeof queryKeys.payments.history>
-  |ReturnType<typeof queryKeys.payments.summary>
-  |ReturnType<typeof queryKeys.payments.methods>
+export type TransactionKeys= 
+  |typeof queryKeys.transactions.all
+  |ReturnType<typeof queryKeys.transactions.lists>
+  |ReturnType<typeof queryKeys.transactions.list>
+  |ReturnType<typeof queryKeys.transactions.details>
+  |ReturnType<typeof queryKeys.transactions.detail>
+  |ReturnType<typeof queryKeys.transactions.history>
+  |ReturnType<typeof queryKeys.transactions.summary>
+  |ReturnType<typeof queryKeys.transactions.methods>
 
 export type NotificationKeys= 
   |typeof queryKeys.notifications.all

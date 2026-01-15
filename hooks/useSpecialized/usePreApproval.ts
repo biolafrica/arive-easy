@@ -1,132 +1,14 @@
 
 import { useCrud } from '../useCrud';
 import { getEntityCacheConfig } from '@/lib/cache-config';
-import { useInfiniteList, useState } from '../useInfiniteList';
-import { useQuery } from '@tanstack/react-query';
-import { queryKeys } from '@/lib/query-keys';
-import apiClient, { ApiResponse,} from '@/lib/api-client'; 
+import {useState } from '../useInfiniteList';
+import apiClient from '@/lib/api-client'; 
 import { useAuthContext } from '@/providers/auth-provider';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import * as stage from '@/type/pages/dashboard/approval';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
-
-export function usePreApproval(id: string) {
-  const crud = useCrud<stage.PreApprovalBase>({
-    resource: 'pre-approvals',
-    interfaceType: 'buyer',
-    cacheConfig: getEntityCacheConfig('preApprovals', 'detail'),
-  });
-  
-  const { data, isLoading, error } = crud.useGetOne(id);
-  
-  return {
-    preApproval: data,
-    isLoading,
-    error,
-    ...crud,
-  };
-}
-
-// Infinite scroll for pre-approvals
-export function useInfinitePreApprovals(params?: any) {
-  return useInfiniteList<stage.PreApprovalBase>({
-    resource: 'pre-approvals',
-    interfaceType: 'buyer',
-    params,
-    limit: 15,
-    autoFetch: true,
-  });
-}
-
-export function usePreApprovalsByStatus(status: string, params?: any) {
-  return useQuery({
-    queryKey: queryKeys.preApprovals.byStatus(status, params),
-    queryFn: async () => {
-      const response = await apiClient.get<ApiResponse<stage.PreApprovalBase[]>>('/api/pre-approvals', {
-        status,
-        ...params,
-      });
-      return response.data || [];
-    },
-    ...getEntityCacheConfig('preApprovals', 'list'),
-  });
-}
-
-
-export function usePreApprovalsByProperty(propertyId: string, params?: any) {
-  return useQuery({
-    queryKey: queryKeys.preApprovals.byProperty(propertyId, params),
-    queryFn: async () => {
-      const response = await apiClient.get<ApiResponse<stage.PreApprovalBase[]>>('/api/pre-approvals', {
-        property_id: propertyId,
-        ...params,
-      });
-      return response.data || [];
-    },
-    enabled: !!propertyId,
-    ...getEntityCacheConfig('preApprovals', 'list'),
-  });
-}
-
-
-export function usePreApprovalStatistics() {
-  const { user } = useAuthContext();
-  
-  return useQuery({
-    queryKey: queryKeys.preApprovals.statistics(),
-    queryFn: async () => {
-      const response = await apiClient.get<ApiResponse<{
-        total: number;
-        pending: number;
-        approved: number;
-        rejected: number;
-        expired: number;
-      }>>('/api/pre-approvals/statistics');
-      
-      return response.data;
-    },
-    enabled: !!user?.id,
-    ...getEntityCacheConfig('preApprovals', 'statistics'),
-  });
-}
-
-
-export function usePreApprovalEligibility(propertyId?: string) {
-  const { user } = useAuthContext();
-  
-  return useQuery({
-    queryKey: queryKeys.preApprovals.eligibility(propertyId),
-    queryFn: async () => {
-      const response = await apiClient.get<ApiResponse<{
-        eligible: boolean;
-        reasons?: string[];
-        maxAmount?: number;
-        requirements?: string[];
-      }>>('/api/pre-approvals/eligibility', {
-        property_id: propertyId,
-      });
-      
-      return response.data;
-    },
-    enabled: !!user?.id,
-    ...getEntityCacheConfig('preApprovals', 'eligibility'),
-  });
-}
-
-export function useInfinitePreApprovalsWithProperties(params?: any) {
-  return useInfiniteList<stage.PreApprovalWithProperty>({
-    resource: 'pre-approvals',
-    interfaceType: 'buyer',
-    params: {
-      ...params,
-      include: ['property'], 
-    },
-    limit: 15,
-    autoFetch: true,
-  });
-}
 
 export function usePreApprovals(params?: any) {
   const crud = useCrud<stage.PreApprovalBase>({
@@ -519,6 +401,43 @@ export async function processDocumentFiles(
     tax_returns: finalUrls.tax_returns,
     bank_statements: finalUrls.bank_statements,
     employment_verification: finalUrls.employment_verification,
+  };
+}
+
+export function useAdminPrepApprovals(params?: any) {
+  const { user, loading: isUserLoading } = useAuthContext();
+  console.log("params",params)
+  
+  const crud = useCrud<stage.PreApprovalBase>({
+    resource: 'pre-approvals',
+    interfaceType: 'admin',
+    optimisticUpdate: true,
+    invalidateOnMutation: true,
+  });
+
+  const queryParams = useMemo(() => {
+    if (!user?.id) return null; 
+    
+    return {
+      ...params,
+      filters: {
+        ...params?.filters,
+      }
+    };
+  }, [params, user?.id]);
+
+
+  const { data, isLoading, error } = crud.useGetAll(
+    queryParams || undefined, 
+    !isUserLoading && !!user?.id 
+  );
+
+  return {
+    pre_approvals: data?.data || [],
+    pagination: data?.pagination,
+    isLoading: isLoading || isUserLoading,
+    error,
+    ...crud,
   };
 }
 

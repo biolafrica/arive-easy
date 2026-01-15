@@ -5,9 +5,11 @@ import { requireAuth } from "@/utils/server/authMiddleware";
 import { createCRUDHandlers } from "@/utils/server/crudFactory";
 import { NextRequest } from "next/server";
 
-const propertyHandlers = createCRUDHandlers<PreApprovalBase>({
+const preApprovalHandlers = createCRUDHandlers<PreApprovalBase>({
   table: 'pre_approvals',
-  requiredFields: ['user_id', 'status', 'reference_number',],
+  searchFields:['user_name'],
+
+  requiredFields: ['user_id', 'status', 'reference_number'],
     middleware:{
     auth:async(request:NextRequest)=>{
       const user = await requireAuth();
@@ -53,4 +55,4 @@ const propertyHandlers = createCRUDHandlers<PreApprovalBase>({
   }
 });
 
-export const { GET, PUT, POST, PATCH } = propertyHandlers;
+export const { GET, PUT, POST, PATCH } = preApprovalHandlers;

@@ -40,6 +40,7 @@ export default function PreApprovalDashboardDisplayLogic() {
       const newPreApproval = await submitPreApproval({
         reference_number: referenceNumber,
         user_id: user?.id,
+        user_name: user?.user_metadata.name,
         current_step: 0,
         completed_steps: 0,
         is_complete: false,

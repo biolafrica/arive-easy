@@ -12,6 +12,7 @@ import ActiveFilters from "@/components/common/ActiveFilters";
 import { transactionFilterConfigs } from "../common/TransactionFilter";
 import { TransactionBase } from "@/type/pages/dashboard/transactions";
 import { useTableFilters } from "@/hooks/useTableQuery";
+import { getTableEmptyMessage } from "@/components/common/TableEmptyMessage";
 
 
 export default function UserTransactionClientView() {
@@ -29,12 +30,10 @@ export default function UserTransactionClientView() {
 
   const { transactions, pagination, isLoading } = useTransactions(queryParams);
 
-  const emptyMessage = useMemo(() => {
-    if (hasActiveFilters) {
-      return { title: 'No transaction found', message: 'Try adjusting your filters or search query',};
-    }
-    return {title: 'No transaction found', message: 'Your applications will appear here'};
-  }, [hasActiveFilters]);
+  const emptyMessage = useMemo(
+    () => getTableEmptyMessage(hasActiveFilters, 'transactions'),
+    [hasActiveFilters]
+  );
 
   return (
     <div>

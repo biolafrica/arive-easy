@@ -9,13 +9,13 @@ export const adminPreApprovalConfigs: FilterConfig[] = [
     options: [
       { value: '', label: 'All Statuses' },
       { value: 'approved', label: 'Approved' },
-      { value: 'submitted', label: 'Submitted' },
+      { value: 'pending', label: 'Submitted' },
       { value: 'rejected', label: 'Rejected' },
       { value: 'draft', label: 'Draft' },
     ],
   },
   {
-    key: 'steps',
+    key: 'current_step',
     label: 'Steps',
     placeholder: 'All Steps',
     type: 'select', 
@@ -25,6 +25,7 @@ export const adminPreApprovalConfigs: FilterConfig[] = [
       { value: '2', label: '2' },
       { value: '3', label: '3' },
       { value: '4', label: '4' },
+      { value: '5', label: '5' }, 
     ],
   },
 ];

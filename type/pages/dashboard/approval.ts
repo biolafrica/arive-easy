@@ -94,6 +94,8 @@ export interface PreApprovalBase{
   id:string;
   reference_number:string;
   user_id:string;
+  user_name:string;
+  users?:UserBase;
   current_step: number;
   completed_steps:number;
   is_complete:boolean;

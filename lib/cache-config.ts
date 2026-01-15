@@ -178,7 +178,7 @@ export const ENTITY_CACHE_CONFIGS = {
   },
 
   // Payment history
-  payments: {
+  transactions: {
     list: {
       staleTime: 5 * MINUTE,
       cacheTime: 15 * MINUTE,

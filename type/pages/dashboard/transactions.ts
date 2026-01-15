@@ -1,3 +1,7 @@
+import { UserBase } from "@/type/user";
+import { PropertyBase } from "../property";
+import { ApplicationBase } from "./application";
+
 export interface Metadata{
   session_url:string | null;
   expires_at:string;
@@ -6,7 +10,11 @@ export interface Metadata{
 export interface TransactionBase{
   id:string;
   user_id:string;
+  users?:UserBase
   application_id?:string;
+  property_id?:string;
+  applications?:ApplicationBase;
+  properties?:PropertyBase;
   stripe_session_id:string;
   type:string;
   stripe_payment_intent_id:string;
@@ -20,13 +28,8 @@ export interface TransactionBase{
   metadata?:Metadata
 }
 
-export type SellerTransactionBase = Omit<TransactionBase, 'application_id' >& {
-  property_id:string;
-  properties:{
-    title:string;
-    price:string;
-
-  }
+export type SellerTransactionBase = TransactionBase & {
+  properties:PropertyBase
 }
 
 export type AdminTransactionBase = TransactionBase & {

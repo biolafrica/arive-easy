@@ -1,11 +1,11 @@
 import { DescriptionList } from "@/components/common/DescriptionList";
 import { Button } from "@/components/primitives/Button";
 import { formatDate, formatUSD, toNumber } from "@/lib/formatter";
-import { SellerTransactionBase } from "@/type/pages/dashboard/transactions";
+import { TransactionBase } from "@/type/pages/dashboard/transactions";
 import { useRouter } from "next/navigation";
 
 interface Props {
-  transaction: SellerTransactionBase;
+  transaction: TransactionBase;
 }
 
 export const getStatusBadge = (status:string): string => {
@@ -41,9 +41,9 @@ export default function SellerTransactionDetail({ transaction }: Props){
           title="Property Details"
           subtitle="Details and information about this property"
           items={[
-            { label: 'Property ID', value: { type: 'text', value: transaction.property_id}},
-            { label: 'Property Name', value: { type: 'text', value: transaction.properties.title}},
-            { label: 'Property Price', value: { type: 'text', value: formatUSD({ amount: toNumber(transaction.properties.price), fromCents: false, decimals: 2 })}},
+            { label: 'Property ID', value: { type: 'text', value: transaction?.property_id || ''}},
+            { label: 'Property Name', value: { type: 'text', value: transaction.properties?.title || ''}},
+            { label: 'Property Price', value: { type: 'text', value: formatUSD({ amount: toNumber(transaction.properties?.price || 0), fromCents: false, decimals: 2 })}},
           ]}
         />
 

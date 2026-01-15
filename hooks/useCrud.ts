@@ -1,17 +1,8 @@
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  UseQueryOptions,
-} from '@tanstack/react-query';
+import {useQuery,useMutation, useQueryClient,UseQueryOptions} from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { apiClient, PaginatedResponse, ApiError } from '../lib/api-client';
 import { queryKeys, FilterParams, QueryParams } from '../lib/query-keys';
-import { 
-  InterfaceType, 
-  getCacheConfig, 
-  getMutationConfig,
-} from '../lib/cache-config';
+import { InterfaceType, getCacheConfig, getMutationConfig} from '../lib/cache-config';
 
 // Generic CRUD hook configuration
 export interface UseCrudConfig<T> {
@@ -117,17 +108,18 @@ export function useCrud<T extends { id: string }>({
     }
   };
 
-  // ============ GET ALL (List) ============
-  const useGetAll = (params?: FilterParams) => {
+  // ============ GET ALL (All) ============
+  const useGetAll = (params?: FilterParams, enabled = true) => {
     return useQuery<PaginatedResponse<T>, ApiError>({
       queryKey: keys.list(params),
       queryFn: async () => {
         const response = await apiClient.get<PaginatedResponse<T>>(endpoint, params);
-        return {
+        return { 
           ...response,
-          data: response.data.map(transform),
+          data: response.data.map(transform)
         };
       },
+      enabled, // Add this
       ...finalCacheConfig,
     });
   };

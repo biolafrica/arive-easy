@@ -1,30 +1,31 @@
 import { useTableFilters } from "@/hooks/useTableQuery";
 import { useMemo } from "react";
 import DataTable from "@/components/common/DataTable";
-import { columns, statusConfig, usePreApprovals } from "@/data/pages/dashboard/approval";
+import { columns, statusConfig} from "@/data/pages/dashboard/approval";
 import FilterDropdown from "@/components/common/FilterDropdown";
 import { adminPreApprovalConfigs } from "./AdminApplicationsFilters";
 import ActiveFilters from "@/components/common/ActiveFilters";
+import { useAdminPrepApprovals } from "@/hooks/useSpecialized/usePreApproval";
+import { getTableEmptyMessage } from "@/components/common/TableEmptyMessage";
 
 export default function AdminPreApprovalClientView ({detailPanel}:any){
+
   const { sortBy, sortOrder, searchValue, filters, queryParams: baseQueryParams,     
     hasActiveFilters, handlePageChange, handleItemsPerPageChange, handleSort,
     handleFilterChange, handleSearchChange,
   } = useTableFilters({
-    initialFilters: { status: '' },searchFields: ['name'], defaultLimit: 10,
+    initialFilters: { status: '' },searchFields: [], defaultLimit: 10,
   });
 
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['users'],
   }), [baseQueryParams]);
 
-  const{pre_approvals, isLoading}= usePreApprovals(queryParams)
+  const{ pre_approvals, pagination, isLoading}= useAdminPrepApprovals(queryParams)
 
-  const emptyMessage = useMemo(() => {
-    if (hasActiveFilters) {
-      return { title: 'No pre-approval found', message: 'Try adjusting your filters or search query',};
-    }
-    return {title: 'No pre_approval found', message: 'Your pre_approvals will appear here'};
-  }, [hasActiveFilters]);
+  const emptyMessage = useMemo(
+    () => getTableEmptyMessage(hasActiveFilters, 'pre-approvals'),
+    [hasActiveFilters]
+  );
 
 
   return(
@@ -33,7 +34,7 @@ export default function AdminPreApprovalClientView ({detailPanel}:any){
         title="Pre-Approvals"
         columns={columns}
         data={pre_approvals}
-        pagination={ {
+        pagination={pagination || {
           page: 1,
           limit: 10,
           total: 0,
@@ -42,7 +43,7 @@ export default function AdminPreApprovalClientView ({detailPanel}:any){
         loading={isLoading}
         searchValue={searchValue}
         onSearchChange={handleSearchChange}
-        searchPlaceholder="Search user"
+        searchPlaceholder="Search user name"
         filterDropdown={
           <FilterDropdown
             filters={filters}
