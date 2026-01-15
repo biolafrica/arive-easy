@@ -105,12 +105,14 @@ export interface PreApprovalBase{
   document_info:DocumentInfoTypes;
   documents_uploaded:boolean;
   documents_id:string;
+
   status:string;
-  conditions:string[];
-  rejection_reasons:string[];
-  guidance_notes:string;
+  conditions?:string[];
+  rejection_reasons?:string[];
+  guidance_notes?:string;
   reviewed_by:string;
   reviewed_at:string;
+
   created_at:string;
   updated_at:string
   recommended_monthly_payment:string;
@@ -118,37 +120,10 @@ export interface PreApprovalBase{
   affordability_score:string;
   debt_to_income_ration:string;
 }
+export type PreAprovalStatus = Pick<PreApprovalBase, 'updated_at' | 'reviewed_at' | 'reviewed_by'| 'status' | 'conditions' | 'rejection_reasons'>;
 
 export type BackendPreApprovalForm = Omit<PreApprovalBase, 'id' | 'created_at' | 'updated_at'>;
 
-export type AdminPreApprovalBase = PreApprovalBase & {users: UserBase};
-
-export interface MockPreApprovals {
-  id: string;
-  user_id: string;
-  status: string;
-  users: MockUsers;
-  current_step: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface MockUsers {
-  name: string;
-  email: string;
-}
-
-
-export interface PreApprovalWithProperty extends PreApprovalBase {
-  property: {
-    id: string;
-    title: string;
-    price: number;
-    address: string;
-    city: string;
-    image_url?: string;
-  };
-}
 
 
 export interface DocumentInfoTypes {

@@ -193,7 +193,7 @@ export function usePreApprovalStages(preApprovalId: string) {
   const [isUploading, setIsUploading] = useState(false);
 
   const updatePersonalInfo = async (data: { 
-    personal_info: stage.PersonalInfoType; 
+    personal_info: stage.PersonalInfoType;
     current_step: number; 
     completed_steps: number 
   }) => {
@@ -438,6 +438,23 @@ export function useAdminPrepApprovals(params?: any) {
     isLoading: isLoading || isUserLoading,
     error,
     ...crud,
+  };
+}
+
+export function useAdminPreApprovalStatus(preApprovalId: string) {
+  const { updatePreApproval, isUpdating } = useUpdatePreApproval();
+
+  const updateStatus = async (data: stage.PreAprovalStatus) => {
+    return updatePreApproval(preApprovalId, data, {
+      successMessage: `Application ${data.status === 'approved' ? 'approved' : 'declined'} successfully`,
+      redirectOnSuccess: true,
+      redirectPath:'/admin-dashboard/applications'
+    });
+  };
+
+  return {
+    updateStatus,
+    isUpdating,
   };
 }
 

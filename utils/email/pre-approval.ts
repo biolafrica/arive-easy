@@ -7,7 +7,7 @@ export const preApprovalReceivedBody = ({
 }) => {
   return `
     <h2 style="color: #1f2937; font-size: 24px; margin: 0 0 10px 0;">
-      Your Pre-approval Application Has Been Received! 🎉
+      Your Pre-approval Application Has Been Received!
     </h2>
     
     <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 25px 0;">
@@ -55,7 +55,7 @@ export const preApprovalReceivedBody = ({
         <!-- Step 3 -->
         <div>
           <div style="position: absolute; left: 0; width: 20px; height: 20px; background-color: #e5e7eb; border-radius: 50%;"></div>
-          <h4 style="color: #1f2937; margin: 0 0 5px 0; font-size: 16px;">Step 3: Property Selection</h4>
+          <h4 style="color: #1f2937; margin: 0 0 5px 0; font-size: 16px;">Step 3: Identity and Income Verification</h4>
           <p style="color: #6b7280; margin: 0; font-size: 14px;">Browse and select properties within your approved range</p>
         </div>
       </div>
@@ -68,5 +68,195 @@ export const preApprovalReceivedBody = ({
         View Application Status
       </a>
     </div>
+  `;
+};
+
+export const preApprovalAcceptedBody = ({
+  userName,
+  referenceNumber,
+}: {
+  userName: string;
+  referenceNumber: string;
+}) => {
+  return `
+    <h2 style="color: #10b981; font-size: 24px; margin: 0 0 10px 0;">
+      Congratulations! Your Pre-approval is Approved!
+    </h2>
+    
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 25px 0;">
+      Dear ${userName},
+    </p>
+    
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 25px 0;">
+      Great news! After reviewing your application, we're pleased to inform you that you've been pre-approved for a mortgage with Kletch.
+    </p>
+
+    <!-- Approval Details Box -->
+    <div style="background-color: #f0fdf4; border: 2px solid #10b981; padding: 25px; border-radius: 8px; margin: 25px 0;">
+      <h3 style="color: #166534; margin: 0 0 20px 0; font-size: 18px;">
+        Your Pre-approval Details
+      </h3>
+      
+      <div style="margin-bottom: 15px;">
+        <span style="color: #6b7280; font-size: 14px;">Reference Number:</span>
+        <span style="color: #1f2937; font-size: 14px; font-weight: 600; margin-left: 10px;">${referenceNumber}</span>
+      </div>
+      
+      <div style="background-color: #fef3c7; padding: 10px; border-radius: 6px; margin-top: 20px;">
+        <span style="color: #92400e; font-size: 14px;">⏱️ Valid For:</span>
+        <span style="color: #92400e; font-size: 14px; font-weight: 600; margin-left: 10px;">3 months</span>
+      </div>
+    </div>
+
+    <!-- Next Steps -->
+    <div style="margin: 30px 0;">
+      <h3 style="color: #374151; font-size: 18px; margin: 0 0 20px 0;">
+        Ready to Find Your Dream Property?
+      </h3>
+      
+      <div style="position: relative; padding-left: 30px;">
+
+        <!-- Step 1 -->
+        <div style="margin-bottom: 25px;">
+          <div style="position: absolute; left: 0; width: 20px; height: 20px; background-color: #e5e7eb; border-radius: 50%;"></div>
+          <h4 style="color: #1f2937; margin: 0 0 5px 0; font-size: 16px;">Complete Identity Verification</h4>
+          <p style="color: #6b7280; margin: 0; font-size: 14px;">Verify your identity and income documentation</p>
+        </div>
+
+        <!-- Step 2 -->
+        <div style="margin-bottom: 25px;">
+          <div style="position: absolute; left: 0; width: 20px; height: 20px; background-color: #10b981; border-radius: 50%;"></div>
+          <h4 style="color: #1f2937; margin: 0 0 5px 0; font-size: 16px;">Browse Properties</h4>
+          <p style="color: #6b7280; margin: 0; font-size: 14px;">Explore our partner properties within your approved budget</p>
+        </div>
+       
+        
+        <!-- Step 3 -->
+        <div>
+          <div style="position: absolute; left: 0; width: 20px; height: 20px; background-color: #e5e7eb; border-radius: 50%;"></div>
+          <h4 style="color: #1f2937; margin: 0 0 5px 0; font-size: 16px;">Finalize Your Mortgage</h4>
+          <p style="color: #6b7280; margin: 0; font-size: 14px;">Select your property and complete the full application</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA Buttons -->
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="${process.env.NEXT_PUBLIC_BASE_URL}/properties" 
+         style="display: inline-block; padding: 12px 30px; background-color: #10b981; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; margin-right: 10px;">
+        Browse Properties
+      </a>
+      <a href="${process.env.NEXT_PUBLIC_BASE_URL}/user-dashboard" 
+         style="display: inline-block; padding: 12px 30px; background-color: #4F46E5; color: white; text-decoration: none; border-radius: 6px; font-weight: 600;">
+        Go to Dashboard
+      </a>
+    </div>
+
+    <!-- Important Notice -->
+    <div style="background-color: #f9fafb; padding: 15px; border-radius: 6px; margin-top: 30px;">
+      <p style="color: #6b7280; font-size: 12px; margin: 0; line-height: 1.5;">
+        <strong>Important:</strong> This pre-approval is subject to final verification of your income and identity documentation. 
+        The actual loan amount and terms may vary based on the property selected and final underwriting.
+      </p>
+    </div>
+  `;
+};
+
+export const preApprovalRejectedBody = ({
+  userName,
+  referenceNumber,
+  rejectionReasons,
+}: {
+  userName: string;
+  referenceNumber: string;
+  rejectionReasons?: string[];
+}) => {
+  return `
+    <h2 style="color: #1f2937; font-size: 24px; margin: 0 0 10px 0;">
+      Your Pre-approval Application Update
+    </h2>
+    
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 25px 0;">
+      Dear ${userName},
+    </p>
+    
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 25px 0;">
+      Thank you for your mortgage pre-approval application. After careful review, we regret to inform you that we're unable to approve your application at this time.
+    </p>
+
+    <!-- Reference Box -->
+    <div style="background-color: #fef2f2; border: 2px solid #ef4444; padding: 20px; border-radius: 8px; margin: 25px 0;">
+      <p style="color: #6b7280; margin: 0 0 5px 0; font-size: 14px;">
+        Reference Number
+      </p>
+      <p style="color: #1f2937; margin: 0; font-size: 18px; font-weight: bold; font-family: monospace;">
+        ${referenceNumber}
+      </p>
+    </div>
+
+    ${rejectionReasons && rejectionReasons.length > 0 ? `
+    <!-- Reasons Section -->
+    <div style="margin: 30px 0;">
+      <h3 style="color: #374151; font-size: 18px; margin: 0 0 15px 0;">
+        Why wasn't my application approved?
+      </h3>
+      <p style="color: #6b7280; font-size: 14px; margin: 0 0 15px 0;">
+        Your application didn't meet our requirements in the following areas:
+      </p>
+      <ul style="color: #6b7280; font-size: 14px; line-height: 1.8; margin: 0; padding-left: 20px;">
+        ${rejectionReasons.map(reason => `<li>${reason}</li>`).join('')}
+      </ul>
+    </div>
+    ` : ''}
+
+    <!-- Next Steps -->
+    <div style="margin: 30px 0;">
+      <h3 style="color: #374151; font-size: 18px; margin: 0 0 20px 0;">
+        What Can You Do Next?
+      </h3>
+      
+      <div style="position: relative; padding-left: 30px;">
+        <!-- Option 1 -->
+        <div style="margin-bottom: 25px;">
+          <div style="position: absolute; left: 0; width: 20px; height: 20px; background-color: #3b82f6; border-radius: 50%;"></div>
+          <h4 style="color: #1f2937; margin: 0 0 5px 0; font-size: 16px;">Review Your Finances</h4>
+          <p style="color: #6b7280; margin: 0; font-size: 14px;">Take time to improve your credit score, increase savings, or stabilize employment</p>
+        </div>
+        
+        <!-- Option 2 -->
+        <div style="margin-bottom: 25px;">
+          <div style="position: absolute; left: 0; width: 20px; height: 20px; background-color: #3b82f6; border-radius: 50%;"></div>
+          <h4 style="color: #1f2937; margin: 0 0 5px 0; font-size: 16px;">Contact Our Support Team</h4>
+          <p style="color: #6b7280; margin: 0; font-size: 14px;">Our mortgage advisors can provide guidance on improving your application</p>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- Support CTA -->
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="${process.env.NEXT_PUBLIC_BASE_URL}/support" 
+         style="display: inline-block; padding: 12px 30px; background-color: #4F46E5; color: white; text-decoration: none; border-radius: 6px; font-weight: 600;">
+        Contact Support
+      </a>
+    </div>
+
+    <!-- Helpful Resources -->
+    <div style="background-color: #f0f9ff; padding: 20px; border-radius: 8px; margin-top: 30px;">
+      <h4 style="color: #1e40af; margin: 0 0 10px 0; font-size: 16px;">
+        📚 Helpful Resources
+      </h4>
+      <ul style="color: #3b82f6; font-size: 14px; line-height: 1.8; margin: 0; padding-left: 20px;">
+        <li><a href="${process.env.NEXT_PUBLIC_BASE_URL}/articles" style="color: #3b82f6;">How to Improve Your Credit Score</a></li>
+        <li><a href="${process.env.NEXT_PUBLIC_BASE_URL}/articles" style="color: #3b82f6;">Understanding Mortgage Requirements</a></li>
+        <li><a href="${process.env.NEXT_PUBLIC_BASE_URL}/faq" style="color: #3b82f6;">Frequently Asked Questions</a></li>
+      </ul>
+    </div>
+
+    <!-- Closing Message -->
+    <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin: 25px 0 0 0;">
+      We understand this may be disappointing news, but we're here to help you succeed in your homeownership journey. 
+      Please don't hesitate to reach out to our support team for guidance.
+    </p>
   `;
 };

@@ -1,5 +1,5 @@
 import {PreApprovalBase } from "@/type/pages/dashboard/approval";
-import { preApprovalReceivedBody } from "@/utils/email/pre-approval";
+import { preApprovalAcceptedBody, preApprovalReceivedBody, preApprovalRejectedBody } from "@/utils/email/pre-approval";
 import { sendEmail } from "@/utils/email/send_email";
 import { requireAuth } from "@/utils/server/authMiddleware";
 import { createCRUDHandlers } from "@/utils/server/crudFactory";
@@ -36,7 +36,6 @@ const preApprovalHandlers = createCRUDHandlers<PreApprovalBase>({
     afterUpdate:async(created,_,context)=>{
       if(created.is_complete === true){
         try {
-          console.log("creating email")
           await sendEmail({
             to:  `${context.auth?.email}`,
             subject: 'Pre-Approval Application Received',
@@ -49,6 +48,38 @@ const preApprovalHandlers = createCRUDHandlers<PreApprovalBase>({
           console.error('Failed to send pre-approval received email:', error);
         }
        
+      }
+
+      if(created.status === 'approved'){
+        try {
+          await sendEmail({
+            to:  `${created.personal_info.email}`,
+            subject: 'Pre-Approval Application Feedbacks',
+            html: preApprovalAcceptedBody({
+              userName: `${created.personal_info.first_name}`,
+              referenceNumber: `${created.reference_number}`,
+            }),
+          });
+          //create application
+        } catch (error) {
+          console.error('Failed to send pre-approval acceptance feedback email:', error);
+        }
+      }
+
+      if(created.status === 'rejected'){
+        try {
+          await sendEmail({
+            to:  `${created.personal_info.email}`,
+            subject: 'Pre-Approval Application Feedbacks',
+            html:preApprovalRejectedBody({
+              userName: `${created.personal_info.first_name}`,
+              referenceNumber: `${created.reference_number}`,
+              rejectionReasons: created.rejection_reasons
+            }),
+          });
+        } catch (error) {
+          console.error('Failed to send pre-approval rejection feedback email:', error);
+        }
       }
 
     }

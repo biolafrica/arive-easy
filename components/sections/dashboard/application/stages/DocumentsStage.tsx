@@ -22,16 +22,15 @@ export default function DocumentsStage({
         title="Documents Information"
         subtitle="Your Pre Approvals Submitted Documents."
         items={[
-          {
-            label: 'Attachments',
+          {label: 'Attachments',
             value: {
               type: 'attachments',
-              files: [
-                { name: 'pay_stubs'},
-                { name: 'tax_returns'},
-                { name: 'bank_statements'},
-                {name: 'employment_verification'}
-              ],
+              files: [ 
+                stageData?.pay_stubs && {name: 'Pay Stubs', url:stageData.pay_stubs},
+                stageData?.tax_returns && {name: 'Tax Returns',url: stageData.tax_returns},
+                stageData?.bank_statements && { name: 'Bank Statements', url: stageData.bank_statements},
+                stageData?.employment_verification && { name: 'Employment Verification',url: stageData.pay_stubs?.employment_verification}
+              ].filter(Boolean) as any,
             },
           },
         ]}
