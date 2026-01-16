@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { useApplicationStageUpdates } from "@/hooks/useSpecialized/useApplications";
 import { useApplicationStageManager } from "@/hooks/useApplicationStageManager";
-import { ApplicationBase,} from "@/type/pages/dashboard/application";
+import { ApplicationBase} from "@/type/pages/dashboard/application";
 import { ApplicationAccordion } from "../common/ApplicationAccordion";
 import { ApplicationStageHeader } from "./ApplicationStageHeader";
 import { StepProgress } from "@/components/ui/ProgressBar";
@@ -37,11 +37,11 @@ export function ApplicationDetails({ application: initialApplication }: Props) {
     let updatedApplication: ApplicationBase | undefined;
     
     switch (stageKey) {
-      case 'property_selection':
-        updatedApplication = await updatePropertySelection(data);
-        break;
       case 'identity_verification':
         updatedApplication = await updateIdentityVerification(data);
+        break;
+      case 'property_selection':
+        updatedApplication = await updatePropertySelection(data);
         break;
       case 'terms_agreement':
         updatedApplication = await updateTermsAgreement(data);
@@ -98,10 +98,10 @@ export function ApplicationDetails({ application: initialApplication }: Props) {
         return <PropertyPreferencesStage {...props} />;
       case 'documents_upload':
         return <DocumentsStage {...props} />;
-      case 'property_selection':
-        return <PropertySelectionStage {...props} />;
       case 'identity_verification':
         return <IdentityVerificationStage {...props} />;
+      case 'property_selection':
+        return <PropertySelectionStage {...props} />;
       case 'terms_agreement':
         return <TermsAgreementStage {...props} />;
       case 'payment_setup':

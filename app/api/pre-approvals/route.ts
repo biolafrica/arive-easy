@@ -1,8 +1,11 @@
+import { CreateApplication } from "@/type/pages/dashboard/application";
 import {PreApprovalBase } from "@/type/pages/dashboard/approval";
+import { generateApplicationRefNo } from "@/utils/common/generateApplicationRef";
 import { preApprovalAcceptedBody, preApprovalReceivedBody, preApprovalRejectedBody } from "@/utils/email/pre-approval";
 import { sendEmail } from "@/utils/email/send_email";
 import { requireAuth } from "@/utils/server/authMiddleware";
 import { createCRUDHandlers } from "@/utils/server/crudFactory";
+import { SupabaseQueryBuilder } from "@/utils/supabase/queryBuilder";
 import { NextRequest } from "next/server";
 
 const preApprovalHandlers = createCRUDHandlers<PreApprovalBase>({
@@ -52,6 +55,70 @@ const preApprovalHandlers = createCRUDHandlers<PreApprovalBase>({
 
       if(created.status === 'approved'){
         try {
+          const application = new SupabaseQueryBuilder<CreateApplication>("applications")
+          const applicationNumber = generateApplicationRefNo("APP")
+          const body = {
+            application_number: applicationNumber,
+            pre_approval_id: `${created.id}`,
+            user_id: `${created.user_id}`,
+            property_id: '0ca3e480-6a3e-4c47-bed0-637386b5f64c',
+            stages_completed: {
+              personal_info: {
+                completed: true,
+                completed_at: new Date().toISOString(),
+                status: "completed",
+              },
+              employment_info: {
+                completed: true,
+                completed_at: new Date().toISOString(),
+                status: "completed",
+              },
+              documents_upload: {
+                completed: true,
+                completed_at: new Date().toISOString(),
+                status: "completed",
+              },
+              property_preferences: {
+                completed: true,
+                completed_at: new Date().toISOString(),
+                status: "completed",
+              },
+              identity_verification: {
+                completed: false,
+                completed_at: undefined,
+                status: "current",
+                retry_count: 0,
+                data: null,
+                kyc_status: undefined,
+              },
+              property_selection: {
+                completed: false,
+                completed_at: undefined,
+                status: "upcoming",
+              },
+              terms_agreement: {
+                completed: false,
+                completed_at: undefined,
+                status: "upcoming",
+              },
+              payment_setup: {
+                completed: false,
+                completed_at: undefined,
+                status: "upcoming",
+              },
+              mortgage_activation: {
+                completed: false,
+                completed_at: undefined,
+                status: "upcoming",
+              },
+            },
+            current_step: 5,
+            current_stage: "identity_verification",
+            status: "in_progress",
+            created_at: new Date().toISOString(),
+          } satisfies Partial<CreateApplication>;
+
+          await application.create(body)
           await sendEmail({
             to:  `${created.personal_info.email}`,
             subject: 'Pre-Approval Application Feedbacks',
@@ -60,7 +127,6 @@ const preApprovalHandlers = createCRUDHandlers<PreApprovalBase>({
               referenceNumber: `${created.reference_number}`,
             }),
           });
-          //create application
         } catch (error) {
           console.error('Failed to send pre-approval acceptance feedback email:', error);
         }

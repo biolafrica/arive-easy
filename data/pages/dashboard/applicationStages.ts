@@ -54,21 +54,21 @@ export const STAGE_CONFIGURATIONS: StageConfig[] = [
   },
   {
     step: 5,
-    key: 'property_selection',
-    title: 'Property Selection',
-    description: 'Select and confirm your property choice',
-    requiresAction: true,
-    actionLabel: 'Select Property',
-    nextStageCondition: (app) => !!app.property_id && app.developer_status === 'approved'
-  },
-  {
-    step: 6,
     key: 'identity_verification',
     title: 'Identity Verification (KYC)',
     description: 'Complete identity verification with our partners',
     requiresAction: true,
     actionLabel: 'Complete Verification',
     nextStageCondition: (app) => app.kyc_status === 'verified'
+  },
+   {
+    step: 6,
+    key: 'property_selection',
+    title: 'Property Selection',
+    description: 'Select and confirm your property choice',
+    requiresAction: true,
+    actionLabel: 'Select Property',
+    nextStageCondition: (app) => !!app.property_id && app.developer_status === 'approved'
   },
   {
     step: 7,

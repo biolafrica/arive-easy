@@ -144,7 +144,8 @@ export function useApplicationStageUpdates(application: ApplicationBase) {
         identity_verification: {
           completed: true,
           completed_at: new Date().toISOString(),
-          status: 'success',
+          status: 'completed',
+          kyc_status: 'success',
           data
         }
       },

@@ -1,4 +1,4 @@
-export function generateApplicationRefNo(){
+export function generateApplicationRefNo(prefix="PA"){
   const now = new Date();
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -7,7 +7,7 @@ export function generateApplicationRefNo(){
   const timestamp = Date.now().toString(36).toUpperCase(); 
   const random = Math.random().toString(36).substr(2, 4).toUpperCase();
 
-  return `PA-${year}${month}${day}-${timestamp}${random}`
+  return `${prefix}-${year}${month}${day}-${timestamp}${random}`
 
 } 
   

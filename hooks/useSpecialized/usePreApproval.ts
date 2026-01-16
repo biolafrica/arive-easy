@@ -109,11 +109,7 @@ export function useUpdatePreApproval() {
     }
 
     const { 
-      conditions, 
-      rejection_reasons,
       guidance_notes,
-      reviewed_at,
-      reviewed_by,
       ...allowedData 
     } = data as any;
     

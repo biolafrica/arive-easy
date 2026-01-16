@@ -15,6 +15,7 @@ export default function AdminPreApprovalDetails ({ pre_approvals }: Props){
   const { updateStatus, isUpdating } = useAdminPreApprovalStatus(pre_approvals.id);
 
   const handleSubmit = async (data: PreAprovalStatus) => {
+    console.log("approved data", data)
     await updateStatus(data);
   };
 

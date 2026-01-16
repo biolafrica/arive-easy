@@ -33,8 +33,8 @@ export const APPLICATION_STAGES: ApplicationStage[] = [
 ];
 
 export const columns: TableColumn<MockApplications>[] = [
-  { key: 'id', header: 'Approval ID', sortable: false},
-  { key: 'property', header: 'Property', sortable: false, accessor: (row) => row.properties.title},
+  { key: 'application_number', header: 'Approval ID', sortable: false},
+  { key: 'property', header: 'Property', sortable: false, accessor: (row) => row.properties?.title || 'ongoing'},
   { key: 'current_stage', header: 'Current stage', sortable: false,},
   { key: 'created_at', header: 'Date Created', sortable: false, accessor: (row) => formatDate(row.created_at)},
 ];

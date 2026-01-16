@@ -18,8 +18,8 @@ export type ApplicationStageKey =
 | "employment_info" 
 | "property_preferences" 
 | "documents_upload" 
-| "property_selection" 
 | "identity_verification" 
+| "property_selection" 
 | "terms_agreement" 
 | "payment_setup" 
 | "mortgage_activation" 
@@ -38,10 +38,11 @@ export interface StageMetadata {
 export interface VerificationStageMetadata {
   completed: boolean;
   completed_at?: string;
-  status: KYCStatus;
+  status: StageStatus;
   error_message?: string;
   retry_count?: number;
   data?: any;
+  kyc_status?: KYCStatus
 }
 
 
@@ -132,6 +133,8 @@ export interface  ApplicationBase{
   updated_at:string;
 
 }
+
+export type CreateApplication = Pick<ApplicationBase, 'application_number'| 'current_stage' | 'created_at' | 'current_step' | 'user_id' |'pre_approval_id' | 'stages_completed' | 'status' | 'property_id' >
 
 export interface MockApplications {
   id: string;

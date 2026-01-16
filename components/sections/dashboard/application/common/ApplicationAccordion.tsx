@@ -50,7 +50,7 @@ export function ApplicationAccordion({
               isDisabled && 'opacity-60'
             )}
           >
-            {/* Header */}
+   
             <button
               disabled={isDisabled}
               onClick={() =>
@@ -87,17 +87,14 @@ export function ApplicationAccordion({
               </div>
             </button>
 
-            {/* Content */}
             {isOpen && !isDisabled && (
               <div className="border-t border-border p-4 space-y-4">
-                {/* Rejected message */}
                 {stage.status === 'rejected' && stage.errorMessage && (
                   <div className="rounded-lg bg-red-100 p-3 text-sm text-red-700">
                     {stage.errorMessage}
                   </div>
                 )}
 
-                {/* Editable vs Read-only */}
                 {isReadOnly
                   ? renderReadOnly(stage.key)
                   : renderEditable(stage.key)}
