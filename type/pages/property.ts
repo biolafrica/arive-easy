@@ -44,6 +44,9 @@ export interface PropertyBase {
   area_sqm?: string | null;
   bedrooms: number;
   bathrooms: number;
+  
+  view:number;
+  offer:number;
 
   images: string[];
   tours?: PropertyTours | null;

@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation';
 import { UserAvatarForm, UserBase, } from '@/type/user';
 import { useAuthContext } from '@/providers/auth-provider';
 import { FavoriteBase, PropertyFavorite } from '@/type/pages/dashboard/favorite';
+import { useEffect } from 'react';
 
 
 export function useProperties(params?: any) {
@@ -33,6 +34,23 @@ export function useProperties(params?: any) {
   };
 }
 
+export function useAdminProperty(id: string) {
+  const crud = useCrud<PropertyBase>({
+    resource: 'properties',
+    interfaceType: 'admin',
+    cacheConfig: getEntityCacheConfig('properties', 'detail'),
+  });
+  
+  const { data, isLoading, error } = crud.useGetOne(id);
+  
+  return {
+    property: data,
+    isLoading,
+    error,
+    ...crud,
+  };
+}
+
 export function useProperty(id: string) {
   const crud = useCrud<PropertyBase>({
     resource: 'properties',
@@ -41,6 +59,14 @@ export function useProperty(id: string) {
   });
   
   const { data, isLoading, error } = crud.useGetOne(id);
+  
+
+  useEffect(() => {
+    if (data?.id) {
+      apiClient.post(`/api/properties/${id}/view`)
+      .catch(err => console.log('View tracking failed:', err));
+    }
+  }, [data?.id, id]);
   
   return {
     property: data,
@@ -100,6 +126,78 @@ export function useSimilarProperties(
     ...getEntityCacheConfig('properties', 'list'),
   });
 }
+
+export function useFavorites() {
+  const { user } = useAuthContext();
+
+  const { useGetAll, create, remove, isCreating, isDeleting } = useCrud<FavoriteBase>({
+    resource: 'favorites',
+    interfaceType: 'client',
+    showNotifications: false, 
+  });
+
+
+  const { data: favoritesData, isLoading } = useGetAll(
+    { filters: { user_id: user?.id } },!!user?.id
+  );
+
+  const favorites = favoritesData?.data || [];
+  
+  const toggleFavorite = async (propertyId: string) => {
+    if (!user) {
+      toast.error('Please login to save properties');
+      return;
+    }
+    
+    const existing = favorites.find(f => f.property_id === propertyId);
+    
+    try {
+      if (existing) {
+        await remove(existing.id);
+        toast.success('Removed from favorites');
+      } else {
+        await create({ property_id: propertyId, user_id: user.id });
+        toast.success('Added to favorites');
+      }
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+    }
+  };
+  
+  const isFavorited = (propertyId: string) => {
+    if (!user) return false;
+    return favorites.some(f => f.property_id === propertyId);
+  };
+  
+  return {
+    favorites,
+    isLoading: isLoading && user,
+    toggleFavorite,
+    isFavorited,
+    isToggling: isCreating || isDeleting,
+  };
+}
+
+export function useInfiniteFavoriteProperties(params?: any) {
+  return useInfiniteList<PropertyFavorite>({
+    resource: 'favorites',
+    interfaceType: 'client',
+    params,
+    limit: 15,
+    autoFetch: true,
+  });
+}
+
+export function usePropertyOffer() {
+  return useMutation({
+    mutationFn: async (propertyId: string) => {return apiClient.post(`/api/properties/${propertyId}/offer`)},
+    onSuccess: () => {toast.success('Offer submitted successfully!')},
+    onError: (error: any) => {toast.error(error?.error?.message || 'Failed to submit offer')},
+  });
+}
+
+
+
 
 export function useArticles(params?: any) {
   const crud = useCrud<ArticleBase>({
@@ -296,71 +394,5 @@ export function useSubscriber() {
 }
 
 
-export function useFavorites() {
-  const { user } = useAuthContext();
-
-  const { useGetAll, create, remove, isCreating, isDeleting,
-  } = useCrud<FavoriteBase>({
-    resource: 'favorites',
-    interfaceType: 'client',
-    showNotifications: false, 
-  });
-
-  const { data: favoritesData, isLoading,  } = useGetAll({
-    filters:{user_id : user?.id} 
-  });
-
-
-
-  const favorites = favoritesData?.data || [];
-  
-
-  const toggleFavorite = async (propertyId: string) => {
-    if (!user) {
-      toast.error('Please login to save properties');
-      return;
-    }
-    
-    const existing = favorites.find(f => f.property_id === propertyId);
-    
-    try {
-      if (existing) {
-        await remove(existing.id);
-        toast.success('Removed from favorites');
-      } else {
-        await create({ property_id: propertyId , user_id: user.id});
-        toast.success('Added to favorites');
-      }
-    } catch (error) {
-      console.error("error toggling")
-  
-    }
-  };
-  
-  const isFavorited = (propertyId: string) => {
-    if (!user) return []
-    return favorites.some(f => f.property_id === propertyId);
-  };
-  
-  return {
-    favorites,
-    isLoading,
-    toggleFavorite,
-    isFavorited,
-    isToggling: isCreating || isDeleting,
-  };
-}
-
-export function useInfiniteFavoriteProperties(params?: any) {
-  return useInfiniteList<PropertyFavorite>({
-    resource: 'favorites',
-    interfaceType: 'client',
-    params,
-    limit: 15,
-    autoFetch: true,
-    
-
-  });
-}
 
 

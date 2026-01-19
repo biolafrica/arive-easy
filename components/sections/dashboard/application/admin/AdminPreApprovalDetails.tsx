@@ -8,15 +8,18 @@ import { StatusHeader } from "./StatusHeader";
 
 interface Props {
   pre_approvals: PreApprovalBase;
+  close:any;
 }
 
-export default function AdminPreApprovalDetails ({ pre_approvals }: Props){
+export default function AdminPreApprovalDetails ({ pre_approvals, close }: Props){
  
   const { updateStatus, isUpdating } = useAdminPreApprovalStatus(pre_approvals.id);
 
   const handleSubmit = async (data: PreAprovalStatus) => {
-    console.log("approved data", data)
     await updateStatus(data);
+    setTimeout(()=>{
+      close
+    },1500)
   };
 
   return(

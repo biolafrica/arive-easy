@@ -91,7 +91,7 @@ async function handleIdentityVerification(webhookData: any) {
           identity_verification: {
             completed: true,
             completed_at: new Date().toISOString(),
-            status: ourStatus,
+            status: "completed",
             data: {
               kyc_session_id: identity_verification_id,
               kyc_result: steps,
@@ -115,7 +115,8 @@ async function handleIdentityVerification(webhookData: any) {
         stages_completed: {
           identity_verification: {
             completed: false,
-            status: ourStatus,
+            error_message:'verification was not succesful',
+            status:"current"
           }
         }
       });
@@ -133,7 +134,7 @@ async function handleIdentityVerification(webhookData: any) {
         stages_completed: {
           identity_verification: {
             completed: false,
-            status: 'pending',
+            status:"current"
           }
         }
       });

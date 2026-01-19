@@ -40,7 +40,7 @@ export default function AdminApplicationsClientView (){
         />
       </div>
 
-      {tab === 'pre_approval' && (<AdminPreApprovalClientView detailPanel={detailPanel}/> )}
+      {tab === 'pre_approval' && (<AdminPreApprovalClientView detailPanel={detailPanel} close={detailPanel.close}/> )}
       {tab === 'pre_mortgage' && (<AdminPreMortgageClientView detailPanel={detailPanel}/> ) }
       
     </div>

@@ -15,7 +15,6 @@ interface UseTableFiltersReturn {
   searchValue: string;
   debouncedSearch: string;
   filters: Record<string, string | string[]>;
-  
   queryParams: any;
   hasActiveFilters: boolean;
   
@@ -29,16 +28,9 @@ interface UseTableFiltersReturn {
   resetPagination: () => void;
 }
 
-export function useTableFilters(
-  options: UseTableFiltersOptions = {}
-): UseTableFiltersReturn {
-  const {
-    initialFilters = {},
-    searchFields = [],
-    defaultLimit = 10,
-    searchDebounceMs = 500,
-  } = options;
-
+export function useTableFilters(options: UseTableFiltersOptions = {}): UseTableFiltersReturn {
+  const { initialFilters = {}, searchFields = [], defaultLimit = 10, searchDebounceMs = 500,} = options;
+  
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(defaultLimit);
   const [sortBy, setSortBy] = useState<string>('');
@@ -58,10 +50,7 @@ export function useTableFilters(
 
 
   const queryParams = useMemo(() => {
-    const params: any = {
-      page,
-      limit,
-    };
+    const params: any = { page, limit };
 
     if (sortOrder && sortBy) {
       params.sortBy = sortBy;
