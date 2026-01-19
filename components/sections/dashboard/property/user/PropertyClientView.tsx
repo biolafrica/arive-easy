@@ -1,37 +1,33 @@
 'use client'
 
-import { PropertyActions } from "./PropertyAction";
-import { PropertyAmenities } from "./PropertyAmenities";
-import PropertyDescription from "./PropertyDescription";
-import { PropertyDetails } from "./PropertyDetails";
-import { PropertyGallery } from "./PropertyGallery";
-import { PropertyPricing } from "./PropetyPricing";
-import { useProperty, useSimilarProperties } from "@/hooks/useSpecialized";
-import PropertyHead from "./PropertyHead";
-import { SectionHeading } from "@/components/common/SectionHeading";
-import { PropertyCard } from "@/components/cards/public/property";
+import { PropertyActions } from "@/components/sections/public/property/PropertyAction";
+import { PropertyAmenities } from "@/components/sections/public/property/PropertyAmenities";
+import PropertyDescription from "@/components/sections/public/property/PropertyDescription";
+import { PropertyDetails } from "@/components/sections/public/property/PropertyDetails";
+import { PropertyGallery } from "@/components/sections/public/property/PropertyGallery";
+import PropertyHead from "@/components/sections/public/property/PropertyHead";
+import { PropertyPricing } from "@/components/sections/public/property/PropetyPricing";
 import { PropertyDetailsPageSkeleton } from "@/components/skeleton/PropertyCardSkeleton";
+import { useAdminProperty } from "@/hooks/useSpecialized";
 
+export default function UserDashbaordPropertyClientView({id}:any){
+  const {property, isLoading, error, refresh} = useAdminProperty(id);
 
-export default function PropertyClientView({id}:any){
-  const {property, isLoading, error,} = useProperty(id);
-
-  const { data: similarProperties, refetch } = useSimilarProperties(property)
-
-  if (error) {
+    if (error) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px]">
         <p className="text-red-500 mb-4">Error loading property details</p>
-        <button onClick={() => refetch()} className="px-4 py-2 bg-blue-600 text-white rounded">Try Again</button>
+        <button onClick={() => refresh()} className="px-4 py-2 bg-blue-600 text-white rounded">Try Again</button>
       </div>
     );
   }
 
+
   return(
     <div>
       {isLoading && (<PropertyDetailsPageSkeleton/>) }
-      
-      {!isLoading && property && (
+
+       {!isLoading && property && (
         <div>
           <PropertyHead title={property.title} address_full={property.address_full} description={property.description} id={property.id}/>
 
@@ -70,22 +66,6 @@ export default function PropertyClientView({id}:any){
             </aside>
           </section>
         </div>
-      )}
-
-      {similarProperties && similarProperties.length > 0 && (
-        <section className="mt-20">
-          <SectionHeading
-            title="Similar Properties"
-            description="Discover other properties that might interest you"
-          />
-
-          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {similarProperties.map((property) => (
-              <PropertyCard key={property.id} property={property} />
-            ))}
-          </div>
-
-        </section>
       )}
 
     </div>

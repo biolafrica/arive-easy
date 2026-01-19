@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from "@/components/primitives/Button";
-import { DashboardPageHeader } from "../property/SellerPropertyHeader";
+import { DashboardPageHeader } from "../property/seller/SellerPropertyHeader";
 import { PROPERTY_STATS, PropertyListingCard } from "@/components/cards/dashboard/SellerProperty";
 
 export default function SellerDashboardListingsClientView (){

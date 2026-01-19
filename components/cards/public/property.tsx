@@ -10,9 +10,10 @@ import { toast } from 'sonner';
 
 interface Props {
   property: PropertyData;
+  interfaceType?: string;
 }
 
-export function PropertyCard({ property }: Props) {
+export function PropertyCard({ property, interfaceType = 'client' }: Props) {
   const { user } = useAuthContext();
   
   const { isFavorited, toggleFavorite, isToggling } = useFavorites()
@@ -32,7 +33,7 @@ export function PropertyCard({ property }: Props) {
   };
 
   return (
-    <Link href={`/properties/${property.id}`}>
+    <Link href={`/${interfaceType === 'client' ? "properties" :"user-dashboard/properties"}/${property.id}`}>
       <div className="rounded-xl border border-border bg-card shadow-sm hover:shadow-md transition">
         <div className="relative">
           <PropertyImageCarousel images={property.images} />

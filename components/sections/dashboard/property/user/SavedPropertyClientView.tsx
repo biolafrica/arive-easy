@@ -27,7 +27,7 @@ export default function SavedPropertyClientView({setTab}:any){
       {favorite && favorite.length > 0 && (
         <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {favorite.map((property) => (
-            <PropertyCard key={property.id} property={property.properties} />
+            <PropertyCard key={property.id} property={property.properties} interfaceType="buyer" />
           ))}
         </div>
       )}

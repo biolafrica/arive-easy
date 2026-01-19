@@ -36,6 +36,7 @@ export default function PropertyHead({title, address_full ,id, description}:Prop
   return(
     <>
       <header className="mb-8 flex flex-col gap-4">
+        
         <Button
           variant="text"
           size="sm"
