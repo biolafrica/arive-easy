@@ -1,6 +1,6 @@
 import { useCrud,} from './useCrud';
 import { useInfiniteList} from './useInfiniteList';
-import { queryKeys } from '../lib/query-keys';
+import { FilterParams, queryKeys } from '../lib/query-keys';
 import { getEntityCacheConfig } from '../lib/cache-config';
 import { ApiResponse, apiClient } from '../lib/api-client';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation';
 import { UserAvatarForm, UserBase, } from '@/type/user';
 import { useAuthContext } from '@/providers/auth-provider';
 import { FavoriteBase, PropertyFavorite } from '@/type/pages/dashboard/favorite';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 
 export function useProperties(params?: any) {
@@ -81,6 +81,24 @@ export function useInfiniteProperties(params?: any) {
     resource: 'properties',
     interfaceType: 'client',
     params,
+    limit: 15,
+    autoFetch: true,
+  });
+}
+
+export function useSellerInfiniteProperties(params?: FilterParams) {
+  const stableParams = useMemo(() => ({ ...params,
+    filters: params?.filters ? Object.fromEntries(
+      Object.entries(params.filters).filter(([_, v]) => v !== '' && v !== undefined && v !== null)
+    ) : undefined,
+
+    search: params?.search?.trim() || undefined,
+  }), [ params?.filters, params?.search, params?.sortBy, params?.sortOrder, params?.limit ]);
+
+  return useInfiniteList<PropertyBase>({
+    resource: 'properties',
+    interfaceType: 'buyer',
+    params: stableParams,
     limit: 15,
     autoFetch: true,
   });
@@ -181,7 +199,7 @@ export function useFavorites() {
 export function useInfiniteFavoriteProperties(params?: any) {
   return useInfiniteList<PropertyFavorite>({
     resource: 'favorites',
-    interfaceType: 'client',
+    interfaceType: 'buyer',
     params,
     limit: 15,
     autoFetch: true,

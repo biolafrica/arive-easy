@@ -1,105 +1,48 @@
-"use client"
+"use client";
 
-import { EllipsisVerticalIcon, EyeIcon, TagIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
+import { PropertyActions, StatusBadge, resolvePropertyStatus } from '@/components/sections/dashboard/listing/PropertyCardUtils';
+import { formatUSD, toNumber } from '@/lib/formatter';
+import { PropertyBase } from '@/type/pages/property';
 
-interface PropertyStat {
-  icon: React.ReactNode;
-  label: string;
-}
 
 interface PropertyListingCardProps {
-  image: string;
-  title: string;
-  price: string;
-  stats: PropertyStat[];
-  badges?: { label: string; variant?: 'success' | 'neutral' }[];
-  onMenuClick?: () => void;
+  property: PropertyBase;
+  onEdit: (property: PropertyBase) => void;
 }
 
-export function PropertyListingCard({
-  image,
-  title,
-  price,
-  stats,
-  badges = [],
-  onMenuClick,
-}: PropertyListingCardProps) {
+export function PropertyListingCard({ property, onEdit }: PropertyListingCardProps) {
+  const displayStatus = resolvePropertyStatus(property.status);
+
   return (
-    <div className="flex flex-col md:flex-row overflow-hidden rounded-xl border border-border bg-card">
-      
-      <div className="md:w-[40%] h-56 md:h-auto">
-        <img
-          src={image}
-          alt={title}
-          className="h-full w-full object-cover"
-        />
-      </div>
+    <div className="flex overflow-hidden rounded-xl border bg-white">
+      <img
+        src={property.images?.[0] || '/placeholder-property.jpg'}
+        alt={property.title || property.address_full}
+        className="h-48 w-48 object-cover"
+      />
 
-      <div className="flex flex-1 flex-col p-6">
-
+      <div className="flex flex-1 flex-col justify-between p-6">
         <div className="flex items-start justify-between">
-          <h3 className="text-xl font-semibold text-heading">
-            {title}
-          </h3>
-
-          <button
-            onClick={onMenuClick}
-            className="text-muted hover:text-heading"
-          >
-            <EllipsisVerticalIcon className="h-6 w-6" />
-          </button>
-        </div>
-
-        <div className="mt-4 flex flex-wrap items-center gap-6 text-sm text-secondary">
-          {stats.map((stat, idx) => (
-            <div key={idx} className="flex items-center gap-2">
-              {stat.icon}
-              <span>{stat.label}</span>
+          <div>
+            <h3 className="text-lg font-semibold text-heading">
+              {property.title}
+            </h3>
+            <div className="mt-2 flex items-center gap-2">
+              <StatusBadge {...displayStatus} />
             </div>
-          ))}
-        </div>
-
-        <div className="mt-6 text-4xl font-bold text-heading">
-          {price}
-        </div>
-
-        {badges.length > 0 && (
-          <div className="mt-6 flex gap-3">
-            {badges.map((badge) => (
-              <span
-                key={badge.label}
-                className={`
-                  rounded-lg px-4 py-2 text-sm font-medium
-                  ${
-                    badge.variant === 'success'
-                      ? 'bg-green-200 text-green-950'
-                      : 'bg-muted text-heading'
-                  }
-                `}
-              >
-                {badge.label}
-              </span>
-            ))}
           </div>
-        )}
+          
+  
+          <PropertyActions
+            property={property}
+            onEdit={onEdit}
+          />
+        </div>
+
+        <div className="mt-6 text-2xl font-bold">
+          {formatUSD({ amount: toNumber(property.price), fromCents: false, decimals: 0 })}
+        </div>
       </div>
     </div>
   );
 }
-
-
-
-export const PROPERTY_STATS = [
-  {
-    icon: <TagIcon className="h-5 w-5" />,
-    label: '3 Offers',
-  },
-  {
-    icon: <EyeIcon className="h-5 w-5" />,
-    label: '45 Views',
-  },
-  {
-    icon: <ShieldCheckIcon className="h-5 w-5" />,
-    label: '₦25,000,000',
-  },
-];

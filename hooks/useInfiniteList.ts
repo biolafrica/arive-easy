@@ -76,22 +76,10 @@ export function useInfiniteList<T>({
   } = (finalCacheConfig as any);
 
   // 3. Single useInfiniteQuery instance
-  const {
-    data,
-    isLoading,
-    isError, // Added for the effect
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    refetch,
-  } = useInfiniteQuery<
-    PaginatedResponse<T>, 
-    ApiError,             
-    InfiniteData<PaginatedResponse<T>>,
-    QueryKey,            
-    number               
-  >({
+  const {data,isLoading, isError, error, fetchNextPage, hasNextPage, isFetchingNextPage,
+    refetch} = useInfiniteQuery<
+    PaginatedResponse<T>, ApiError, InfiniteData<PaginatedResponse<T>>,
+    QueryKey,number >({
     queryKey: keys.list({ ...params, limit }),
     initialPageParam: 1,
     queryFn: async ({ pageParam }) => {

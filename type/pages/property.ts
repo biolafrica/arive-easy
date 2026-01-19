@@ -1,6 +1,10 @@
 export type VideoTourProvider = 'youtube' | 'vimeo' | 'self';
 export type Virtual3DProvider = 'matterport' | 'custom';
 
+
+export type PropertyStatus = |'draft'|'active'|'inactive'|'withdrawn'|'offers'
+| 'reserved'| 'in_progress'| 'sold'| 'paused';
+
 export interface PropertyVideoTour {
   url: string;
   provider?: string;
@@ -21,7 +25,7 @@ export interface PropertyBase {
   id: string;
   slug: string;
   title: string;
-  status: string;
+  status: PropertyStatus;
   description: string;
 
   address_full: string;
