@@ -17,6 +17,10 @@ export const TABS = [
 export default function AdminApplicationsClientView (){
   const [tab, setTab] = useState('pre_approval');
   const detailPanel = useSidePanel<any>();
+
+  const handleClose=()=>{
+    detailPanel.close()
+  }
   
   return(
     <div className="space-y-5">
@@ -27,7 +31,7 @@ export default function AdminApplicationsClientView (){
         title= {detailPanel.mode === 'edit' ? 'Pre Approval Details' : 'Pre Mortgage Details'}
       >
         {detailPanel.mode === 'edit' && detailPanel.selectedItem ? 
-          (<AdminPreApprovalDetails pre_approvals={detailPanel.selectedItem} close={detailPanel.close} />):
+          (<AdminPreApprovalDetails pre_approvals={detailPanel.selectedItem} close={handleClose} />):
           (<AdminPreMortgageDetails applications={detailPanel.selectedItem} />)
         }
       </SidePanel>

@@ -1,10 +1,7 @@
 import { OfferBase } from "@/type/pages/dashboard/offer";
-import { PropertyBase } from "@/type/pages/property";
 import { requireAuth } from "@/utils/server/authMiddleware";
 import { createCRUDHandlers } from "@/utils/server/crudFactory";
-import { SupabaseQueryBuilder } from "@/utils/supabase/queryBuilder";
 import { NextRequest } from "next/server";
-import { TransactionBase } from "plaid";
 
 const OffersHandlers = createCRUDHandlers<OfferBase>({
   table: 'offers',

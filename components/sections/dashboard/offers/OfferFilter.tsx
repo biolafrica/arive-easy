@@ -10,7 +10,7 @@ export const offerFilterConfigs: FilterConfig[] = [
       { value: '', label: 'All Statuses' },
       { value: 'accepted', label: 'Success' },
       { value: 'pending', label: 'Pending' },
-      { value: 'rejected', label: 'Failed' },
+      { value: 'declined', label: 'Failed' },
  
     ],
   },

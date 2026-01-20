@@ -21,6 +21,7 @@ export interface OfferBase{
 
   rejection_note?:string;
   property_name:string;
+  developer_id:string;
 }
 
 export interface OffersBase{

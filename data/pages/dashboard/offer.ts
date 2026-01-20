@@ -68,7 +68,7 @@ export const columns: TableColumn<OfferBase>[] = [
 export const statusConfig: StatusConfig[] = [
   { label: 'Accepted', value: 'accepted', variant: 'green' },
   { label: 'Pending', value: 'pending', variant: 'yellow' },
-  { label: 'Decline', value: 'rejected', variant: 'red' }
+  { label: 'Decline', value: 'declined', variant: 'red' }
 ];
 
 export function useOffers(queryParams?: Record<string, any>) {

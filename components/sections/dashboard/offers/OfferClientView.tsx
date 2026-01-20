@@ -34,6 +34,10 @@ export default function OfferClientView (){
     [hasActiveFilters]
   );
 
+  const handleClose=()=>{
+    detailPanel.close()
+  }
+
 
 
   return(
@@ -45,7 +49,7 @@ export default function OfferClientView (){
       >
         {detailPanel.selectedItem && (
           <div>
-            <OfferDetails offer={detailPanel.selectedItem} />
+            <OfferDetails offer={detailPanel.selectedItem} close={handleClose} />
           </div>
         )}
 

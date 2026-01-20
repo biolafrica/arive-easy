@@ -8,7 +8,7 @@ import { StatusHeader } from "./StatusHeader";
 
 interface Props {
   pre_approvals: PreApprovalBase;
-  close:any;
+  close:()=>void;
 }
 
 export default function AdminPreApprovalDetails ({ pre_approvals, close }: Props){
@@ -18,7 +18,7 @@ export default function AdminPreApprovalDetails ({ pre_approvals, close }: Props
   const handleSubmit = async (data: PreAprovalStatus) => {
     await updateStatus(data);
     setTimeout(()=>{
-      close
+      close()
     },1500)
   };
 

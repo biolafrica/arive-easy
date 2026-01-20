@@ -2,13 +2,15 @@ import { DescriptionList } from "@/components/common/DescriptionList";
 import { Button } from "@/components/primitives/Button";
 import { formatUSD, toNumber } from "@/lib/formatter";
 import { OfferBase, } from "@/type/pages/dashboard/offer";
+import { OfferActions } from "./OfferAction";
 
 
 interface Props {
   offer: OfferBase;
+  close: any
 }
 
-export default function OfferDetails({ offer }: Props) {
+export default function OfferDetails({ offer, close }: Props) {
   return (
     <div>
 
@@ -45,17 +47,7 @@ export default function OfferDetails({ offer }: Props) {
 
       </div>
 
-      <div className="mt-5 flex items-center gap-5">
-
-        <Button onClick={()=>console.log("accepted")}>
-          Accept Offer
-        </Button>
-
-        <Button variant="text" onClick={()=>console.log("rejected")} className="text-red-600">
-          Decline Offer
-        </Button>
-
-      </div>
+     <OfferActions offer={offer} close={close}/>
 
     </div>
   );

@@ -25,7 +25,7 @@ export function useSellerOffers(params?: any) {
       ...params,
       filters: {
         ...params?.filters,
-        user_id: user.id,
+        developer_id: user.id,
       },
     };
   }, [params, user?.id]);
@@ -85,7 +85,7 @@ export function useSellerOfferActions() {
     }
 
     return update(offerId, {
-      status: 'rejected',
+      status: 'declined',
       rejection_note:reason,
       updated_at: new Date().toISOString(),
       
