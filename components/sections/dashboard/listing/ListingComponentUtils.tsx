@@ -3,7 +3,7 @@ import { Button } from "@/components/primitives/Button";
 import { PropertyBase } from "@/type/pages/property";
 
 type PropertyStatus = '' |'draft'|'active'|'inactive'|'withdrawn'|'offers'
-| 'reserved'| 'in_progress'| 'sold'| 'paused';
+| 'reserved'| 'inprogress'| 'sold'| 'paused';
 
 const statuses=[
   {key:1, value:"" , item:"All statuses"},
@@ -13,7 +13,7 @@ const statuses=[
   {key:5, value:"withdrawn" , item:"Withdrawn"},
   {key:6, value:"offers" , item:"Offers"},
   {key:7, value:"reserved" , item:"Reserved"},
-  {key:8, value:"in_progress" , item:"In Progress"},
+  {key:8, value:"inprogress" , item:"In Progress"},
   {key:9, value:"sold" , item:"Sold"},
   {key:10, value:"paused" , item:"Paused"},
 
@@ -23,6 +23,22 @@ interface PropertyStatusFilterProps {
   value: PropertyStatus;
   onChange: (status: PropertyStatus) => void;
 }
+
+interface ActiveFiltersBadgeProps {
+  count: number;
+  onClear: () => void;
+}
+
+interface PropertiesGridProps {
+  properties: PropertyBase[];
+  onEdit: (property: PropertyBase) => void; 
+}
+
+interface LoadMoreButtonProps {
+  isLoading: boolean;
+  onClick: () => void;
+}
+
 
 export function PropertyStatusFilter({ value, onChange }: PropertyStatusFilterProps) {
   return (
@@ -38,11 +54,6 @@ export function PropertyStatusFilter({ value, onChange }: PropertyStatusFilterPr
   );
 }
 
-
-interface ActiveFiltersBadgeProps {
-  count: number;
-  onClear: () => void;
-}
 
 export function ActiveFiltersBadge({ count, onClear }: ActiveFiltersBadgeProps) {
   return (
@@ -61,11 +72,6 @@ export function ActiveFiltersBadge({ count, onClear }: ActiveFiltersBadgeProps) 
 }
 
 
-interface PropertiesGridProps {
-  properties: PropertyBase[];
-  onEdit: (property: PropertyBase) => void; 
-}
-
 export function PropertiesGrid({ properties, onEdit }: PropertiesGridProps) {
   return (
     <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-2">
@@ -80,11 +86,6 @@ export function PropertiesGrid({ properties, onEdit }: PropertiesGridProps) {
   );
 }
 
-
-interface LoadMoreButtonProps {
-  isLoading: boolean;
-  onClick: () => void;
-}
 
 export function LoadMoreButton({ isLoading, onClick }: LoadMoreButtonProps) {
   return (

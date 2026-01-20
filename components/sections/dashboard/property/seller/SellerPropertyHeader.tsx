@@ -35,7 +35,8 @@ export function DashboardPageHeader({
   }, [onSearch]);
 
   return (
-    <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+    <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+
       <div className="space-y-1">
         <h1 className="text-2xl font-semibold text-heading">{title}</h1>
         {description && (

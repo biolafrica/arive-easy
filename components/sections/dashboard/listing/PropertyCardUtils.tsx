@@ -13,6 +13,34 @@ interface PropertyActionsProps {
   onEdit: (property: PropertyBase) => void;
 }
 
+export const getbabge = (step:string): string => {
+  const base = 'badge px-3 py-2 rounded-lg'
+
+  switch(step) {
+    case 'active':
+      return `${base} badge-green`;
+    case 'inactive':
+      return `${base} badge-red`;
+    case 'withdrawn':
+      return `${base} badge-red`;
+    case 'offers':
+      return `${base} badge-yellow`;
+    case 'sold':
+      return `${base} badge-green`;
+    case 'inprogress':
+      return `${base} badge-yellow`;
+    case 'draft':
+      return `${base} badge-yellow`;
+    case 'paused':
+      return `${base} badge-red`;
+    case 'reserved':
+      return `${base} badge-green`;
+    default:
+      return `${base}`;
+  }
+};
+
+
 export function resolvePropertyStatus(status: PropertyStatus): DisplayStatus {
   const inactiveStatuses = ['draft', 'paused', 'withdrawn'] as const;
   
@@ -25,15 +53,10 @@ export function resolvePropertyStatus(status: PropertyStatus): DisplayStatus {
 
 export function StatusBadge({ tone, label }: DisplayStatus) {
   return (
-    <span
-      className={`rounded-md px-3 py-1 text-sm font-medium capitalize ${
-        tone === 'active'
-          ? 'bg-green-100 text-green-700'
-          : 'bg-gray-100 text-gray-600'
-      }`}
-    >
-      {label}
-    </span>
+    <div className='flex gap-2 items-center' >
+      <span className={`${getbabge(tone)} `}>{tone}</span>
+      <span className={`${getbabge(label)}`}>{label}</span>
+    </div>
   );
 }
 

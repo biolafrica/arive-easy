@@ -27,7 +27,7 @@ export default function AdminApplicationsClientView (){
         title= {detailPanel.mode === 'edit' ? 'Pre Approval Details' : 'Pre Mortgage Details'}
       >
         {detailPanel.mode === 'edit' && detailPanel.selectedItem ? 
-          (<AdminPreApprovalDetails pre_approvals={detailPanel.selectedItem} />):
+          (<AdminPreApprovalDetails pre_approvals={detailPanel.selectedItem} close={detailPanel.close} />):
           (<AdminPreMortgageDetails applications={detailPanel.selectedItem} />)
         }
       </SidePanel>

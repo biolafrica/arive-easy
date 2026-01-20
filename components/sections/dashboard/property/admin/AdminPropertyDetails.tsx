@@ -1,7 +1,7 @@
-import { MockPropertyBase } from "@/type/pages/dashboard/property";
+import { PropertyBase } from "@/type/pages/property";
 
 interface Props {
-  property: MockPropertyBase;
+  property: PropertyBase;
 }
 export default function AdminPropertyDetails ({ property }: Props){
   return(

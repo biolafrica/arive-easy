@@ -214,6 +214,41 @@ export function usePropertyOffer() {
   });
 }
 
+export function useAdminProperties(params?: any) {
+  const { user, loading: isUserLoading } = useAuthContext();
+  
+  const crud = useCrud<PropertyBase>({
+    resource: 'properties',
+    interfaceType: 'admin',
+    optimisticUpdate: true,
+    invalidateOnMutation: true,
+  });
+
+  const queryParams = useMemo(() => {
+    if (!user?.id) return null; 
+    
+    return {
+      ...params,
+      filters: { ...params?.filters,}
+    };
+  }, [params, user?.id]);
+
+
+  const { data, isLoading, error } = crud.useGetAll(
+    queryParams || undefined, 
+    !isUserLoading && !!user?.id 
+  );
+
+  return {
+    properties: data?.data || [],
+    pagination: data?.pagination,
+    isLoading: isLoading || isUserLoading,
+    error,
+    ...crud,
+  };
+}
+
+
 
 
 

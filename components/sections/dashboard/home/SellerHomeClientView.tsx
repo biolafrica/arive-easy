@@ -8,7 +8,6 @@ import { useSidePanel } from "@/hooks/useSidePanel";
 import { columns, statusConfig, useOffers } from "@/data/pages/dashboard/offer";
 import DataTable from "@/components/common/DataTable";
 import SidePanel from "@/components/ui/SidePanel";
-import { PROPERTY_STATS, PropertyListingCard } from "@/components/cards/dashboard/SellerProperty";
 
 export default function SellerHomeClientView() {
   const { user } = useAuthContext();
@@ -65,46 +64,6 @@ export default function SellerHomeClientView() {
         onItemsPerPageChange={()=>console.log('items per page change')}
         emptyMessage={emptyMessage}
       /> 
-
-      <div className="grid lg:grid-cols-2 gap-5">
-
-        <PropertyListingCard
-          image="/images/house-1.jpg"
-          title="123 Palm Drive, Lekki, Lagos"
-          price="$250,000,000"
-          stats={PROPERTY_STATS}
-          badges={[
-            { label: 'Active', variant: 'success' },
-            { label: 'Funded', variant: 'success' },
-          ]}
-          onMenuClick={() => console.log('menu clicked')}
-        />
-
-        <PropertyListingCard
-          image="/images/house-1.jpg"
-          title="123 Palm Drive, Lekki, Lagos"
-          price="$250,000,000"
-          stats={PROPERTY_STATS}
-          badges={[
-            { label: 'Active', variant: 'success' },
-            { label: 'Funded', variant: 'success' },
-          ]}
-          onMenuClick={() => console.log('menu clicked')}
-        />
-
-        <PropertyListingCard
-          image="/images/house-1.jpg"
-          title="123 Palm Drive, Lekki, Lagos"
-          price="$250,000,000"
-          stats={PROPERTY_STATS}
-          badges={[
-            { label: 'Active', variant: 'success' },
-            { label: 'Funded', variant: 'success' },
-          ]}
-          onMenuClick={() => console.log('menu clicked')}
-        />
-
-      </div>
 
     </>
   )

@@ -22,10 +22,8 @@ export function PropertyTourCard({
 
   const handleClick = () => {
     if (video && tours?.video?.url) {
-      // Open video in modal
       setIsVideoModalOpen(true);
     } else if (!video && tours?.virtual3D?.url) {
-      // Open 3D tour in new tab (as before)
       window.open(tours.virtual3D.url, '_blank');
     }
   };
@@ -48,7 +46,6 @@ export function PropertyTourCard({
             className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
 
-          {/* Play/3D Icon Overlay */}
           <div className="absolute inset-0 flex items-center justify-center bg-black/30 transition-opacity group-hover:bg-black/40">
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 shadow-lg transition-transform group-hover:scale-110">
               <Icon className="h-7 w-7 text-gray-800" />
@@ -65,7 +62,6 @@ export function PropertyTourCard({
         </Button>
       </div>
 
-      {/* Video Modal */}
       {video && tours?.video?.url && (
         <VideoModal
           videoUrl={tours.video.url}

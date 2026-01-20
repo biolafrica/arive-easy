@@ -22,7 +22,6 @@ export function PropertyGallery({
   return (
     <>
       <div className="space-y-6">
-        {/* Main Image with Zoom */}
         <div 
           className="relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-muted cursor-zoom-in group"
           onClick={handleImageClick}
@@ -35,13 +34,11 @@ export function PropertyGallery({
             priority
           />
           
-          {/* Zoom Indicator */}
           <div className="absolute top-4 right-4 p-2 rounded-lg bg-black/50 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
             <MagnifyingGlassPlusIcon className="h-5 w-5 text-white" />
           </div>
         </div>
 
-        {/* Thumbnail Gallery */}
         <div className="flex gap-2 overflow-x-auto">
           {images.map((img, i) => (
             <button
@@ -63,7 +60,6 @@ export function PropertyGallery({
           ))}
         </div>
 
-        {/* Tour Cards */}
         {(tours?.virtual3D || tours?.video) && (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {tours.virtual3D && (
@@ -85,7 +81,6 @@ export function PropertyGallery({
         )}
       </div>
 
-      {/* Image Zoom Modal */}
       <ImageZoomModal
         images={images}
         initialIndex={active}

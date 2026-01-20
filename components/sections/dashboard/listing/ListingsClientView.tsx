@@ -4,7 +4,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { Button } from '@/components/primitives/Button';
 import { DashboardPageHeader } from '../property/seller/SellerPropertyHeader';
-import { AllPropertyGridSkeleton } from '@/components/skeleton/PropertyCardSkeleton';
+import {AllPropertyListingGridSkeleton } from '@/components/skeleton/PropertyCardSkeleton';
 import { PropertyEmptyState } from '../../public/property/PropertyEmptyState';
 import { PropertyBase } from '@/type/pages/property';
 import { useSellerInfiniteProperties } from '@/hooks/useSpecialized';
@@ -15,7 +15,7 @@ import { ActiveFiltersBadge, LoadMoreButton, LoadingMoreSkeleton, PropertiesGrid
 
 
 type PropertyStatus = '' |'draft'|'active'|'inactive'|'withdrawn'|'offers'
-| 'reserved'| 'in_progress'| 'sold'| 'paused';
+| 'reserved'| 'inprogress'| 'sold'| 'paused';
 
 interface PropertyFilters {
   status: PropertyStatus;
@@ -103,7 +103,7 @@ export default function SellerDashboardListingsClientView() {
       )}
 
 
-      {isLoading && <AllPropertyGridSkeleton />}
+      {isLoading && <AllPropertyListingGridSkeleton/>}
 
 
       {!isLoading && !hasProperties && (

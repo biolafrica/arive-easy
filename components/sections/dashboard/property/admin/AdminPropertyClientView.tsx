@@ -2,7 +2,7 @@
 
 import { getTableEmptyMessage } from "@/components/common/TableEmptyMessage";
 import SidePanel from "@/components/ui/SidePanel";
-import { columns, statusConfig, useAdminProperty } from "@/data/pages/dashboard/property";
+import { columns, statusConfig } from "@/data/pages/dashboard/property";
 import { useSidePanel } from "@/hooks/useSidePanel";
 import { useTableFilters } from "@/hooks/useTableQuery";
 import { useMemo } from "react";
@@ -11,22 +11,24 @@ import DataTable from "@/components/common/DataTable";
 import FilterDropdown from "@/components/common/FilterDropdown";
 import ActiveFilters from "@/components/common/ActiveFilters";
 import { adminPropertyFilterConfigs } from "./PropertyFilter";
+import { useAdminProperties } from "@/hooks/useSpecialized";
+import { PropertyBase } from "@/type/pages/property";
 
 export default function AdminPropertyClientView (){
-  const detailPanel = useSidePanel<any>();
+  const detailPanel = useSidePanel<PropertyBase>();
 
 
   const { sortBy, sortOrder, searchValue, filters, queryParams: baseQueryParams,     
     hasActiveFilters, handlePageChange, handleItemsPerPageChange, handleSort,
     handleFilterChange, handleSearchChange,
   } = useTableFilters({
-    initialFilters: { status: '' },searchFields: ['name'], defaultLimit: 10,
+    initialFilters: { status: '' },searchFields: [], defaultLimit: 10,
   });
 
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['users'],
   }), [baseQueryParams]);
 
-    const {properties, isLoading} =  useAdminProperty(queryParams);
+  const {properties, isLoading, pagination} = useAdminProperties(queryParams);
 
   const emptyMessage = useMemo(
     () => getTableEmptyMessage(hasActiveFilters, 'properties'),
@@ -49,7 +51,7 @@ export default function AdminPropertyClientView (){
         title="Properties"
         columns={columns}
         data={properties}
-        pagination={ {
+        pagination={ pagination ||{
           page: 1,
           limit: 10,
           total: 0,

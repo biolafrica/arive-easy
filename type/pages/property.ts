@@ -1,9 +1,11 @@
+import { UserBase } from "../user";
+
 export type VideoTourProvider = 'youtube' | 'vimeo' | 'self';
 export type Virtual3DProvider = 'matterport' | 'custom';
 
 
 export type PropertyStatus = |'draft'|'active'|'inactive'|'withdrawn'|'offers'
-| 'reserved'| 'in_progress'| 'sold'| 'paused';
+| 'reserved'| 'inprogress'| 'sold'| 'paused';
 
 export interface PropertyVideoTour {
   url: string;
@@ -49,8 +51,8 @@ export interface PropertyBase {
   bedrooms: number;
   bathrooms: number;
   
-  view:number;
-  offer:number;
+  views:number;
+  offers:number;
 
   images: string[];
   tours?: PropertyTours | null;
@@ -61,6 +63,8 @@ export interface PropertyBase {
   is_active: boolean;
 
   developer_id?: string | null;
+  users?:UserBase;
+
   created_by: string;
   approved_by?: string | null;
   approved_at?: string | null;

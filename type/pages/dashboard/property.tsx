@@ -1,5 +1,4 @@
 export type MortgageStatus = | 'active' | 'closed' | 'pending' | 'arrears' | 'suspended';
-import { PropertyBase } from "@/type/pages/property";
 
 export interface MortgageCardProps {
   title: string;
@@ -22,10 +21,3 @@ export interface MortgageStatProps{
   value: string;
   highlight?: boolean;
 }
-
-export type MockPropertyBase = Pick<PropertyBase, 'id' | 'developer_id' | 'title' | 'status' |  'price' |  'is_active' |  'created_at' |  'updated_at' | 'property_type'> & {
-  users: {
-    name: string;
-    email: string;
-  }
-};
