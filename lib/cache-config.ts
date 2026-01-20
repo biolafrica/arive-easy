@@ -189,6 +189,18 @@ export const ENTITY_CACHE_CONFIGS = {
     },
   },
 
+  // Offer history
+  offers: {
+    list: {
+      staleTime: 5 * MINUTE,
+      cacheTime: 15 * MINUTE,
+    },
+    summary: {
+      staleTime: 10 * MINUTE,
+      cacheTime: 30 * MINUTE,
+    },
+  },
+
   // User profile
   profile: {
     own: {

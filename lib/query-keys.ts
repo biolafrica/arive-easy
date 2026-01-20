@@ -134,6 +134,20 @@ export const queryKeys = {
     statistics: () => [...queryKeys.applications.all, 'statistics'] as const,
   },
 
+  // Offers
+  offers: {
+    all: ['offers'] as const,
+    lists: () => [...queryKeys.offers.all, 'list'] as const,
+    list: (params?: FilterParams) => 
+      [...queryKeys.offers.lists(), params] as const,
+    details: () => [...queryKeys.offers.all, 'detail'] as const,
+    detail: (id: string) => 
+      [...queryKeys.offers.details(), id] as const,
+    byStatus: (status: string, params?: PaginationParams) =>
+      [...queryKeys.offers.all, 'by-status', status, params] as const,
+    statistics: () => [...queryKeys.offers.all, 'statistics'] as const,
+  },
+
   // transactions
   transactions: {
     all: ['transactions'] as const,
@@ -266,6 +280,15 @@ export type ApplicationKeys=
   |ReturnType<typeof queryKeys.applications.detail>
   |ReturnType<typeof queryKeys.applications.byStatus>
   |ReturnType<typeof queryKeys.applications.statistics>
+
+export type OfferKeys= 
+  |typeof queryKeys.offers.all
+  |ReturnType<typeof queryKeys.offers.lists>
+  |ReturnType<typeof queryKeys.offers.list>
+  |ReturnType<typeof queryKeys.offers.details>
+  |ReturnType<typeof queryKeys.offers.detail>
+  |ReturnType<typeof queryKeys.offers.byStatus>
+  |ReturnType<typeof queryKeys.offers.statistics>
 
 export type TransactionKeys= 
   |typeof queryKeys.transactions.all

@@ -1,6 +1,8 @@
 import { PaperClipIcon, ArrowDownTrayIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
 
-export type DescriptionValue = | { type: 'text'; value: string } | { type: 'paragraph'; value: string }
+export type DescriptionValue = 
+  | { type: 'text'; value: string } 
+  | { type: 'paragraph'; value: string }
   | { type: 'attachments'; files: { name: string; size?: string; url?: string }[];}
   | { type: 'custom'; node: React.ReactNode };
 

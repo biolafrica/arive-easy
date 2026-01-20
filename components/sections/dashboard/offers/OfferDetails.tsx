@@ -1,11 +1,11 @@
 import { DescriptionList } from "@/components/common/DescriptionList";
 import { Button } from "@/components/primitives/Button";
 import { formatUSD, toNumber } from "@/lib/formatter";
-import { OffersBase } from "@/type/pages/dashboard/offer";
+import { OfferBase, } from "@/type/pages/dashboard/offer";
 
 
 interface Props {
-  offer: OffersBase;
+  offer: OfferBase;
 }
 
 export default function OfferDetails({ offer }: Props) {
@@ -17,8 +17,9 @@ export default function OfferDetails({ offer }: Props) {
           title="Property Details"
           subtitle="Details and information about the property"
           items={[
-            { label: 'Property Name', value: { type: 'text', value: offer.listings.title } },
-            { label: 'Offered Price', value: { type: 'text', value: formatUSD({ amount: toNumber(offer.listings.price), fromCents: false, decimals: 2 }) } },
+            { label: 'Property Name', value: { type: 'text', value: offer.properties?.title || "" } },
+            { label: 'Property Address', value: { type: 'text', value: offer.properties?.address_full || "" } },
+            { label: 'Offered Price', value: { type: 'text', value: formatUSD({ amount: toNumber(offer.amount), fromCents: false, decimals: 2 }) } },
           ]}
         />
 
@@ -26,9 +27,9 @@ export default function OfferDetails({ offer }: Props) {
           title="Buyer Details"
           subtitle="Details and information about the buyer"
           items={[
-            { label: 'Name', value: { type: 'text', value: offer.users.name} },
-            { label: 'Email', value: { type: 'text', value: offer.users.email } },
-            { label: 'Phone Number', value: { type: 'text', value: offer.users.phone_number} },
+            { label: 'Name', value: { type: 'text', value: offer.users?.name || ""} },
+            { label: 'Email', value: { type: 'text', value: offer.users?.email || "" } },
+            { label: 'Phone Number', value: { type: 'text', value: offer.users?.phone_number || ''} },
           ]}
         />
         
@@ -36,8 +37,8 @@ export default function OfferDetails({ offer }: Props) {
           title="Offer Details"
           subtitle="Details and information about the offer"
           items={[
-            { label: 'Offered Amount', value: { type: 'text', value: formatUSD({ amount: toNumber(offer.listings.price), fromCents: false, decimals: 2 }) } },
-            { label: 'Financing', value: { type: 'text', value: "Mortgage" } },
+            { label: 'Offered Amount', value: { type: 'text', value: formatUSD({ amount: toNumber(offer.amount), fromCents: false, decimals: 2 }) } },
+            { label: 'Financing', value: { type: 'text', value: offer.type } },
             { label: 'Date', value: { type: 'text', value: new Date(offer.created_at).toLocaleDateString()} },
           ]}
         />

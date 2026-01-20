@@ -1,5 +1,27 @@
 import { UserBase } from "@/type/user";
 import { PropertyBase } from "../property";
+import { ApplicationBase } from "./application";
+
+export interface OfferBase{
+  id:string;
+  users?:UserBase;
+  user_id: string;
+
+  application_id:string;
+  applications?:ApplicationBase;
+
+  property_id:string;
+  properties?:PropertyBase
+
+  amount:string;
+  status:string;
+  created_at:string;
+  updated_at?:string;
+  type:string;
+
+  rejection_note?:string;
+  property_name:string;
+}
 
 export interface OffersBase{
   users:MockUser;

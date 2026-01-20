@@ -1,6 +1,6 @@
 import { StatusConfig, TableColumn } from "@/components/common/DataTable";
 import { formatNumberDate, formatUSD, toNumber } from "@/lib/formatter";
-import { OffersBase } from "@/type/pages/dashboard/offer";
+import { OfferBase, OffersBase } from "@/type/pages/dashboard/offer";
 
 export const MOCK_DATA:OffersBase[] = [
   {
@@ -58,11 +58,11 @@ export const MOCK_DATA:OffersBase[] = [
   }
 ];
 
-export const columns: TableColumn<OffersBase>[] = [
-  { key: 'property', header: 'Property', sortable: false, accessor: (row) => row.listings.title},
-  { key: 'buyer', header: 'Buyer', sortable: false, accessor: (row) => row.users.name},
+export const columns: TableColumn<OfferBase>[] = [
+  { key: 'property_name', header: 'Property', sortable: false},
+  { key: 'buyer', header: 'Buyer', sortable: false, accessor: (row) => row.users?.name},
   { key: 'created_at', header: 'Date', sortable: false, accessor: (row) => formatNumberDate(row.created_at)},
-  {key:'offer_amount', header:'Offer Amount', sortable:false, accessor:(row) => formatUSD({ amount: toNumber(row.listings.price), fromCents: false, decimals: 0 })},
+  {key:'amount', header:'Offer Amount', sortable:false, accessor:(row) => formatUSD({ amount: toNumber(row.amount), fromCents: false, decimals: 0 })},
 ];
 
 export const statusConfig: StatusConfig[] = [

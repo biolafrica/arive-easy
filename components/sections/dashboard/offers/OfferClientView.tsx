@@ -2,7 +2,7 @@
 
 import FilterDropdown from "@/components/common/FilterDropdown";
 import SidePanel from "@/components/ui/SidePanel";
-import { columns, statusConfig, useOffers } from "@/data/pages/dashboard/offer";
+import { columns, statusConfig, } from "@/data/pages/dashboard/offer";
 import { useSidePanel } from "@/hooks/useSidePanel";
 import { useTableFilters } from "@/hooks/useTableQuery";
 import { useMemo } from "react";
@@ -10,28 +10,29 @@ import { offerFilterConfigs } from "./OfferFilter";
 import ActiveFilters from "@/components/common/ActiveFilters";
 import DataTable from "@/components/common/DataTable";
 import OfferDetails from "./OfferDetails";
+import { useSellerOffers } from "@/hooks/useSpecialized/useOffers";
+import { getTableEmptyMessage } from "@/components/common/TableEmptyMessage";
+import { OfferBase } from "@/type/pages/dashboard/offer";
 
 export default function OfferClientView (){
-  const detailPanel = useSidePanel<any>();
+  const detailPanel = useSidePanel<OfferBase>();
 
   const { sortBy, sortOrder, searchValue, filters, queryParams: baseQueryParams,     
     hasActiveFilters, handlePageChange, handleItemsPerPageChange, handleSort,
     handleFilterChange, handleSearchChange,
   } = useTableFilters({
-    initialFilters: { status: '' },searchFields: ['property'], defaultLimit: 10,
+    initialFilters: { status: '' },searchFields: [], defaultLimit: 10,
   });
 
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['properties','users'],
   }), [baseQueryParams]);
 
-  const {offers, isLoading} = useOffers(queryParams);
+  const {offers, isLoading, pagination} = useSellerOffers(queryParams);
 
-  const emptyMessage = useMemo(() => {
-    if (hasActiveFilters) {
-      return { title: 'No offers yet', message: 'Try adjusting your filters or search query',};
-    }
-    return {title: 'No offers found', message: 'Your offers will appear here'};
-  }, [hasActiveFilters]);
+  const emptyMessage = useMemo(
+    () => getTableEmptyMessage(hasActiveFilters, 'offers'),
+    [hasActiveFilters]
+  );
 
 
 
@@ -54,7 +55,7 @@ export default function OfferClientView (){
         title="Offers and Interests"
         columns={columns}
         data={offers}
-        pagination={ {
+        pagination={pagination || {
           page: 1,
           limit: 10,
           total: 0,
@@ -63,7 +64,7 @@ export default function OfferClientView (){
         loading={isLoading}
         searchValue={searchValue}
         onSearchChange={handleSearchChange}
-        searchPlaceholder="Search by description"
+        searchPlaceholder="Search property name"
         filterDropdown={
           <FilterDropdown
             filters={filters}

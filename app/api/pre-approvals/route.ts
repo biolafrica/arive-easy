@@ -119,6 +119,7 @@ const preApprovalHandlers = createCRUDHandlers<PreApprovalBase>({
           } satisfies Partial<CreateApplication>;
 
           await application.create(body)
+          
           await sendEmail({
             to:  `${created.personal_info.email}`,
             subject: 'Pre-Approval Application Feedbacks',

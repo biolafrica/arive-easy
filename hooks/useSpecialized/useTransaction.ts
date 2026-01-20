@@ -39,9 +39,8 @@ export function useTransactions(params?: any) {
     ...crud,
   };
 }
+
 export function useAdminTransactions(params?: any) {
-  const { user, loading: isUserLoading } = useAuthContext();
-  
   const crud = useCrud<TransactionBase>({
     resource: 'transactions',
     interfaceType: 'admin',
@@ -49,28 +48,12 @@ export function useAdminTransactions(params?: any) {
     invalidateOnMutation: true,
   });
 
-  const queryParams = useMemo(() => {
-    if (!user?.id) return null; 
-    
-    return {
-      ...params,
-      filters: {
-        ...params?.filters,
-        user_id: user.id,
-      },
-    };
-  }, [params, user?.id]);
-
-
-  const { data, isLoading, error } = crud.useGetAll(
-    queryParams || undefined, 
-    !isUserLoading && !!user?.id 
-  );
+  const { data, isLoading, error } = crud.useGetAll(params);
 
   return {
     transactions: data?.data || [],
     pagination: data?.pagination,
-    isLoading: isLoading || isUserLoading,
+    isLoading: isLoading,
     error,
     ...crud,
   };

@@ -34,10 +34,10 @@ export function useProperties(params?: any) {
   };
 }
 
-export function useAdminProperty(id: string) {
+export function usesellerProperty(id: string) {
   const crud = useCrud<PropertyBase>({
     resource: 'properties',
-    interfaceType: 'admin',
+    interfaceType: 'buyer',
     cacheConfig: getEntityCacheConfig('properties', 'detail'),
   });
   
