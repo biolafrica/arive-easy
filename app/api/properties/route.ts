@@ -4,7 +4,7 @@ import { createCRUDHandlers } from "@/utils/server/crudFactory";
 
 const propertyHandlers = createCRUDHandlers<PropertyForm>({
   table: 'properties',
-  requiredFields: ['title', 'description', 'property-type', 'price', 'city'],
+  requiredFields: ['title', 'description', 'property_type', 'price', 'city'],
   searchFields: ['title'],
   defaultSort: {
     field: 'created_at',
@@ -12,4 +12,4 @@ const propertyHandlers = createCRUDHandlers<PropertyForm>({
   },
 });
 
-export const { GET } = propertyHandlers;
+export const { GET, POST, PUT, DELETE } = propertyHandlers;

@@ -19,7 +19,7 @@ export default function ListingClientView({id}:any){
 
           <div className="space-y-3">
             <SellerPropertyViewTop/>
-            <SellerPropertyViewBottom/>
+            <SellerPropertyViewBottom id={property.id}/>
           </div>
          
         </div>

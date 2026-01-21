@@ -6,12 +6,13 @@ import { Button } from '@/components/primitives/Button';
 import { DashboardPageHeader } from '../property/seller/SellerPropertyHeader';
 import {AllPropertyListingGridSkeleton } from '@/components/skeleton/PropertyCardSkeleton';
 import { PropertyEmptyState } from '../../public/property/PropertyEmptyState';
-import { PropertyBase } from '@/type/pages/property';
 import { useSellerInfiniteProperties } from '@/hooks/useSpecialized';
 import { useSidePanel } from '@/hooks/useSidePanel';
 import SidePanel from '@/components/ui/SidePanel';
 import SellerPropertyDetails from './SellerPropertyDetails';
 import { ActiveFiltersBadge, LoadMoreButton, LoadingMoreSkeleton, PropertiesGrid, PropertyStatusFilter } from './ListingComponentUtils';
+import SellerPropertyNew from './SellerPropertyNew';
+import { Property } from './property-form';
 
 
 type PropertyStatus = '' |'draft'|'active'|'inactive'|'withdrawn'|'offers'
@@ -26,7 +27,7 @@ export default function SellerDashboardListingsClientView() {
   const [searchTerm, setSearchTerm] = useState('');
   
   const debouncedSearch = useDebounce(searchTerm, 500);
-  const detailPanel = useSidePanel<PropertyBase>();
+  const detailPanel = useSidePanel<Property>();
 
   const queryParams = useMemo(() => ({
     filters: filters.status ? { status: filters.status } : {},
@@ -59,6 +60,10 @@ export default function SellerDashboardListingsClientView() {
     return count;
   }, [filters.status, debouncedSearch]);
 
+  const handleClose=()=>{
+    detailPanel.close()
+  }
+
 
   if (error) {
     return (
@@ -83,8 +88,8 @@ export default function SellerDashboardListingsClientView() {
         title={detailPanel.mode === 'edit' ? 'Edit Property' : 'Create New Property'}
       >
         {detailPanel.selectedItem && detailPanel.mode === "edit" ? 
-          ( <SellerPropertyDetails property={detailPanel.selectedItem} />):
-          ( <SellerPropertyDetails />)
+          ( <SellerPropertyDetails property={detailPanel.selectedItem} close={handleClose} />):
+          ( <SellerPropertyNew close={handleClose} />)
         }
 
       </SidePanel>

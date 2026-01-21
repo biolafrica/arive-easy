@@ -14,7 +14,11 @@ import { useSellerOffers } from "@/hooks/useSpecialized/useOffers";
 import { getTableEmptyMessage } from "@/components/common/TableEmptyMessage";
 import { OfferBase } from "@/type/pages/dashboard/offer";
 
-export default function OfferClientView (){
+export interface Props{
+  value:string
+}
+
+export default function OfferClientView ({value=''}){
   const detailPanel = useSidePanel<OfferBase>();
 
   const { sortBy, sortOrder, searchValue, filters, queryParams: baseQueryParams,     
@@ -27,7 +31,12 @@ export default function OfferClientView (){
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['properties','users'],
   }), [baseQueryParams]);
 
-  const {offers, isLoading, pagination} = useSellerOffers(queryParams);
+  
+  const {offers, isLoading, pagination} = useSellerOffers(queryParams, value);
+  
+
+  
+  
 
   const emptyMessage = useMemo(
     () => getTableEmptyMessage(hasActiveFilters, 'offers'),

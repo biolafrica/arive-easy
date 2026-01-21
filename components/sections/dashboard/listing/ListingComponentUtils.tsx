@@ -1,6 +1,6 @@
 import { PropertyListingCard } from "@/components/cards/dashboard/SellerProperty";
 import { Button } from "@/components/primitives/Button";
-import { PropertyBase } from "@/type/pages/property";
+import { Property } from "./property-form";
 
 type PropertyStatus = '' |'draft'|'active'|'inactive'|'withdrawn'|'offers'
 | 'reserved'| 'inprogress'| 'sold'| 'paused';
@@ -30,8 +30,8 @@ interface ActiveFiltersBadgeProps {
 }
 
 interface PropertiesGridProps {
-  properties: PropertyBase[];
-  onEdit: (property: PropertyBase) => void; 
+  properties: Property[];
+  onEdit: (property: Property) => void; 
 }
 
 interface LoadMoreButtonProps {

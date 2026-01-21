@@ -7,7 +7,7 @@ import { getEntityCacheConfig } from "@/lib/cache-config";
 import { useMemo } from "react";
 
 
-export function useSellerOffers(params?: any) {
+export function useSellerOffers(params?: any, propertyId?: string) {
   const { user, loading: isUserLoading } = useAuthContext();
 
   const crud = useCrud<OfferBase>({
@@ -20,15 +20,21 @@ export function useSellerOffers(params?: any) {
   
   const queryParams = useMemo(() => {
     if (!user?.id) return null; 
+
+      const filters: Record<string, any> = {
+      ...params?.filters,
+      developer_id: user.id,
+    };
+  
+    if (propertyId) {
+      filters.property_id = propertyId;
+    }
     
     return {
       ...params,
-      filters: {
-        ...params?.filters,
-        developer_id: user.id,
-      },
+      filters,
     };
-  }, [params, user?.id]);
+  }, [params, user?.id, propertyId]);
 
 
   const { data, isLoading, error } = crud.useGetAll(

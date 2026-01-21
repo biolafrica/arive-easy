@@ -14,6 +14,7 @@ import { UserAvatarForm, UserBase, } from '@/type/user';
 import { useAuthContext } from '@/providers/auth-provider';
 import { FavoriteBase, PropertyFavorite } from '@/type/pages/dashboard/favorite';
 import { useEffect, useMemo } from 'react';
+import { Property } from '@/components/sections/dashboard/listing/property-form';
 
 
 export function useProperties(params?: any) {
@@ -95,7 +96,7 @@ export function useSellerInfiniteProperties(params?: FilterParams) {
     search: params?.search?.trim() || undefined,
   }), [ params?.filters, params?.search, params?.sortBy, params?.sortOrder, params?.limit ]);
 
-  return useInfiniteList<PropertyBase>({
+  return useInfiniteList<Property>({
     resource: 'properties',
     interfaceType: 'buyer',
     params: stableParams,

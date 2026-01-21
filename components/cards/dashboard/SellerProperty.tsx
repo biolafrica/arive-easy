@@ -1,15 +1,15 @@
 "use client";
 
 import { PropertyActions, StatusBadge, resolvePropertyStatus } from '@/components/sections/dashboard/listing/PropertyCardUtils';
+import { Property } from '@/components/sections/dashboard/listing/property-form';
 import { formatUSD, toNumber } from '@/lib/formatter';
-import { PropertyBase } from '@/type/pages/property';
 import { EyeIcon, TagIcon,} from '@heroicons/react/24/outline';
 import Image from 'next/image';
 
 
 interface PropertyListingCardProps {
-  property: PropertyBase;
-  onEdit: (property: PropertyBase) => void;
+  property: Property;
+  onEdit: (property: Property) => void;
 }
 
 export function PropertyListingCard({ property, onEdit}: PropertyListingCardProps) {

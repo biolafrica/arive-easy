@@ -29,7 +29,8 @@ export interface PropertyBase {
   title: string;
   status: PropertyStatus;
   description: string;
-
+  property_number:string
+;
   address_full: string;
   street?: string | null;
   city: string;

@@ -1,0 +1,6 @@
+export { LocationSection } from './LocationSection'
+export { DetailsSection } from './DetailsSection'
+export { MediaSection } from './MediaSection'
+export { AmenitiesSection } from './AmenitiesSection'
+export { SEOSection } from './SEOSection'
+export {BasicInfoSection} from './BasicInfoSection'

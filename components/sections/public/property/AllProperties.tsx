@@ -11,7 +11,7 @@ import { ProcessedFilters } from "@/hooks/usePropertySearchFilter";
 
 export default function AllProperties(){
   const [appliedFilters, setAppliedFilters] = useState<ProcessedFilters>({
-    status: 'Available'
+    status: 'active'
   });
 
   const {items: properties, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage, error, refresh } = useInfiniteProperties({

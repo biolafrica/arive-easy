@@ -116,14 +116,8 @@ export const mockSingleProperty = {
     'A stunning 4-bedroom luxury residence located in the heart of Victoria Island, offering premium finishes and modern amenities.',
 
   amenities: [
-    'Swimming Pool',
-    'Gym / Fitness Center',
-    '24/7 Security',
-    'High-Speed Internet',
-    'Garden & Landscaping',
-    'Backup Generator',
-    'Parking Space',
-    'Balcony / Terrace',
+    'Swimming Pool','Gym / Fitness Center', '24/7 Security','High-Speed Internet',
+    'Garden & Landscaping','Backup Generator', 'Parking Space','Balcony / Terrace',
   ],
   seo_title: null,
   seo_description: null,

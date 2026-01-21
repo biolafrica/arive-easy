@@ -1,7 +1,8 @@
 import { useState , useRef, useEffect } from 'react';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
-import { PropertyBase, PropertyStatus } from '@/type/pages/property';
+import { PropertyStatus } from '@/type/pages/property';
+import { Property } from './property-form';
 
 type DisplayStatus = {
   tone: 'active' | 'inactive';
@@ -9,8 +10,8 @@ type DisplayStatus = {
 };
 
 interface PropertyActionsProps {
-  property: PropertyBase;
-  onEdit: (property: PropertyBase) => void;
+  property: Property;
+  onEdit: (property: Property) => void;
 }
 
 export const getbabge = (step:string): string => {
