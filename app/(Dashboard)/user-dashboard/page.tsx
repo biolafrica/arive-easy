@@ -17,7 +17,7 @@ export default function UserDashboardPage() {
 
       <DashboardWelcomeHeader
         name={user?.user_metadata?.name || ""}
-        primaryAction={{ label: 'Explore Properties', onClick: () => router.push('/user-dashboard/properties') }}
+        primaryAction={{ label: 'Explore Properties', onClick: () => router.push('/user-dashboard/properties?tab=browse') }}
         secondaryAction={{ label: 'Get Pre-approved', onClick: () => router.push('/user-dashboard/applications') }}
         illustrationSrc="/images/dashboard-welcome.svg"
       />

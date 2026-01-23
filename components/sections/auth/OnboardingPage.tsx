@@ -226,7 +226,7 @@ export function RoleOptionCard({
   icon,
   title,
   description,
-  activeClassName = 'border-border bg-background text-heading',
+  activeClassName = 'border-orange-900 bg-orange-100 text-heading',
 }: RoleOptionCardProps) {
   return (
     <button

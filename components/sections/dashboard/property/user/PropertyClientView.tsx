@@ -8,10 +8,11 @@ import { PropertyGallery } from "@/components/sections/public/property/PropertyG
 import PropertyHead from "@/components/sections/public/property/PropertyHead";
 import { PropertyPricing } from "@/components/sections/public/property/PropetyPricing";
 import { PropertyDetailsPageSkeleton } from "@/components/skeleton/PropertyCardSkeleton";
-import { useAdminProperty } from "@/hooks/useSpecialized";
+import { usesellerProperty } from "@/hooks/useSpecialized";
+
 
 export default function UserDashbaordPropertyClientView({id}:any){
-  const {property, isLoading, error, refresh} = useAdminProperty(id);
+  const {property, isLoading, error, refresh} = usesellerProperty(id);
 
     if (error) {
     return (
