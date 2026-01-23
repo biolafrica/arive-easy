@@ -23,10 +23,10 @@ const typeOptions:FilterConfig = {
   options: [
     { value: '', label: 'All Types' },
     { value: 'escrow', label: 'Escrow' },
-    { value: 'processing_fee', label: 'Processing' },
-    { value: 'valuation_fee', label: 'Valuation' },
-    { value: 'legal_fee', label: 'Legal' },
-    { value: 'service_fee', label: 'Service' },
+    { value: 'processing fee', label: 'Processing' },
+    { value: 'valuation fee', label: 'Valuation' },
+    { value: 'legal fee', label: 'Legal' },
+    { value: 'service fee', label: 'Service' },
   ],
 }
   

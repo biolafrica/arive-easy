@@ -252,7 +252,6 @@ export function useAdminProperties(params?: any) {
 
 
 
-
 export function useArticles(params?: any) {
   const crud = useCrud<ArticleBase>({
     resource: 'articles',

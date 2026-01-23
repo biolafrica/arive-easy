@@ -5,7 +5,7 @@ import SidePanel from "@/components/ui/SidePanel";
 import { adminTransactionscolumns, statusConfig, } from "@/data/pages/dashboard/transaction";
 import { useSidePanel } from "@/hooks/useSidePanel";
 import { useTableFilters } from "@/hooks/useTableQuery";
-import { AdminTransactionBase, TransactionBase } from "@/type/pages/dashboard/transactions";
+import { TransactionBase } from "@/type/pages/dashboard/transactions";
 import { useMemo } from "react";
 import AdminTransactionDetail from "./AdminTransactionDetails";
 import DataTable from "@/components/common/DataTable";
@@ -21,7 +21,7 @@ export default function AdminTransactionClientView() {
     hasActiveFilters, handlePageChange, handleItemsPerPageChange, handleSort,
     handleFilterChange, handleSearchChange,
   } = useTableFilters({
-    initialFilters: { status: '' },searchFields: ['id'], defaultLimit: 10,
+    initialFilters: { status: '' },searchFields: [], defaultLimit: 10,
   });
 
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['users'],
@@ -61,7 +61,7 @@ export default function AdminTransactionClientView() {
         loading={isLoading}
         searchValue={searchValue}
         onSearchChange={handleSearchChange}
-        searchPlaceholder="Search property"
+        searchPlaceholder="Search user"
         filterDropdown={
           <FilterDropdown
             filters={filters}

@@ -112,6 +112,27 @@ export function formatUSD({
   }).format(value);
 }
 
+export function formatTime(
+  date: string | number | Date,
+  locale: string = "en-US",
+  options: Intl.DateTimeFormatOptions = {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  }
+): string {
+  if (!date) return "";
+
+  const d = date instanceof Date ? date : new Date(date);
+
+  if (isNaN(d.getTime())) {
+    console.warn("Invalid date supplied to formatTime:", date);
+    return "";
+  }
+
+  return d.toLocaleTimeString(locale, options);
+}
+
 
 export function parseCurrencyInput(value: string): number {
   const cleanedValue = value.replace(/[^0-9.]/g, '');

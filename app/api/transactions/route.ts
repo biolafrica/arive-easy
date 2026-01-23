@@ -6,7 +6,7 @@ import { TransactionBase } from "plaid";
 const propertyHandlers = createCRUDHandlers<TransactionBase>({
   table: 'transactions',
   requiredFields: ['user_id', 'application_id'],
-  searchFields: ['type'],
+  searchFields: ['type','user_name','property_name'],
   defaultSort: {
     field: 'created_at',
     order: 'desc'

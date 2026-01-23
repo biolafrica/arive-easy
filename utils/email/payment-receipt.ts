@@ -96,7 +96,7 @@ export const paymentReceiptBody = ({
         What happens next?
       </h4>
       <ul style="color: #92400e; margin: 10px 0; padding-left: 20px; font-size: 14px;">
-        <li style="margin-bottom: 5px;">Your application is now being reviewed</li>
+        <li style="margin-bottom: 5px;">Kindly go back to your your dashboard for your Immigration and Home country Identity Verification</li>
         <li style="margin-bottom: 5px;">You'll receive an update within 24-48 hours</li>
         <li>Once approved, you can start browsing properties</li>
       </ul>

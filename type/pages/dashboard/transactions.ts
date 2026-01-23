@@ -26,6 +26,8 @@ export interface TransactionBase{
   created_at:string;
   updated_at:string;
   metadata?:Metadata
+  user_name:string;
+  property_name?:string;
 }
 
 export type SellerTransactionBase = TransactionBase & {

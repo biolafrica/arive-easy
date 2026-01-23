@@ -13,6 +13,25 @@ export interface ApplicationStage {
   errorMessage?: string; 
 }
 
+export interface KYCData{
+  home_country_session_id?:string;
+  home_country_status?:string;
+  home_country_verified_at?:string;
+  home_country_document_type?:string;
+  home_country_document_number?:string;
+  home_country_expiry_date?:string;
+
+  immigration_session_id?:string;
+  immigration_status?:string;
+  immigration_verified_at?:string;
+  immigration_document_type?:string;
+  immigration_document_number?:string;
+  immigration_expiry_date?:string;
+
+  overall_status?:string;
+  updated_at:string;
+}
+
 export type ApplicationStageKey = 
 | "personal_info" 
 | "employment_info" 
@@ -41,7 +60,7 @@ export interface VerificationStageMetadata {
   status: StageStatus;
   error_message?: string;
   retry_count?: number;
-  data?: any;
+  data?: KYCData;
   kyc_status?: KYCStatus
 }
 
@@ -51,7 +70,7 @@ export type DeveloperStatus = | "pending" | "reviewing" | "approved" | "rejected
 export type UnderwritingStatus = | "pending" | "document_review" | "risk_assessment" | "approved" | "conditional" | "rejected" ;
 
 
-export interface  ApplicationBase{
+export interface ApplicationBase{
   id: string;
   application_number: string;
 

@@ -55,6 +55,7 @@ export async function POST(request:NextRequest){
 
     await queryBuilder.create({
       user_id:user.id,
+      user_name:user.user_metadata.name,
       application_id: application_id,
       stripe_session_id: session.id,
       amount:10000,

@@ -22,7 +22,7 @@ export default function UserTransactionClientView() {
     hasActiveFilters, handlePageChange, handleItemsPerPageChange, handleSort,
     handleFilterChange, handleSearchChange,
   } = useTableFilters({
-    initialFilters: { status: '' },searchFields: ['type'], defaultLimit: 10,
+    initialFilters: { status: '' },searchFields: [], defaultLimit: 10,
   });
 
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['applications'],

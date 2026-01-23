@@ -88,7 +88,9 @@ const preApprovalHandlers = createCRUDHandlers<PreApprovalBase>({
                 completed_at: undefined,
                 status: "current",
                 retry_count: 0,
-                data: null,
+                data: {
+                  updated_at:"",
+                },
                 kyc_status: undefined,
               },
               property_selection: {

@@ -3,7 +3,7 @@
 
 import { DescriptionList } from "@/components/common/DescriptionList";
 import { Button } from "@/components/primitives/Button";
-import { formatDate, formatUSD } from "@/lib/formatter";
+import { formatDate, formatTime, formatUSD } from "@/lib/formatter";
 import { TransactionBase } from "@/type/pages/dashboard/transactions";
 import { useRouter } from "next/navigation";
 
@@ -49,10 +49,10 @@ export default function UserTransactionDetails({ transaction }: Props) {
           items={[
             { label: 'Transacion ID', value: { type: 'text', value: transaction.id}},
             { label: 'Date', value: { type: 'text', value: formatDate(transaction.created_at)}},
-            { label: 'Time', value: { type: 'text', value: formatDate(transaction.created_at,)}},
+            { label: 'Time', value: { type: 'text', value: formatTime(transaction.created_at,)}},
             { label: 'type', value: { type: 'text', value: transaction.type}},
             { label: 'Payment Method', value: { type: 'text', value: transaction.payment_method }},
-            { label: 'Application ID', value: { type: 'text', value: transaction.application_id || '' }},
+            { label: `${transaction.application_id? "Application ID" : "Property ID"}`, value: { type: 'text', value: transaction.application_id || transaction.property_id || '' }},
           ]}
         />
       </div>

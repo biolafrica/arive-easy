@@ -21,7 +21,7 @@ export function useApplicationStatistics() {
 }
 
 export function useApplications(params?: any) {
-  const { user } = useAuthContext();
+  const { user, loading: isUserLoading } = useAuthContext();
 
   const crud = useCrud<ApplicationBase>({
     resource: 'applications',
@@ -31,27 +31,31 @@ export function useApplications(params?: any) {
   });
 
   const queryParams = useMemo(() => {
-    const mergedParams = { ...params };
+    if (!user?.id) return null; 
     
-    if (user?.id) {
-      mergedParams.filters = {
-        ...mergedParams.filters,
+    return {
+      ...params,
+      filters: {
+        ...params?.filters,
         user_id: user.id,
-      };
-    }
-    
-    return mergedParams;
+      },
+    };
   }, [params, user?.id]);
 
-  const { data, isLoading, error } = crud.useGetAll(queryParams);
+
+  const { data, isLoading, error } = crud.useGetAll(
+    queryParams || undefined, 
+    !isUserLoading && !!user?.id 
+  );
 
   return {
     applications: data?.data || [],
     pagination: data?.pagination,
-    isLoading,
+    isLoading: isLoading || isUserLoading,
     error,
     ...crud,
   };
+  
 }
 
 export function useUpdateApplication() {

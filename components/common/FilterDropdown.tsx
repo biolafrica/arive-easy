@@ -148,9 +148,7 @@ export default function FilterDropdown({
         ref={buttonRef}
         onClick={handleToggle}
         className={`
-          inline-flex items-center gap-2 px-4 py-2 bg-background border border-border 
-          rounded-lg text-sm text-text hover:bg-hover hover:border-accent 
-          focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 
+          inline-flex items-center gap-2 px-4 py-2 bg-background border border-border rounded-lg text-sm text-text hover:bg-hover hover:border-accent focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 
           focus:ring-offset-background transition-colors relative
           ${buttonClassName}
         `}
@@ -168,8 +166,7 @@ export default function FilterDropdown({
         <div
           ref={dropdownRef}
           className={`
-            absolute right-0 mt-2 w-80 bg-card border border-border rounded-lg 
-            shadow-lg bg-white z-50 overflow-hidden
+            absolute right-0 mt-2 w-80 bg-card border border-border rounded-lg shadow-lg bg-white z-50 overflow-hidden
             ${dropdownClassName}
           `}
         >
@@ -193,6 +190,7 @@ export default function FilterDropdown({
                 </label>
 
                 <div className="relative">
+
                   <button
                     type="button"
                     onClick={() => handleSelectToggle(config.key)}
@@ -214,8 +212,9 @@ export default function FilterDropdown({
                   </button>
 
                   {openSelect === config.key && (
-                    <div className="absolute z-10 w-full mt-1 bg-card border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                    <div className="absolute z-50 w-full mt-1 bg-card border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto">
                       {config.options.map((option) => (
+
                         <button
                           key={option.value}
                           type="button"
@@ -263,6 +262,7 @@ export default function FilterDropdown({
               Apply
             </Button>
           </div>
+
         </div>
       )}
     </div>

@@ -64,7 +64,6 @@ export type PropertyFormErrors = Partial<Record<keyof PropertyFormValues, string
   'tours.virtual3D'?: string;
 };
 
-
 export interface FormSectionProps {
   values: PropertyFormValues;
   errors: PropertyFormErrors;
