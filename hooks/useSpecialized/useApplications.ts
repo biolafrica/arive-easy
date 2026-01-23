@@ -150,7 +150,6 @@ export function useApplicationStageUpdates(application: ApplicationBase) {
           completed_at: new Date().toISOString(),
           status: 'completed',
           kyc_status: 'success',
-          data
         }
       },
       current_stage: 'terms_agreement',

@@ -1,7 +1,8 @@
+import { TransactionBase } from "@/type/pages/dashboard/transactions";
 import { requireAuth } from "@/utils/server/authMiddleware";
 import { createCRUDHandlers } from "@/utils/server/crudFactory";
 import { NextRequest } from "next/server";
-import { TransactionBase } from "plaid";
+
 
 const propertyHandlers = createCRUDHandlers<TransactionBase>({
   table: 'transactions',
