@@ -23,6 +23,7 @@ export default function IdentityVerificationStage({
   isReadOnly,
   isUpdating,
 }: Props) {
+
   const handleStatusUpdate = () => {
     onUpdate({
       identity_verification_status: 'pending',

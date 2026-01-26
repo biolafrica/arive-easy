@@ -32,16 +32,8 @@ export interface KYCData{
   updated_at:string;
 }
 
-export type ApplicationStageKey = 
-| "personal_info" 
-| "employment_info" 
-| "property_preferences" 
-| "documents_upload" 
-| "identity_verification" 
-| "property_selection" 
-| "terms_agreement" 
-| "payment_setup" 
-| "mortgage_activation" 
+export type ApplicationStageKey = | "personal_info" | "employment_info" | "property_preferences" | "documents_upload" | "identity_verification" | "property_selection" 
+| "terms_agreement" | "payment_setup" | "mortgage_activation" 
 
 export type StageStatus = | "completed" | "current" | "upcoming" | "rejected" | "in_progress" ;
 
@@ -171,5 +163,34 @@ export interface MockProperties {
   address: string;
 }
 
+
+export type StatusBannerVariant = 'pending' | 'approved' | 'declined';
+
+export interface StatusBannerProps {
+  variant: StatusBannerVariant;
+  propertyName: string;
+  reason?: string;
+}
+
+export interface PropertySelectionStageData {
+  status: '' | 'sent' | 'approved' | 'declined';
+  reason: string;
+  submitted_at: string;
+  property_name: string;
+  type: 'mortgage' | 'outright';
+}
+
+export interface Props {
+  application: ApplicationBase;
+  stageData: PropertySelectionStageData;
+  onUpdate: (data: {
+    property_id: string;
+    property_name: string;
+    property_price: number;
+    type: 'mortgage' | 'outright';
+  }) => Promise<any>;
+  isReadOnly?: boolean;
+  isUpdating?: boolean;
+}
 
 

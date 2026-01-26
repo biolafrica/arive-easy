@@ -16,7 +16,7 @@ export default function PaymentSuccessPage() {
   useEffect(() => {
     if (data?.status === 'failed' || data?.status === 'cancelled') {
       setTimeout(() => {
-        router.push('/test/cancelled');
+        router.push(`${process.env.NEXT_PUBLIC_API_URL}/test/cancelled`);
       }, 3000);
     }
   }, [data?.status, router]);
@@ -45,7 +45,7 @@ export default function PaymentSuccessPage() {
               {error instanceof Error ? error.message : 'Unable to verify payment status'}
             </p>
             <Button
-              onClick={() => router.push('/user-dashboard/dashboard')}
+              onClick={() => router.push(`${process.env.NEXT_PUBLIC_API_URL}/user-dashboard/`)}
               className="mt-6 w-full"
             >
               Back to Dashboard
@@ -99,14 +99,14 @@ export default function PaymentSuccessPage() {
 
           <div className="mt-6 space-y-3">
             <Button
-              onClick={() => router.push('/user-dashboard/applications')}
+              onClick={() => router.push(`${process.env.NEXT_PUBLIC_API_URL}/user-dashboard/applications`)}
               className="w-full"
             >
               View Application Status
             </Button>
             
             <Button
-              onClick={() => router.push('/user-dashboard')}
+              onClick={() => router.push(`${process.env.NEXT_PUBLIC_API_URL}/user-dashboard/`)}
               variant="outline"
               className="w-full"
             >

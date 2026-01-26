@@ -37,13 +37,13 @@ const preApprovalHandlers = createCRUDHandlers<PreApprovalBase>({
   },
   hooks:{
     afterUpdate:async(created,_,context)=>{
-      if(created.is_complete === true){
+      if(created.completed_steps === 4 && created.current_step === 5){
         try {
           await sendEmail({
-            to:  `${context.auth?.email}`,
+            to:  `${created.personal_info.email}`,
             subject: 'Pre-Approval Application Received',
             html: preApprovalReceivedBody({
-              userName: `${context?.auth?.name}`,
+              userName: `${created.personal_info.first_name}`,
               referenceNumber: `${created.reference_number}`,
             }),
           });

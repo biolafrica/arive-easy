@@ -1,6 +1,8 @@
 import { StatusConfig, TableColumn } from "@/components/common/DataTable";
 import { formatDate } from "@/lib/formatter";
-import { ApplicationStage, MockApplications } from "@/type/pages/dashboard/application";
+import { ApplicationStage, MockApplications, PropertySelectionStageData } from "@/type/pages/dashboard/application";
+import { PropertyBase } from "@/type/pages/property";
+import {ClockIcon, CheckCircleIcon, XCircleIcon} from '@heroicons/react/24/outline';
 
 export const APPLICATION_STAGES: ApplicationStage[] = [
   {
@@ -81,3 +83,41 @@ export function usePreApplications(queryParams?: Record<string, any>) {
     isLoading: false,
   }
 }
+
+
+export const STATUS_CONFIG = {
+  pending: {
+    icon: ClockIcon,
+    container: 'bg-blue-50 border-blue-200',
+    iconColor: 'text-blue-500',
+    title: 'Awaiting Seller Review',
+    titleColor: 'text-blue-900',
+    textColor: 'text-blue-700',
+    defaultMessage: (propertyName: string) =>
+      `Your selection for ${propertyName} has been sent to the seller for review. You’ll be notified once they respond.`,
+  },
+
+  approved: {
+    icon: CheckCircleIcon,
+    container: 'bg-green-50 border-green-200',
+    iconColor: 'text-green-500',
+    title: 'Property Approved!',
+    titleColor: 'text-green-900',
+    textColor: 'text-green-700',
+    defaultMessage: (propertyName: string) =>
+      `Great news! The seller has approved your selection for ${propertyName}. You can now proceed to the next step.`,
+  },
+
+  declined: {
+    icon: XCircleIcon,
+    container: 'bg-red-50 border-red-200',
+    iconColor: 'text-red-500',
+    title: 'Property Selection Declined',
+    titleColor: 'text-red-900',
+    textColor: 'text-red-700',
+    defaultMessage: (propertyName: string) =>
+      `Unfortunately, your selection for ${propertyName} was declined.`,
+  },
+} as const;
+
+

@@ -110,7 +110,7 @@ const ConfirmBanner: React.FC<ConfirmBannerProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-background backdrop-blur-sm p-4 animate-in fade-in duration-200"
       onClick={handleBackdropClick}
       role="dialog"
       aria-modal="true"
@@ -119,7 +119,7 @@ const ConfirmBanner: React.FC<ConfirmBannerProps> = ({
     >
       <div
         ref={dialogRef}
-        className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl max-w-md w-full overflow-hidden animate-in slide-in-from-bottom-4 duration-300"
+        className="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden animate-in slide-in-from-bottom-4 duration-300"
         onClick={handleDialogClick}
         tabIndex={-1}
       >

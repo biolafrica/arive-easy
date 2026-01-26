@@ -113,50 +113,57 @@ export function useApplicationStageUpdates(application: ApplicationBase) {
 
   const updatePropertySelection = async (data: {
     property_id: string;
-    [key: string]: any;
+    property_name: string;
+    property_price: number;
+    type: 'mortgage' | 'outright';
   }) => {
     return updateApplication(application.id, {
+      property_id: data.property_id,
+      property_price: data.property_price,
       stages_completed: {
         ...application.stages_completed,
         property_selection: {
-          completed: true,
-          completed_at: new Date().toISOString(),
-          status: 'completed',
-          data
+          completed: false,
+          completed_at: '',
+          status: 'in_progress',
+          data: {
+            status: 'sent',
+            reason: '',
+            submitted_at: new Date().toISOString(),
+            property_name: data.property_name,
+            type: data.type
+          }
         }
-      },
-      current_stage: 'identity_verification',
-      current_step: 6
-    }, {
-      successMessage: 'Property selected successfully'
-    });
-
-  };
+      }
+    }, 
+    {successMessage: 'Selected Property submitted successfully'}
+  )};
   
   const updateIdentityVerification = async (data: {
     kyc_session_id: string;
     kyc_result: any;
     kyc_status: string;
   }) => {
-    return updateApplication(application.id, {
-      kyc_status: data.kyc_status,
-      kyc_session_id: data.kyc_session_id,
-      kyc_result: data.kyc_result,
-      kyc_verified_at: new Date().toISOString(),
-      stages_completed: {
-        ...application.stages_completed,
-        identity_verification: {
-          completed: true,
-          completed_at: new Date().toISOString(),
-          status: 'completed',
-          kyc_status: 'success',
-        }
-      },
-      current_stage: 'terms_agreement',
-      current_step: 7
-    }, {
-      successMessage: 'Identity verified successfully'
-    });
+    return updateApplication(application.id,
+      {
+        kyc_status: data.kyc_status,
+        kyc_session_id: data.kyc_session_id,
+        kyc_result: data.kyc_result,
+        kyc_verified_at: new Date().toISOString(),
+        stages_completed: {
+          ...application.stages_completed,
+          identity_verification: {
+            completed: true,
+            completed_at: new Date().toISOString(),
+            status: 'completed',
+            kyc_status: 'success',
+          }
+        },
+        current_stage: 'terms_agreement',
+        current_step: 7
+      }, 
+      {successMessage: 'Identity verified successfully'}
+    )
   };
   
   const updateTermsAgreement = async (data: {

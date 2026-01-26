@@ -9,7 +9,7 @@ import { StepProgress } from "@/components/ui/ProgressBar";
 import PersonalInfoStage from "../stages/PersonalInfoStage";
 import EmploymentInfoStage from "../stages/EmploymentInfoStage";
 import DocumentsStage from "../stages/DocumentsStage";
-import PropertySelectionStage from "../stages/PropertySelectionStage";
+import PropertySelectionStage from "../stages/property-selection/PropertySelectionStage";
 import IdentityVerificationStage from "../stages/verification/IdentityVerificationStage";
 import TermsAgreementStage from "../stages/TermsAgreementStage";
 import PaymentSetupStage from "../stages/PaymentSetupStage";

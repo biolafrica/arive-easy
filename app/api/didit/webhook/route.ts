@@ -236,6 +236,7 @@ export async function POST(request: NextRequest) {
     }
 
     const user = await userQueryBuilder.findById(updateVerification.user_id)
+    console.log("payload received", payload);
 
     if (updateData.overall_status === 'approved') {
 
@@ -249,6 +250,8 @@ export async function POST(request: NextRequest) {
       const application = await applicationQueryBuilder.update(applicationId,{
         identity_verification_status:'approved',
         identity_verification_completed_at: new Date().toISOString(),
+        current_stage: 'property_selection',
+        current_step: 6,
         stages_completed:{
           ...currentApplication.stages_completed,
           identity_verification:{
@@ -285,26 +288,48 @@ export async function POST(request: NextRequest) {
 
     if (internalStatus === 'declined') {
       const currentApplication = await applicationQueryBuilder.findById(applicationId);
-      const idData = payload.decision?.id_verifications?.[0];
+      const idVerification = payload.decision?.id_verifications?.[0];
+      
+      // Get the first warning with an error log_type, or the first warning overall
+      const errorWarning = idVerification?.warnings?.find(w => w.log_type === 'error') 
+        || idVerification?.warnings?.[0];
+      
+      const errorMessage = errorWarning?.long_description 
+        || errorWarning?.short_description 
+        || 'Verification failed. Please try again with clearer documents.';
 
       if (!currentApplication) {
         console.error('Application not found');
         return NextResponse.json({ error: 'Application not found' }, { status: 404 });
       }
 
-      await applicationQueryBuilder.update(applicationId,{
-        identity_verification_status:'failed',
-        stages_completed:{
+      const updatedData: any = {
+        ...currentApplication.stages_completed.identity_verification?.data,
+        updated_at: new Date().toISOString(),
+      };
+
+      if (verificationType === 'home_country') {
+        updatedData.home_country_status = 'declined';
+        updatedData.home_country_error_message = errorMessage;
+      } else {
+        updatedData.immigration_status = 'declined';
+        updatedData.immigration_error_message = errorMessage;
+      }
+
+      await applicationQueryBuilder.update(applicationId, {
+        identity_verification_status: 'failed',
+        stages_completed: {
           ...currentApplication.stages_completed,
-          identity_verification:{
+          identity_verification: {
             ...currentApplication.stages_completed.identity_verification,
-            completed:false,
-            status:'completed',
-            kyc_status:'failed',
-            error_message:idData?.warnings?.[1].long_description,
+            completed: false,
+            status: 'current', 
+            kyc_status: 'failed',
+            error_message: errorMessage,
+            data: updatedData,
           }
         }
-      })
+      });
 
       try {
         await sendEmail({
@@ -314,9 +339,10 @@ export async function POST(request: NextRequest) {
             userName:user.name,
             referenceNumber:applicationId,
             canResubmit:false,
-            declineReasons:idData?.warnings?.[1].long_description
+            declineReasons:errorMessage
           })
         });
+
       } catch (emailError) {
         console.error('Failed to send failure email:', emailError);
       }

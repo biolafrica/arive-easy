@@ -1,7 +1,4 @@
-export const preApprovalReceivedBody = ({
-  userName,
-  referenceNumber,
-}: {
+export const preApprovalReceivedBody = ({userName, referenceNumber}: {
   userName: string;
   referenceNumber: string;
 }) => {
@@ -71,10 +68,7 @@ export const preApprovalReceivedBody = ({
   `;
 };
 
-export const preApprovalAcceptedBody = ({
-  userName,
-  referenceNumber,
-}: {
+export const preApprovalAcceptedBody = ({userName, referenceNumber}: {
   userName: string;
   referenceNumber: string;
 }) => {

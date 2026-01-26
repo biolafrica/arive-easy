@@ -33,10 +33,6 @@ export default function OfferClientView ({value=''}){
 
   
   const {offers, isLoading, pagination} = useSellerOffers(queryParams, value);
-  
-
-  
-  
 
   const emptyMessage = useMemo(
     () => getTableEmptyMessage(hasActiveFilters, 'offers'),

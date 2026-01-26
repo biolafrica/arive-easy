@@ -1,5 +1,7 @@
 import { PropertyForm } from "@/type/pages/property";
+import { requireAuth } from "@/utils/server/authMiddleware";
 import { createCRUDHandlers } from "@/utils/server/crudFactory";
+import { NextRequest } from "next/server";
 
 
 const propertyHandlers = createCRUDHandlers<PropertyForm>({
@@ -10,6 +12,7 @@ const propertyHandlers = createCRUDHandlers<PropertyForm>({
     field: 'created_at',
     order: 'desc'
   },
+
 });
 
 export const { GET, POST, PUT, DELETE } = propertyHandlers;

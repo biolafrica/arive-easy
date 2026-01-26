@@ -23,14 +23,14 @@ export default function PaymentCancelledPage() {
 
           <div className="mt-6 space-y-3">
             <Button
-              onClick={() => router.push('/user-dashboard/applications')}
+              onClick={() => router.push(`${process.env.NEXT_PUBLIC_API_URL}/user-dashboard/applications`)}
               className="w-full"
             >
               Retry Payment
             </Button>
             
             <Button
-              onClick={() => router.push('/user-dashboard')}
+              onClick={() => router.push(`${process.env.NEXT_PUBLIC_API_URL}/user-dashboard/`)}
               variant="outline"
               className="w-full"
             >
