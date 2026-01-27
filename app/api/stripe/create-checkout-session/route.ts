@@ -20,7 +20,8 @@ export async function POST(request:NextRequest){
     const existingTransaction = await queryBuilder.findOneByCondition({
       application_id:application_id, 
       user_id: user.id, 
-      status : "succeeded"
+      type:"processing fee",
+      status : "succeeded",
     })
 
     if (existingTransaction) {

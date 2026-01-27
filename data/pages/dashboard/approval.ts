@@ -1,7 +1,7 @@
 import { StatusConfig, TableColumn } from "@/components/common/DataTable";
-import { formatDate } from "@/lib/formatter";
+import { formatDate,} from "@/lib/formatter";
 import { FormField } from "@/type/form";
-import {PreApprovalBase } from "@/type/pages/dashboard/approval";
+import {PreApprovalBase } from "@/type/pages/dashboard/approval"
 
 
 export const personalInfoFields:FormField[] = [
@@ -217,4 +217,5 @@ export const statusConfig: StatusConfig[] = [
   { value: 'rejected', label: 'Rejected', variant: 'red' },
   { value: 'draft', label: 'Draft', variant: 'blue' },
 ];
+
 

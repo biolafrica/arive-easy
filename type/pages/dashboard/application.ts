@@ -62,6 +62,15 @@ export type DeveloperStatus = | "pending" | "reviewing" | "approved" | "rejected
 export type UnderwritingStatus = | "pending" | "document_review" | "risk_assessment" | "approved" | "conditional" | "rejected" ;
 
 
+export interface StageMetadata {
+  completed: boolean;
+  completed_at?: string;
+  status: StageStatus;
+  error_message?: string;
+  retry_count?: number;
+  data?: any;
+}
+
 export interface ApplicationBase{
   id: string;
   application_number: string;
@@ -187,6 +196,7 @@ export interface Props {
     property_id: string;
     property_name: string;
     property_price: number;
+    developer_id:string;
     type: 'mortgage' | 'outright';
   }) => Promise<any>;
   isReadOnly?: boolean;

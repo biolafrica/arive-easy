@@ -42,7 +42,6 @@ const applicationHandlers = createCRUDHandlers<ApplicationBase>({
       const userQueryBuilder = new SupabaseQueryBuilder<UserBase>('users');
 
       const currentStageData = updated.stages_completed?.property_selection?.data;
-      const previousStageData = previous?.stages_completed?.property_selection?.data;
 
       if ( currentStageData?.status === 'sent' && updated.property_id) {
         try {

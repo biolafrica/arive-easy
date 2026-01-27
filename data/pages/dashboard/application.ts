@@ -1,7 +1,7 @@
 import { StatusConfig, TableColumn } from "@/components/common/DataTable";
-import { formatDate } from "@/lib/formatter";
-import { ApplicationStage, MockApplications, PropertySelectionStageData } from "@/type/pages/dashboard/application";
-import { PropertyBase } from "@/type/pages/property";
+import { formatDate, formatUSD } from "@/lib/formatter";
+import { FormField } from "@/type/form";
+import { ApplicationStage, MockApplications} from "@/type/pages/dashboard/application";
 import {ClockIcon, CheckCircleIcon, XCircleIcon} from '@heroicons/react/24/outline';
 
 export const APPLICATION_STAGES: ApplicationStage[] = [
@@ -120,4 +120,16 @@ export const STATUS_CONFIG = {
   },
 } as const;
 
+
+export const downPaymentField:FormField[]=[
+  {name: 'down_payment', label:"Down Payment", type:'text', required:true , placeholder:"Enter Amount"}
+]
+
+export interface DownPaymentForm{
+  down_payment:string
+}
+
+export const downPaymentInitialValue:DownPaymentForm ={
+  down_payment: formatUSD({amount:0, fromCents:false, decimals:2})
+}
 

@@ -5,6 +5,10 @@ import { ApplicationBase } from "./application";
 export interface Metadata{
   session_url:string | null;
   expires_at:string;
+  seller_id?:string;
+  property_id?:string;
+  escrow_status?:string;
+  payment_type?:string;
 }
 
 export interface TransactionBase{

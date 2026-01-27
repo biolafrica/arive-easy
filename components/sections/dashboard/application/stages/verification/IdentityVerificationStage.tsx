@@ -20,8 +20,8 @@ export default function IdentityVerificationStage({
   application,
   stageData,
   onUpdate,
-  isReadOnly,
-  isUpdating,
+  isReadOnly=false,
+  isUpdating=false,
 }: Props) {
 
   const handleStatusUpdate = () => {

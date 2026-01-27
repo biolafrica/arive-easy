@@ -1,3 +1,4 @@
+import { ApplicationBase } from '@/type/pages/dashboard/application';
 import { UserBase } from '@/type/user';
 import { paymentReceiptBody } from '@/utils/email/payment-receipt';
 import { sendEmail } from '@/utils/email/send_email';
@@ -18,6 +19,7 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   const queryBuilder = new SupabaseQueryBuilder<UserBase>("users");
+  const applicationQueryBuilder = new SupabaseQueryBuilder<ApplicationBase>("applications");
 
   try {
     const body = await request.text();
@@ -49,24 +51,27 @@ export async function POST(request: NextRequest) {
     }
     
     switch (event.type) {
+
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
+
+        const isEscrowPayment = session.metadata?.payment_type?.startsWith('escrow_');
         
         const { data: transaction, error: updateError } = await supabaseAdmin
-          .from('transactions')
-          .update({
-            status: 'succeeded',
-            stripe_payment_intent_id: session.payment_intent as string | null,
-            payment_method: session.payment_method_types?.[0] || 'card',
-            metadata: {
-              completed_at: new Date().toISOString(),
-              customer_details: session.customer_details,
-            },
-            updated_at: new Date().toISOString(),
-          })
-          .eq('stripe_session_id', session.id)
-          .select()
-          .single();
+        .from('transactions')
+        .update({
+          status: 'succeeded',
+          stripe_payment_intent_id: session.payment_intent as string | null,
+          payment_method: session.payment_method_types?.[0] || 'card',
+          metadata: {
+            completed_at: new Date().toISOString(),
+            customer_details: session.customer_details,
+          },
+          updated_at: new Date().toISOString(),
+        })
+        .eq('stripe_session_id', session.id)
+        .select()
+        .single();
 
         if (updateError) {
           return NextResponse.json(
@@ -75,7 +80,6 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        const user = await queryBuilder.findById(session.metadata?.user_id || '');
 
         if (session.metadata?.application_id) {
           const { error: appUpdateError } = await supabaseAdmin
@@ -94,6 +98,7 @@ export async function POST(request: NextRequest) {
           }
         }
 
+        const user = await queryBuilder.findById(session.metadata?.user_id || '');
         if (user?.email && transaction) {
           try {
             await sendEmail({
@@ -107,6 +112,7 @@ export async function POST(request: NextRequest) {
                 receiptUrl: '',
                 applicationId: session.metadata?.application_id || '',
                 paymentDate: new Date().toISOString(),
+                type:"payment"
               }),
             });
             console.log('Receipt email sent to:', user.email);
@@ -115,7 +121,93 @@ export async function POST(request: NextRequest) {
           }
         }
 
+        if (isEscrowPayment) {
+          const { data: newTransaction, error: updateError } = await supabaseAdmin
+            .from('transactions')
+            .update({
+              status: 'succeeded',
+              stripe_payment_intent_id: session.payment_intent as string | null,
+              payment_method: session.payment_method_types?.[0] || 'card',
+              metadata: {
+                completed_at: new Date().toISOString(),
+                customer_details: session.customer_details,
+                escrow_status: 'held', 
+              },
+              updated_at: new Date().toISOString(),
+            })
+            .eq('stripe_session_id', session.id)
+            .select()
+            .single();
+
+          if (updateError) {
+            console.error('Failed to update escrow transaction:', updateError);
+            break;
+          }
+
+          if (session.metadata?.application_id && session.metadata?.payment_type) {
+            const paymentType = session.metadata.payment_type.replace('escrow_', '');
+            const updateData: any = {};
+
+            if (paymentType === 'down_payment') {
+              await applicationQueryBuilder.update(session.metadata.application_id,{
+                down_payment_amount: parseInt(session.metadata.original_amount || '0'),
+                updated_at: new Date().toISOString(),
+              })
+
+              updateData[`${paymentType}_amount`] = parseInt(session.metadata.original_amount || '0');
+              updateData[`${paymentType}_status`] = 'escrowed';
+              updateData[`${paymentType}_transaction_id`] = newTransaction.id;
+              updateData[`${paymentType}_date`] = new Date().toISOString();
+            }
+
+            const application = await applicationQueryBuilder.findById(session.metadata.application_id)
+
+            if (application) {
+              const stageData = application.stages_completed?.payment_setup?.data || {};
+              const updatedStageData = { ...stageData, ...updateData };
+
+              await applicationQueryBuilder.update(session.metadata.application_id,{
+                stages_completed: {
+                  ...application.stages_completed,
+                  payment_setup: {
+                    ...application.stages_completed.payment_setup,
+                    status:'current',
+                    completed:false,
+                    data: updatedStageData,
+                  }
+                },
+                updated_at: new Date().toISOString(),
+              })
+          
+            }
+          }
+
+          const user = await queryBuilder.findById(session.metadata?.user_id || '');
+          if (user?.email && transaction) {
+            try {
+              await sendEmail({
+                to: user.email,
+                subject: 'Escrow Payment Confirmed - Ariveasy',
+                html: paymentReceiptBody({
+                  userName: user.name || 'Customer',
+                  amount: session.amount_total || 0,
+                  currency: session.currency || 'usd',
+                  transactionId: transaction.id,
+                  receiptUrl: '',
+                  applicationId: session.metadata?.application_id || '',
+                  paymentDate: new Date().toISOString(),
+                  type:"escrow"
+                }),
+              });
+
+            } catch (emailError) {
+              console.error('Failed to send escrow confirmation email:', emailError);
+            }
+          }
+        }
+
         break;
+
       }
 
       case 'checkout.session.expired': {

@@ -6,6 +6,7 @@ export const paymentReceiptBody = ({
   receiptUrl,
   paymentDate,
   applicationId,
+  type
 }: {
   userName: string;
   amount: number;
@@ -14,6 +15,7 @@ export const paymentReceiptBody = ({
   receiptUrl?: string;
   applicationId: string;
   paymentDate: string;
+  type:string
 }) => {
   const formattedAmount = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -95,11 +97,21 @@ export const paymentReceiptBody = ({
       <h4 style="color: #92400e; margin: 0 0 10px 0; font-size: 14px; font-weight: 600;">
         What happens next?
       </h4>
-      <ul style="color: #92400e; margin: 10px 0; padding-left: 20px; font-size: 14px;">
-        <li style="margin-bottom: 5px;">Kindly go back to your your dashboard for your Immigration and Home country Identity Verification</li>
-        <li style="margin-bottom: 5px;">You'll receive an update within 24-48 hours</li>
-        <li>Once approved, you can start browsing properties</li>
-      </ul>
+      ${type === 'payment' ? `
+        <ul style="color: #92400e; margin: 10px 0; padding-left: 20px; font-size: 14px;">
+          <li style="margin-bottom: 5px;">Kindly go back to your your dashboard for your Immigration and Home country Identity Verification</li>
+          <li style="margin-bottom: 5px;">You'll receive an update within 24-48 hours</li>
+          <li>Once approved, you can start browsing properties</li>
+        </ul>` 
+        : `
+        <ul style="color: #92400e; margin: 10px 0; padding-left: 20px; font-size: 14px;">
+          <li style="margin-bottom: 5px;">Wait for a detail email about the apartment valuation from our support team</li>
+          <li style="margin-bottom: 5px;">You'll receive an update within 5 working days</li>
+          <li>After valuation, you can sign the necessary document and activate your mortgage </li>
+        </ul>`
+      }
+    
+
     </div>
   `;
 };

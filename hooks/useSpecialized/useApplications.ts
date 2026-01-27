@@ -115,11 +115,13 @@ export function useApplicationStageUpdates(application: ApplicationBase) {
     property_id: string;
     property_name: string;
     property_price: number;
+    developer_id:string;
     type: 'mortgage' | 'outright';
   }) => {
     return updateApplication(application.id, {
       property_id: data.property_id,
       property_price: data.property_price,
+      developer_id:data.developer_id,
       stages_completed: {
         ...application.stages_completed,
         property_selection: {

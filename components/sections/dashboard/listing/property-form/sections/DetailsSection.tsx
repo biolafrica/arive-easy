@@ -40,7 +40,6 @@ export function DetailsSection() {
 
       <div>
         <label htmlFor="price" className="block text-sm font-medium text-heading mb-1">
-
           Price (USD) <span className="text-red-500">*</span>
         </label>
         <div className="relative">

@@ -83,7 +83,8 @@ export default function PropertySelectionStage({
         property_id: selectedProperty.id,
         property_name: selectedProperty.title,
         property_price: Number(selectedProperty.price),
-        type: 'mortgage'
+        type: 'mortgage',
+        developer_id: selectedProperty?.developer_id || ""
       });
       setSelectedPropertyId(null);
     } catch (error) {
