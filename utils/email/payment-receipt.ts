@@ -73,7 +73,7 @@ export const paymentReceiptBody = ({
         <tr>
           <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Description:</td>
           <td style="padding: 8px 0; color: #1f2937; font-size: 14px; text-align: right;">
-            Application Processing Fee
+            ${type} Fee
           </td>
         </tr>
       </table>
@@ -97,17 +97,35 @@ export const paymentReceiptBody = ({
       <h4 style="color: #92400e; margin: 0 0 10px 0; font-size: 14px; font-weight: 600;">
         What happens next?
       </h4>
-      ${type === 'payment' ? `
+
+      ${type === 'Application Processing' ? `
+
         <ul style="color: #92400e; margin: 10px 0; padding-left: 20px; font-size: 14px;">
           <li style="margin-bottom: 5px;">Kindly go back to your your dashboard for your Immigration and Home country Identity Verification</li>
           <li style="margin-bottom: 5px;">You'll receive an update within 24-48 hours</li>
-          <li>Once approved, you can start browsing properties</li>
+          <li>Once Successfull, you can start browsing properties</li>
         </ul>` 
-        : `
-        <ul style="color: #92400e; margin: 10px 0; padding-left: 20px; font-size: 14px;">
+
+        : type === 'Escrow'? `<ul style="color: #92400e; margin: 10px 0; padding-left: 20px; font-size: 14px;">
           <li style="margin-bottom: 5px;">Wait for a detail email about the apartment valuation from our support team</li>
           <li style="margin-bottom: 5px;">You'll receive an update within 5 working days</li>
           <li>After valuation, you can sign the necessary document and activate your mortgage </li>
+        </ul>`
+
+        : type === 'Legal' ? `<ul style="color: #92400e; margin: 10px 0; padding-left: 20px; font-size: 14px;">
+          <li style="margin-bottom: 5px;">Wait for a detail email about the apartment remaining documents from our support team</li>
+          <li style="margin-bottom: 5px;">You'll receive an update within 5 working days</li>
+          <li>After legal stage, we activate your mortgage </li>
+        </ul>` 
+
+        : type === "Valuation" ? `<ul style="color: #92400e; margin: 10px 0; padding-left: 20px; font-size: 14px;">
+          <li style="margin-bottom: 5px;">Wait for a detail email about the apartment valuation from our support team</li>
+          <li style="margin-bottom: 5px;">You'll receive an update within 5 working days</li>
+          <li>After valuation, you can sign the necessary document and activate your mortgage </li>
+        </ul>` 
+
+        : ` <ul style="color: #92400e; margin: 10px 0; padding-left: 20px; font-size: 14px;">
+          <li style="margin-bottom: 5px;">Wait for a detail email about the apartment from our support team</li>
         </ul>`
       }
     

@@ -11,21 +11,17 @@ import { DownPaymentForm, downPaymentField, downPaymentInitialValue } from '@/da
 interface DownPaymentSectionProps {
   application: ApplicationBase;
   paymentData: any;
-  onUpdate: (data: any) => void;
   suggestedDownPayment: number;
   isReadOnly: boolean;
   isUpdating: boolean;
-  isDownPaymentSufficient: boolean;
 }
 
 export function DownPaymentSection({
   application,
   paymentData,
-  onUpdate,
   suggestedDownPayment,
   isReadOnly,
   isUpdating,
-  isDownPaymentSufficient
 }: DownPaymentSectionProps) {
   const [customAmount, setCustomAmount] = useState(paymentData.down_payment_amount);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -165,6 +161,7 @@ export function DownPaymentSection({
           </div>
         </div>
       )}
+      
     </div>
   );
 }

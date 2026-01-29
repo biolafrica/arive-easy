@@ -46,4 +46,3 @@ export type AdminTransactionBase = TransactionBase & {
   };
 }
 
-

@@ -54,75 +54,11 @@ export async function POST(request: NextRequest) {
 
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
-
         const isEscrowPayment = session.metadata?.payment_type?.startsWith('escrow_');
+        const paymentType = session.metadata?.payment_type;
         
-        const { data: transaction, error: updateError } = await supabaseAdmin
-        .from('transactions')
-        .update({
-          status: 'succeeded',
-          stripe_payment_intent_id: session.payment_intent as string | null,
-          payment_method: session.payment_method_types?.[0] || 'card',
-          metadata: {
-            completed_at: new Date().toISOString(),
-            customer_details: session.customer_details,
-          },
-          updated_at: new Date().toISOString(),
-        })
-        .eq('stripe_session_id', session.id)
-        .select()
-        .single();
-
-        if (updateError) {
-          return NextResponse.json(
-            { error: 'Failed to update transaction' },
-            { status: 500 }
-          );
-        }
-
-
-        if (session.metadata?.application_id) {
-          const { error: appUpdateError } = await supabaseAdmin
-            .from('applications')
-            .update({
-              processing_fee_payment_status: 'paid',
-              processing_fee_payment_day: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            })
-            .eq('id', session.metadata.application_id);
-          
-          if (appUpdateError) {
-            console.error('Failed to update application:', appUpdateError);
-          } else {
-            console.log('Application updated successfully');
-          }
-        }
-
-        const user = await queryBuilder.findById(session.metadata?.user_id || '');
-        if (user?.email && transaction) {
-          try {
-            await sendEmail({
-              to: user.email,
-              subject: 'Payment Receipt - Ariveasy',
-              html: paymentReceiptBody({
-                userName: user.name || 'Customer',
-                amount: session.amount_total || 10000,
-                currency: session.currency || 'usd',
-                transactionId: transaction.id,
-                receiptUrl: '',
-                applicationId: session.metadata?.application_id || '',
-                paymentDate: new Date().toISOString(),
-                type:"payment"
-              }),
-            });
-            console.log('Receipt email sent to:', user.email);
-          } catch (emailError) {
-            console.error('Failed to send receipt email:', emailError);
-          }
-        }
-
         if (isEscrowPayment) {
-          const { data: newTransaction, error: updateError } = await supabaseAdmin
+          const { data: transaction, error: updateError } = await supabaseAdmin
             .from('transactions')
             .update({
               status: 'succeeded',
@@ -156,7 +92,7 @@ export async function POST(request: NextRequest) {
 
               updateData[`${paymentType}_amount`] = parseInt(session.metadata.original_amount || '0');
               updateData[`${paymentType}_status`] = 'escrowed';
-              updateData[`${paymentType}_transaction_id`] = newTransaction.id;
+              updateData[`${paymentType}_transaction_id`] = transaction.id;
               updateData[`${paymentType}_date`] = new Date().toISOString();
             }
 
@@ -184,10 +120,11 @@ export async function POST(request: NextRequest) {
 
           const user = await queryBuilder.findById(session.metadata?.user_id || '');
           if (user?.email && transaction) {
+
             try {
               await sendEmail({
                 to: user.email,
-                subject: 'Escrow Payment Confirmed - Ariveasy',
+                subject: 'Escrow Payment Confirmed - Kletch',
                 html: paymentReceiptBody({
                   userName: user.name || 'Customer',
                   amount: session.amount_total || 0,
@@ -196,14 +133,239 @@ export async function POST(request: NextRequest) {
                   receiptUrl: '',
                   applicationId: session.metadata?.application_id || '',
                   paymentDate: new Date().toISOString(),
-                  type:"escrow"
+                  type:"Escrow"
                 }),
               });
 
             } catch (emailError) {
               console.error('Failed to send escrow confirmation email:', emailError);
             }
+
           }
+        }
+
+        if (paymentType === 'legal_fee') {
+          console.log("initiated legal fee payment", paymentType)
+          const { data: transaction, error: updateError } = await supabaseAdmin
+          .from('transactions')
+          .update({
+            status: 'succeeded',
+            stripe_payment_intent_id: session.payment_intent as string | null,
+            payment_method: session.payment_method_types?.[0] || 'card',
+            metadata: {
+              completed_at: new Date().toISOString(),
+              customer_details: session.customer_details,
+            },
+            updated_at: new Date().toISOString(),
+          })
+          .eq('stripe_session_id', session.id)
+          .select()
+          .single();
+
+          if (!updateError && session.metadata?.application_id) {
+
+            await applicationQueryBuilder.update(session.metadata.application_id,{
+              legal_fee_payment_status: 'paid',
+              legal_fee_payment_date: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            })
+
+            const application =await applicationQueryBuilder.findById(session.metadata.application_id)
+
+            if (application) {
+              const stageData = application.stages_completed?.payment_setup?.data || {};
+              const updatedStageData = {
+                ...stageData,
+                legal_fee_status: 'paid',
+                legal_fee_transaction_id: transaction?.id,
+                legal_fee_date: new Date().toISOString(),
+                legal_fee_amount:parseInt(session.metadata.original_amount || '0')
+
+              };
+
+              await applicationQueryBuilder.update(session.metadata.application_id,{
+                stages_completed: {
+                  ...application.stages_completed,
+                  payment_setup: {
+                    completed:false,
+                    status:'current',
+                    ...application.stages_completed?.payment_setup,
+                    data: updatedStageData
+                  }
+                },
+              })
+
+            }
+          }
+
+          const user = await queryBuilder.findById(session.metadata?.user_id || '');
+          if (user?.email && transaction) {
+
+            try {
+              await sendEmail({
+                to: user.email,
+                subject: 'Legal Fee Payment Confirmed - Kletch',
+                html: paymentReceiptBody({
+                  userName: user.name || 'Customer',
+                  amount: session.amount_total || 0,
+                  currency: session.currency || 'usd',
+                  transactionId: transaction.id,
+                  receiptUrl: '',
+                  applicationId: session.metadata?.application_id || '',
+                  paymentDate: new Date().toISOString(),
+                  type:"Legal"
+                }),
+              });
+
+            } catch (emailError) {
+              console.error('Failed to send legal fee confirmation email:', emailError);
+            }
+
+          }
+
+        }else if (paymentType === 'valuation_fee') {
+
+          const { data: transaction, error: updateError } = await supabaseAdmin
+            .from('transactions')
+            .update({
+              status: 'succeeded',
+              stripe_payment_intent_id: session.payment_intent as string | null,
+              payment_method: session.payment_method_types?.[0] || 'card',
+              metadata: {
+                completed_at: new Date().toISOString(),
+                customer_details: session.customer_details,
+              },
+              updated_at: new Date().toISOString(),
+            })
+            .eq('stripe_session_id', session.id)
+            .select()
+            .single();
+
+          if (!updateError && session.metadata?.application_id) {
+
+            await applicationQueryBuilder.update(session.metadata.application_id,{
+              valuation_fee_payment_status: 'paid',
+              valuation_fee_payment_date: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            })
+
+            const application = await applicationQueryBuilder.findById(session.metadata.application_id)
+
+            if (application) {
+              const stageData = application.stages_completed?.payment_setup?.data || {};
+              const updatedStageData = {
+                ...stageData,
+                valuation_fee_status: 'paid',
+                valuation_transaction_id: transaction?.id,
+                valuation_fee_date: new Date().toISOString(),
+                valuation_fee_amount:parseInt(session.metadata.original_amount || '0')
+              };
+
+              await applicationQueryBuilder.update(session.metadata.application_id,{
+                stages_completed: {
+                  ...application.stages_completed,
+                  payment_setup: {
+                    completed:false,
+                    status:'current',
+                    ...application.stages_completed?.payment_setup,
+                    data: updatedStageData
+                  }
+                },
+              })
+
+            }
+            
+            const user = await queryBuilder.findById(session.metadata?.user_id || '');
+            if (user?.email && transaction) {
+
+              try {
+                await sendEmail({
+                  to: user.email,
+                  subject: 'Valuation Fee Payment Confirmed - Kletch',
+                  html: paymentReceiptBody({
+                    userName: user.name || 'Customer',
+                    amount: session.amount_total || 0,
+                    currency: session.currency || 'usd',
+                    transactionId: transaction.id,
+                    receiptUrl: '',
+                    applicationId: session.metadata?.application_id || '',
+                    paymentDate: new Date().toISOString(),
+                    type:"Valuation"
+                  }),
+                });
+
+              } catch (emailError) {
+                console.error('Failed to send valuation fee confirmation email:', emailError);
+              }
+
+            }
+
+          }
+        }else{
+
+          const { data: transaction, error: updateError } = await supabaseAdmin
+          .from('transactions')
+          .update({
+            status: 'succeeded',
+            stripe_payment_intent_id: session.payment_intent as string | null,
+            payment_method: session.payment_method_types?.[0] || 'card',
+            metadata: {
+              completed_at: new Date().toISOString(),
+              customer_details: session.customer_details,
+            },
+            updated_at: new Date().toISOString(),
+          })
+          .eq('stripe_session_id', session.id)
+          .select()
+          .single();
+
+          if (updateError) {
+            return NextResponse.json(
+              { error: 'Failed to update transaction' },
+              { status: 500 }
+            );
+          }
+
+          if (session.metadata?.application_id) {
+            const { error: appUpdateError } = await supabaseAdmin
+              .from('applications')
+              .update({
+                processing_fee_payment_status: 'paid',
+                processing_fee_payment_date: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+              })
+              .eq('id', session.metadata.application_id);
+            
+            if (appUpdateError) {
+              console.error('Failed to update application:', appUpdateError);
+            } else {
+              console.log('Application updated successfully');
+            }
+          }
+
+          const user = await queryBuilder.findById(session.metadata?.user_id || '');
+          if (user?.email && transaction) {
+            try {
+              await sendEmail({
+                to: user.email,
+                subject: 'Payment Receipt - Kletch',
+                html: paymentReceiptBody({
+                  userName: user.name || 'Customer',
+                  amount: session.amount_total || 10000,
+                  currency: session.currency || 'usd',
+                  transactionId: transaction.id,
+                  receiptUrl: '',
+                  applicationId: session.metadata?.application_id || '',
+                  paymentDate: new Date().toISOString(),
+                  type:"Application Processing"
+                }),
+              });
+              console.log('Receipt email sent to:', user.email);
+            } catch (emailError) {
+              console.error('Failed to send receipt email:', emailError);
+            }
+          }
+
         }
 
         break;
@@ -249,12 +411,13 @@ export async function POST(request: NextRequest) {
 
           if (transaction) {
             const user = await queryBuilder.findById(transaction.user_id);
+            console.log("send receipt to this user", user)
 
             if (user?.email && charges.data[0].receipt_url) {
               try {
                 await sendEmail({
                   to: user.email,
-                  subject: 'Your Payment Receipt is Ready - Ariveasy',
+                  subject: 'Your Payment Receipt is Ready - Kletch',
                   html: `
                     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
                       <h2 style="color: #4F46E5;">Your Receipt is Ready!</h2>

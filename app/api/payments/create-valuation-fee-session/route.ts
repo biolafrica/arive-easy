@@ -12,21 +12,20 @@ export async function POST(request: NextRequest) {
   try {
     const user = await requireAuth();
     const body = await request.json();
-
     const transactionBuilder = new SupabaseQueryBuilder<TransactionBase>("transactions");
 
-    const { application_id, amount, type, seller_id, property_id } = body;
+    const { application_id, amount, description } = body;
 
-    if (!application_id || !amount || !type || !seller_id) {
+    if (!application_id || !amount) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       );
     }
 
-    if (type === 'down_payment' && amount < 1000) {
+    if (amount <= 0) {
       return NextResponse.json(
-        { error: 'Minimum down payment amount not met' },
+        { error: 'Invalid valuation fee amount' },
         { status: 400 }
       );
     }
@@ -34,13 +33,13 @@ export async function POST(request: NextRequest) {
     const existingTransaction = await transactionBuilder.findOneByCondition({
       application_id,
       user_id: user.id,
-      type: `escrow_${type}`,
+      type: 'valuation_fee',
       status: 'succeeded'
     });
 
     if (existingTransaction) {
       return NextResponse.json(
-        { error: 'Escrow payment already completed for this application' },
+        { error: 'Valuation fee already paid for this application' },
         { status: 400 }
       );
     }
@@ -52,68 +51,59 @@ export async function POST(request: NextRequest) {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: `${type.replace('_', ' ').replace(/\b\w/g, (l:string) => l.toUpperCase())} - Escrow`,
-              description: `Secure escrow payment for property purchase`,
-              images: property_id ? [`${process.env.NEXT_PUBLIC_API_URL}/api/properties/${property_id}/image`] : undefined,
+              name: 'Property Valuation Fee',
+              description: description || 'Professional property valuation and assessment fee',
             },
-            unit_amount: amount * 100, // Convert to cents
+            unit_amount: amount * 100, 
           },
           quantity: 1
         },
       ],
       mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_API_URL}/test/success?session_id={CHECKOUT_SESSION_ID}&type=escrow`,
-      cancel_url: `${process.env.NEXT_PUBLIC_API_URL}/test/cancelled?type=escrow`,
+      success_url: `${process.env.NEXT_PUBLIC_API_URL}/test/success?session_id={CHECKOUT_SESSION_ID}&type=valuation_fee`,
+      cancel_url: `${process.env.NEXT_PUBLIC_API_URL}/test/cancelled?type=valuation_fee`,
       metadata: {
         user_id: user.id,
         application_id,
-        seller_id,
-        property_id,
-        payment_type: `escrow_${type}`,
+        payment_type: 'valuation_fee',
         original_amount: amount.toString(),
         user_email: user.email || '',
       },
       customer_email: user.email,
       payment_intent_data: {
         metadata: {
-          escrow_type: type,
+          fee_type: 'valuation',
           application_id,
-          seller_id,
           user_id: user.id,
         }
       }
     });
 
-    const createdTransaction = await transactionBuilder.create({
+    await transactionBuilder.create({
       user_id: user.id,
       user_name: user.user_metadata.name,
       application_id,
       stripe_session_id: session.id,
-      property_id,
-      amount: amount * 100, // Store in cents
-      currency: 'usd',
+      amount: amount * 100, 
       status: 'pending',
-      type: `escrow_${type}`,
+      type: 'valuation_fee',
       metadata: {
         session_url: session.url,
         expires_at: new Date(session.expires_at * 1000).toISOString(),
-        seller_id,
-        property_id,
-        escrow_status: 'pending',
-        payment_type: type,
+        payment_type: 'valuation',
+  
       }
     });
 
     return NextResponse.json({
       url: session.url,
       sessionId: session.id,
-      escrowId: session.id // Can be used for tracking
     });
 
   } catch (error) {
-    console.error('Escrow session creation error:', error);
+    console.error('Valuation fee session creation error:', error);
     return NextResponse.json(
-      { error: 'Failed to create escrow payment session' },
+      { error: 'Failed to create valuation fee payment session' },
       { status: 500 }
     );
   }

@@ -55,7 +55,7 @@ export default function IdentityVerificationStage({
   return (
     <div className="space-y-8">
       <VerificationFeeInfo />
-
+’’
       <VerificationClientView
         hasPaid={getHasPaid(application.processing_fee_payment_status)}
         application_id={application.id}

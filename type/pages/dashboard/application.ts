@@ -118,9 +118,13 @@ export interface ApplicationBase{
 
   processing_fee:number;
   processing_fee_payment_status:string;
-  processing_fee_payement_day:string;
+  processing_fee_payment_date:string;
   valuation_fee:number;
+  valuation_fee_payment_status:string;
+  valuation_fee_payment_date:string;
   legal_fee:number;
+  legal_fee_payment_status:string;
+  legal_fee_payment_date:string
   total_fee:number;
 
   developer_status: string;
@@ -194,7 +198,7 @@ export interface Props {
   stageData: PropertySelectionStageData;
   onUpdate: (data: {
     property_id: string;
-    property_name: string;
+    property_name: string
     property_price: number;
     developer_id:string;
     type: 'mortgage' | 'outright';

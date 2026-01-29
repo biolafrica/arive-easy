@@ -9,7 +9,6 @@ import { formatUSD } from "@/lib/formatter";
 interface LegalValuationFeesSectionProps {
   application: ApplicationBase;
   paymentData: any;
-  onUpdate: (data: any) => void;
   isReadOnly: boolean;
   isUpdating: boolean;
 }
@@ -17,13 +16,14 @@ interface LegalValuationFeesSectionProps {
 export function LegalValuationFeesSection({
   application,
   paymentData,
-  onUpdate,
   isReadOnly,
   isUpdating
 }: LegalValuationFeesSectionProps) {
 
   const handleFeePayment = async (type: 'legal' | 'valuation') => {
     const amount = type === 'legal' ? application.legal_fee : application.valuation_fee;
+    const api = type === "legal" ?  '/api/payments/create-legal-fee-session' :'/api/payments/create-valuation-fee-session'
+    
     
     if (amount <= 0) {
       toast.error(`${type} fee amount not set by admin`);
@@ -31,13 +31,12 @@ export function LegalValuationFeesSection({
     }
 
     try {
-      const response = await fetch('/api/stripe/create-checkout-session', {
+      const response = await fetch(api, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           application_id: application.id,
           amount: amount,
-          type: `${type}_fee`,
           description: `${type.charAt(0).toUpperCase() + type.slice(1)} fee for property purchase`
         }),
       });
@@ -60,7 +59,6 @@ export function LegalValuationFeesSection({
       <h3 className="text-lg font-semibold text-gray-900 mb-4">Additional Fees</h3>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Legal Fee */}
         {application.legal_fee > 0 && (
           <div className="border rounded-lg p-4">
             <div className="flex items-center space-x-3 mb-3">
@@ -92,7 +90,6 @@ export function LegalValuationFeesSection({
           </div>
         )}
 
-        {/* Valuation Fee */}
         {application.valuation_fee > 0 && (
           <div className="border rounded-lg p-4">
             <div className="flex items-center space-x-3 mb-3">
@@ -123,9 +120,10 @@ export function LegalValuationFeesSection({
             )}
           </div>
         )}
+
+
       </div>
 
-      {/* Admin Notice */}
       {(application.legal_fee === 0 && application.valuation_fee === 0) && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
           <p className="text-sm text-yellow-800">
