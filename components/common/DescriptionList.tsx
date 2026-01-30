@@ -10,9 +10,19 @@ export interface DescriptionItem { label: string; value: DescriptionValue;}
 
 interface DescriptionListProps { title?: string; subtitle?: string; items: DescriptionItem[];}
 
+interface DescriptionListEmptyProps {
+  title: string;
+  subtitle?: string;
+  icon?: ReactNode;
+  message: string;
+}
+
+
+
 export function DescriptionList({ title, subtitle, items }: DescriptionListProps) {
   return (
     <section className="space-y-6">
+
       {(title || subtitle) && (
         <div>
           {title && (<h3 className="text-lg font-semibold text-heading"> {title} </h3>)}
@@ -129,4 +139,42 @@ function DescriptionValueRenderer({ value}: {value: DescriptionValue}) {
       return null;
   }
 }
+
+import { ReactNode } from 'react';
+
+
+
+export function DescriptionListEmpty({
+  title,
+  subtitle,
+  icon,
+  message,
+}: DescriptionListEmptyProps) {
+  return (
+    <section className="space-y-4">
+      <div>
+        <h3 className="text-lg font-semibold text-heading">{title}</h3>
+        {subtitle && (
+          <p className="mt-1 text-sm text-secondary">{subtitle}</p>
+        )}
+      </div>
+
+      <div className="flex min-h-[160px] items-center justify-center rounded-lg border border-dashed bg-gray-50 px-4">
+        <div className="flex flex-col items-center text-center">
+          {icon && (
+            <div className="mb-3 text-gray-400">
+              {icon}
+            </div>
+          )}
+          <p className="text-sm text-gray-500 max-w-sm">
+            {message}
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+
 

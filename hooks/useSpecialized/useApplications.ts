@@ -288,3 +288,22 @@ export function usePaymentStatus(sessionId: string | null) {
     retry: 3,
   });
 }
+
+export function useAdminApplications(params?: any) {
+  const crud = useCrud<ApplicationBase>({
+    resource: 'applications',
+    interfaceType: 'admin',
+    optimisticUpdate: true,
+    invalidateOnMutation: true,
+  });
+
+  const { data, isLoading, error } = crud.useGetAll(params);
+
+  return {
+    applications: data?.data || [],
+    pagination: data?.pagination,
+    isLoading: isLoading,
+    error,
+    ...crud,
+  };
+}

@@ -37,7 +37,7 @@ export async function sendEmail({
     : html;
 
   const msg = {
-    from: `${layoutConfig?.companyName || 'Ariveasy'} <${process.env.SMTP_FROM}>`,
+    from: `${layoutConfig?.companyName || 'Kletch'} <${process.env.SMTP_FROM}>`,
     to,
     subject,
     text,

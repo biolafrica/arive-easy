@@ -1,11 +1,17 @@
 import { DescriptionList } from "@/components/common/DescriptionList";
 
 export const getbadge = (step:string): string => {
-  const base = 'badge px-3 py-2 rounded-lg '
+  const base = 'badge px-3 py-2 rounded-lg'
 
   switch(step) {
     case 'current':
       return `${base} badge-blue`;
+    case 'paid':
+      return `${base} badge-green`;
+    case 'escrowed':
+      return `${base} badge-green`;
+    case 'approved':
+      return `${base} badge-green`;
     case 'upcoming':
       return `${base} badge-yellow`;
     case 'completed':

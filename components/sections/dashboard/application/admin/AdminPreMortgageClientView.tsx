@@ -1,30 +1,30 @@
-import { columns, statusConfig, usePreApplications } from "@/data/pages/dashboard/application";
+import { columns, statusConfig } from "@/data/pages/dashboard/application";
 import { useTableFilters } from "@/hooks/useTableQuery";
 import { useMemo } from "react";
 import DataTable from "@/components/common/DataTable";
 import FilterDropdown from "@/components/common/FilterDropdown";
 import { adminApplicationConfigs } from "./AdminApplicationsFilters";
 import ActiveFilters from "@/components/common/ActiveFilters";
+import { getTableEmptyMessage } from "@/components/common/TableEmptyMessage";
+import { useAdminApplications } from "@/hooks/useSpecialized/useApplications";
 
 export default function AdminPreMortgageClientView ({detailPanel}:any){
   const { sortBy, sortOrder, searchValue, filters, queryParams: baseQueryParams,     
     hasActiveFilters, handlePageChange, handleItemsPerPageChange, handleSort,
     handleFilterChange, handleSearchChange,
   } = useTableFilters({
-    initialFilters: { status: '' },searchFields: ['name'], defaultLimit: 10,
+    initialFilters: { status: '' },searchFields: [], defaultLimit: 10,
   });
 
-  const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['users'],
+  const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['properties'],
   }), [baseQueryParams]);
 
-  const {applications, isLoading}=usePreApplications(queryParams)
+  const {applications, isLoading, pagination}= useAdminApplications(queryParams)
 
-  const emptyMessage = useMemo(() => {
-    if (hasActiveFilters) {
-      return { title: 'No application found', message: 'Try adjusting your filters or search query',};
-    }
-    return {title: 'No applications found', message: 'Your applications will appear here'};
-  }, [hasActiveFilters]);
+  const emptyMessage = useMemo(
+    () => getTableEmptyMessage(hasActiveFilters, 'applications'),
+    [hasActiveFilters]
+  );
 
   return(
     <div>
@@ -32,7 +32,7 @@ export default function AdminPreMortgageClientView ({detailPanel}:any){
         title="Applications"
         columns={columns}
         data={applications}
-        pagination={ {
+        pagination={pagination || {
           page: 1,
           limit: 10,
           total: 0,

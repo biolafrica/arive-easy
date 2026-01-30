@@ -22,8 +22,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    
-
     if (amount <= 0) {
       return NextResponse.json(
         { error: 'Invalid legal fee amount' },

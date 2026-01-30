@@ -149,8 +149,8 @@ export function ApplicationDetails({ application: initialApplication }: Props) {
         </div>
       )}
       
-      <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="bg-white rounded-lg border border-border shadow-sm p-6 mb-8">
+        <div className="grid md:grid-cols-2 gap-4">
           <div>
             <p className="text-sm text-gray-500">Application Number</p>
             <p className="font-medium">{application?.application_number}</p>
@@ -159,14 +159,7 @@ export function ApplicationDetails({ application: initialApplication }: Props) {
             <p className="text-sm text-gray-500">Property</p>
             <p className="font-medium">{application?.properties?.title || 'Not Selected'}</p>
           </div>
-          <div>
-            <p className="text-sm text-gray-500">Loan Amount</p>
-            <p className="font-medium">${application?.loan_amount?.toLocaleString() || '0'}</p>
-          </div>
-          <div>
-            <p className="text-sm text-gray-500">Status</p>
-            <p className="font-medium capitalize">{application?.status}</p>
-          </div>
+
         </div>
       </div>
       

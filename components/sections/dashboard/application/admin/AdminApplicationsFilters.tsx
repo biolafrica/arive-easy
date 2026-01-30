@@ -38,13 +38,13 @@ export const adminApplicationConfigs: FilterConfig[] = [
     type: 'select', 
     options: [
       { value: '', label: 'All Statuses' },
-      { value: 'approved', label: 'Approved' },
+      { value: 'in_progress', label: 'In Progress' },
       { value: 'rejected', label: 'Rejected' },
-      { value: 'draft', label: 'Draft' },
+      { value: 'completed', label: 'Completed' },
     ],
   },
   {
-    key: 'stages',
+    key: 'current_stage',
     label: 'Stages',
     placeholder: 'All Stages',
     type: 'select', 

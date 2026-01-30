@@ -20,7 +20,7 @@ export default function AdminPreApprovalClientView ({detailPanel}:any){
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['users'],
   }), [baseQueryParams]);
 
-  const{ pre_approvals, pagination, isLoading}= useAdminPrepApprovals(queryParams)
+  const{ pre_approvals, pagination, isLoading} = useAdminPrepApprovals(queryParams)
 
   const emptyMessage = useMemo(
     () => getTableEmptyMessage(hasActiveFilters, 'pre-approvals'),

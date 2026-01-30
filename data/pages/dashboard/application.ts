@@ -1,7 +1,7 @@
 import { StatusConfig, TableColumn } from "@/components/common/DataTable";
 import { formatDate, formatUSD } from "@/lib/formatter";
 import { FormField } from "@/type/form";
-import { ApplicationStage, MockApplications} from "@/type/pages/dashboard/application";
+import { ApplicationBase, ApplicationStage, MockApplications} from "@/type/pages/dashboard/application";
 import {ClockIcon, CheckCircleIcon, XCircleIcon} from '@heroicons/react/24/outline';
 
 export const APPLICATION_STAGES: ApplicationStage[] = [
@@ -34,7 +34,7 @@ export const APPLICATION_STAGES: ApplicationStage[] = [
   },
 ];
 
-export const columns: TableColumn<MockApplications>[] = [
+export const columns: TableColumn<ApplicationBase>[] = [
   { key: 'application_number', header: 'Approval ID', sortable: false},
   { key: 'property', header: 'Property', sortable: false, accessor: (row) => row.properties?.title || 'ongoing'},
   { key: 'current_stage', header: 'Current stage', sortable: false,},
@@ -42,9 +42,9 @@ export const columns: TableColumn<MockApplications>[] = [
 ];
 
 export const statusConfig: StatusConfig[] = [
-  { value: 'approved', label: 'Approved', variant: 'green' },
+  { value: 'in_progress', label: 'In Progress', variant: 'yellow' },
   { value: 'rejected', label: 'Rejected', variant: 'red' },
-  { value: 'draft', label: 'Draft', variant: 'yellow' },
+  { value: 'completed', label: 'Draft', variant: 'green' },
 ];
 
 export const MOCK_DATA: MockApplications[] = [

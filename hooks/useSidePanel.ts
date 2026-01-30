@@ -5,10 +5,10 @@ export function useSidePanel<T>() {
   const [mode, setMode] = useState<'add' | 'edit'>('add');
   const [selectedItem, setSelectedItem] = useState<T | null>(null);
 
-  const openAdd = () => {
+  const openAdd = (item: T) => {
     setIsOpen(true);
     setMode('add');
-    setSelectedItem(null);
+    setSelectedItem(item);
   };
 
   const openEdit = (item: T) => {
