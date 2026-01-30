@@ -4,7 +4,7 @@ import { MouseEvent, useEffect, useRef } from 'react'
 import { ExclamationTriangleIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { Button } from '../primitives/Button'
 
-type BannerVariant = 'default' | 'danger' | 'warning'
+export type BannerVariant = 'default' | 'danger' | 'warning'
 
 interface ConfirmBannerProps {
   open: boolean
@@ -110,7 +110,7 @@ const ConfirmBanner: React.FC<ConfirmBannerProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-background backdrop-blur-sm p-4 animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200"
       onClick={handleBackdropClick}
       role="dialog"
       aria-modal="true"
@@ -134,15 +134,16 @@ const ConfirmBanner: React.FC<ConfirmBannerProps> = ({
 
         <div className="p-6">
           
-          <h3 id="dialog-title" className="text-lg font-semibold text-gray-900 dark:text-white text-center mb-2">
+          <h3 id="dialog-title" className="text-lg font-semibold text-heading text-center mb-2">
             {title}
           </h3>
           
-          <p id="dialog-description" className="text-sm text-gray-600 dark:text-gray-400 text-center mb-6">
+          <p id="dialog-description" className="text-sm text-secondary  text-center mb-6">
             {message}
           </p>
           
           <div className="flex flex-col sm:flex-row gap-3">
+
             <Button
               variant="outline"
               size="md"

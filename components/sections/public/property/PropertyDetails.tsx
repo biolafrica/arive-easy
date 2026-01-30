@@ -1,3 +1,4 @@
+import { Item } from "@/components/common/Item";
 import { PropertyDetailsProps } from "@/type/pages/property";
 
 export function PropertyDetails({
@@ -24,11 +25,3 @@ export function PropertyDetails({
   );
 }
 
-function Item({ label, value }: { label: string; value: any }) {
-  return (
-    <div className="flex justify-between text-secondary">
-      <span>{label}</span>
-      <span className="font-medium text-heading text-right">{value}</span>
-    </div>
-  );
-}

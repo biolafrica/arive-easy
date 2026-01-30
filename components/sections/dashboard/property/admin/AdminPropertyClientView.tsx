@@ -35,6 +35,7 @@ export default function AdminPropertyClientView (){
     [hasActiveFilters]
   );
 
+
   return(
     <div>
       <SidePanel
@@ -43,7 +44,10 @@ export default function AdminPropertyClientView (){
         title="Transaction Details"
       >
         {detailPanel.selectedItem && (
-          <AdminPropertyDetails property={detailPanel.selectedItem} />
+          <AdminPropertyDetails 
+          property={detailPanel.selectedItem} 
+          onClose={detailPanel.close} 
+          />
         )}
       </SidePanel>
 

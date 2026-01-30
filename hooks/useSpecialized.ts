@@ -216,8 +216,6 @@ export function usePropertyOffer() {
 }
 
 export function useAdminProperties(params?: any) {
-  const { user, loading: isUserLoading } = useAuthContext();
-  
   const crud = useCrud<PropertyBase>({
     resource: 'properties',
     interfaceType: 'admin',
@@ -225,27 +223,73 @@ export function useAdminProperties(params?: any) {
     invalidateOnMutation: true,
   });
 
-  const queryParams = useMemo(() => {
-    if (!user?.id) return null; 
-    
-    return {
-      ...params,
-      filters: { ...params?.filters,}
-    };
-  }, [params, user?.id]);
-
-
-  const { data, isLoading, error } = crud.useGetAll(
-    queryParams || undefined, 
-    !isUserLoading && !!user?.id 
-  );
+  const { data, isLoading, error } = crud.useGetAll(params);
 
   return {
     properties: data?.data || [],
     pagination: data?.pagination,
-    isLoading: isLoading || isUserLoading,
+    isLoading: isLoading,
     error,
     ...crud,
+  };
+}
+
+export function useAdminPropertyActions() {
+  const { update, isUpdating } = useCrud<PropertyBase>({
+    resource: 'properties',
+    interfaceType: 'admin',
+    showNotifications: true,
+    optimisticUpdate: false, 
+    
+    onSuccess: {
+      update: (data: PropertyBase) => {
+        // Success message handled below based on action
+      },
+    },
+    onError: {
+      update: (error) => {
+        toast.error(error?.error?.message || 'Failed to update property');
+      },
+    },
+  });
+
+  const toggleApproval = async (propertyId: string, currentStatus: boolean) => {
+    const newStatus = !currentStatus;
+    
+    try {
+      await update(propertyId, {
+        is_active: newStatus,
+        ...(newStatus && { updated_at: new Date().toISOString() }),
+        ...(!newStatus && { updated_at: "" }),
+      });
+      
+      toast.success(newStatus ? 'Property approved successfully' : 'Property unapproved successfully' );
+    } catch (error) {
+      // Error already handled by onError
+    }
+  };
+
+  const toggleFeature = async (propertyId: string, currentStatus: boolean) => {
+    const newStatus = !currentStatus;
+    
+    try {
+      await update(propertyId, {
+        is_featured: newStatus,
+        ...(newStatus && { updated_at: new Date().toISOString() }),
+        ...(!newStatus && { updated_at: "" }),
+      });
+      
+      toast.success( newStatus ? 'Property added to featured' : 'Property removed from featured');
+    } catch (error) {
+      // Error already handled by onError
+    }
+  };
+
+
+  return {
+    toggleApproval,
+    toggleFeature,
+    isUpdating,
   };
 }
 
