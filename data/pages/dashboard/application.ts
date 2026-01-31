@@ -1,7 +1,7 @@
 import { StatusConfig, TableColumn } from "@/components/common/DataTable";
 import { formatDate, formatUSD } from "@/lib/formatter";
 import { FormField } from "@/type/form";
-import { ApplicationBase, ApplicationStage, MockApplications} from "@/type/pages/dashboard/application";
+import { AddLegalForm, AddTermsForm, AddValuationForm, ApplicationBase, ApplicationStage, MockApplications} from "@/type/pages/dashboard/application";
 import {ClockIcon, CheckCircleIcon, XCircleIcon} from '@heroicons/react/24/outline';
 
 export const APPLICATION_STAGES: ApplicationStage[] = [
@@ -130,6 +130,55 @@ export interface DownPaymentForm{
 }
 
 export const downPaymentInitialValue:DownPaymentForm ={
-  down_payment: formatUSD({amount:0, fromCents:false, decimals:2})
+  down_payment:''
 }
+
+export const valuationField:FormField[]=[
+  {name:'valuation_fee', label:"Valuation Fee Amount($)", type:'text', required:true, placeholder:"Enter Amount"},
+]
+
+export const legalField:FormField[]=[
+  {name:'legal_fee', label:"Legal Fee Amount($)", type:'text', required:true, placeholder:"Enter Amount"},
+]
+
+export const termField:FormField[]=[
+  {name:'loan_term_months', label:"Term Months", type:'text', required:true, placeholder:"Enter months"},
+  {name:'interest_rate', label:"Interest Rate(%)", type:'text', required:true, placeholder:"Enter interest percentage"},
+  {name:'down_payment_percentage', label:"Down Payment (%)", type:'text', required:true, placeholder:"Enter percentage"},
+  {name:'approved_loan_amount', label:"Approved Loan Amount($)", type:'text', required:true, placeholder:"Enter amount"},
+]
+
+export const valuationInitialValue:AddValuationForm = {
+  valuation_fee:0
+}
+
+export const legalInitialValue:AddLegalForm = {
+  legal_fee:0
+}
+
+export const termInitialValue:AddTermsForm = {
+  loan_term_months:0,
+  interest_rate:0,
+  down_payment_percentage:0,
+  approved_loan_amount:0
+}
+
+export const confirmConfig = {
+  terms: {
+    title: 'Terms & Agreement Stage',
+    message: 'Are you sure you want to complete T & A stage',
+    variant: 'warning',
+  },
+  payment: {
+    title: 'Payment Setup Stage',
+    message: 'Are you sure you want to complete payment stage',
+    variant: 'warning',
+  },
+  mortgage: {
+    title: 'Mortgage Activation',
+    message: 'Are you sure you want to activate mortgage for this user',
+    variant: 'warning',
+  },
+} as const;
+
 

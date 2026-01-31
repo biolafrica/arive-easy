@@ -9,6 +9,10 @@ import { useState } from "react";
 import AddPayment from "./AddPayment";
 import AddDocuments from "./AddDocuments";
 import AddTerms from "./AddTerms";
+import { Banner } from "../../property/admin/AdminPropertyDetails";
+import ConfirmBanner from "@/components/feedbacks/ConfirmBanner";
+import { useConfirmAction } from "@/hooks/useConfirmation";
+import { confirmConfig } from "@/data/pages/dashboard/application";
 
 interface Props {
   applications: ApplicationBase;
@@ -18,6 +22,9 @@ export default function AdminPreMortgageDetails ({ applications }: Props){
   const [paymentShowModal, setPaymentShowModal] = useState(false);
   const [documentShowModal, setDocumentShowModal] = useState(false);
   const [termShowModal, setTermShowModal] = useState(false);
+
+  const [showDialog, setShowDialog] = useState(false);
+  const [bannerContent, setBannerContent] = useState<Banner | null>(null)
 
   const home = applications.stages_completed.identity_verification?.data;
   const immigration = applications.stages_completed.identity_verification?.data;
@@ -44,6 +51,26 @@ export default function AdminPreMortgageDetails ({ applications }: Props){
   const addTerms=()=>{
     console.log ('terms and condition')
   }
+
+  const handleType = async (type: 'terms' | 'payment' | 'mortgage') => {
+    if (type === 'terms') {
+      // complete terms
+    }
+
+    if (type === 'payment') {
+      // complete payment
+    }
+
+    if (type === 'mortgage') {
+      // activate mortgage
+    }
+  };
+
+  const {open, banner, openConfirm, closeConfirm} = useConfirmAction(confirmConfig, handleType);
+
+
+
+
   
   return(
     <>
@@ -170,7 +197,7 @@ export default function AdminPreMortgageDetails ({ applications }: Props){
                 }},
                 { label: 'Complete Stage', value: { type: 'custom', 
                   node:(
-                    <Button onClick={addTerms} size='xs' >
+                    <Button onClick={()=>openConfirm('terms')} size='xs' >
                       Complete Stage
                     </Button>
                   ) 
@@ -249,7 +276,7 @@ export default function AdminPreMortgageDetails ({ applications }: Props){
 
                 { label: 'Complete Stage', value: { type: 'custom', 
                   node:(
-                    <Button onClick={()=>console.log("complete stage")} size='xs' >
+                    <Button onClick={()=>openConfirm('payment')} size='xs' >
                       Complete Stage
                     </Button>
                   ) 
@@ -279,7 +306,7 @@ export default function AdminPreMortgageDetails ({ applications }: Props){
                 }},
                 { label: 'Mortgage Activation', value: { type: 'custom',
                   node:(
-                    <Button onClick={addTerms} size='xs' >
+                    <Button onClick={()=>openConfirm('mortgage')} size='xs' >
                       Activate Mortgage
                     </Button>
                   )
@@ -291,12 +318,24 @@ export default function AdminPreMortgageDetails ({ applications }: Props){
     
 
         </div >
+
       </div>
 
       <AddPayment showModal={paymentShowModal} setShowModal={setPaymentShowModal}/>
       <AddDocuments showModal={documentShowModal} setShowModal={setDocumentShowModal}/>
       <AddTerms showModal={termShowModal} setShowModal={setTermShowModal}/>
 
+      {banner && (
+        <ConfirmBanner
+          open={open}
+          title={banner.title}
+          message={banner.message}
+          variant={banner.variant}
+          onConfirm={banner.confirm}
+          onCancel={closeConfirm}
+        />
+      )}
+      
     </>
   )
 }

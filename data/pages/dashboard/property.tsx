@@ -26,4 +26,18 @@ export const statusConfig: StatusConfig[] = [
 ];
 
 
+export const confirmConfig = {
+  approval: {
+    title: 'Approval',
+    message: 'Are you sure you want to update approval?',
+    variant: 'warning',
+  },
+  feature: {
+    title: 'Feature',
+    message: 'Are you sure you want to update feature?',
+    variant: 'warning',
+  },
+} as const;
+
+
 

@@ -9,63 +9,35 @@ import PropertyDocumentsList from "./PropertyDocumentList";
 import { useState } from "react";
 import ConfirmBanner, { BannerVariant } from "@/components/feedbacks/ConfirmBanner";
 import { useAdminPropertyActions } from "@/hooks/useSpecialized";
+import { useConfirmAction } from "@/hooks/useConfirmation";
+import { confirmConfig } from "@/data/pages/dashboard/property";
 
 interface Props {
   property: PropertyBase;
   onClose: ()=>void
 }
 
-interface Banner{
+export interface Banner{
   title: string;
   message:string;
   variant: BannerVariant;
-  confirm : ()=>void;
+  confirm :  () => void;
 
 }
 
 export default function AdminPropertyDetails ({ property, onClose }: Props){
-  const [showDialog, setShowDialog] = useState(false);
-  const [bannerContent, setBannerContent] = useState<Banner | null>(null)
-
   const { toggleApproval, toggleFeature, isUpdating } = useAdminPropertyActions();
 
-
-  const handleFeature = async()=>{
+  const handleType = async(type: 'approval' | 'feature')=>{
+    type === 'approval' ?
+    await toggleApproval(property.id, property.is_active):
     await toggleFeature(property.id, property.is_featured);
-    setShowDialog(false);
-    setTimeout(()=>{
-      onClose()
-    }, 1500)
-  }
-
-  const handleApproval = async()=>{
-    await toggleApproval(property.id, property.is_active);
-    setShowDialog(false);
     setTimeout(()=>{
       onClose()
     }, 1500)
 
   }
-
-  const handleBanner = (type: 'approval' | 'feature') => {
-    const config = {
-      approval: {
-        title: 'Approval',
-        message: 'Are you sure you want to update approval?',
-        variant: 'warning' as const,
-        confirm: handleApproval,
-      },
-      feature: {
-        title: 'Feature',
-        message: 'Are you sure you want to update feature?',
-        variant: 'warning' as const,
-        confirm: handleFeature,
-      },
-    };
-
-    setBannerContent(config[type]);
-    setShowDialog(true);
-  };
+  const { open, banner, openConfirm, closeConfirm,} = useConfirmAction(confirmConfig, handleType);
 
   return(
     <>
@@ -114,12 +86,12 @@ export default function AdminPropertyDetails ({ property, onClose }: Props){
 
         <div className="flex gap-5">
 
-          <Button onClick={()=>handleBanner('approval')} disabled={isUpdating}>
+          <Button onClick={()=>openConfirm('approval')} disabled={isUpdating}>
             {property.is_active ? "UnApprove" : "Approve"} Property
           </Button>
 
           <Button 
-            onClick={()=>handleBanner('feature')} 
+            onClick={()=>openConfirm('feature')} 
             variant="secondary" 
             disabled={isUpdating}
           >
@@ -130,14 +102,14 @@ export default function AdminPropertyDetails ({ property, onClose }: Props){
 
       </div>
 
-      {bannerContent && (
+      {banner && (
         <ConfirmBanner
-          open={showDialog}
-          title={bannerContent.title}
-          message={bannerContent.message}
-          variant={bannerContent.variant}
-          onConfirm={bannerContent.confirm}
-          onCancel={() => setShowDialog(false)}
+          open={open}
+          title={banner.title}
+          message={banner.message}
+          variant={banner.variant}
+          onConfirm={banner.confirm}
+          onCancel={closeConfirm}
         />
       )}
 

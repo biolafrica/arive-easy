@@ -158,6 +158,10 @@ export interface ApplicationBase{
 
 }
 
+export type AddValuationForm = Pick<ApplicationBase, "valuation_fee">
+export type AddLegalForm = Pick<ApplicationBase, "legal_fee">
+export type AddTermsForm = Pick<ApplicationBase, "loan_term_months" | "interest_rate" |"down_payment_percentage" | "approved_loan_amount">
+
 export type CreateApplication = Pick<ApplicationBase, 'application_number'| 'current_stage' | 'created_at' | 'current_step' | 'user_id' |'pre_approval_id' | 'stages_completed' | 'status' | 'property_id' >
 
 export interface MockApplications {
