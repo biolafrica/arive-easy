@@ -1,7 +1,7 @@
 import { StatusConfig, TableColumn } from "@/components/common/DataTable";
-import { formatDate, formatUSD } from "@/lib/formatter";
+import { formatDate} from "@/lib/formatter";
 import { FormField } from "@/type/form";
-import { AddLegalForm, AddTermsForm, AddValuationForm, ApplicationBase, ApplicationStage, MockApplications} from "@/type/pages/dashboard/application";
+import { AddLegalForm, AddPlan, AddTermsForm, AddValuationForm, ApplicationBase, ApplicationStage, MockApplications} from "@/type/pages/dashboard/application";
 import {ClockIcon, CheckCircleIcon, XCircleIcon} from '@heroicons/react/24/outline';
 
 export const APPLICATION_STAGES: ApplicationStage[] = [
@@ -137,6 +137,16 @@ export const valuationField:FormField[]=[
   {name:'valuation_fee', label:"Valuation Fee Amount($)", type:'text', required:true, placeholder:"Enter Amount"},
 ]
 
+export const planField:FormField[]=[
+  {name:'monthly_payment', label:"Monthly Payment($)", type:'text', required:true, placeholder:"Enter Amount"},
+  {name:'first_payment_date', label:"First Payment Date", type:"date", required:true},
+  {name:'last_payment_date', label:"First Payment Date", type:"date", required:true},
+  {name:'total_payment', label:"Total Payment($)", type:"text", required:true, placeholder:"Enter Amount"},
+  {name:'loan_term_months', label:"Loan Term Months", type:"text", required:true, placeholder:"Enter term months"},
+  {name:'payment_day_of_month', label:"Payment Day", type:"text", required:true, placeholder:"Enter payment day"},
+
+]
+
 export const legalField:FormField[]=[
   {name:'legal_fee', label:"Legal Fee Amount($)", type:'text', required:true, placeholder:"Enter Amount"},
 ]
@@ -161,6 +171,15 @@ export const termInitialValue:AddTermsForm = {
   interest_rate:0,
   down_payment_percentage:0,
   approved_loan_amount:0
+}
+
+export const planInitialValue:AddPlan={
+  last_payment_date:"",
+  first_payment_date:"",
+  monthly_payment:0,
+  total_payment:0,
+  loan_term_months:0,
+  payment_day_of_month:0
 }
 
 export const confirmConfig = {

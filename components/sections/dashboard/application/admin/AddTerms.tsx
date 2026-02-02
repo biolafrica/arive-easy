@@ -1,24 +1,27 @@
 import Modal from "@/components/common/ContentModal";
 import Form from "@/components/form/Form";
 import { termField, termInitialValue } from "@/data/pages/dashboard/application";
-import { AddTermsForm } from "@/type/pages/dashboard/application";
+import { useUpdateApplication } from "@/hooks/useSpecialized/useApplications";
+import { AddTermsForm, AdminApplicationModalProps } from "@/type/pages/dashboard/application";
 
-export default function AddTerms({showModal, setShowModal}:{
-  showModal:boolean
-  setShowModal:(value:boolean)=>void
-}){
+export default function AddTerms(
+  {showModal, setShowModal, id}:AdminApplicationModalProps)
+{
+
+  const { updateApplication} = useUpdateApplication()
 
   const validate =(values:AddTermsForm)=>{
     const errors: Partial<Record<keyof AddTermsForm, string>>={}
     return errors
   }
-  const handleSubmit=()=>{
-    console.log('submit')
+
+  const handleSubmit = async(values:AddTermsForm)=>{
+    await updateApplication(id, values, {successMessage: 'Loan Terms added successfully'})
   }
 
   return(
     <div>
-       <Modal
+      <Modal
         onClose={()=>setShowModal(false)}
         isOpen={showModal}
         title="Add Terms"
@@ -29,6 +32,7 @@ export default function AddTerms({showModal, setShowModal}:{
           validate={validate}
           onSubmit={handleSubmit}
           submitLabel="Add Terms"
+          
         />
 
       </Modal>

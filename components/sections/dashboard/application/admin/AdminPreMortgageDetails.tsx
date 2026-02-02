@@ -9,10 +9,11 @@ import { useState } from "react";
 import AddPayment from "./AddPayment";
 import AddDocuments from "./AddDocuments";
 import AddTerms from "./AddTerms";
-import { Banner } from "../../property/admin/AdminPropertyDetails";
 import ConfirmBanner from "@/components/feedbacks/ConfirmBanner";
 import { useConfirmAction } from "@/hooks/useConfirmation";
 import { confirmConfig } from "@/data/pages/dashboard/application";
+import { useUpdateApplication } from "@/hooks/useSpecialized/useApplications";
+import CreatePlan from "./CreatePlan";
 
 interface Props {
   applications: ApplicationBase;
@@ -22,9 +23,9 @@ export default function AdminPreMortgageDetails ({ applications }: Props){
   const [paymentShowModal, setPaymentShowModal] = useState(false);
   const [documentShowModal, setDocumentShowModal] = useState(false);
   const [termShowModal, setTermShowModal] = useState(false);
+  const [planShowModal, setPlanShowModal] = useState(false);
 
-  const [showDialog, setShowDialog] = useState(false);
-  const [bannerContent, setBannerContent] = useState<Banner | null>(null)
+  const { updateApplication} = useUpdateApplication()
 
   const home = applications.stages_completed.identity_verification?.data;
   const immigration = applications.stages_completed.identity_verification?.data;
@@ -48,17 +49,38 @@ export default function AdminPreMortgageDetails ({ applications }: Props){
     }
   }
 
-  const addTerms=()=>{
-    console.log ('terms and condition')
-  }
-
   const handleType = async (type: 'terms' | 'payment' | 'mortgage') => {
     if (type === 'terms') {
-      // complete terms
+      await updateApplication(applications.id, {
+        stages_completed: {
+          ...applications.stages_completed,
+          terms_agreement: {
+            ...applications.stages_completed.terms_agreement,
+            completed: true,
+            completed_at: new Date().toISOString(),
+            status: 'completed',
+          }
+        },
+      current_stage: 'payment_setup',
+      current_step: 8
+      },{successMessage: 'Completed terms and agreement stage'})
     }
 
     if (type === 'payment') {
-      // complete payment
+      await updateApplication(applications.id, {
+        stages_completed: {
+          ...applications.stages_completed,
+          payment_setup: {
+            ...applications.stages_completed.payment_setup,
+            completed: true,
+            completed_at: new Date().toISOString(),
+            status: 'completed',
+          
+          }
+        },
+        current_stage: 'mortgage_activation',
+        current_step: 9
+      },{successMessage: 'Completed payment setup stage'})
     }
 
     if (type === 'mortgage') {
@@ -69,9 +91,6 @@ export default function AdminPreMortgageDetails ({ applications }: Props){
   const {open, banner, openConfirm, closeConfirm} = useConfirmAction(confirmConfig, handleType);
 
 
-
-
-  
   return(
     <>
       <div>
@@ -299,7 +318,7 @@ export default function AdminPreMortgageDetails ({ applications }: Props){
               items={[
                 { label: 'Payment Plan', value: { type: 'custom',
                   node:(
-                    <Button onClick={addTerms} size='xs' >
+                    <Button onClick={()=>setPlanShowModal(true)} size='xs' >
                       Create Plan
                     </Button>
                   )
@@ -321,9 +340,10 @@ export default function AdminPreMortgageDetails ({ applications }: Props){
 
       </div>
 
-      <AddPayment showModal={paymentShowModal} setShowModal={setPaymentShowModal}/>
+      <AddPayment showModal={paymentShowModal} setShowModal={setPaymentShowModal} id={applications.id}/>
       <AddDocuments showModal={documentShowModal} setShowModal={setDocumentShowModal}/>
-      <AddTerms showModal={termShowModal} setShowModal={setTermShowModal}/>
+      <AddTerms showModal={termShowModal} setShowModal={setTermShowModal} id={applications.id}/>
+      <CreatePlan showModal={planShowModal} setShowModal={setPlanShowModal} id={applications.id}/>
 
       {banner && (
         <ConfirmBanner

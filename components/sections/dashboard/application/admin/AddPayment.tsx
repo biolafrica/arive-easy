@@ -2,15 +2,16 @@ import Modal from "@/components/common/ContentModal";
 import Form from "@/components/form/Form";
 import { Button } from "@/components/primitives/Button";
 import { legalField, legalInitialValue, valuationField, valuationInitialValue } from "@/data/pages/dashboard/application";
-import { AddLegalForm, AddValuationForm } from "@/type/pages/dashboard/application";
+import { useUpdateApplication } from "@/hooks/useSpecialized/useApplications";
+import { AddLegalForm, AddValuationForm, AdminApplicationModalProps } from "@/type/pages/dashboard/application";
 import { useState } from "react";
 
-export default function AddPayment({showModal, setShowModal}:{
-  showModal:boolean
-  setShowModal:(value:boolean)=>void
-}){
+export default function AddPayment(
+  {showModal, setShowModal, id}:AdminApplicationModalProps)
+{
 
   const [actionType, setActionType]=useState<'valuation' |'legal' | null>(null)
+  const { updateApplication} = useUpdateApplication()
 
   const handleActionClick = (type: 'valuation' | 'legal') => {
     setActionType(type);
@@ -28,12 +29,12 @@ export default function AddPayment({showModal, setShowModal}:{
     return errors
   }
 
-  const handleLegalSubmit=()=>{
-    console.log('legal submit')
+  const handleLegalSubmit = async(values:AddLegalForm)=>{
+    await updateApplication(id, values, {successMessage: 'Legal fee added successfully'})
   }
 
-  const handleValuationSubmit=()=>{
-    console.log('valuation submit')
+  const handleValuationSubmit = async(values:AddValuationForm)=>{
+    await updateApplication(id, values, {successMessage: 'Valuation fee added successfully'})
   }
 
   return(

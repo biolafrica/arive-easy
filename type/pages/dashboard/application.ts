@@ -115,6 +115,11 @@ export interface ApplicationBase{
   interest_rate: number;
   loan_term_months: number;
   monthly_payment:number;
+  first_payment_date:string;
+  last_payment_date:string;
+  total_payment:number;
+  payment_day_of_month:number;
+
 
   processing_fee:number;
   processing_fee_payment_status:string;
@@ -161,6 +166,7 @@ export interface ApplicationBase{
 export type AddValuationForm = Pick<ApplicationBase, "valuation_fee">
 export type AddLegalForm = Pick<ApplicationBase, "legal_fee">
 export type AddTermsForm = Pick<ApplicationBase, "loan_term_months" | "interest_rate" |"down_payment_percentage" | "approved_loan_amount">
+export type AddPlan = Pick<ApplicationBase, "monthly_payment" | "first_payment_date" | "last_payment_date" | "total_payment" | "loan_term_months" |"payment_day_of_month" >
 
 export type CreateApplication = Pick<ApplicationBase, 'application_number'| 'current_stage' | 'created_at' | 'current_step' | 'user_id' |'pre_approval_id' | 'stages_completed' | 'status' | 'property_id' >
 
@@ -168,7 +174,7 @@ export interface MockApplications {
   id: string;
   property_id: string;
   application_number: string;
-  status: string;
+    status: string;
   properties: MockProperties;
   current_stage: string;
   created_at: string;
@@ -209,6 +215,13 @@ export interface Props {
   }) => Promise<any>;
   isReadOnly?: boolean;
   isUpdating?: boolean;
+}
+
+
+export interface AdminApplicationModalProps{
+  showModal:boolean
+  setShowModal:(value:boolean)=>void
+  id:string
 }
 
 
