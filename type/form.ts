@@ -15,6 +15,8 @@ export type FieldType =
 | 'image'
 | 'file'
 | 'richtext'
+| 'money'
+
 
 export interface SelectOption {
   value: string | number;
@@ -41,6 +43,9 @@ export interface FormField {
   maxSize?: number; // in MB
   preview?: boolean;
   aspectRatio?: '1:1' | '16:9' | '4:3' | '3:2' | 'free';
+  currency?: string;  // 'USD', 'EUR', 'GBP', 'NGN', etc.
+  locale?: string;    // 'en-US', 'en-GB', 'en-NG', etc.
+  showCurrencySymbol?: boolean;
 }
 
 export interface FormProps<T extends Record<string, any>> {

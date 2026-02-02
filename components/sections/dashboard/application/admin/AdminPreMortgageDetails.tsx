@@ -59,6 +59,10 @@ export default function AdminPreMortgageDetails ({ applications }: Props){
             completed: true,
             completed_at: new Date().toISOString(),
             status: 'completed',
+          },
+          payment_setup: {
+            status: 'current',
+            completed: false,
           }
         },
       current_stage: 'payment_setup',
@@ -75,7 +79,10 @@ export default function AdminPreMortgageDetails ({ applications }: Props){
             completed: true,
             completed_at: new Date().toISOString(),
             status: 'completed',
-          
+          },
+          mortgage_activation: {
+            status: 'current',
+            completed: false,
           }
         },
         current_stage: 'mortgage_activation',

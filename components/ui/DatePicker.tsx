@@ -77,7 +77,11 @@ export function CompositeDatePicker({
   const [dateParts, setDateParts] = useState<DateParts>(() => parseDateValue(value));
 
   useEffect(() => {
-    setDateParts(parseDateValue(value));
+    if (value) {
+      setDateParts(parseDateValue(value));
+    } else if (value === undefined && dateParts.day && dateParts.month && dateParts.year) {
+      setDateParts({ day: '', month: '', year: '' });
+    }
   }, [value, parseDateValue]);
 
 
@@ -123,8 +127,6 @@ export function CompositeDatePicker({
         
         onChange?.(dateStr);
       }
-    } else {
-      onChange?.(undefined);
     }
   }, [onChange, min, max]);
 

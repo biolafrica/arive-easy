@@ -7,6 +7,7 @@ import RichTextEditor from './RichTextEditor';
 import { FormField, FormProps } from '@/type/form';
 import { CompositeDatePicker} from '../ui/DatePicker';
 import { useCallback } from 'react';
+import MoneyInput from '../ui/MoneyInput';
 
 
 function Form<T extends Record<string, any>>({
@@ -291,6 +292,29 @@ function Form<T extends Record<string, any>>({
               start: 1900, 
               end: new Date().getFullYear() 
             }}
+          />
+        );
+      case 'money':
+        return (
+          <MoneyInput
+            name={name}
+            value={values[name]}
+            onChange={(amount) => {
+              setFieldValue(name as keyof T, amount as any);
+              if (onFieldChange) {
+                onFieldChange(name as keyof T, amount);
+              }
+            }}
+            onBlur={() => setFieldTouched(name as keyof T, true)}
+            placeholder={placeholder || "0.00"}
+            disabled={disabled}
+            required={required}
+            error={!!showError}
+            min={typeof min === 'number' ? min : undefined}
+            max={typeof max === 'number' ? max : undefined}
+            currency={field.currency || 'USD'}
+            locale={field.locale || 'en-US'}
+            showCurrencySymbol={field.showCurrencySymbol !== false}
           />
         );
         
