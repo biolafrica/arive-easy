@@ -119,7 +119,7 @@ export interface ApplicationBase{
   last_payment_date:string;
   total_payment:number;
   payment_day_of_month:number;
-
+   direct_debit_status:string;
 
   processing_fee:number;
   processing_fee_payment_status:string;

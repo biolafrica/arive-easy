@@ -12,6 +12,7 @@ export interface UserBase {
   address?:string;
   bio?:string;
   provider?: string;
+  stripe_customer_id?: string;
 }
 
 

@@ -231,7 +231,12 @@ export function useApplicationStageUpdates(application: ApplicationBase) {
           completed: true,
           completed_at: new Date().toISOString(),
           status: 'completed',
-          data
+          data: {
+            ...data,
+            direct_debit_status: 'active',
+            direct_debit_creation_date: new Date().toISOString(),
+            current_step: 'success',
+          }
         }
       },
       mortgage_start_date: new Date().toISOString()

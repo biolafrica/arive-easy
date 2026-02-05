@@ -18,7 +18,7 @@ export default function CreatePlan(
 
   const handleSubmit = async(values:AddPlan)=>{
     await updateApplication(id, values, {successMessage: 'Plan created succesfully'})
-   console.log("taye")
+    setShowModal(false);
   }
 
   return(

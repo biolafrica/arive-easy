@@ -1,7 +1,7 @@
 'use client';
 
 import { ApplicationBase } from "@/type/pages/dashboard/application";
-import { PaymentSetupData } from "../PaymentSetupStage";
+import { PaymentSetupData } from "./PaymentSetupStage";
 import { formatUSD } from "@/lib/formatter";
 
 interface PaymentSummaryProps {

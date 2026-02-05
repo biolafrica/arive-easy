@@ -12,8 +12,8 @@ import DocumentsStage from "../stages/DocumentsStage";
 import PropertySelectionStage from "../stages/property-selection/PropertySelectionStage";
 import IdentityVerificationStage from "../stages/verification/IdentityVerificationStage";
 import TermsAgreementStage from "../stages/TermsAgreementStage";
-import PaymentSetupStage from "../stages/PaymentSetupStage";
-import MortgageActivationStage from "../stages/MortgageActivationStage";
+import PaymentSetupStage from "../stages/payment-setup/PaymentSetupStage";
+import MortgageActivationStage from "../stages/mortgage-activation/MortgageActivationStage";
 import PropertyPreferencesStage from "../stages/PropertyPreferencesStage";
 
 

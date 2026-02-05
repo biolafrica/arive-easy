@@ -1,9 +1,9 @@
 'use client';
 
 import { ApplicationBase } from "@/type/pages/dashboard/application";
-import { DownPaymentSection } from './payment-setup/DownPaymentSection';
-import { LegalValuationFeesSection } from './payment-setup/LegalValuationFeesSection';
-import {PaymentSummary } from './payment-setup/PaymentSummary';
+import { DownPaymentSection } from './DownPaymentSection';
+import { LegalValuationFeesSection } from './LegalValuationFeesSection';
+import {PaymentSummary } from './PaymentSummary';
 
 
 interface Props {

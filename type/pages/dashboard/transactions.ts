@@ -9,6 +9,7 @@ export interface Metadata{
   property_id?:string;
   escrow_status?:string;
   payment_type?:string;
+
 }
 
 export interface TransactionBase{

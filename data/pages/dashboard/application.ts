@@ -122,7 +122,7 @@ export const STATUS_CONFIG = {
 
 
 export const downPaymentField:FormField[]=[
-  {name: 'down_payment', label:"Down Payment", type:'text', required:true , placeholder:"Enter Amount"}
+  {name: 'down_payment', label:"Down Payment($)", type:'money', required:true , placeholder:"Enter Amount", currency:"USD", locale:"en-US", showCurrencySymbol:true}
 ]
 
 export interface DownPaymentForm{
@@ -134,7 +134,7 @@ export const downPaymentInitialValue:DownPaymentForm ={
 }
 
 export const valuationField:FormField[]=[
-  {name:'valuation_fee', label:"Valuation Fee Amount($)", type:'text', required:true, placeholder:"Enter Amount"},
+  {name:'valuation_fee', label:"Valuation Fee Amount($)", type:'money', required:true, placeholder:"Enter Amount", currency:"USD", locale:"en-US", showCurrencySymbol:true},
 ]
 
 export const planField:FormField[]=[
@@ -152,14 +152,14 @@ export const planField:FormField[]=[
 ]
 
 export const legalField:FormField[]=[
-  {name:'legal_fee', label:"Legal Fee Amount($)", type:'text', required:true, placeholder:"Enter Amount"},
+  {name:'legal_fee', label:"Legal Fee Amount($)", type:'money', required:true, placeholder:"Enter Amount",currency:"USD", locale:"en-US", showCurrencySymbol:true},
 ]
 
 export const termField:FormField[]=[
   {name:'loan_term_months', label:"Term Months", type:'text', required:true, placeholder:"Enter months"},
   {name:'interest_rate', label:"Interest Rate(%)", type:'text', required:true, placeholder:"Enter interest percentage"},
   {name:'down_payment_percentage', label:"Down Payment (%)", type:'text', required:true, placeholder:"Enter percentage"},
-  {name:'approved_loan_amount', label:"Approved Loan Amount($)", type:'text', required:true, placeholder:"Enter amount"},
+  {name:'approved_loan_amount', label:"Approved Loan Amount($)", type:'money', required:true, placeholder:"Enter amount",currency:"USD", locale:"en-US", showCurrencySymbol:true},
 ]
 
 export const valuationInitialValue:AddValuationForm = {

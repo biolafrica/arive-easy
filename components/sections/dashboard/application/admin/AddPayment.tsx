@@ -5,6 +5,7 @@ import { legalField, legalInitialValue, valuationField, valuationInitialValue } 
 import { useUpdateApplication } from "@/hooks/useSpecialized/useApplications";
 import { AddLegalForm, AddValuationForm, AdminApplicationModalProps } from "@/type/pages/dashboard/application";
 import { useState } from "react";
+import { set } from "zod";
 
 export default function AddPayment(
   {showModal, setShowModal, id}:AdminApplicationModalProps)
@@ -31,10 +32,12 @@ export default function AddPayment(
 
   const handleLegalSubmit = async(values:AddLegalForm)=>{
     await updateApplication(id, values, {successMessage: 'Legal fee added successfully'})
+    setShowModal(false);
   }
 
   const handleValuationSubmit = async(values:AddValuationForm)=>{
     await updateApplication(id, values, {successMessage: 'Valuation fee added successfully'})
+    setShowModal(false);
   }
 
   return(

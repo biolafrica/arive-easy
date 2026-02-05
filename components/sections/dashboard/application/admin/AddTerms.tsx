@@ -17,6 +17,7 @@ export default function AddTerms(
 
   const handleSubmit = async(values:AddTermsForm)=>{
     await updateApplication(id, values, {successMessage: 'Loan Terms added successfully'})
+    setShowModal(false);
   }
 
   return(
