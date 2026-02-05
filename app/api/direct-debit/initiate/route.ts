@@ -190,12 +190,12 @@ export async function POST(request: NextRequest) {
       stages_completed: {
         ...application.stages_completed,
         mortgage_activation: {
-          completed: false, // NOT completed - user still needs to add payment method
+          completed: false, 
           completed_at: undefined,
-          status: 'in_progress', // Stage is in progress
+          status: 'current', 
           data: {
             direct_debit_status: 'pending_setup',
-            current_step: 'payment_method', // User is moving to payment_method step
+            current_step: 'payment_method',
             mortgage_id: mortgageId,
             setup_intent_id: setupIntent.id,
             client_secret: setupIntent.client_secret,
