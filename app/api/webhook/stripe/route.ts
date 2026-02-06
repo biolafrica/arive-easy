@@ -8,10 +8,7 @@ import { Mortgage } from '@/type/pages/dashboard/mortgage';
 import { UserBase } from '@/type/user';
 import { sendEmail } from '@/utils/email/send_email';
 import { paymentReceiptBody } from '@/utils/email/payment-receipt';
-
-// ============================================
-// STRIPE INITIALIZATION
-// ============================================
+import { getPaymentFailedEmailTemplate, getPaymentSuccessEmailTemplate } from '@/utils/email/direct-debit';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-12-15.clover"
@@ -22,15 +19,7 @@ const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// ============================================
-// TYPES
-// ============================================
-
 type PaymentType = 'escrow_down_payment' | 'legal_fee' | 'valuation_fee' | 'processing_fee' | string;
-
-// ============================================
-// MAIN WEBHOOK HANDLER
-// ============================================
 
 export async function POST(request: NextRequest) {
   try {
@@ -54,9 +43,7 @@ export async function POST(request: NextRequest) {
 
     console.log(`Processing webhook event: ${event.type}`);
 
-    // Route to appropriate handler
     switch (event.type) {
-      // ========== CHECKOUT EVENTS ==========
       case 'checkout.session.completed':
         await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
         break;
@@ -65,7 +52,6 @@ export async function POST(request: NextRequest) {
         await handleCheckoutExpired(event.data.object as Stripe.Checkout.Session);
         break;
 
-      // ========== PAYMENT INTENT EVENTS ==========
       case 'payment_intent.succeeded':
         await handlePaymentIntentSucceeded(event.data.object as Stripe.PaymentIntent);
         break;
@@ -74,12 +60,10 @@ export async function POST(request: NextRequest) {
         await handlePaymentIntentFailed(event.data.object as Stripe.PaymentIntent);
         break;
 
-      // ========== SETUP INTENT EVENTS (Direct Debit) ==========
       case 'setup_intent.succeeded':
         await handleSetupIntentSucceeded(event.data.object as Stripe.SetupIntent);
         break;
 
-      // ========== INVOICE EVENTS (Subscriptions) ==========
       case 'invoice.payment_succeeded':
         await handleInvoicePaymentSucceeded(event.data.object as Stripe.Invoice);
         break;
@@ -88,7 +72,6 @@ export async function POST(request: NextRequest) {
         await handleInvoicePaymentFailed(event.data.object as Stripe.Invoice);
         break;
 
-      // ========== SUBSCRIPTION EVENTS ==========
       case 'customer.subscription.updated':
         await handleSubscriptionUpdated(event.data.object as Stripe.Subscription);
         break;
@@ -97,7 +80,6 @@ export async function POST(request: NextRequest) {
         await handleSubscriptionCancelled(event.data.object as Stripe.Subscription);
         break;
 
-      // ========== OTHER EVENTS ==========
       case 'payment_method.attached':
         console.log('Payment method attached:', (event.data.object as Stripe.PaymentMethod).id);
         break;
@@ -113,10 +95,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 });
   }
 }
-
-// ============================================
-// CHECKOUT SESSION HANDLERS
-// ============================================
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const paymentType = session.metadata?.payment_type as PaymentType;
@@ -152,10 +130,6 @@ async function handleCheckoutExpired(session: Stripe.Checkout.Session) {
   });
 }
 
-// ============================================
-// PAYMENT INTENT HANDLERS
-// ============================================
-
 async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
   console.log('Payment intent succeeded:', paymentIntent.id);
 
@@ -181,10 +155,6 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
   });
 }
 
-// ============================================
-// SETUP INTENT HANDLERS (Direct Debit Bank Verification)
-// ============================================
-
 async function handleSetupIntentSucceeded(setupIntent: Stripe.SetupIntent) {
   const applicationId = setupIntent.metadata?.application_id;
   
@@ -204,14 +174,12 @@ async function handleSetupIntentSucceeded(setupIntent: Stripe.SetupIntent) {
     return;
   }
 
-  // Update mortgage to active
   await mortgageQueryBuilder.update(mortgage.id, {
     status: 'active',
     activated_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   });
 
-  // Update application
   const application = await applicationQueryBuilder.findById(applicationId);
   if (application) {
     await applicationQueryBuilder.update(applicationId, {
@@ -238,10 +206,6 @@ async function handleSetupIntentSucceeded(setupIntent: Stripe.SetupIntent) {
   console.log(`Bank verification completed for mortgage ${mortgage.id}`);
 }
 
-// ============================================
-// INVOICE HANDLERS (Subscription Payments)
-// ============================================
-
 async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
   const subscriptionId = getSubscriptionId(invoice);
   const paymentIntentId = getPaymentIntentId(invoice);
@@ -251,6 +215,9 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
   if (!subscriptionId) return;
 
   const mortgageQueryBuilder = new SupabaseQueryBuilder<Mortgage>("mortgages");
+  const userQueryBuilder = new SupabaseQueryBuilder<UserBase>("users");
+  const applicationQueryBuilder = new SupabaseQueryBuilder<ApplicationBase>("applications");
+
 
   const mortgage = await mortgageQueryBuilder.findOneByCondition({
     stripe_subscription_id: subscriptionId
@@ -261,7 +228,6 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
     return;
   }
 
-  // Update payment record
   const { data: payment, error: paymentError } = await supabaseAdmin
     .from('mortgage_payments')
     .update({
@@ -282,7 +248,6 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
     console.error('Failed to update payment record:', paymentError);
   }
 
-  // Update mortgage
   const newPaymentsMade = (mortgage.payments_made || 0) + 1;
   const isCompleted = newPaymentsMade >= mortgage.total_payments;
   const nextPaymentDate = new Date(invoice.period_end * 1000);
@@ -297,7 +262,6 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
     updated_at: new Date().toISOString(),
   });
 
-  // Create transaction record
   await supabaseAdmin.from('transactions').insert({
     user_id: mortgage.user_id,
     application_id: mortgage.application_id,
@@ -312,6 +276,23 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
     metadata: { payment_number: newPaymentsMade, subscription_id: subscriptionId },
   });
 
+  const application = await applicationQueryBuilder.findById(mortgage.application_id);
+  const user = await userQueryBuilder.findById(mortgage.user_id);
+
+  if (user?.email) {
+    sendEmail({
+      to: user.email,
+      subject: 'Payment Successful - Kletch',
+      html: getPaymentSuccessEmailTemplate({
+        userName: user.name || 'Customer', 
+        amount: invoice.amount_paid / 100,
+        paymentNumber: newPaymentsMade,
+        totalPayments: mortgage.total_payments,
+        nextPaymentDate: nextPaymentDate.toISOString().split('T')[0],
+        applicationNumber: application?.application_number || '',
+      }),
+    }).catch(err => console.error('Failed to send payment success email:', err));
+  }
   console.log(`Mortgage payment ${newPaymentsMade}/${mortgage.total_payments} succeeded for ${mortgage.id}`);
 }
 
@@ -324,6 +305,8 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
   if (!subscriptionId) return;
 
   const mortgageQueryBuilder = new SupabaseQueryBuilder<Mortgage>("mortgages");
+  const userQueryBuilder = new SupabaseQueryBuilder<UserBase>("users");
+  const applicationQueryBuilder = new SupabaseQueryBuilder<ApplicationBase>("applications");
 
   const mortgage = await mortgageQueryBuilder.findOneByCondition({
     stripe_subscription_id: subscriptionId
@@ -331,7 +314,6 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
 
   if (!mortgage) return;
 
-  // Update payment record
   await supabaseAdmin
     .from('mortgage_payments')
     .update({
@@ -346,18 +328,34 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
     .order('payment_number', { ascending: true })
     .limit(1);
 
-  // Update mortgage status
   await mortgageQueryBuilder.update(mortgage.id, {
     status: 'payment_failed',
     updated_at: new Date().toISOString(),
   });
 
+  const application = await applicationQueryBuilder.findById(mortgage.application_id);
+
+  const user = await userQueryBuilder.findById(mortgage.user_id);
+  
+  if (user?.email) {
+    sendEmail({
+      to: user.email,
+      subject: 'Payment Failed - Action Required - Kletch',
+      html: getPaymentFailedEmailTemplate({
+        userName: user.name || 'Customer',
+        amount: invoice.amount_due / 100,
+        failureReason: invoice.last_finalization_error?.message || 'Your payment could not be processed',
+        retryDate: invoice.next_payment_attempt 
+          ? new Date(invoice.next_payment_attempt * 1000).toISOString().split('T')[0]
+          : null,
+        applicationNumber: application?.application_number || '',
+        updatePaymentUrl: `${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/applications`,
+      }),
+    }).catch(err => console.error('Failed to send payment failure email:', err));
+  }
+
   console.log(`Mortgage payment failed for ${mortgage.id}`);
 }
-
-// ============================================
-// SUBSCRIPTION HANDLERS
-// ============================================
 
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   console.log('Subscription updated:', subscription.id);
@@ -414,10 +412,6 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
   }
 }
 
-// ============================================
-// PAYMENT PROCESSORS
-// ============================================
-
 async function processEscrowPayment(session: Stripe.Checkout.Session, paymentType: string) {
   const applicationId = session.metadata?.application_id;
   const userId = session.metadata?.user_id;
@@ -462,7 +456,7 @@ async function processEscrowPayment(session: Stripe.Checkout.Session, paymentTyp
       transactionId: transaction.id,
       applicationId: applicationId || '',
       type: 'Escrow',
-      subject: 'Escrow Payment Confirmed - Ariveasy',
+      subject: 'Escrow Payment Confirmed - Kletch',
     });
   }
 }
@@ -506,7 +500,7 @@ async function processFeePayment(session: Stripe.Checkout.Session, feeType: 'leg
       transactionId: transaction.id,
       applicationId: applicationId || '',
       type: typeLabel,
-      subject: `${typeLabel} Fee Payment Confirmed - Ariveasy`,
+      subject: `${typeLabel} Fee Payment Confirmed - Kletch`,
     });
   }
 }
@@ -546,10 +540,6 @@ async function processGenericPayment(session: Stripe.Checkout.Session) {
     });
   }
 }
-
-// ============================================
-// UTILITY FUNCTIONS
-// ============================================
 
 async function updateTransactionBySessionId(
   sessionId: string,
@@ -666,14 +656,12 @@ async function sendReceiptUrlEmail(userId: string, receiptUrl: string): Promise<
   }
 }
 
-// Helper: Get subscription ID from invoice (handles string or expanded object)
 function getSubscriptionId(invoice: Stripe.Invoice): string | undefined {
   const subscription = invoice.parent?.subscription_details?.subscription;
   if (!subscription) return undefined;
   return typeof subscription === 'string' ? subscription : (subscription as Stripe.Subscription).id;
 }
 
-// Helper: Get payment intent ID from invoice
 function getPaymentIntentId(invoice: Stripe.Invoice): string | undefined {
   const paymentData = invoice.payments?.data?.[0];
   const paymentIntent = paymentData?.payment?.payment_intent;

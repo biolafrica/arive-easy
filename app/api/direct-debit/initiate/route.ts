@@ -46,7 +46,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if direct debit is already set up
     const existingMortgage = await mortgageQueryBuilder.findOneByCondition({ 
       application_id: application_id 
     });
@@ -57,11 +56,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get user and pre-approval data
     const applicationUser = await userQueryBuilder.findById(application.user_id);
     const pre_approvals = await preApprovalQueryBuilder.findById(application.pre_approval_id);
     
-    // Get or create Stripe customer
     let stripeCustomerId = applicationUser?.stripe_customer_id;
     
     if (!stripeCustomerId) {
@@ -81,7 +78,6 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Determine payment method types based on country
     const country = user_country || pre_approvals?.personal_info?.residence_country || 'canada';
     const isCanadian = country === 'CA' || country === 'canada' || country === 'Canada';
     
@@ -89,7 +85,6 @@ export async function POST(request: NextRequest) {
     let paymentMethodOptions: Stripe.SetupIntentCreateParams['payment_method_options'] = {};
 
     if (!isCanadian) {
-      // Canadian Pre-Authorized Debit
       paymentMethodTypes = ['acss_debit', 'card'];
       paymentMethodOptions = {
         acss_debit: {
@@ -98,11 +93,10 @@ export async function POST(request: NextRequest) {
             interval_description: 'Monthly mortgage payment on the agreed date',
             transaction_type: 'personal',
           },
-          currency: 'usd', // Transactions in USD as per requirement
+          currency: 'usd', 
         },
       };
     } else {
-      // US ACH Direct Debit
       paymentMethodTypes = ['us_bank_account', 'card'];
       paymentMethodOptions = {
         us_bank_account: {
@@ -114,7 +108,6 @@ export async function POST(request: NextRequest) {
       };
     }
 
-    // Create SetupIntent
     const setupIntent = await stripe.setupIntents.create({
       customer: stripeCustomerId,
       payment_method_types: paymentMethodTypes,
@@ -125,33 +118,28 @@ export async function POST(request: NextRequest) {
         monthly_amount: application.monthly_payment.toString(),
         country: country,
       },
-      usage: 'off_session', // For recurring payments
+      usage: 'off_session', 
     });
 
-    // Prepare mortgage data
     const mortgageData = {
       application_id: application_id,
       user_id: user.id,
       
-      // Loan details from application
       property_price: application.property_price,
       down_payment_made: application.down_payment_amount,
       approved_loan_amount: application.approved_loan_amount,
       interest_rate_annual: application.interest_rate,
       loan_term_months: application.loan_term_months,
       
-      // Payment schedule from bank terms
       monthly_payment: application.monthly_payment,
       total_payments: application.total_payment,
       first_payment_date: application.first_payment_date,
       last_payment_date: application.last_payment_date,
       payment_day_of_month: application.payment_day_of_month,
       
-      // Stripe references
       stripe_customer_id: stripeCustomerId,
       stripe_setup_intent_id: setupIntent.id,
       
-      // Status - pending until user adds payment method
       status: 'pending_payment_method' as const,
       payments_made: 0,
       
@@ -161,7 +149,6 @@ export async function POST(request: NextRequest) {
     let mortgageId: string;
 
     if (existingMortgage) {
-      // Update existing mortgage record
       const updateMortgage = await mortgageQueryBuilder.update(existingMortgage.id, mortgageData);
       
       if (!updateMortgage) {
@@ -170,7 +157,6 @@ export async function POST(request: NextRequest) {
       }
       mortgageId = existingMortgage.id;
     } else {
-      // Create new mortgage record
       const newMortgage = await mortgageQueryBuilder.create({
         ...mortgageData,
         created_at: new Date().toISOString(),
@@ -183,7 +169,6 @@ export async function POST(request: NextRequest) {
       mortgageId = newMortgage.id;
     }
 
-    // Update application - stage is NOT completed yet, user still needs to add payment method
     await applicationQueryBuilder.update(application_id, {
       direct_debit_status: 'pending_setup',
       updated_at: new Date().toISOString(),

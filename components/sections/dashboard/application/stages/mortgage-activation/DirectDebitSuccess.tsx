@@ -5,10 +5,6 @@ import { formatDate, formatUSD } from "@/lib/formatter";
 import { Button } from "@/components/primitives/Button";
 import Link from "next/link";
 
-// ============================================
-// TYPES
-// ============================================
-
 interface DirectDebitSuccessProps {
   loanDetails: {
     loanAmount: number;
@@ -22,10 +18,6 @@ interface DirectDebitSuccessProps {
   applicationId: string;
   isPendingVerification?: boolean;
 }
-
-// ============================================
-// COMPONENT
-// ============================================
 
 export function DirectDebitSuccess({ 
   loanDetails, 
@@ -45,7 +37,6 @@ export function DirectDebitSuccess({
 
   return (
     <div className="space-y-6">
-      {/* Success/Pending Header */}
       <div className="text-center py-8">
         <div className={`mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4 ${
           isPendingVerification ? 'bg-amber-100' : 'bg-green-100'
@@ -72,7 +63,6 @@ export function DirectDebitSuccess({
         </p>
       </div>
 
-      {/* Pending Verification Notice */}
       {isPendingVerification && (
         <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
           <div className="flex items-start space-x-3">
@@ -89,7 +79,6 @@ export function DirectDebitSuccess({
         </div>
       )}
 
-      {/* Payment Schedule Card */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <div className={`border-b px-6 py-4 ${
           isPendingVerification 
@@ -104,7 +93,6 @@ export function DirectDebitSuccess({
         </div>
 
         <div className="p-6 space-y-6">
-          {/* Monthly Payment */}
           <div className="flex items-center justify-between py-4 border-b border-gray-100">
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-blue-50 rounded-lg">
@@ -119,7 +107,6 @@ export function DirectDebitSuccess({
             </div>
           </div>
 
-          {/* Payment Date */}
           <div className="flex items-center justify-between py-4 border-b border-gray-100">
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-purple-50 rounded-lg">
@@ -134,7 +121,6 @@ export function DirectDebitSuccess({
             </div>
           </div>
 
-          {/* First Payment */}
           <div className="flex items-center justify-between py-4 border-b border-gray-100">
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-amber-50 rounded-lg">
@@ -152,7 +138,6 @@ export function DirectDebitSuccess({
             </div>
           </div>
 
-          {/* Loan Details */}
           <div className="grid grid-cols-2 gap-4 pt-4">
             <div className="text-center p-4 bg-gray-50 rounded-lg">
               <p className="text-sm text-gray-500">Loan Amount</p>
@@ -170,7 +155,6 @@ export function DirectDebitSuccess({
         </div>
       </div>
 
-      {/* What's Next */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
         <h4 className="font-semibold text-blue-900 mb-3">What Happens Next?</h4>
         <ul className="space-y-3 text-sm text-blue-800">
@@ -216,7 +200,6 @@ export function DirectDebitSuccess({
         </ul>
       </div>
 
-      {/* Action Buttons */}
       <div className="flex flex-col sm:flex-row gap-4">
         <Link href='/user-dashboard/properties/' className="flex-1">
           <Button variant="outline" className="w-full">
@@ -230,7 +213,6 @@ export function DirectDebitSuccess({
         </Link>
       </div>
 
-      {/* Support Note */}
       <p className="text-center text-sm text-gray-500">
         Need to make changes? Contact our support team at{' '}
         <a href="mailto:support@ariveasy.com" className="text-blue-600 hover:underline">

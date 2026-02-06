@@ -23,7 +23,6 @@ export function useDirectDebitSetup() {
   const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
 
-  // Mutation to initiate direct debit setup
   const initiateMutation = useMutation({
     mutationFn: async (params: InitiateSetupParams): Promise<SetupResult> => {
       const response = await fetch('/api/direct-debit/initiate', {
@@ -50,7 +49,6 @@ export function useDirectDebitSetup() {
     },
   });
 
-  // Mutation to confirm setup after payment method is added
   const confirmMutation = useMutation({
     mutationFn: async (params: ConfirmSetupParams) => {
       const response = await fetch('/api/direct-debit/confirm', {
@@ -72,7 +70,6 @@ export function useDirectDebitSetup() {
       setError(null);
       toast.success('Automatic payments have been set up successfully!');
       
-      // Invalidate related queries
       queryClient.invalidateQueries({ 
         queryKey: ['applications', variables.application_id] 
       });
@@ -87,16 +84,13 @@ export function useDirectDebitSetup() {
   });
 
   return {
-    // Initiate setup
     initiateSetup: initiateMutation.mutateAsync,
     isInitiating: initiateMutation.isPending,
     setupData: initiateMutation.data,
 
-    // Confirm setup
     confirmSetup: confirmMutation.mutateAsync,
     isConfirming: confirmMutation.isPending,
 
-    // Error state
     error,
     clearError: () => setError(null),
   };

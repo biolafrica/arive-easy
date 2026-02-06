@@ -7,9 +7,6 @@ import { useDirectDebitSetup } from "@/hooks/useDirectDebitSetup";
 import { DirectDebitPaymentForm } from "./DirectDebitPaymentForm";
 import { DirectDebitSuccess } from "./DirectDebitSuccess";
 
-// ============================================
-// TYPES
-// ============================================
 
 export interface MortgageActivationData {
   direct_debit_status: 'not_started' | 'pending_setup' | 'pending_verification' | 'active' | 'paused' | 'cancelled';
@@ -29,9 +26,6 @@ interface Props {
   isUpdating: boolean;
 }
 
-// ============================================
-// COMPONENT
-// ============================================
 
 export default function MortgageActivationStage({
   application,
@@ -40,56 +34,37 @@ export default function MortgageActivationStage({
   isReadOnly,
   isUpdating
 }: Props) {
-  // Initialize state from stageData (persisted) or defaults
   const [currentStep, setCurrentStep] = useState<SetupStep>(
     stageData?.current_step || 'review'
   );
+
   const [clientSecret, setClientSecret] = useState<string | null>(
     stageData?.client_secret || null
   );
 
-  const {
-    initiateSetup,
-    isInitiating,
-    confirmSetup,
-    isConfirming,
-    error,
-    clearError
-  } = useDirectDebitSetup();
-
-  // ============================================
-  // RESTORE STATE FROM STAGE DATA
-  // ============================================
+  const { initiateSetup, isInitiating, confirmSetup, isConfirming, error, clearError } = useDirectDebitSetup();
   
   useEffect(() => {
-    // If direct debit is already active, show success
     if (application.direct_debit_status === 'active' || stageData?.direct_debit_status === 'active') {
       setCurrentStep('success');
       return;
     }
 
-    // If we have a client_secret saved, restore the payment_method step
     if (stageData?.client_secret && stageData?.current_step === 'payment_method') {
       setClientSecret(stageData.client_secret);
       setCurrentStep('payment_method');
       return;
     }
 
-    // If pending_verification, show success (waiting for webhook)
     if (stageData?.direct_debit_status === 'pending_verification') {
       setCurrentStep('success');
       return;
     }
 
-    // Otherwise use the saved current_step or default to review
     if (stageData?.current_step) {
       setCurrentStep(stageData.current_step);
     }
   }, [application.direct_debit_status, stageData]);
-
-  // ============================================
-  // HANDLERS
-  // ============================================
 
   const handleInitiateSetup = async () => {
     try {
@@ -101,7 +76,6 @@ export default function MortgageActivationStage({
       });
 
       if (result?.client_secret) {
-        // Save to state
         setClientSecret(result.client_secret);
         setCurrentStep('payment_method');
       }
@@ -116,48 +90,36 @@ export default function MortgageActivationStage({
     status: 'succeeded' | 'processing'
   ) => {
     try {
-      // Call the confirm endpoint via hook
       await confirmSetup({
         application_id: application.id,
         setup_intent_id: setupIntentId,
         payment_method_id: paymentMethodId,
       });
 
-      // Determine the direct debit status based on Stripe's response
-      // 'processing' = bank debit is being verified asynchronously
-      // 'succeeded' = card or instant verification completed
       const directDebitStatus = status === 'succeeded' ? 'active' : 'pending_verification';
 
-      // Update stage data
       await onUpdate({
         direct_debit_status: directDebitStatus,
         direct_debit_creation_date: new Date().toISOString(),
         current_step: 'success',
-        // Clear client_secret as it's no longer needed
         client_secret: undefined,
       });
 
-      // Move to success step
       setCurrentStep('success');
 
     } catch (err) {
       console.error('Failed to confirm setup:', err);
-      throw err; // Re-throw so the form can handle the error
+      throw err;
     }
   }, [application.id, confirmSetup, onUpdate]);
 
   const handleBack = useCallback(async () => {
     setCurrentStep('review');
     
-    // Optionally persist the step change
     await onUpdate({
       current_step: 'review',
     });
   }, [onUpdate]);
-
-  // ============================================
-  // LOAN DETAILS
-  // ============================================
 
   const loanDetails = {
     loanAmount: application.approved_loan_amount || 0,
@@ -169,11 +131,6 @@ export default function MortgageActivationStage({
     interestRate: application.interest_rate || 0,
   };
 
-  // ============================================
-  // RENDER
-  // ============================================
-
-  // Show processing message if pending verification
   const isPendingVerification = stageData?.direct_debit_status === 'pending_verification';
 
   return (

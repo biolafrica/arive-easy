@@ -32,7 +32,6 @@ export function ReviewStep({ loanDetails, onProceed, isLoading, error }: ReviewS
 
   return (
     <div className="space-y-6">
-      {/* Loan Summary Card */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
           <h3 className="text-lg font-semibold text-white">Your Mortgage Payment Plan</h3>
@@ -40,7 +39,6 @@ export function ReviewStep({ loanDetails, onProceed, isLoading, error }: ReviewS
         </div>
 
         <div className="p-6">
-          {/* Monthly Payment Highlight */}
           <div className="text-center py-6 border-b border-gray-100">
             <p className="text-sm text-gray-500 uppercase tracking-wide">Monthly Payment</p>
             <p className="text-4xl font-bold text-gray-900 mt-2">
@@ -51,7 +49,6 @@ export function ReviewStep({ loanDetails, onProceed, isLoading, error }: ReviewS
             </p>
           </div>
 
-          {/* Details Grid */}
           <div className="grid grid-cols-2 gap-6 py-6">
             <DetailItem
               icon={<icon.BanknotesIcon className="w-5 h-5 text-blue-600" />}
@@ -75,7 +72,6 @@ export function ReviewStep({ loanDetails, onProceed, isLoading, error }: ReviewS
             />
           </div>
 
-          {/* Interest Rate Note */}
           <div className="bg-gray-50 rounded-lg p-4 text-sm text-gray-600">
             <p>
               <span className="font-medium">Interest Rate:</span> {loanDetails.interestRate}% per annum
@@ -87,7 +83,6 @@ export function ReviewStep({ loanDetails, onProceed, isLoading, error }: ReviewS
         </div>
       </div>
 
-      {/* Important Information */}
       <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
         <h4 className="font-medium text-amber-800">Before You Continue</h4>
         <ul className="mt-2 text-sm text-amber-700 space-y-1">
@@ -98,14 +93,12 @@ export function ReviewStep({ loanDetails, onProceed, isLoading, error }: ReviewS
         </ul>
       </div>
 
-      {/* Error Display */}
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 text-sm">
           {error}
         </div>
       )}
 
-      {/* Action Button */}
       <Button
         onClick={onProceed}
         disabled={isLoading}

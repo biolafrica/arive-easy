@@ -6,7 +6,9 @@ import { Mortgage } from '@/type/pages/dashboard/mortgage';
 import { ApplicationBase } from '@/type/pages/dashboard/application';
 import { PreApprovalBase } from '@/type/pages/dashboard/approval';
 import { supabaseAdmin } from '@/utils/supabase/supabaseAdmin';
-// import { sendEmail, getDirectDebitConfirmationEmailTemplate } from '@/utils/server/sendEmail';
+import { sendEmail } from '@/utils/email/send_email';
+import { getDirectDebitConfirmationEmailTemplate } from '@/utils/email/direct-debit';
+
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-12-15.clover",
@@ -29,7 +31,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify the SetupIntent
     const setupIntent = await stripe.setupIntents.retrieve(setup_intent_id);
     
     if (setupIntent.status !== 'succeeded' && setupIntent.status !== 'processing') {
@@ -39,7 +40,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get the mortgage record
     const mortgage = await mortgageQueryBuilder.findOneByCondition({
       application_id: application_id,
     });
@@ -50,7 +50,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get application for additional details
     const application = await applicationQueryBuilder.findById(application_id);
     if (!application) {
       return NextResponse.json(
@@ -58,23 +57,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Attach payment method to customer
     await stripe.paymentMethods.attach(payment_method_id, {
       customer: mortgage.stripe_customer_id,
     });
 
-    // Set as default payment method
     await stripe.customers.update(mortgage.stripe_customer_id, {
       invoice_settings: {
         default_payment_method: payment_method_id,
       },
     });
 
-    // Get payment method details for record
     const paymentMethod = await stripe.paymentMethods.retrieve(payment_method_id);
     const paymentMethodType = paymentMethod.type;
     
-    // Determine payment method display name
     let paymentMethodDisplay = '';
     if (paymentMethodType === 'us_bank_account' && paymentMethod.us_bank_account) {
       paymentMethodDisplay = `${paymentMethod.us_bank_account.bank_name} ****${paymentMethod.us_bank_account.last4}`;
@@ -84,16 +79,13 @@ export async function POST(request: NextRequest) {
       paymentMethodDisplay = `${paymentMethod.card.brand?.toUpperCase()} ****${paymentMethod.card.last4}`;
     }
 
-    // Determine status based on SetupIntent status
-    // For bank debits, 'processing' means async verification is pending
     const isProcessing = setupIntent.status === 'processing';
     const directDebitStatus = isProcessing ? 'pending_verification' : 'active';
     const mortgageStatus = isProcessing ? 'pending_verification' : 'active';
 
-    // Create a Price object for the subscription
     const price = await stripe.prices.create({
       currency: 'usd',
-      unit_amount: Math.round(mortgage.monthly_payment * 100), // Convert to cents
+      unit_amount: Math.round(mortgage.monthly_payment * 100), 
       recurring: {
         interval: 'month',
       },
@@ -106,13 +98,11 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Calculate billing cycle anchor for the payment day
     const billingCycleAnchor = calculateBillingCycleAnchor(
       mortgage.first_payment_date,
       mortgage.payment_day_of_month
     );
 
-    // Create the subscription
     const subscription = await stripe.subscriptions.create({
       customer: mortgage.stripe_customer_id,
       items: [{ price: price.id }],
@@ -128,13 +118,11 @@ export async function POST(request: NextRequest) {
         mortgage_id: mortgage.id,
         total_payments: mortgage.total_payments.toString(),
       },
-      // Cancel after all payments are made
       cancel_at: mortgage.last_payment_date 
         ? Math.floor(new Date(mortgage.last_payment_date).getTime() / 1000) + (30 * 24 * 60 * 60)
         : undefined,
     });
 
-    // Update mortgage record with subscription details
     const updateMortgage = await mortgageQueryBuilder.update(mortgage.id, {
       stripe_subscription_id: subscription.id,
       stripe_payment_method_id: payment_method_id,
@@ -149,10 +137,8 @@ export async function POST(request: NextRequest) {
 
     if (!updateMortgage) {
       console.error('Failed to update mortgage record');
-      // Don't fail the request - subscription is already created
     }
 
-    // Update application status AND stage completion
     await applicationQueryBuilder.update(application_id, {
       direct_debit_status: directDebitStatus,
       current_stage: 'mortgage_activation',
@@ -162,7 +148,7 @@ export async function POST(request: NextRequest) {
       stages_completed: {
         ...application.stages_completed,
         mortgage_activation: {
-          completed: true, // Stage is completed - user has done their part
+          completed: true,
           completed_at: new Date().toISOString(),
           status: 'completed',
           data: {
@@ -172,7 +158,6 @@ export async function POST(request: NextRequest) {
             subscription_id: subscription.id,
             payment_method_display: paymentMethodDisplay,
             is_pending_verification: isProcessing,
-            // Clear sensitive data
             client_secret: undefined,
             setup_intent_id: undefined,
           }
@@ -180,33 +165,30 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    // Create initial payment schedule records
     await createPaymentSchedule(supabaseAdmin, mortgage, subscription.id);
 
-    // Send confirmation email
     const preApproval = await preApprovalQueryBuilder.findById(application.pre_approval_id);
     const userEmail = preApproval?.personal_info?.email || user.email;
     const userName = `${preApproval?.personal_info?.first_name} ${preApproval?.personal_info?.last_name}`;
 
-    // Uncomment when email is set up:
-    // if (userEmail) {
-    //   sendEmail({
-    //     to: userEmail,
-    //     subject: isProcessing 
-    //       ? 'Bank Verification in Progress - Ariveasy'
-    //       : 'Automatic Payments Set Up Successfully - Ariveasy',
-    //     html: getDirectDebitConfirmationEmailTemplate({
-    //       userName,
-    //       monthlyPayment: mortgage.monthly_payment,
-    //       firstPaymentDate: mortgage.first_payment_date,
-    //       paymentDayOfMonth: mortgage.payment_day_of_month,
-    //       paymentMethodDisplay,
-    //       totalPayments: mortgage.total_payments,
-    //       applicationNumber: application?.application_number,
-    //       isPendingVerification: isProcessing,
-    //     }),
-    //   }).catch(err => console.error('Failed to send confirmation email:', err));
-    // }
+   
+    if (userEmail) {
+      sendEmail({
+        to: userEmail,
+        subject: isProcessing 
+          ? 'Bank Verification in Progress - Kletch'
+          : 'Automatic Payments Set Up Successfully - Kletch',
+        html: getDirectDebitConfirmationEmailTemplate({
+          userName,
+          monthlyPayment: mortgage.monthly_payment,
+          firstPaymentDate: mortgage.first_payment_date,
+          paymentDayOfMonth: mortgage.payment_day_of_month,
+          paymentMethodDisplay,
+          totalPayments: mortgage.total_payments,
+          applicationNumber: application?.application_number,
+        }),
+      }).catch(err => console.error('Failed to send confirmation email:', err));
+    }
 
     return NextResponse.json({
       success: true,
@@ -225,17 +207,14 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Helper function to calculate billing cycle anchor
 function calculateBillingCycleAnchor(firstPaymentDate: string | null, paymentDayOfMonth: number): number {
   if (firstPaymentDate) {
     return Math.floor(new Date(firstPaymentDate).getTime() / 1000);
   }
 
-  // If no first payment date, use next occurrence of payment day
   const now = new Date();
   const targetDate = new Date(now.getFullYear(), now.getMonth(), paymentDayOfMonth);
   
-  // If the day has passed this month, use next month
   if (targetDate <= now) {
     targetDate.setMonth(targetDate.getMonth() + 1);
   }
@@ -243,7 +222,6 @@ function calculateBillingCycleAnchor(firstPaymentDate: string | null, paymentDay
   return Math.floor(targetDate.getTime() / 1000);
 }
 
-// Helper function to create payment schedule records
 async function createPaymentSchedule(
   supabaseAdmin: any, 
   mortgage: any, 
