@@ -194,3 +194,23 @@ export interface PaymentWebhookData {
   stripe_invoice_id: string;
   stripe_payment_intent_id: string;
 }
+
+
+export interface MortgageDetailPageProps {
+  mortgage: Mortgage & {
+    property?: {
+      id: string;
+      name: string;
+      address: string;
+      city: string;
+      state: string;
+      image_url?: string;
+      bedrooms?: number;
+      bathrooms?: number;
+      square_feet?: number;
+    };
+  };
+  payments?: MortgagePayment[];
+}
+
+export type TabType = 'overview' | 'payments' | 'documents';

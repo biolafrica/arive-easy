@@ -3,16 +3,7 @@
 import Link from 'next/link';
 import { formatDate, formatUSD } from '@/lib/formatter';
 import { Button } from '@/components/primitives/Button';
-import { Mortgage, MortgageForm } from '@/type/pages/dashboard/mortgage';
-import { MortgageCardSkeleton } from '@/components/skeleton/MortgageCradSkeleton';
-
-
-interface MortgageCardProps {
-  mortgage: MortgageForm;
-  onMakePayment?: (mortgageId: string) => void;
-}
-
-type MortgageStatus = 'active' | 'pending_verification' | 'pending_payment_method' | 'payment_failed' | 'paused' | 'completed' | 'cancelled';
+import { MortgageCardProps, MortgageStatus } from '@/type/pages/dashboard/property';
 
 
 function StatusBadge({ status }: { status: MortgageStatus }) {
@@ -55,7 +46,6 @@ function StatusBadge({ status }: { status: MortgageStatus }) {
     </span>
   );
 }
-
 
 function LoanProgressBar({ 
   paid, 
@@ -101,7 +91,6 @@ function LoanProgressBar({
   );
 }
 
-
 function DetailRow({ 
   label, 
   value, 
@@ -120,7 +109,6 @@ function DetailRow({
     </div>
   );
 }
-
 
 export function MortgageCard({ mortgage, onMakePayment }: MortgageCardProps) {
   const {

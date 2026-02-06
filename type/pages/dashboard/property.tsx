@@ -1,23 +1,8 @@
-export type MortgageStatus = | 'active' | 'closed' | 'pending' | 'arrears' | 'suspended';
+import { MortgageForm } from "./mortgage";
 
 export interface MortgageCardProps {
-  title: string;
-  address: string;
-  status: MortgageStatus;
-  propertyValue: string;
-  loanBalance: string;
-  interestRate: string;
-  monthlyPayment: string;
-  progressPercent: number;
-  paidAmount: string;
-  remainingAmount: string;
-  nextPaymentDue?: string;
-  mortgageEndDate: string;
-  onMakePayment?: () => void;
+  mortgage: MortgageForm;
+  onMakePayment?: (mortgageId: string) => void;
 }
 
-export interface MortgageStatProps{
-  label: string;
-  value: string;
-  highlight?: boolean;
-}
+export type MortgageStatus = 'active' | 'pending_verification' | 'pending_payment_method' | 'payment_failed' | 'paused' | 'completed' | 'cancelled';
