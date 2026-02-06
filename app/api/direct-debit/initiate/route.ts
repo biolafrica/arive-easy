@@ -6,6 +6,7 @@ import { requireAuth } from '@/utils/server/authMiddleware';
 import { ApplicationBase } from '@/type/pages/dashboard/application';
 import { PreApprovalBase } from '@/type/pages/dashboard/approval';
 import { Mortgage } from '@/type/pages/dashboard/mortgage';
+import { property } from 'zod';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-12-15.clover",
@@ -130,6 +131,7 @@ export async function POST(request: NextRequest) {
       approved_loan_amount: application.approved_loan_amount,
       interest_rate_annual: application.interest_rate,
       loan_term_months: application.loan_term_months,
+      property_id: application.property_id,
       
       monthly_payment: application.monthly_payment,
       total_payments: application.total_payment,

@@ -89,3 +89,5 @@ export type PropertyGalleryProps =  Pick<PropertyBase, 'images' | 'tours'>
 export type PropertyAmenitiesProps = Pick<PropertyBase, 'amenities'>
 export type PropertyHeadProps = Pick<PropertyBase, 'address_full' | 'title' | 'description' | 'id'>
 export type PropertShareProps = Pick<PropertyBase, 'id' | 'title' | 'description'>
+
+export type PropertyListItemProps = Pick<PropertyBase,  'title' | 'status' | 'address_full' >

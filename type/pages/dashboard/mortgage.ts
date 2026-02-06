@@ -1,3 +1,4 @@
+import { PropertyBase, PropertyForm, PropertyListItemProps } from "../property";
 
 export type MortgageStatus = 
   | 'pending_payment_method'
@@ -17,37 +18,33 @@ export interface Mortgage {
   application_id: string;
   user_id: string;
   
-  // Loan Details
   property_price: number;
   down_payment_made: number;
   approved_loan_amount: number;
   interest_rate_annual: number;
   loan_term_months: number;
+  property_id: string;
+  property?: PropertyListItemProps;
   
-  // Payment Schedule
   monthly_payment: number;
   total_payments: number;
   first_payment_date: string;
   last_payment_date: string;
   payment_day_of_month: number;
   
-  // Stripe References
   stripe_customer_id: string;
   stripe_setup_intent_id?: string;
   stripe_subscription_id?: string;
   stripe_payment_method_id?: string;
   stripe_price_id?: string;
   
-  // Payment Method Details
   payment_method_type?: string;
   payment_method_display?: string;
   
-  // Tracking
   payments_made: number;
   next_payment_date?: string;
   last_payment_date_actual?: string;
   
-  // Status
   status: string;
   activated_at?: string;
   paused_at?: string;
@@ -57,6 +54,8 @@ export interface Mortgage {
   created_at: string;
   updated_at: string;
 }
+
+export type MortgageForm = Pick<Mortgage, 'property_price' | 'approved_loan_amount' | 'interest_rate_annual' | 'monthly_payment' | 'payments_made' | 'total_payments' | 'next_payment_date' | 'last_payment_date' | 'property' | 'id' | 'status'> 
 
 
 
