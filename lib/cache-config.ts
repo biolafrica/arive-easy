@@ -153,6 +153,21 @@ export const ENTITY_CACHE_CONFIGS = {
     },
   },
 
+  mortgages: {
+    list: {
+      staleTime: 5 * MINUTE,
+      cacheTime: 30 * MINUTE,
+    },
+    detail: {
+      staleTime: 10 * MINUTE,
+      cacheTime: 1 * HOUR,
+    },
+    search: {
+      staleTime: 3 * MINUTE,
+      cacheTime: 15 * MINUTE,
+    },
+  },
+
   // Articles/Blog posts
   articles: {
     list: {
@@ -189,6 +204,21 @@ export const ENTITY_CACHE_CONFIGS = {
     },
   },
 
+  mortgagePayments: {
+    list: {
+      staleTime: 5 * MINUTE,
+      cacheTime: 15 * MINUTE,
+    },
+    summary: {
+      staleTime: 10 * MINUTE,
+      cacheTime: 30 * MINUTE,
+    },
+     detail: {
+      staleTime: 1 * MINUTE,
+      cacheTime: 5 * MINUTE,
+    },
+  },
+
   // Offer history
   offers: {
     list: {
@@ -199,6 +229,7 @@ export const ENTITY_CACHE_CONFIGS = {
       staleTime: 10 * MINUTE,
       cacheTime: 30 * MINUTE,
     },
+   
   },
 
   // User profile

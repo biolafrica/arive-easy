@@ -1,4 +1,4 @@
-import { PropertyBase, PropertyForm, PropertyListItemProps } from "../property";
+import { PropertyBase, PropertyForm } from "../property";
 
 export type MortgageStatus = 
   | 'pending_payment_method'
@@ -24,7 +24,7 @@ export interface Mortgage {
   interest_rate_annual: number;
   loan_term_months: number;
   property_id: string;
-  property?: PropertyListItemProps;
+  properties?: PropertyBase;
   
   monthly_payment: number;
   total_payments: number;
@@ -54,8 +54,6 @@ export interface Mortgage {
   created_at: string;
   updated_at: string;
 }
-
-export type MortgageForm = Pick<Mortgage, 'property_price' | 'approved_loan_amount' | 'interest_rate_annual' | 'monthly_payment' | 'payments_made' | 'total_payments' | 'next_payment_date' | 'last_payment_date' | 'property' | 'id' | 'status'> 
 
 
 

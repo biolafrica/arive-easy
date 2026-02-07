@@ -1,7 +1,9 @@
+import { useMortgagePayments } from '@/hooks/useSpecialized/useMortgagePayment';
 import { formatDate, formatUSD } from '@/lib/formatter';
-import { MortgageDetailPageProps, MortgagePayment } from '@/type/pages/dashboard/mortgage';
+import { Mortgage,  } from '@/type/pages/dashboard/mortgage';
 import * as icon from '@heroicons/react/24/outline';
 import Link from 'next/link';
+import { PropertyBase } from '@/type/pages/property';
 
 export function StatusBadge({ status }: { status: string }) {
   const statusConfig: Record<string, { label: string; className: string; icon: React.ReactNode }> = {
@@ -106,7 +108,7 @@ export function StatCard({
   );
 }
 
-export function ProgressSection({ mortgage }: { mortgage: MortgageDetailPageProps['mortgage'] }) {
+export function ProgressSection({ mortgage }: { mortgage: Mortgage }) {
   const paidAmount = (mortgage.payments_made || 0) * mortgage.monthly_payment;
   const totalAmount = mortgage.approved_loan_amount;
   const remainingAmount = totalAmount - paidAmount;
@@ -167,31 +169,30 @@ export function ProgressSection({ mortgage }: { mortgage: MortgageDetailPageProp
 }
 
 
-export  function PropertyInfoSection({ property }: { property: MortgageDetailPageProps['mortgage']['property'] }) {
-  if (!property) return null;
+export  function PropertyInfoSection({property}: {property:PropertyBase}) {
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
       {/* Property Image */}
-      {property.image_url && (
+      {property.images && (
         <div className="h-48 sm:h-64 overflow-hidden">
           <img 
-            src={property.image_url} 
-            alt={property.name}
+            src={property.images[0]} 
+            alt={property.title}
             className="w-full h-full object-cover"
           />
         </div>
       )}
       
       <div className="p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">{property.name}</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">{property.title}</h3>
         <p className="text-gray-500 flex items-center gap-2">
           <icon.MapPinIcon className="w-4 h-4" />
-          {property.address}, {property.city}, {property.state}
+          {property.address_full || 'Address not available'}
         </p>
 
         {/* Property Details */}
-        {(property.bedrooms || property.bathrooms || property.square_feet) && (
+        {(property.bedrooms || property.bathrooms || property.area_sqm) && (
           <div className="flex flex-wrap gap-4 mt-4 pt-4 border-t border-gray-100">
             {property.bedrooms && (
               <div className="flex items-center gap-1.5 text-sm text-gray-600">
@@ -205,17 +206,17 @@ export  function PropertyInfoSection({ property }: { property: MortgageDetailPag
                 {property.bathrooms} Baths
               </div>
             )}
-            {property.square_feet && (
+            {property.area_sqm && (
               <div className="flex items-center gap-1.5 text-sm text-gray-600">
                 <icon.ArrowsPointingOutIcon className="w-4 h-4" />
-                {property.square_feet.toLocaleString()} sqft
+                {property.area_sqm.toLocaleString()} sqft
               </div>
             )}
           </div>
         )}
 
         <Link
-          href={`/properties/${property.id}`}
+          href={`/user-dashboard/properties/${property.id}`}
           className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 text-sm font-medium mt-4"
         >
           View Property Details
@@ -226,8 +227,16 @@ export  function PropertyInfoSection({ property }: { property: MortgageDetailPag
   );
 }
 
+export function PaymentHistoryTable({summary , id}: { summary: boolean , id?: string }) {
 
-export function PaymentHistoryTable({ payments, isLoading }: { payments: MortgagePayment[]; isLoading?: boolean }) {
+  const {mortgagePayments, isLoading, error} = useMortgagePayments({
+    filters: {
+      mortgage_id:id,
+    }
+  })
+  
+  const payments = summary ? mortgagePayments.slice(0, 5) : mortgagePayments;
+
   if (isLoading) {
     return (
       <div className="animate-pulse space-y-3">
@@ -285,7 +294,7 @@ export function PaymentHistoryTable({ payments, isLoading }: { payments: Mortgag
   );
 }
 
-export function LoanDetailsSection({ mortgage }: { mortgage: MortgageDetailPageProps['mortgage'] }) {
+export function LoanDetailsSection({ mortgage }: { mortgage: Mortgage }) {
   const details = [
     { label: 'Property Value', value: formatUSD({ amount: mortgage.property_price }) },
     { label: 'Down Payment', value: formatUSD({ amount: mortgage.down_payment_made }) },

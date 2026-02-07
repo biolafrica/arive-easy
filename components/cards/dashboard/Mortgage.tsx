@@ -111,6 +111,7 @@ function DetailRow({
 }
 
 export function MortgageCard({ mortgage, onMakePayment }: MortgageCardProps) {
+  console.log('Rendering MortgageCard with mortgage:', mortgage);
   const {
     id,
     property_price,
@@ -122,7 +123,7 @@ export function MortgageCard({ mortgage, onMakePayment }: MortgageCardProps) {
     next_payment_date,
     last_payment_date,
     status,
-    property,
+    properties,
   } = mortgage;
 
   const paidAmount = payments_made * monthly_payment;
@@ -135,10 +136,10 @@ export function MortgageCard({ mortgage, onMakePayment }: MortgageCardProps) {
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6">
         <div className="flex-1 min-w-0">
           <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 truncate">
-            {property?.title || 'Property'}
+            {properties?.title || 'Property'}
           </h3>
           <p className="text-gray-500 text-sm mt-1 truncate">
-            {property?.address_full || 'Address not available'}
+            {properties?.address_full || 'Address not available'}
           </p>
         </div>
         <StatusBadge status={status as MortgageStatus} />
@@ -191,7 +192,6 @@ export function MortgageCard({ mortgage, onMakePayment }: MortgageCardProps) {
       <div className="mt-6 flex flex-col sm:flex-row gap-3">
         {status === 'active' && onMakePayment && (
           <Button
-            variant="outline"
             className="flex-1"
             onClick={() => onMakePayment(id)}
           >
@@ -199,9 +199,9 @@ export function MortgageCard({ mortgage, onMakePayment }: MortgageCardProps) {
           </Button>
         )}
         
-        <Link href={`/user-dashboard/mortgages/${id}`} className="flex-1">
+        <Link href={`/user-dashboard/properties/${id}/mortgages`} className="flex-1">
           <Button 
-            variant={status === 'active' && onMakePayment ? 'ghost' : 'outline'}
+            variant='outline'
             className="w-full"
           >
             View Details

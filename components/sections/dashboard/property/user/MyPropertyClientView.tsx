@@ -1,32 +1,20 @@
-
-import { Mortgage, MortgageForm } from "@/type/pages/dashboard/mortgage";
 import { MortgageCardSkeleton } from "./MortgageSkeleton";
 import Link from "next/link";
 import { Button } from "@/components/primitives/Button";
 import { MortgageCard } from "@/components/cards/dashboard/Mortgage";
+import { useMortgages } from "@/hooks/useSpecialized/useMortgage";
+import { useAuthContext } from "@/providers/auth-provider";
 
 export default function MyPropertyClientView(){
-  const mortgages: MortgageForm[] = [
-    {
-      id: '1',
-      status: 'active',
-      property_price: 50000,
-      approved_loan_amount: 380000000,
-      interest_rate_annual: 6.7,
-      monthly_payment: 100,
-      payments_made: 1,
-      total_payments: 55000,
-      next_payment_date: '2026-02-05 21:57:16.512893+00',
-      last_payment_date: '2026-02-05 21:57:16.512893+00',
-      property:{
-        title: 'Mary Keyes Residence',
-        address_full: '123 Mary Keyes Street, Utako, Abuja',
-        status: 'active',
-      }
-    }
-  ]
+  const { user, loading: isUserLoading } = useAuthContext();
 
-  const isLoading = false;
+  const {mortgages, isLoading, error} = useMortgages({
+    include: ['properties'],
+    filters: {
+      user_id: user?.id,
+    }
+  })
+
 
   const handleMakePayment = (mortgageId: string) => {
     console.log('Make payment for mortgage:', mortgageId);
@@ -41,7 +29,6 @@ export default function MyPropertyClientView(){
       </div>
     );
   }
-
   if (mortgages.length === 0) {
     return (
       <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-300">

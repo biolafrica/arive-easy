@@ -2,16 +2,38 @@
 
 import { useState } from "react";
 import { Button } from "@/components/primitives/Button";
-import { MortgageDetailPageProps, TabType } from "@/type/pages/dashboard/mortgage";
+import { TabType } from "@/type/pages/dashboard/mortgage";
 import { useRouter } from "next/navigation";
 import * as icon from '@heroicons/react/24/outline';
 import { formatDate, formatUSD } from "@/lib/formatter";
 import { LoanDetailsSection, PaymentHistoryTable, ProgressSection, PropertyInfoSection, StatCard, StatusBadge } from "./MortgageUtils";
+import { useMortgage} from "@/hooks/useSpecialized/useMortgage";
 
-export default function MortgageClientView({ mortgage, payments = [] }: MortgageDetailPageProps) {
-
+export default function MortgageClientView({ id }: { id: string }) {
   const router = useRouter();
+
   const [activeTab, setActiveTab] = useState<TabType>('overview');
+
+  const {mortgage, isLoading, error} = useMortgage(id, {
+    include: ['properties'],
+  })
+
+  if (isLoading) {
+    return (
+      <div className="p-6">
+        <p className="text-gray-500">Loading mortgage details...</p>
+      </div>
+    );
+  }
+
+  if (error || !mortgage || !mortgage.properties) {
+    console.error('Error loading mortgage:', error);
+    return (
+      <div className="p-6">
+        <p className="text-red-500">Failed to load mortgage details. Please try again later.</p>
+      </div>
+    );
+  }
 
 
 
@@ -40,27 +62,27 @@ export default function MortgageClientView({ mortgage, payments = [] }: Mortgage
             <div>
               <div className="flex items-center gap-3 flex-wrap">
                 <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-                  {mortgage.property?.name || 'Mortgage Details'}
+                  {mortgage?.properties?.title || 'Mortgage Details'}
                 </h1>
-                <StatusBadge status={mortgage.status} />
+                <StatusBadge status={mortgage?.status || 'active'} />
               </div>
-              {mortgage.property && (
+              {mortgage?.properties && (
                 <p className="text-gray-500 mt-1 flex items-center gap-1">
                   <icon.MapPinIcon className="w-4 h-4" />
-                  {mortgage.property.address}, {mortgage.property.city}, {mortgage.property.state}
+                  {mortgage.properties.address_full}
                 </p>
               )}
             </div>
 
             {/* Actions */}
             <div className="flex gap-3">
-              {mortgage.status === 'active' && (
+              {mortgage?.status === 'active' && (
                 <Button >
                   <icon.CreditCardIcon className="w-4 h-4 mr-2" />
                   Make Payment
                 </Button>
               )}
-              {mortgage.status === 'payment_failed' && (
+              {mortgage?.status === 'payment_failed' && (
                 <Button variant="ghost">
                   <icon.ExclamationTriangleIcon className="w-4 h-4 mr-2" />
                   Update Payment Method
@@ -98,14 +120,14 @@ export default function MortgageClientView({ mortgage, payments = [] }: Mortgage
               <StatCard
                 icon={icon.BanknotesIcon}
                 label="Loan Balance"
-                value={formatUSD({ amount: mortgage.approved_loan_amount - ((mortgage.payments_made || 0) * mortgage.monthly_payment) })}
+                value={formatUSD({ amount: (mortgage?.approved_loan_amount || 0) - ((mortgage?.payments_made || 0) * (mortgage?.monthly_payment || 0)) })}
                 iconBgColor="bg-orange-50"
                 iconColor="text-orange-600"
               />
               <StatCard
                 icon={icon.CurrencyDollarIcon}
                 label="Monthly Payment"
-                value={formatUSD({ amount: mortgage.monthly_payment })}
+                value={formatUSD({ amount: mortgage?.monthly_payment || 0 })}
                 valueColor="text-orange-500"
                 iconBgColor="bg-green-50"
                 iconColor="text-green-600"
@@ -113,16 +135,16 @@ export default function MortgageClientView({ mortgage, payments = [] }: Mortgage
               <StatCard
                 icon={icon.CalendarIcon}
                 label="Next Payment"
-                value={mortgage.next_payment_date ? formatDate(mortgage.next_payment_date) : 'N/A'}
-                subValue={mortgage.status === 'completed' ? 'Loan completed' : undefined}
+                value={mortgage?.next_payment_date ? formatDate(mortgage?.next_payment_date) : 'N/A'}
+                subValue={mortgage?.status === 'completed' ? 'Loan completed' : undefined}
                 iconBgColor="bg-blue-50"
                 iconColor="text-blue-600"
               />
               <StatCard
                 icon={icon.ClockIcon}
                 label="End Date"
-                value={mortgage.last_payment_date ? new Date(mortgage.last_payment_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'N/A'}
-                subValue={`${mortgage.total_payments - (mortgage.payments_made || 0)} payments left`}
+                value={mortgage?.last_payment_date ? new Date(mortgage.last_payment_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'N/A'}
+                subValue={`${(mortgage?.total_payments || 0) - (mortgage?.payments_made || 0)} payments left`}
                 iconBgColor="bg-purple-50"
                 iconColor="text-purple-600"
               />
@@ -132,12 +154,13 @@ export default function MortgageClientView({ mortgage, payments = [] }: Mortgage
             <ProgressSection mortgage={mortgage} />
 
             {/* Two Column Layout */}
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
                 <LoanDetailsSection mortgage={mortgage} />
               </div>
               <div>
-                <PropertyInfoSection property={mortgage.property} />
+                <PropertyInfoSection property={mortgage.properties} />
               </div>
             </div>
 
@@ -152,7 +175,7 @@ export default function MortgageClientView({ mortgage, payments = [] }: Mortgage
                   View All
                 </button>
               </div>
-              <PaymentHistoryTable payments={payments.slice(0, 5)} />
+              <PaymentHistoryTable summary={true} id={mortgage.id} />
             </div>
           </div>
         )}
@@ -160,7 +183,7 @@ export default function MortgageClientView({ mortgage, payments = [] }: Mortgage
         {activeTab === 'payments' && (
           <div className="bg-white rounded-xl border border-gray-200 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Payment History</h3>
-            <PaymentHistoryTable payments={payments} />
+            <PaymentHistoryTable summary={false} id={mortgage.id} />
           </div>
         )}
 

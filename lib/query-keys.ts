@@ -52,6 +52,36 @@ export const queryKeys = {
       [...queryKeys.properties.all, 'similar', id, { limit }] as const,
   },
 
+  // mortgages (for client interface)
+  mortgages: {
+    all: ['mortgages'] as const,
+    lists: () => [...queryKeys.mortgages.all, 'list'] as const,
+    list: (params?: FilterParams) => 
+      [...queryKeys.mortgages.lists(), params] as const,
+    details: () => [...queryKeys.mortgages.all, 'detail'] as const,
+    detail: (id: string, params?: QueryParams) => 
+      [...queryKeys.mortgages.details(), id, params] as const,
+    infinite: (params?: FilterParams) =>
+      [...queryKeys.mortgages.all, 'infinite', params] as const,
+    search: (query: string, params?: SearchParams) =>
+      [...queryKeys.mortgages.all, 'search', query, params] as const,
+    featured: () => [...queryKeys.mortgages.all, 'featured'] as const,
+  },
+
+  mortgagePayments: {
+    all: ['mortgage-payments'] as const,
+    lists: () => [...queryKeys.mortgagePayments.all, 'list'] as const,
+    list: (params?: FilterParams) => 
+      [...queryKeys.mortgagePayments.lists(), params] as const,
+    details: () => [...queryKeys.mortgagePayments.all, 'detail'] as const,
+    detail: (id: string, params?: QueryParams) => 
+      [...queryKeys.mortgagePayments.details(), id, params] as const,
+    infinite: (params?: FilterParams) =>
+      [...queryKeys.mortgagePayments.all, 'infinite', params] as const,
+    search: (query: string, params?: SearchParams) =>
+      [...queryKeys.mortgagePayments.all, 'search', query, params] as const,
+  },
+
   // Articles/Blog posts
   articles: {
     all: ['articles'] as const,
@@ -240,6 +270,25 @@ export type PropertyKeys =
   | ReturnType<typeof queryKeys.properties.featured>
   | ReturnType<typeof queryKeys.properties.byAgent>
   | ReturnType<typeof queryKeys.properties.similar>;
+
+export type mortgageKeys = 
+  | typeof queryKeys.mortgages.all
+  | ReturnType<typeof queryKeys.mortgages.lists>
+  | ReturnType<typeof queryKeys.mortgages.list>
+  | ReturnType<typeof queryKeys.mortgages.details>
+  | ReturnType<typeof queryKeys.mortgages.detail>
+  | ReturnType<typeof queryKeys.mortgages.infinite>
+  | ReturnType<typeof queryKeys.mortgages.search>
+  | ReturnType<typeof queryKeys.mortgages.featured>;
+
+export type mortgagePaymentKeys = 
+  | typeof queryKeys.mortgagePayments.all
+  | ReturnType<typeof queryKeys.mortgagePayments.lists>
+  | ReturnType<typeof queryKeys.mortgagePayments.list>
+  | ReturnType<typeof queryKeys.mortgagePayments.details>
+  | ReturnType<typeof queryKeys.mortgagePayments.detail>
+  | ReturnType<typeof queryKeys.mortgagePayments.infinite>
+  | ReturnType<typeof queryKeys.mortgagePayments.search>;
 
 export type ArticleKeys = 
   | typeof queryKeys.articles.all

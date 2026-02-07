@@ -8,10 +8,7 @@ export default async function MortgageDetailsPage(
   const {id} =  await params;
   return (
     <Suspense fallback={<MortgageDetailSkeleton />}>
-      {/* <MortgageClientView 
-        mortgage={{}} 
-        payments={[]} 
-      /> */}
+      <MortgageClientView id={id} /> 
     </Suspense>
   );
 }
