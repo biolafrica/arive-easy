@@ -5,11 +5,14 @@ import { Button } from "@/components/primitives/Button";
 import { TabType } from "@/type/pages/dashboard/mortgage";
 import { useRouter } from "next/navigation";
 import * as icon from '@heroicons/react/24/outline';
-import { formatDate, formatUSD } from "@/lib/formatter";
-import { LoanDetailsSection, PaymentHistoryTable, ProgressSection, PropertyInfoSection, StatCard, StatusBadge } from "./MortgageUtils";
+import { formatDate,  } from "@/lib/formatter";
+import { LoanDetailsSection, PaymentHistoryTable, ProgressSection, PropertyInfoSection, StatusBadge } from "./MortgageUtils";
 import { useMortgage} from "@/hooks/useSpecialized/useMortgage";
 import ErrorState from "@/components/feedbacks/ErrorState";
 import { PropertyDetailsPageSkeleton } from "@/components/skeleton/PropertyCardSkeleton";
+import { StatsCard } from "@/components/cards/dashboard/StatsCard";
+import { StatsGrid } from "@/components/layouts/dashboard/StatGrid";
+import { statData } from "@/data/pages/dashboard/mortgage";
 
 export default function MortgageClientView({ id }: { id: string }) {
   const router = useRouter();
@@ -35,6 +38,8 @@ export default function MortgageClientView({ id }: { id: string }) {
     { id: 'payments', label: 'Payments', icon: icon.BanknotesIcon },
     { id: 'documents', label: 'Documents', icon: icon.DocumentTextIcon },
   ];
+
+
 
   return (
     <div>
@@ -74,14 +79,17 @@ export default function MortgageClientView({ id }: { id: string }) {
                 {/* Actions */}
                 <div className="flex gap-3">
                   {mortgage?.status === 'active' && (
-                    <Button >
-                      <icon.CreditCardIcon className="w-4 h-4 mr-2" />
+                    <Button 
+                      leftIcon={<icon.CreditCardIcon className="w-4 h-4"/>} 
+                    >
                       Make Payment
                     </Button>
                   )}
                   {mortgage?.status === 'payment_failed' && (
-                    <Button variant="ghost">
-                      <icon.ExclamationTriangleIcon className="w-4 h-4 mr-2" />
+                    <Button 
+                      variant='secondary' 
+                      leftIcon={<icon.ExclamationTriangleIcon className="w-4 h-4"/>}
+                    >
                       Update Payment Method
                     </Button>
                   )}
@@ -111,41 +119,26 @@ export default function MortgageClientView({ id }: { id: string }) {
           {/* Content */}
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {activeTab === 'overview' && (
+
               <div className="space-y-6">
-                {/* Stats Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <StatCard
-                    icon={icon.BanknotesIcon}
-                    label="Loan Balance"
-                    value={formatUSD({ amount: (mortgage?.approved_loan_amount || 0) - ((mortgage?.payments_made || 0) * (mortgage?.monthly_payment || 0)) })}
-                    iconBgColor="bg-orange-50"
-                    iconColor="text-orange-600"
-                  />
-                  <StatCard
-                    icon={icon.CurrencyDollarIcon}
-                    label="Monthly Payment"
-                    value={formatUSD({ amount: mortgage?.monthly_payment || 0 })}
-                    valueColor="text-orange-500"
-                    iconBgColor="bg-green-50"
-                    iconColor="text-green-600"
-                  />
-                  <StatCard
-                    icon={icon.CalendarIcon}
-                    label="Next Payment"
-                    value={mortgage?.next_payment_date ? formatDate(mortgage?.next_payment_date) : 'N/A'}
-                    subValue={mortgage?.status === 'completed' ? 'Loan completed' : undefined}
-                    iconBgColor="bg-blue-50"
-                    iconColor="text-blue-600"
-                  />
-                  <StatCard
-                    icon={icon.ClockIcon}
-                    label="End Date"
-                    value={mortgage?.last_payment_date ? new Date(mortgage.last_payment_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'N/A'}
-                    subValue={`${(mortgage?.total_payments || 0) - (mortgage?.payments_made || 0)} payments left`}
-                    iconBgColor="bg-purple-50"
-                    iconColor="text-purple-600"
-                  />
-                </div>
+                <StatsGrid>
+                  {statData(
+                    (mortgage?.approved_loan_amount || 0) - ((mortgage?.payments_made || 0) * (mortgage?.monthly_payment || 0)),
+                    mortgage?.next_payment_date ? formatDate(mortgage?.next_payment_date) : 'N/A',
+                    mortgage?.last_payment_date,
+                  ).map((stat) => {
+                    const Icon = stat.icon;
+                    return (
+                      <StatsCard
+                        key={stat.id}
+                        icon={<Icon className="h-6 w-6" />}
+                        title={stat.title}
+                        value={stat.value}
+                      />
+                    );
+                  })}
+
+                </StatsGrid>
 
                 {/* Progress Section */}
                 <ProgressSection mortgage={mortgage} />

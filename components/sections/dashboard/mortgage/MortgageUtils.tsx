@@ -4,6 +4,8 @@ import { Mortgage,  } from '@/type/pages/dashboard/mortgage';
 import * as icon from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { PropertyBase } from '@/type/pages/property';
+import { InfoCard, InfoItem } from '@/components/common/Item';
+import { getOrdinalSuffix } from '@/utils/common/ordinalSuffix';
 
 export function StatusBadge({ status }: { status: string }) {
   const statusConfig: Record<string, { label: string; className: string; icon: React.ReactNode }> = {
@@ -73,40 +75,6 @@ export function PaymentStatusBadge({ status }: { status: string }) {
   );
 }
 
-export function StatCard({ 
-  icon: IconComponent, 
-  label, 
-  value, 
-  subValue,
-  iconBgColor = 'bg-blue-50',
-  iconColor = 'text-blue-600',
-  valueColor = 'text-gray-900'
-}: { 
-  icon: React.ElementType;
-  label: string;
-  value: string;
-  subValue?: string;
-  iconBgColor?: string;
-  iconColor?: string;
-  valueColor?: string;
-}) {
-  return (
-    <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
-      <div className="flex items-start gap-4">
-        <div className={`p-3 rounded-lg ${iconBgColor}`}>
-          <IconComponent className={`w-6 h-6 ${iconColor}`} />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm text-gray-500">{label}</p>
-          <p className={`text-xl sm:text-2xl font-bold truncate ${valueColor}`}>{value}</p>
-          {subValue && (
-            <p className="text-xs text-gray-400 mt-0.5">{subValue}</p>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export function ProgressSection({ mortgage }: { mortgage: Mortgage }) {
   const paidAmount = (mortgage.payments_made || 0) * mortgage.monthly_payment;
@@ -295,41 +263,60 @@ export function PaymentHistoryTable({summary , id}: { summary: boolean , id?: st
 }
 
 export function LoanDetailsSection({ mortgage }: { mortgage: Mortgage }) {
-  const details = [
-    { label: 'Property Value', value: formatUSD({ amount: mortgage.property_price }) },
-    { label: 'Down Payment', value: formatUSD({ amount: mortgage.down_payment_made }) },
-    { label: 'Loan Amount', value: formatUSD({ amount: mortgage.approved_loan_amount }) },
-    { label: 'Interest Rate', value: `${mortgage.interest_rate_annual}% per annum` },
-    { label: 'Loan Term', value: `${mortgage.loan_term_months} months (${Math.floor(mortgage.loan_term_months / 12)} years)` },
-    { label: 'Monthly Payment', value: formatUSD({ amount: mortgage.monthly_payment }) },
-    { label: 'Payment Day', value: `${mortgage.payment_day_of_month}${getOrdinalSuffix(mortgage.payment_day_of_month)} of each month` },
-    { label: 'First Payment', value: mortgage.first_payment_date ? formatDate(mortgage.first_payment_date) : 'N/A' },
-    { label: 'Final Payment', value: mortgage.last_payment_date ? formatDate(mortgage.last_payment_date) : 'N/A' },
-    { label: 'Total Payments', value: mortgage.total_payments.toString() },
-  ];
-
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Loan Details</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
-        {details.map((item, index) => (
-          <div key={index} className="flex justify-between py-2 border-b border-gray-100 last:border-0">
-            <span className="text-gray-500 text-sm">{item.label}</span>
-            <span className="text-gray-900 font-medium text-sm">{item.value}</span>
-          </div>
-        ))}
-      </div>
-    </div>
+    <InfoCard title="Loan Details" columns={2}>
+      <InfoItem
+        label="Property Value"
+        value={formatUSD({ amount: mortgage.property_price })}
+      />
+      <InfoItem
+        label="Down Payment"
+        value={formatUSD({ amount: mortgage.down_payment_made })}
+      />
+      <InfoItem
+        label="Loan Amount"
+        value={formatUSD({ amount: mortgage.approved_loan_amount })}
+      />
+      <InfoItem
+        label="Interest Rate"
+        value={`${mortgage.interest_rate_annual}% per annum`}
+      />
+      <InfoItem
+        label="Loan Term"
+        value={`${mortgage.loan_term_months} months (${Math.floor(
+          mortgage.loan_term_months / 12
+        )} years)`}
+      />
+      <InfoItem
+        label="Monthly Payment"
+        value={formatUSD({ amount: mortgage.monthly_payment })}
+      />
+      <InfoItem
+        label="Payment Day"
+        value={`${mortgage.payment_day_of_month}${getOrdinalSuffix(
+          mortgage.payment_day_of_month
+        )} of each month`}
+      />
+      <InfoItem
+        label="First Payment"
+        value={
+          mortgage.first_payment_date ? formatDate(mortgage.first_payment_date) : "N/A"
+        }
+      />
+      <InfoItem
+        label="Final Payment"
+        value={
+          mortgage.last_payment_date ? formatDate(mortgage.last_payment_date): "N/A"
+        }
+      />
+      <InfoItem
+        label="Total Payments"
+        value={mortgage.total_payments}
+      />
+    </InfoCard>
   );
 }
 
-export function getOrdinalSuffix(day: number): string {
-  if (day > 3 && day < 21) return 'th';
-  switch (day % 10) {
-    case 1: return 'st';
-    case 2: return 'nd';
-    case 3: return 'rd';
-    default: return 'th';
-  }
-}
+
+
 

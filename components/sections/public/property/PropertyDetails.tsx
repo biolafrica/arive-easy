@@ -1,4 +1,4 @@
-import { Item } from "@/components/common/Item";
+import { InfoCard, InfoItem } from "@/components/common/Item";
 import { PropertyDetailsProps } from "@/type/pages/property";
 
 export function PropertyDetails({
@@ -10,18 +10,15 @@ export function PropertyDetails({
   interior,
 }: PropertyDetailsProps) {
   return (
-    <div className="rounded-xl border border-border p-5">
-      <h3 className="font-semibold text-heading mb-4">Property Details</h3>
-
-      <dl className="space-y-2 text-sm">
-        <Item label="Address" value={address_full} />
-        <Item label="Area" value={`${area_sqm} sqm`} />
-        <Item label="Bedrooms" value={`${bedrooms}`} />
-        <Item label="Bathrooms" value={`${bathrooms}`} />
-        <Item label="Type" value={property_type} />
-        <Item label="Interior" value={interior} />
-      </dl>
-    </div>
+    <InfoCard title="Property Details">
+      <InfoItem label="Address" value={address_full} />
+      <InfoItem label="Area" value={`${area_sqm} sqm`} />
+      <InfoItem label="Bedrooms" value={bedrooms} />
+      <InfoItem label="Bathrooms" value={bathrooms} />
+      <InfoItem label="Type" value={property_type} />
+      <InfoItem label="Interior" value={interior} />
+    </InfoCard>
   );
 }
+
 

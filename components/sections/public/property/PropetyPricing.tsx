@@ -1,4 +1,4 @@
-import { Item } from "@/components/common/Item";
+import { InfoCard, InfoItem } from "@/components/common/Item";
 import { formatNaira } from "@/lib/formatter";
 import { PropertyPricingProps } from "@/type/pages/property";
 
@@ -11,18 +11,15 @@ export function PropertyPricing({
   interest_rate,
 }: PropertyPricingProps) {
   return (
-    <div className="rounded-xl border border-border p-5">
-      <h3 className="font-semibold text-heading mb-4">Pricing</h3>
-
-      <dl className="space-y-2 text-sm">
-        <Item label="Property Price" value={formatNaira(price)} />
-        <Item label="Deposit Required" value={formatNaira(deposit)} />
-        <Item label="Down Payment" value={formatNaira(down_payment)} />
-        <Item label="Payment Period" value={`${payment_period} years`} />
-        <Item label="Interest Rate" value={`${interest_rate}% p.a`} />
-      </dl>
-    </div>
+    <InfoCard title="Pricing">
+      <InfoItem label="Property Price" value={formatNaira(price)} />
+      <InfoItem label="Deposit Required" value={formatNaira(deposit)} />
+      <InfoItem label="Down Payment" value={formatNaira(down_payment)} />
+      <InfoItem label="Payment Period" value={`${payment_period} years`} />
+      <InfoItem label="Interest Rate" value={`${interest_rate}% p.a`} />
+    </InfoCard>
   );
 }
+
 
 

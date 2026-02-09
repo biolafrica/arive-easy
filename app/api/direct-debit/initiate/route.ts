@@ -6,7 +6,6 @@ import { requireAuth } from '@/utils/server/authMiddleware';
 import { ApplicationBase } from '@/type/pages/dashboard/application';
 import { PreApprovalBase } from '@/type/pages/dashboard/approval';
 import { Mortgage } from '@/type/pages/dashboard/mortgage';
-import { property } from 'zod';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-12-15.clover",

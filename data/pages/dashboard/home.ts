@@ -1,7 +1,7 @@
 import { StatusConfig, TableColumn } from "@/components/common/DataTable";
 import { formatCurrency } from "@/lib/formatter";
 import { ApplicationBase, } from "@/type/pages/dashboard/application";
-import { LockClosedIcon, HomeModernIcon, FolderIcon } from '@heroicons/react/24/outline';
+import { LockClosedIcon, HomeModernIcon, FolderIcon, BanknotesIcon } from '@heroicons/react/24/outline';
 
 
 export const columns: TableColumn<ApplicationBase>[] = [
@@ -143,3 +143,6 @@ export const MOCK_SELLER_DASHBOARD_STATS = [
     icon: LockClosedIcon,
   },
 ];
+
+
+
