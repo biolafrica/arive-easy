@@ -4,48 +4,10 @@ import Link from 'next/link';
 import { formatDate, formatUSD } from '@/lib/formatter';
 import { Button } from '@/components/primitives/Button';
 import { MortgageCardProps, MortgageStatus } from '@/type/pages/dashboard/property';
+import { StatusBadge } from '@/components/sections/dashboard/mortgage/MortgageUtils';
 
 
-function StatusBadge({ status }: { status: MortgageStatus }) {
-  const statusConfig: Record<MortgageStatus, { label: string; className: string }> = {
-    active: {
-      label: 'Active Mortgage',
-      className: 'bg-green-100 text-green-700',
-    },
-    pending_verification: {
-      label: 'Pending Verification',
-      className: 'bg-amber-100 text-amber-700',
-    },
-    pending_payment_method: {
-      label: 'Setup Required',
-      className: 'bg-blue-100 text-blue-700',
-    },
-    payment_failed: {
-      label: 'Payment Failed',
-      className: 'bg-red-100 text-red-700',
-    },
-    paused: {
-      label: 'Paused',
-      className: 'bg-gray-100 text-gray-700',
-    },
-    completed: {
-      label: 'Completed',
-      className: 'bg-purple-100 text-purple-700',
-    },
-    cancelled: {
-      label: 'Cancelled',
-      className: 'bg-red-100 text-red-600',
-    },
-  };
 
-  const config = statusConfig[status] || statusConfig.active;
-
-  return (
-    <span className={`px-3 py-1 rounded-full text-sm font-medium ${config.className}`}>
-      {config.label}
-    </span>
-  );
-}
 
 function LoanProgressBar({ 
   paid, 

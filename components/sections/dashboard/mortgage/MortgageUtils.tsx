@@ -8,49 +8,41 @@ import { InfoCard, InfoItem } from '@/components/common/Item';
 import { getOrdinalSuffix } from '@/utils/common/ordinalSuffix';
 
 export function StatusBadge({ status }: { status: string }) {
-  const statusConfig: Record<string, { label: string; className: string; icon: React.ReactNode }> = {
+  const statusConfig: Record<string, { label: string; className: string }> = {
     active: {
-      label: 'Active',
-      className: 'bg-green-100 text-green-700 border-green-200',
-      icon: <icon.CheckCircleIcon className="w-4 h-4" />,
+      label: 'Active Mortgage',
+      className: 'bg-green-100 text-green-700',
     },
     pending_verification: {
       label: 'Pending Verification',
-      className: 'bg-amber-100 text-amber-700 border-amber-200',
-      icon: <icon.ClockIcon className="w-4 h-4" />,
+      className: 'bg-amber-100 text-amber-700',
     },
     pending_payment_method: {
       label: 'Setup Required',
-      className: 'bg-blue-100 text-blue-700 border-blue-200',
-      icon: <icon.CreditCardIcon className="w-4 h-4" />,
+      className: 'bg-blue-100 text-blue-700',
     },
     payment_failed: {
       label: 'Payment Failed',
-      className: 'bg-red-100 text-red-700 border-red-200',
-      icon: <icon.ExclamationCircleIcon className="w-4 h-4" />,
+      className: 'bg-red-100 text-red-700',
     },
     paused: {
       label: 'Paused',
-      className: 'bg-gray-100 text-gray-700 border-gray-200',
-      icon: <icon.PauseCircleIcon className="w-4 h-4" />,
+      className: 'bg-gray-100 text-gray-700',
     },
     completed: {
       label: 'Completed',
-      className: 'bg-purple-100 text-purple-700 border-purple-200',
-      icon: <icon.CheckBadgeIcon className="w-4 h-4" />,
+      className: 'bg-purple-100 text-purple-700',
     },
     cancelled: {
       label: 'Cancelled',
-      className: 'bg-red-100 text-red-600 border-red-200',
-      icon: <icon.XCircleIcon className="w-4 h-4" />,
+      className: 'bg-red-100 text-red-600',
     },
   };
 
   const config = statusConfig[status] || statusConfig.active;
 
   return (
-    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border ${config.className}`}>
-      {config.icon}
+    <span className={`px-3 py-1 rounded-full text-sm font-medium ${config.className}`}>
       {config.label}
     </span>
   );
@@ -141,7 +133,6 @@ export  function PropertyInfoSection({property}: {property:PropertyBase}) {
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      {/* Property Image */}
       {property.images && (
         <div className="h-48 sm:h-64 overflow-hidden">
           <img 
@@ -159,7 +150,6 @@ export  function PropertyInfoSection({property}: {property:PropertyBase}) {
           {property.address_full || 'Address not available'}
         </p>
 
-        {/* Property Details */}
         {(property.bedrooms || property.bathrooms || property.area_sqm) && (
           <div className="flex flex-wrap gap-4 mt-4 pt-4 border-t border-gray-100">
             {property.bedrooms && (

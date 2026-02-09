@@ -3,19 +3,18 @@
 import { useState } from "react";
 import { Button } from "@/components/primitives/Button";
 import { TabType } from "@/type/pages/dashboard/mortgage";
-import { useRouter } from "next/navigation";
 import * as icon from '@heroicons/react/24/outline';
 import { formatDate,  } from "@/lib/formatter";
-import { LoanDetailsSection, PaymentHistoryTable, ProgressSection, PropertyInfoSection, StatusBadge } from "./MortgageUtils";
+import * as utils from "./MortgageUtils";
 import { useMortgage} from "@/hooks/useSpecialized/useMortgage";
 import ErrorState from "@/components/feedbacks/ErrorState";
 import { PropertyDetailsPageSkeleton } from "@/components/skeleton/PropertyCardSkeleton";
 import { StatsCard } from "@/components/cards/dashboard/StatsCard";
 import { StatsGrid } from "@/components/layouts/dashboard/StatGrid";
-import { statData } from "@/data/pages/dashboard/mortgage";
+import { statData, tabs } from "@/data/pages/dashboard/mortgage";
+import { BackButton } from "@/components/primitives/BackButton";
 
 export default function MortgageClientView({ id }: { id: string }) {
-  const router = useRouter();
 
   const [activeTab, setActiveTab] = useState<TabType>('overview');
 
@@ -33,40 +32,26 @@ export default function MortgageClientView({ id }: { id: string }) {
     );
   }
 
-  const tabs: { id: TabType; label: string; icon: React.ElementType }[] = [
-    { id: 'overview', label: 'Overview', icon: icon.Squares2X2Icon },
-    { id: 'payments', label: 'Payments', icon: icon.BanknotesIcon },
-    { id: 'documents', label: 'Documents', icon: icon.DocumentTextIcon },
-  ];
-
-
-
   return (
     <div>
       {isLoading && (<PropertyDetailsPageSkeleton/>) }
       {!isLoading && mortgage && mortgage.properties && (
         <div className="min-h-screen bg-gray-50">
-          {/* Header */}
           
           <div className="bg-white border-b border-gray-200">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-              {/* Back Button */}
-              <button 
-                onClick={() => router.back()}
-                className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors"
-              >
-                <icon.ArrowLeftIcon className="w-4 h-4" />
-                <span className="text-sm">Back to Mortgages</span>
-              </button>
 
-              {/* Title Row */}
+              <BackButton label="Back to mortgages" className="mb-2" />
+
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-3 flex-wrap">
                     <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
                       {mortgage?.properties?.title || 'Mortgage Details'}
                     </h1>
-                    <StatusBadge status={mortgage?.status || 'active'} />
+
+                    <utils.StatusBadge status={mortgage?.status || 'active'} />
+
                   </div>
                   {mortgage?.properties && (
                     <p className="text-gray-500 mt-1 flex items-center gap-1">
@@ -76,7 +61,6 @@ export default function MortgageClientView({ id }: { id: string }) {
                   )}
                 </div>
 
-                {/* Actions */}
                 <div className="flex gap-3">
                   {mortgage?.status === 'active' && (
                     <Button 
@@ -96,7 +80,6 @@ export default function MortgageClientView({ id }: { id: string }) {
                 </div>
               </div>
 
-              {/* Tabs */}
               <div className="flex gap-1 mt-6 border-b border-gray-200 -mb-px">
                 {tabs.map((tab) => (
                   <button
@@ -116,7 +99,6 @@ export default function MortgageClientView({ id }: { id: string }) {
             </div>
           </div>
 
-          {/* Content */}
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {activeTab === 'overview' && (
 
@@ -140,21 +122,18 @@ export default function MortgageClientView({ id }: { id: string }) {
 
                 </StatsGrid>
 
-                {/* Progress Section */}
-                <ProgressSection mortgage={mortgage} />
+                <utils.ProgressSection mortgage={mortgage} />
 
-                {/* Two Column Layout */}
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   <div className="lg:col-span-2">
-                    <LoanDetailsSection mortgage={mortgage} />
+                    <utils.LoanDetailsSection mortgage={mortgage} />
                   </div>
                   <div>
-                    <PropertyInfoSection property={mortgage.properties} />
+                    <utils.PropertyInfoSection property={mortgage.properties} />
                   </div>
                 </div>
 
-                {/* Recent Payments */}
                 <div className="bg-white rounded-xl border border-gray-200 p-6">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold text-gray-900">Recent Payments</h3>
@@ -165,7 +144,7 @@ export default function MortgageClientView({ id }: { id: string }) {
                       View All
                     </button>
                   </div>
-                  <PaymentHistoryTable summary={true} id={mortgage.id} />
+                  <utils.PaymentHistoryTable summary={true} id={mortgage.id} />
                 </div>
               </div>
             )}
@@ -173,7 +152,7 @@ export default function MortgageClientView({ id }: { id: string }) {
             {activeTab === 'payments' && (
               <div className="bg-white rounded-xl border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Payment History</h3>
-                <PaymentHistoryTable summary={false} id={mortgage.id} />
+                <utils.PaymentHistoryTable summary={false} id={mortgage.id} />
               </div>
             )}
 

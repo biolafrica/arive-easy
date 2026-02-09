@@ -6,14 +6,13 @@ import { NoActiveMortgageState } from "./PropertyEmptyState";
 import { MortgageCard } from "@/components/cards/dashboard/Mortgage";
 
 export default function MyPropertyClientView() {
-  const { user, loading: isUserLoading } = useAuthContext();
+  const { user } = useAuthContext();
   
   const { mortgages, isLoading, error, refresh } = useMortgages({
     filters: {
       user_id: user?.id, 
     }
   });
-
   if (!user) return null;
 
   const handleMakePayment = (mortgageId: string) => {

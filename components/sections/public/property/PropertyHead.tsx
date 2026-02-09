@@ -1,11 +1,12 @@
 'use client'
 
 import SharePost from "@/components/common/Share";
+import { BackButton } from "@/components/primitives/BackButton";
 import { Button } from "@/components/primitives/Button";
 import { useFavorites } from "@/hooks/useSpecialized";
 import { useAuthContext } from "@/providers/auth-provider";
 import { PropertyHeadProps } from "@/type/pages/property";
-import { ArrowLeftIcon, ArrowUpTrayIcon, BookmarkIcon as BookMarkOutline, TrashIcon} from "@heroicons/react/24/outline";
+import {  ArrowUpTrayIcon, BookmarkIcon as BookMarkOutline, TrashIcon} from "@heroicons/react/24/outline";
 import { BookmarkIcon as BookMarkSolid } from '@heroicons/react/24/solid';
 import { toast } from "sonner";
 
@@ -33,15 +34,7 @@ export default function PropertyHead({title, address_full ,id, description}:Prop
     <>
       <header className="mb-8 flex flex-col gap-4">
         
-        <Button
-          variant="text"
-          size="sm"
-          leftIcon={<ArrowLeftIcon className="h-4 w-4" />}
-          className="w-fit px-0 text-secondary"
-          onClick={() => window.history.back()}
-        >
-          Back to properties
-        </Button>
+        <BackButton label="Back to properties" />
 
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
@@ -78,15 +71,7 @@ export function SellerPropertyHead({title, address_full }:{
   return(
     <>
       <header className="mb-8 flex flex-col gap-4">
-        <Button
-          variant="text"
-          size="sm"
-          leftIcon={<ArrowLeftIcon className="h-4 w-4" />}
-          className="w-fit px-2 text-secondary"
-          onClick={() => window.history.back()}
-        >
-          Back to properties
-        </Button>
+        <BackButton label="Back to properties" />
 
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
