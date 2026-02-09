@@ -1,6 +1,7 @@
 'use client';
 
 import { usePropertyFormContext } from '../PropertyFormContext';
+import { SectionHeader } from '../pattern/components';
 import { AMENITIES } from '../pattern/constants';
 
 export function AmenitiesSection() {
@@ -10,13 +11,10 @@ export function AmenitiesSection() {
 
   return (
     <div className="space-y-6">
-      <div className="border-b border-border pb-4">
-        <h3 className="text-lg font-semibold text-heading">Amenities & Features</h3>
-        <p className="text-sm text-secondary mt-1">
-          Select all amenities that this property offers
-        </p>
-      </div>
-
+      <SectionHeader
+        title="Amenities & Features"
+        description=" Select all amenities that this property offers"
+      />
    
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
         {AMENITIES.map((amenity) => {

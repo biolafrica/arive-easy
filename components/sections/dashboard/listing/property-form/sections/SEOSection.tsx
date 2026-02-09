@@ -5,10 +5,10 @@ import { usePropertyFormContext } from '../PropertyFormContext';
 import { ChevronDownIcon, ChevronUpIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { getCharacterCountText } from '../functions/validation';
 import { VALIDATION_RULES } from '../pattern/constants';
+import { FormLabel, FormInput, FormTextarea, InfoBox } from '../pattern/components';
 
 export function SEOSection() {
-  const { values, errors, touched, setFieldValue, setFieldTouched, } = usePropertyFormContext();
-
+  const { values, errors, touched, setFieldValue, setFieldTouched } = usePropertyFormContext();
   const [isExpanded, setIsExpanded] = useState(false);
 
   const seoTitleCharCount = getCharacterCountText(
@@ -22,9 +22,6 @@ export function SEOSection() {
     0,
     VALIDATION_RULES.seo_description.maxLength
   );
-
-  const showSeoTitleError = touched.seo_title && errors.seo_title;
-  const showSeoDescriptionError = touched.seo_description && errors.seo_description;
 
   const autoFillSeoTitle = () => {
     if (values.title && !values.seo_title) {
@@ -71,22 +68,23 @@ export function SEOSection() {
       {isExpanded && (
         <div className="space-y-6 pt-2">
           <div>
-            <div className="flex items-center justify-between mb-1">
-              <label htmlFor="seo_title" className="block text-sm font-medium text-heading">
-
-                SEO Title
-              </label>
-              {values.title && !values.seo_title && (
-                <button
-                  type="button"
-                  onClick={autoFillSeoTitle}
-                  className="text-xs text-accent hover:text-accent/80 transition-colors"
-                >
-                  Auto-fill from title
-                </button>
-              )}
-            </div>
-            <input
+            <FormLabel 
+              htmlFor="seo_title"
+              action={
+                values.title && !values.seo_title ? (
+                  <button
+                    type="button"
+                    onClick={autoFillSeoTitle}
+                    className="text-xs text-accent hover:text-accent/80 transition-colors"
+                  >
+                    Auto-fill from title
+                  </button>
+                ) : undefined
+              }
+            >
+              SEO Title
+            </FormLabel>
+            <FormInput
               type="text"
               id="seo_title"
               name="seo_title"
@@ -95,43 +93,38 @@ export function SEOSection() {
               onBlur={() => setFieldTouched('seo_title')}
               placeholder="Enter SEO title for search engines"
               maxLength={VALIDATION_RULES.seo_title.maxLength + 5}
-              className={`
-                mt-1 block w-full rounded-lg border px-3 py-2 bg-card text-text placeholder-secondary transition-all duration-200
-                focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent
-                ${showSeoTitleError
-                  ? 'border-red-500 focus:ring-red-500'
-                  : 'border-border hover:border-secondary'
-                }
-              `}
+              error={errors.seo_title}
+              showError={touched.seo_title && !!errors.seo_title}
             />
-            <div className="mt-1 flex justify-between items-center">
-              {showSeoTitleError ? (
-                <p className="text-sm text-red-500">{errors.seo_title}</p>
-              ) : (
-                <p className={`text-xs ${seoTitleCharCount.isError ? 'text-red-500' : seoTitleCharCount.isWarning ? 'text-amber-500' : 'text-secondary'}`}>
-                  {seoTitleCharCount.text}
-                </p>
-              )}
-            </div>
+            {!touched.seo_title || !errors.seo_title ? (
+              <p className={`mt-1 text-xs ${
+                seoTitleCharCount.isError 
+                  ? 'text-red-500' : seoTitleCharCount.isWarning 
+                  ? 'text-amber-500' : 'text-secondary'
+              }`}>
+                {seoTitleCharCount.text}
+              </p>
+            ) : null}
           </div>
 
           <div>
-            <div className="flex items-center justify-between mb-1">
-              <label htmlFor="seo_description" className="block text-sm font-medium text-heading">
-                
-                SEO Description
-              </label>
-              {values.description && !values.seo_description && (
-                <button
-                  type="button"
-                  onClick={autoFillSeoDescription}
-                  className="text-xs text-accent hover:text-accent/80 transition-colors"
-                >
-                  Auto-fill from description
-                </button>
-              )}
-            </div>
-            <textarea
+            <FormLabel 
+              htmlFor="seo_description"
+              action={
+                values.description && !values.seo_description ? (
+                  <button
+                    type="button"
+                    onClick={autoFillSeoDescription}
+                    className="text-xs text-accent hover:text-accent/80 transition-colors"
+                  >
+                    Auto-fill from description
+                  </button>
+                ) : undefined
+              }
+            >
+              SEO Description
+            </FormLabel>
+            <FormTextarea
               id="seo_description"
               name="seo_description"
               value={values.seo_description}
@@ -140,42 +133,25 @@ export function SEOSection() {
               placeholder="Enter SEO description for search engines"
               rows={3}
               maxLength={VALIDATION_RULES.seo_description.maxLength + 10}
-              className={`
-                mt-1 block w-full rounded-lg border px-3 py-2 bg-card text-text placeholder-secondary
-                transition-all duration-200 resize-none focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent
-                ${showSeoDescriptionError
-                  ? 'border-red-500 focus:ring-red-500'
-                  : 'border-border hover:border-secondary'
-                }
-              `}
+              error={errors.seo_description}
+              showError={touched.seo_description && !!errors.seo_description}
+              characterCount={seoDescriptionCharCount}
             />
-            <div className="mt-1 flex justify-between items-center">
-              {showSeoDescriptionError ? (
-                <p className="text-sm text-red-500">{errors.seo_description}</p>
-              ) : (
-                <p className={`text-xs ${seoDescriptionCharCount.isError ? 'text-red-500' : seoDescriptionCharCount.isWarning ? 'text-amber-500' : 'text-secondary'}`}>
-                  {seoDescriptionCharCount.text}
-                </p>
-              )}
-            </div>
           </div>
 
-          <div className="bg-hover rounded-lg p-4 border border-border">
-            <p className="text-xs font-medium text-secondary uppercase tracking-wider mb-3">
-              Search Engine Preview
-            </p>
+          <InfoBox title="Search Engine Preview">
             <div className="space-y-1">
               <p className="text-blue-600 dark:text-blue-400 text-lg font-medium truncate">
                 {values.seo_title || values.title || 'Property Title'}
               </p>
               <p className="text-green-700 dark:text-green-500 text-sm">
-                ariveasy.com/properties/{values.slug || 'property-slug'}
+                kletch.com/properties/{values.slug || 'property-slug'}
               </p>
               <p className="text-secondary text-sm line-clamp-2">
                 {values.seo_description || values.description || 'Property description will appear here...'}
               </p>
             </div>
-          </div>
+          </InfoBox>
         </div>
       )}
     </div>

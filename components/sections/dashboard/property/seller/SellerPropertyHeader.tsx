@@ -55,6 +55,7 @@ export function DashboardPageHeader({
               onChange={handleSearchChange}
               className="w-full rounded-lg border border-border bg-background py-2 pl-10 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-primary transition-shadow sm:w-64"
             />
+
             {searchValue && (
               <button
                 onClick={handleClearSearch}
@@ -64,6 +65,7 @@ export function DashboardPageHeader({
                 <XMarkIcon className="h-5 w-5" />
               </button>
             )}
+            
           </div>
         )}
 

@@ -1,5 +1,7 @@
+import { SelectOption } from "./components";
 
-export const PROPERTY_STATUS_OPTIONS = [
+
+export const PROPERTY_STATUS_OPTIONS:SelectOption[]  = [
   { value: '', label: 'Select status', disabled: true },
   { value: 'active', label: 'Active', disabled:false },
   { value: 'inactive', label: 'Inactive', disabled:false },
@@ -8,7 +10,7 @@ export const PROPERTY_STATUS_OPTIONS = [
 export type PropertyStatus = 'active' | 'inactive';
 
 
-export const STATES = [
+export const STATES:SelectOption[]= [
   { value: '', label: 'Select state', disabled: true },
   { value: 'lagos', label: 'Lagos', disabled: false },
   { value: 'abuja', label: 'Abuja', disabled: false  },
@@ -52,7 +54,7 @@ export const CITIES_BY_STATE: Record<string, Array<{ value: string; label: strin
 };
 
 
-export const PROPERTY_TYPES = [
+export const PROPERTY_TYPES:SelectOption[] = [
   { value: '', label: 'Select property type', disabled: true },
   { value: 'apartment', label: 'Apartment', disabled: false },
   { value: 'detached', label: 'Detached House', disabled: false },
@@ -65,7 +67,7 @@ export const PROPERTY_TYPES = [
 ] as const;
 
 
-export const INTERIOR_OPTIONS = [
+export const INTERIOR_OPTIONS:SelectOption[] = [
   { value: '', label: 'Select interior type', disabled: true },
   { value: 'furnished', label: 'Fully Furnished', disabled: false },
   { value: 'semi-furnished', label: 'Semi-Furnished', disabled: false },
@@ -73,7 +75,7 @@ export const INTERIOR_OPTIONS = [
 ] as const;
 
 
-export const LISTING_TAGS = [
+export const LISTING_TAGS:SelectOption[] = [
   { value: '', label: 'No tag' },
   { value: 'hot-deal', label: 'Hot Deal' },
   { value: 'new-listing', label: 'New Listing' },

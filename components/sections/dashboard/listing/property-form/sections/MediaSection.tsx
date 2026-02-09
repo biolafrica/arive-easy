@@ -2,9 +2,10 @@
 
 import React, { useCallback, useRef, useState } from 'react';
 import { usePropertyFormContext } from '../PropertyFormContext';
-import { XMarkIcon, PhotoIcon, PlayIcon, ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/outline';
+import * as icon from '@heroicons/react/24/outline';
 import { VALIDATION_RULES, YOUTUBE_URL_REGEX } from '../pattern/constants';
 import { PropertyImage } from '../pattern/types';
+import { SectionHeader, inputClass } from '../pattern/components';
 
 interface ImageUploaderProps {
   onUpload: (file: File) => Promise<string>;
@@ -148,12 +149,11 @@ export function MediaSection({ onUpload }: ImageUploaderProps) {
 
   return (
     <div className="space-y-6">
-      <div className="border-b border-border pb-4">
-        <h3 className="text-lg font-semibold text-heading">Media</h3>
-        <p className="text-sm text-secondary mt-1">
-          Add images and video tours to showcase this property
-        </p>
-      </div>
+
+      <SectionHeader
+        title="Media & Tours"
+        description="Add images and video tours to showcase this property"
+      />
 
       <div>
         <label className="block text-sm font-medium text-heading mb-3">
@@ -183,7 +183,7 @@ export function MediaSection({ onUpload }: ImageUploaderProps) {
               className="aspect-square rounded-lg border-2 border-dashed border-border hover:border-accent hover:bg-hover
               flex flex-col items-center justify-center gap-2 transition-all duration-200 cursor-pointer"
             >
-              <PhotoIcon className="w-8 h-8 text-secondary" />
+              <icon.PhotoIcon className="w-8 h-8 text-secondary" />
               <span className="text-sm text-secondary">Add Image</span>
             </button>
           )}
@@ -227,11 +227,11 @@ export function MediaSection({ onUpload }: ImageUploaderProps) {
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-card">
-                  <PlayIcon className="w-12 h-12 text-secondary" />
+                  <icon.PlayIcon className="w-12 h-12 text-secondary" />
                 </div>
               )}
               <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                <PlayIcon className="w-16 h-16 text-white" />
+                <icon.PlayIcon className="w-16 h-16 text-white" />
               </div>
             </div>
             <button
@@ -242,7 +242,7 @@ export function MediaSection({ onUpload }: ImageUploaderProps) {
               }}
               className="absolute top-2 right-2 p-1 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
             >
-              <XMarkIcon className="w-5 h-5" />
+              <icon.XMarkIcon className="w-5 h-5" />
             </button>
             <div className="p-3">
               <p className="text-sm text-secondary truncate">{values.tours.video.url}</p>
@@ -255,14 +255,7 @@ export function MediaSection({ onUpload }: ImageUploaderProps) {
               value={videoUrlInput}
               onChange={(e) => setVideoUrlInput(e.target.value)}
               placeholder="https://www.youtube.com/watch?v=..."
-              className={`
-                flex-1 rounded-lg border px-3 py-2 bg-card text-text placeholder-secondary
-                transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent
-                ${showVideoError
-                  ? 'border-red-500'
-                  : 'border-border hover:border-secondary'
-                }
-              `}
+              className={inputClass(false)}
             />
             <button
               type="button"
@@ -303,7 +296,7 @@ export function MediaSection({ onUpload }: ImageUploaderProps) {
               }}
               className="p-1 rounded-full hover:bg-card text-secondary hover:text-text transition-colors"
             >
-              <XMarkIcon className="w-5 h-5" />
+              <icon.XMarkIcon className="w-5 h-5" />
             </button>
           </div>
         ) : (
@@ -313,14 +306,7 @@ export function MediaSection({ onUpload }: ImageUploaderProps) {
               value={virtual3DInput}
               onChange={(e) => setVirtual3DInput(e.target.value)}
               placeholder="https://my.matterport.com/show/?m=..."
-              className={`
-                flex-1 rounded-lg border px-3 py-2 bg-card text-text placeholder-secondary
-                transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent
-                ${showVirtual3DError
-                  ? 'border-red-500'
-                  : 'border-border hover:border-secondary'
-                }
-              `}
+              className={inputClass(false)}
             />
             <button
               type="button"
@@ -398,7 +384,7 @@ function ImageCard({ image, index, total, onRemove, onMoveUp, onMoveDown }: Imag
                 className="p-1 rounded bg-white/90 hover:bg-white text-gray-700 transition-colors"
                 title="Move left"
               >
-                <ArrowUpIcon className="w-4 h-4 -rotate-90" />
+                <icon.ArrowUpIcon className="w-4 h-4 -rotate-90" />
               </button>
             )}
             
@@ -409,7 +395,7 @@ function ImageCard({ image, index, total, onRemove, onMoveUp, onMoveDown }: Imag
                 className="p-1 rounded bg-white/90 hover:bg-white text-gray-700 transition-colors"
                 title="Move right"
               >
-                <ArrowDownIcon className="w-4 h-4 -rotate-90" />
+                <icon.ArrowDownIcon className="w-4 h-4 -rotate-90" />
               </button>
             )}
 
@@ -419,7 +405,7 @@ function ImageCard({ image, index, total, onRemove, onMoveUp, onMoveDown }: Imag
               className="p-1 rounded bg-red-500/90 hover:bg-red-500 text-white transition-colors"
               title="Remove"
             >
-              <XMarkIcon className="w-4 h-4" />
+              <icon.XMarkIcon className="w-4 h-4" />
             </button>
           </div>
         </div>
