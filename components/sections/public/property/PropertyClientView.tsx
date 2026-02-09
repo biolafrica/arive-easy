@@ -11,6 +11,7 @@ import PropertyHead from "./PropertyHead";
 import { SectionHeading } from "@/components/common/SectionHeading";
 import { PropertyCard } from "@/components/cards/public/property";
 import { PropertyDetailsPageSkeleton } from "@/components/skeleton/PropertyCardSkeleton";
+import ErrorState from "@/components/feedbacks/ErrorState";
 
 
 export default function PropertyClientView({id}:any){
@@ -20,10 +21,11 @@ export default function PropertyClientView({id}:any){
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px]">
-        <p className="text-red-500 mb-4">Error loading property details</p>
-        <button onClick={() => refetch()} className="px-4 py-2 bg-blue-600 text-white rounded">Try Again</button>
-      </div>
+      <ErrorState
+        message="Error loading properties"
+        retryLabel="Reload data"
+        onRetry={refetch}
+      />
     );
   }
 

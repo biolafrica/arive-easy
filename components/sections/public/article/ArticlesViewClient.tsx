@@ -8,6 +8,7 @@ import { ArticleEmptyState } from "./ArticleEmptyState";
 import { useArticleFilter } from "@/hooks/useArticleFilter";
 import { useEffect } from "react";
 import { ArticleCategoryFilter } from "./ArticleCategoryFilter";
+import ErrorState from "@/components/feedbacks/ErrorState";
 
 export default function ArticleViewClient(){
 
@@ -26,10 +27,11 @@ export default function ArticleViewClient(){
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px]">
-        <p className="text-red-500 mb-4">Error loading articles</p>
-        <Button onClick={() => refresh()}>Try Again</Button>
-      </div>
+      <ErrorState
+        message="Error loading articles"
+        retryLabel="Reload articles data"
+        onRetry={refresh}
+      />
     );
   }
 

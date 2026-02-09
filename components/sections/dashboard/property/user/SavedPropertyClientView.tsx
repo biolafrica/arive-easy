@@ -4,6 +4,7 @@ import { AllPropertyGridSkeleton } from "@/components/skeleton/PropertyCardSkele
 import { PropertyCard } from "@/components/cards/public/property"
 import { Button } from "@/components/primitives/Button"
 import { useAuthContext } from "@/providers/auth-provider"
+import ErrorState from "@/components/feedbacks/ErrorState"
 
 export default function SavedPropertyClientView({setTab}:any){
   const { user } = useAuthContext();
@@ -15,6 +16,16 @@ export default function SavedPropertyClientView({setTab}:any){
       }
     }
   )
+
+  if (error) {
+    return (
+      <ErrorState
+        message="Error loading properties"
+        retryLabel="Reload data"
+        onRetry={refresh}
+      />
+    );
+  }
 
   return(
     <div>

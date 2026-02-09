@@ -7,13 +7,25 @@ import { FeaturedPropertyGridSkeleton } from "@/components/skeleton/PropertyCard
 import { useFeaturedProperties } from "@/hooks/useSpecialized";
 import { PropertyEmptyState } from "./PropertyEmptyState";
 import { useRouter } from "next/navigation";
+import ErrorState from "@/components/feedbacks/ErrorState";
 
 
 
 export function FeaturedProperties() {
   const router = useRouter();
 
-  const { data: featuredProperties, isLoading: loadingFeatured } = useFeaturedProperties();
+  const { data: featuredProperties, isLoading: loadingFeatured, error, refetch } = useFeaturedProperties();
+
+
+  if (error) {
+    return (
+      <ErrorState
+        message="Error fetching featured properties"
+        retryLabel="Refetch data"
+        onRetry={refetch}
+      />
+    );
+  }
 
   return (
     <section className="py-36 bg-background">

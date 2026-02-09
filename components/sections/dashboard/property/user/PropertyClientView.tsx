@@ -1,5 +1,6 @@
 'use client'
 
+import ErrorState from "@/components/feedbacks/ErrorState";
 import { PropertyActions } from "@/components/sections/public/property/PropertyAction";
 import { PropertyAmenities } from "@/components/sections/public/property/PropertyAmenities";
 import PropertyDescription from "@/components/sections/public/property/PropertyDescription";
@@ -14,12 +15,13 @@ import { usesellerProperty } from "@/hooks/useSpecialized";
 export default function UserDashbaordPropertyClientView({id}:any){
   const {property, isLoading, error, refresh} = usesellerProperty(id);
 
-    if (error) {
+  if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px]">
-        <p className="text-red-500 mb-4">Error loading property details</p>
-        <button onClick={() => refresh()} className="px-4 py-2 bg-blue-600 text-white rounded">Try Again</button>
-      </div>
+      <ErrorState
+        message="Error loading property details"
+        retryLabel="Reload data"
+        onRetry={refresh}
+      />
     );
   }
 

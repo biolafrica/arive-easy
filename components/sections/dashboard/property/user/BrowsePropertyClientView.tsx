@@ -5,6 +5,7 @@ import { useInfiniteProperties } from "@/hooks/useSpecialized";
 import { NoBrowseResultsState } from "./PropertyEmptyState";
 import { PropertyCard } from "@/components/cards/public/property";
 import { Button } from "@/components/primitives/Button";
+import ErrorState from "@/components/feedbacks/ErrorState";
 
 export default function BrowsePropertyClientView(){
 
@@ -12,6 +13,16 @@ export default function BrowsePropertyClientView(){
     sortBy: 'price',
     sortOrder: 'desc',
   });
+
+  if (error) {
+    return (
+      <ErrorState
+        message="Error loading properties"
+        retryLabel="Reload data"
+        onRetry={refresh}
+      />
+    );
+  }
 
   return(
     <div>

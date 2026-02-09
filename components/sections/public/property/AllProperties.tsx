@@ -8,6 +8,7 @@ import { useInfiniteProperties } from "@/hooks/useSpecialized";
 import { PropertyEmptyState } from "./PropertyEmptyState";
 import { useState } from "react";
 import { ProcessedFilters } from "@/hooks/usePropertySearchFilter";
+import ErrorState from "@/components/feedbacks/ErrorState";
 
 export default function AllProperties(){
   const [appliedFilters, setAppliedFilters] = useState<ProcessedFilters>({
@@ -34,10 +35,11 @@ export default function AllProperties(){
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px]">
-        <p className="text-red-500 mb-4">Error loading properties</p>
-        <Button onClick={() => refresh()}>Try Again</Button>
-      </div>
+      <ErrorState
+        message="Error loading properties"
+        retryLabel="Reload data"
+        onRetry={refresh}
+      />
     );
   }
 

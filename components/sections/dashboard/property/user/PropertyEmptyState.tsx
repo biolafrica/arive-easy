@@ -3,17 +3,23 @@ import { HeartIcon, HomeIcon, RectangleStackIcon } from '@heroicons/react/24/out
 import { useRouter } from 'next/navigation';
 
 export function NoActiveMortgageState() {
+  const router = useRouter()
   return (
     <EmptyState
       icon={<HomeIcon className="h-24 w-24" />}
       title="No active mortgages yet"
       description="Once you purchase a property or your mortgage is approved, it will appear here."
+      actions={[
+        {
+          label: 'Start Pre-Approval',
+          onClick: () => {router.push('/user-dashboard/application/pre-approval')},
+        },
+      ]}
     />
   );
 }
 
 export function NoSavedPropertiesState({setTab}:any) {
-  const router = useRouter();
   return (
     <EmptyState
       icon={<HeartIcon className="h-24 w-24" />}

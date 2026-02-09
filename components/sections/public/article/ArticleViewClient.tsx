@@ -6,19 +6,20 @@ import { transformArticle } from "@/utils/articleTransform";
 import { SectionHeading } from "@/components/common/SectionHeading";
 import { ArticleCard } from "@/components/cards/public/article";
 import { ArticlePageSkeleton } from "@/components/skeleton/BlogCardSkeleton";
-import { Button } from "@/components/primitives/Button";
+import ErrorState from "@/components/feedbacks/ErrorState";
 
 export default function ArticleViewClient({id}:any){
   const {article, isLoading, error,} = useArticle(id);
 
   const { data: relatedArticles, refetch } = useRelatedArticles(article)
-  
+
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px]">
-        <p className="text-red-500 mb-4">Error loading articles</p>
-        <Button onClick={() => refetch()}>Try Again</Button>
-      </div>
+      <ErrorState
+        message="Error loading article"
+        retryLabel="Reload article data"
+        onRetry={refetch}
+      />
     );
   }
 

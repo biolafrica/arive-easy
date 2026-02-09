@@ -1,5 +1,5 @@
 import MortgageClientView from "@/components/sections/dashboard/mortgage/MortgageClientView";
-import { MortgageDetailSkeleton } from "@/components/skeleton/MortgageCardSkeleton";
+import { AllPropertyGridSkeleton } from "@/components/skeleton/PropertyCardSkeleton";
 import { Suspense } from "react";
 
 export default async function MortgageDetailsPage(
@@ -7,7 +7,7 @@ export default async function MortgageDetailsPage(
 ) {
   const {id} =  await params;
   return (
-    <Suspense fallback={<MortgageDetailSkeleton />}>
+    <Suspense fallback={<AllPropertyGridSkeleton/>}>
       <MortgageClientView id={id} /> 
     </Suspense>
   );
