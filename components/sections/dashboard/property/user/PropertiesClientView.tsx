@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { SegmentedTabs } from "@/components/common/SegmentedTabs";
 import MyPropertyClientView from "./MyPropertyClientView";
 import SavedPropertyClientView from "./SavedPropertyClientView";
@@ -34,6 +34,7 @@ export default function PropertiesClientView(){
         active={tab}
         onChange={handleTabChange}
       />
+
       <div className="mt-5">
         {tab === 'my' ? 
           (<MyPropertyClientView/>) : tab === 'saved' ? 
@@ -41,6 +42,7 @@ export default function PropertiesClientView(){
           (<BrowsePropertyClientView/>) 
         }
       </div>
+
     </div>
   )
 }

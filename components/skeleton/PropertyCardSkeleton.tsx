@@ -52,17 +52,7 @@ export function PropertyCardSkeleton() {
   );
 }
 
-export function AllPropertyGridSkeleton({count = 6}: PropertyGridSkeletonProps) {
-  return (
-    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 mt-5">
-      {Array.from({ length: count }).map((_, i) => (
-        <PropertyCardSkeleton key={i} />
-      ))}
-    </div>
-  );
-}
-
-export function FeaturedPropertyGridSkeleton({ count = 3 }: PropertyGridSkeletonProps) {
+export function AllPropertyGridSkeleton({count = 3}: PropertyGridSkeletonProps) {
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 mt-5">
       {Array.from({ length: count }).map((_, i) => (
