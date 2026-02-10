@@ -33,6 +33,8 @@ export interface TransactionBase{
   metadata?:Metadata
   user_name:string;
   property_name?:string;
+  state?:'holding' | 'released' | 'refunded';
+  developer_id?:string;
 }
 
 export type SellerTransactionBase = TransactionBase & {

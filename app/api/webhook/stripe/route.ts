@@ -422,6 +422,7 @@ async function processEscrowPayment(session: Stripe.Checkout.Session, paymentTyp
     status: 'succeeded',
     stripe_payment_intent_id: session.payment_intent as string | null,
     payment_method: session.payment_method_types?.[0] || 'card',
+    state: 'holding',
     metadata: {
       completed_at: new Date().toISOString(),
       customer_details: session.customer_details,

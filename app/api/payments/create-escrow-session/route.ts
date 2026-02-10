@@ -90,14 +90,14 @@ export async function POST(request: NextRequest) {
       application_id,
       stripe_session_id: session.id,
       property_id,
-      amount: amount * 100, // Store in cents
+      amount: amount * 100,
       currency: 'usd',
       status: 'pending',
       type: `escrow_${type}`,
+      developer_id: seller_id,
       metadata: {
         session_url: session.url,
         expires_at: new Date(session.expires_at * 1000).toISOString(),
-        seller_id,
         property_id,
         escrow_status: 'pending',
         payment_type: type,
@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       url: session.url,
       sessionId: session.id,
-      escrowId: session.id // Can be used for tracking
+      escrowId: session.id 
     });
 
   } catch (error) {

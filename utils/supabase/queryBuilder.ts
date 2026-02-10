@@ -371,51 +371,94 @@ export class SupabaseQueryBuilder<T> {
     return count || 0;
   }
 
-  async transaction<R>(
-    callback: (qb: SupabaseQueryBuilder<T>) => Promise<R>
-  ): Promise<R> {
+  async countWithConditions(conditions: Record<string, any> = {}) {
     try {
-      // Note: Supabase doesn't have native transactions in the client library
-      // This is a pattern for organizing related operations
-      return await callback(this);
+      let query = supabaseAdmin
+        .from(this.table)
+        .select('*', { count: 'exact', head: true });
+
+      Object.entries(conditions).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          if (Array.isArray(value)) {
+            query = query.in(key, value);
+          } else if (typeof value === 'object' && value.operator) {
+            const { operator, value: filterValue } = value;
+            switch (operator) {
+              case 'gte':
+                query = query.gte(key, filterValue);
+                break;
+              case 'gt':
+                query = query.gt(key, filterValue);
+                break;
+              case 'lte':
+                query = query.lte(key, filterValue);
+                break;
+              case 'lt':
+                query = query.lt(key, filterValue);
+                break;
+              case 'neq':
+                query = query.neq(key, filterValue);
+                break;
+              case 'is':
+                query = query.is(key, filterValue);
+                break;
+              default:
+                query = query.eq(key, filterValue);
+            }
+          } else {
+            query = query.eq(key, value);
+          }
+        }
+      });
+
+      const { count, error } = await query;
+
+      if (error) throw error;
+      return count || 0;
     } catch (error) {
       throw error;
     }
   }
 
-  async aggregate(
-    column: string,
-    operation: 'sum' | 'avg' | 'min' | 'max' | 'count',
-    filters: Record<string, any> = {}
-  ) {
-    // Note: Supabase doesn't directly support aggregate functions in the client
-    // You would need to create a database function or view for this
-    // This is a placeholder for when you implement it on the database side
-    
-    let query = supabaseAdmin
-      .from(this.table)
-      .select(`${column}.${operation}()`);
+  async sumWithConditions(column: any, conditions: Record<string, any> = {}) {
+    try {
+      let query = supabaseAdmin
+        .from(this.table)
+        .select(column);
 
-    Object.entries(filters).forEach(([key, value]) => {
-      query = query.eq(key, value);
-    });
-
-    const { data, error } = await query;
-
-    if (error) throw error;
-    return data;
-  }
-
-  async raw(sql: string, params?: any[]) {
-    const { data, error } = await supabaseAdmin
-      .rpc('execute_raw_sql', { 
-        query: sql, 
-        params: params || [] 
+      Object.entries(conditions).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          if (Array.isArray(value)) {
+            query = query.in(key, value);
+          } else if (typeof value === 'object' && value.operator) {
+            const { operator, value: filterValue } = value;
+            switch (operator) {
+              case 'gte': query = query.gte(key, filterValue); break;
+              case 'gt': query = query.gt(key, filterValue); break;
+              case 'lte': query = query.lte(key, filterValue); break;
+              case 'lt': query = query.lt(key, filterValue); break;
+              case 'neq': query = query.neq(key, filterValue); break;
+              case 'is': query = query.is(key, filterValue); break;
+              default: query = query.eq(key, filterValue);
+            }
+          } else {
+            query = query.eq(key, value);
+          }
+        }
       });
 
-    if (error) throw error;
-    return data;
+      const { data, error } = await query;
+
+      if (error) throw error;
+      
+      // Calculate sum from the returned data
+      const sum = data?.reduce((acc, row) => acc + (Number(row[column]) || 0), 0) || 0;
+      return sum;
+    } catch (error) {
+      throw error;
+    }
   }
+
 }
 
 // Export a factory function for creating typed query builders
