@@ -55,14 +55,14 @@ export async function GET(request: NextRequest) {
       transactionsQB.countWithConditions({
         developer_id: developerId,
         type: 'escrow_down_payment',
-        status: 'success',
+        status: 'succeeded',
         state: 'holding'
       }),
 
       transactionsQB.sumWithConditions('amount', {
         developer_id: developerId,
         type: 'escrow_down_payment',
-        status: 'success',
+        status: 'succeeded',
         state: 'holding'
       })
     ]);

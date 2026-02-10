@@ -43,13 +43,13 @@ export async function GET(request: NextRequest) {
       transactionsQB.countWithConditions({
         user_id: userId,
         type: 'escrow_down_payment',
-        status: 'success'
+        status: 'succeeded'
       }),
 
       transactionsQB.sumWithConditions('amount', {
         user_id: userId,
         type: 'escrow_down_payment',
-        status: 'success'
+        status: 'succeeded'
       })
     ]);
 

@@ -5,8 +5,9 @@ import { PropertyBase } from "@/type/pages/property";
 import { PropertySelectionCard } from "@/components/cards/dashboard/SelectionProperty";
 import { StatusBanner } from "./StatusBanner";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
-import { FeaturedPropertyGridSkeleton } from "@/components/skeleton/PropertyCardSkeleton";
+
 import { formatUSD, toNumber } from "@/lib/formatter";
+import { AllPropertyGridSkeleton } from "@/components/skeleton/PropertyCardSkeleton";
 
 
 function SelectedPropertyView({  property,status
@@ -96,7 +97,7 @@ export default function PropertySelectionStage({
 
 
   if (isLoading) {
-    return ( <FeaturedPropertyGridSkeleton/> );
+    return ( <AllPropertyGridSkeleton/> );
   }
 
   return (

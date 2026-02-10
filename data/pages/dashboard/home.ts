@@ -1,8 +1,8 @@
 import { StatusConfig, TableColumn } from "@/components/common/DataTable";
-import { formatCurrency } from "@/lib/formatter";
+import {formatUSD } from "@/lib/formatter";
 import { ApplicationBase, } from "@/type/pages/dashboard/application";
-import { LockClosedIcon, HomeModernIcon, FolderIcon, BanknotesIcon } from '@heroicons/react/24/outline';
-
+import { LockClosedIcon, HomeModernIcon, FolderIcon, } from '@heroicons/react/24/outline';
+  
 
 export const columns: TableColumn<ApplicationBase>[] = [
   { key: 'application_number', header: 'Application ID', sortable: true,},
@@ -102,47 +102,44 @@ export const PRE_APPROVAL_UI_CONFIG = {
   }
 } as const;
 
-export const MOCK_BUYER_DASHBOARD_STATS = [
-  {
-    id: 'application',
-    title: 'All Application',
-    value: '5',
-    icon: FolderIcon,
-  },
-  {
-    id: 'property',
-    title: 'Property Owned',
-    value: '2',
-    icon: HomeModernIcon,
-  },
-  {
-    id: 'balance',
-    title: 'Escrow Balance',
-    value: `${formatCurrency(41000000)}`,
-    icon: LockClosedIcon,
-  },
-];
 
-export const MOCK_SELLER_DASHBOARD_STATS = [
+export const buyerDashboardStat=(
+  application:number, property:number, balance:number
+)=>{
+  return[
+    { 
+      id: 'application', title: 'All Application',
+      value: application, icon: FolderIcon,
+    },
+    {
+      id: 'property', title: 'Property Owned',
+      value: property, icon: HomeModernIcon,
+    },
+    {
+      id: 'balance', title: 'Escrow Balance',
+      value: formatUSD({amount: balance, fromCents:true}),  icon: LockClosedIcon,
+    },
+  ]
+}
+
+export const sellerDashboardStat=(
+  offer:number, listing:number, balance:number
+)=>{
+  return[
   {
-    id: 'offers',
-    title: ' Total Offers',
-    value: '5',
-    icon: FolderIcon,
+    id: 'offers', title: ' Total Offers',
+    value: offer, icon: FolderIcon,
   },
   {
-    id: 'listing',
-    title: 'Active Listings',
-    value: '2',
-    icon: HomeModernIcon,
+    id: 'listing', title: 'Active Listings',
+    value: listing, icon: HomeModernIcon,
   },
   {
-    id: 'balance',
-    title: 'Escrow Balance',
-    value: `${formatCurrency(41000000)}`,
-    icon: LockClosedIcon,
+    id: 'balance', title: 'Escrow Balance',
+    value: formatUSD({amount:balance, fromCents:true}), icon: LockClosedIcon,
   },
-];
+  ]
+}
 
 
 
