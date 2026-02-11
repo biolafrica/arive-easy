@@ -59,7 +59,7 @@ export default function TemplateClientView() {
         loading={isLoading}
         searchValue={searchValue}
         onSearchChange={handleSearchChange}
-        searchPlaceholder="Search user"
+        searchPlaceholder="Search name"
         filterDropdown={
           <FilterDropdown
             filters={filters}
