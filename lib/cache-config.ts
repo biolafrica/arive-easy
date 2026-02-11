@@ -183,12 +183,24 @@ export const ENTITY_CACHE_CONFIGS = {
   // User documents (buyer dashboard)
   documents: {
     list: {
-      staleTime: 0,              // Always fresh
+      staleTime: 0,
       cacheTime: 5 * MINUTE,
     },
     detail: {
       staleTime: 0,
       cacheTime: 2 * MINUTE,
+    },
+    templates: {
+      staleTime: 10 * MINUTE,
+      cacheTime: 30 * MINUTE,
+    },
+    partners: {
+      staleTime: 5 * MINUTE,
+      cacheTime: 15 * MINUTE,
+    },
+    transactions: {
+      staleTime: 0,
+      cacheTime: 5 * MINUTE,
     },
   },
 

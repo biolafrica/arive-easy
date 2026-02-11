@@ -402,7 +402,6 @@ export async function processDocumentFiles(
 
 export function useAdminPrepApprovals(params?: any) {
   const { user, loading: isUserLoading } = useAuthContext();
-  console.log("params",params)
   
   const crud = useCrud<stage.PreApprovalBase>({
     resource: 'pre-approvals',

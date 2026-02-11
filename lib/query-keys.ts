@@ -125,12 +125,21 @@ export const queryKeys = {
     details: () => [...queryKeys.documents.all, 'detail'] as const,
     detail: (id: string) => 
       [...queryKeys.documents.details(), id] as const,
-    byType: (type: string, params?: PaginationParams) =>
+    byType: (type: 'template' | 'partner' | 'transaction', params?: FilterParams) =>
       [...queryKeys.documents.all, 'by-type', type, params] as const,
-    recent: (limit?: number) =>
-      [...queryKeys.documents.all, 'recent', { limit }] as const,
+    templates: (params?: FilterParams) =>
+      [...queryKeys.documents.all, 'templates', params] as const,
+    partners: (params?: FilterParams) =>
+      [...queryKeys.documents.all, 'partners', params] as const,
+    transactions: (params?: FilterParams) =>
+      [...queryKeys.documents.all, 'transactions', params] as const,
+    recent: (type?: 'template' | 'partner' | 'transaction', limit?: number) =>
+      [...queryKeys.documents.all, 'recent', type, { limit }] as const,
     shared: (params?: PaginationParams) =>
       [...queryKeys.documents.all, 'shared', params] as const,
+    search: (type: 'template' | 'partner' | 'transaction', query: string, params?: SearchParams) =>
+      [...queryKeys.documents.all, 'search', type, query, params] as const,
+
   },
 
   preApprovals: {
@@ -318,8 +327,12 @@ export type DocumentKeys=
   | ReturnType<typeof queryKeys.documents.details>
   | ReturnType<typeof queryKeys.documents.detail>
   | ReturnType<typeof queryKeys.documents.byType>
+  | ReturnType<typeof queryKeys.documents.templates>
+  | ReturnType<typeof queryKeys.documents.partners>
+  | ReturnType<typeof queryKeys.documents.transactions>
   | ReturnType<typeof queryKeys.documents.recent>
   | ReturnType<typeof queryKeys.documents.shared>
+  | ReturnType<typeof queryKeys.documents.search>
 
 export type ApplicationKeys= 
   |typeof queryKeys.applications.all

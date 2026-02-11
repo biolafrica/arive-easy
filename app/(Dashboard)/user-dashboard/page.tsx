@@ -1,31 +1,10 @@
-"use client"
-
-import { UserDashboadStats } from "@/components/cards/dashboard/UserDashboard";
 import { PageContainer } from "@/components/layouts/dashboard/PageContainer";
-import PreApprovalDashboardDisplayLogic from "@/components/sections/dashboard/approval/PreApprovalDashboardDisplayLogic";
-import { DashboardWelcomeHeader } from "@/components/sections/dashboard/home/DashboardWelcomeHeader";
-import { useAuthContext } from "@/providers/auth-provider";
-import { useRouter } from "next/navigation";
-
+import UserHomeClientView from "@/components/sections/dashboard/home/UserHomeClientView";
 
 export default function UserDashboardPage() {
-  const { user } = useAuthContext();
-  const router = useRouter();
-
   return (
     <PageContainer>
-
-      <DashboardWelcomeHeader
-        name={user?.user_metadata?.name || ""}
-        primaryAction={{ label: 'Explore Properties', onClick: () => router.push('/user-dashboard/properties?tab=browse') }}
-        secondaryAction={{ label: 'Get Pre-approved', onClick: () => router.push('/user-dashboard/applications') }}
-        illustrationSrc="/images/dashboard-welcome.svg"
-      />
-
-      <UserDashboadStats/>
-
-      <PreApprovalDashboardDisplayLogic/>
-
+      <UserHomeClientView/>
     </PageContainer>
   );
 }
