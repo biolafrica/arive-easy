@@ -1,4 +1,4 @@
-import { TemplateBase } from "@/type/pages/dashboard/documents";
+import { PartnerDocumentBase, TemplateBase } from "@/type/pages/dashboard/documents";
 import { useCrud } from "../useCrud";
 import { getEntityCacheConfig } from "@/lib/cache-config";
 import { useAuthContext } from "@/providers/auth-provider";
@@ -23,7 +23,25 @@ export function useTemplateDocuments(params?: any) {
   };
 }
 
-export function useUploadDocument() {
+export function usePartnerDocuments(params?: any) {
+  const crud = useCrud<PartnerDocumentBase>({
+    resource: 'documents/partner',
+    interfaceType: 'admin',
+    cacheConfig: getEntityCacheConfig('documents', 'partners'),
+  });
+
+  const { data, isLoading, error } = crud.useGetAll(params);
+
+  return {
+    partners: data?.data || [],
+    pagination: data?.pagination,
+    isLoading,
+    error,
+    ...crud,
+  };
+}
+
+export function useUploadTemplateDocument() {
   const { user } = useAuthContext();
   const { create, isCreating } = useCrud<TemplateBase>({
     resource: 'documents/template',

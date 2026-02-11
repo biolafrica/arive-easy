@@ -27,3 +27,29 @@ export const templateConfigs: FilterConfig[] = [
     ],
   },
 ];
+
+export const partnerConfigs: FilterConfig[] = [
+  {
+    key: 'status',
+    label: 'Status',
+    placeholder: 'All Statuses',
+    type: 'select', 
+    options: [
+      { value: '', label: 'All Statuses' },
+      { value: 'active', label: 'Active' },
+      { value: 'draft', label: 'Draft' },
+      { value: 'archived', label: 'Archived' },
+    ],
+  },
+  {
+    key: 'partner_type',
+    label: 'Type',
+    placeholder: 'All Type',
+    type: 'select', 
+    options: [
+      { value: '', label: 'All Steps' },
+      { value: 'seller', label: 'Seller' },
+      { value: 'Bank', label: 'Bank' },
+    ],
+  },
+];

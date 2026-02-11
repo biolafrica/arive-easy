@@ -46,17 +46,23 @@ export interface TemplateBase {
 
 export interface PartnerDocumentBase {
   id: string;
+  partner_document_number :string;
   template_id :string
-  template_version :string
   partner_id :string
+
+
+  template_version :string
   partner_type :string
   document_name :string
   document_description :string
+
   static_data :string
   custom_clauses :string
   custom_terms :string
   default_values :string
+
   status : 'draft' | 'active' | 'archived';
+  
   last_generated_at: string | null;
   template_document_url: string | null;
   created_at: string;
@@ -67,6 +73,7 @@ export interface PartnerDocumentBase {
 export interface TransactionDocumentBase {
   id: string;
   partner_document_id :string
+  transaction_document_number :string;
   application_id :string
   buyer_id :string
 
