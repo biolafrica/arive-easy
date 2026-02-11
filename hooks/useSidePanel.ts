@@ -2,12 +2,18 @@ import { useState } from 'react';
 
 export function useSidePanel<T>() {
   const [isOpen, setIsOpen] = useState(false);
-  const [mode, setMode] = useState<'add' | 'edit'>('add');
+  const [mode, setMode] = useState<'add' | 'edit' | 'view'>('add');
   const [selectedItem, setSelectedItem] = useState<T | null>(null);
 
-  const openAdd = (item: T) => {
+  const openAdd = () => {
     setIsOpen(true);
     setMode('add');
+    setSelectedItem(null);
+  };
+
+  const openView = (item: T) => {
+    setIsOpen(true);
+    setMode('view');
     setSelectedItem(item);
   };
 
@@ -29,6 +35,7 @@ export function useSidePanel<T>() {
     selectedItem,
     openAdd,
     openEdit,
+    openView,
     close,
   };
 }

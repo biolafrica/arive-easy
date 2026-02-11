@@ -1,9 +1,10 @@
 import { PageContainer } from "@/components/layouts/dashboard/PageContainer";
+import DocumentClientView from "@/components/sections/dashboard/documents/admin/DocumentClientView";
 
 export default function AdminDashboardDocuments (){
   return(
     <PageContainer>
-      <h4>Admin Dashboard Documents</h4>
+      <DocumentClientView />
     </PageContainer>
   )
 }

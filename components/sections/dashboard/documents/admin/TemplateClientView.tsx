@@ -1,14 +1,20 @@
-import { columns, statusConfig } from "@/data/pages/dashboard/application";
-import { useTableFilters } from "@/hooks/useTableQuery";
-import { useMemo } from "react";
-import DataTable from "@/components/common/DataTable";
-import FilterDropdown from "@/components/common/FilterDropdown";
-import { adminApplicationConfigs } from "./AdminApplicationsFilters";
-import ActiveFilters from "@/components/common/ActiveFilters";
 import { getTableEmptyMessage } from "@/components/common/TableEmptyMessage";
-import { useAdminApplications } from "@/hooks/useSpecialized/useApplications";
+import SidePanel from "@/components/ui/SidePanel";
+import { useSidePanel } from "@/hooks/useSidePanel";
+import { useTemplateDocuments } from "@/hooks/useSpecialized/useDocuments";
+import { useTableFilters } from "@/hooks/useTableQuery";
+import { TemplateBase } from "@/type/pages/dashboard/documents";
+import { useMemo } from "react";
+import TemplateDetail from "./TemplateDetail";
+import DataTable from "@/components/common/DataTable";
+import { columns, statusConfig } from "@/data/pages/dashboard/documents";
+import FilterDropdown from "@/components/common/FilterDropdown";
+import ActiveFilters from "@/components/common/ActiveFilters";
+import { templateConfigs } from "../common/DocumentFilter";
 
-export default function AdminPreMortgageClientView ({detailPanel}:any){
+export default function TemplateClientView() {
+  const detailPanel = useSidePanel<TemplateBase>();
+
   const { sortBy, sortOrder, searchValue, filters, queryParams: baseQueryParams,     
     hasActiveFilters, handlePageChange, handleItemsPerPageChange, handleSort,
     handleFilterChange, handleSearchChange,
@@ -16,22 +22,34 @@ export default function AdminPreMortgageClientView ({detailPanel}:any){
     initialFilters: { status: '' },searchFields: [], defaultLimit: 10,
   });
 
-  const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['properties'],
+  const queryParams = useMemo(() => ({ ...baseQueryParams, include: [],
   }), [baseQueryParams]);
 
-  const {applications, isLoading, pagination}= useAdminApplications(queryParams)
+  const{templates, isLoading, pagination} = useTemplateDocuments(queryParams);
+
 
   const emptyMessage = useMemo(
-    () => getTableEmptyMessage(hasActiveFilters, 'applications'),
+    () => getTableEmptyMessage(hasActiveFilters, 'template documents'),
     [hasActiveFilters]
   );
 
-  return(
-    <div>
+  return (
+    <div className="space-y-5">
+      <SidePanel
+        isOpen={detailPanel.isOpen}
+        onClose={detailPanel.close}
+        title="Template Document Detail"
+      >
+        {detailPanel.selectedItem && (
+          <TemplateDetail/>
+        )}
+
+      </SidePanel>
+
       <DataTable
-        title="Applications"
+        title="Template Table"
         columns={columns}
-        data={applications}
+        data={templates}
         pagination={pagination || {
           page: 1,
           limit: 10,
@@ -41,24 +59,24 @@ export default function AdminPreMortgageClientView ({detailPanel}:any){
         loading={isLoading}
         searchValue={searchValue}
         onSearchChange={handleSearchChange}
-        searchPlaceholder="Search property"
+        searchPlaceholder="Search user"
         filterDropdown={
           <FilterDropdown
             filters={filters}
-            filterConfigs={adminApplicationConfigs}
+            filterConfigs={templateConfigs}
             onFilterChange={handleFilterChange}
           />
         }
         activeFiltersSlot={
           <ActiveFilters
             filters={filters}
-            filterConfigs={adminApplicationConfigs}
+            filterConfigs={templateConfigs}
             onFilterChange={handleFilterChange}
           />
         }
         statusConfig={statusConfig}
         getStatus={(row) => row.status}
-        onMore={detailPanel.openView}
+        onMore={detailPanel.openEdit}
         onPageChange={handlePageChange}
         onItemsPerPageChange={handleItemsPerPageChange}
         onSort={handleSort}
@@ -66,6 +84,7 @@ export default function AdminPreMortgageClientView ({detailPanel}:any){
         sortOrder={sortOrder}
         emptyMessage={emptyMessage}
       />
+
     </div>
-  )
+  );
 }

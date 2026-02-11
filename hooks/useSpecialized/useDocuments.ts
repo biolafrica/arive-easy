@@ -2,34 +2,17 @@ import { TemplateBase } from "@/type/pages/dashboard/documents";
 import { useCrud } from "../useCrud";
 import { getEntityCacheConfig } from "@/lib/cache-config";
 import { useAuthContext } from "@/providers/auth-provider";
-import { useMemo } from "react";
 import apiClient from "@/lib/api-client";
 import { toast } from "sonner";
 
 export function useTemplateDocuments(params?: any) {
-  const { user, loading: isUserLoading } = useAuthContext();
-
   const crud = useCrud<TemplateBase>({
     resource: 'documents/template',
     interfaceType: 'admin',
     cacheConfig: getEntityCacheConfig('documents', 'templates'),
   });
 
-  const queryParams = useMemo(() => {
-    if (!user?.id) return null; 
-    
-    return {
-      ...params,
-      filters: {
-        ...params?.filters,
-      }
-    };
-  }, [params, user?.id]);
-
-  const { data, isLoading, error } = crud.useGetAll(
-    queryParams || undefined, 
-    !isUserLoading && !!user?.id 
-  );
+  const { data, isLoading, error } = crud.useGetAll(params);
 
   return {
     templates: data?.data || [],

@@ -100,7 +100,7 @@ export default function SellerDashboardListingsClientView() {
         searchPlaceholder="Search properties..."
         onSearch={handleSearchChange}
         filters={<PropertyStatusFilter value={filters.status} onChange={handleStatusChange} />}
-        action={<Button onClick={()=>detailPanel.openAdd}> Upload Properties </Button>}
+        action={<Button onClick={detailPanel.openAdd}> Upload Properties </Button>}
       />
 
       {hasActiveFilters && (

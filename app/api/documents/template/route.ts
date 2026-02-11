@@ -4,7 +4,7 @@ import { createCRUDHandlers } from "@/utils/server/crudFactory";
 import { NextRequest } from "next/server";
 
 const documentTemplateHandlers = createCRUDHandlers<TemplateBase>({
-  table: 'documents_templates',
+  table: 'document_templates',
   requiredFields: ['name', 'slug', 'type', 'category', 'version', 'template_file_url', 'template_fields', 'stage'],
   searchFields: ['name'],
   defaultSort: {

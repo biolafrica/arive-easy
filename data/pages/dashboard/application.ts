@@ -2,6 +2,7 @@ import { StatusConfig, TableColumn } from "@/components/common/DataTable";
 import { formatDate} from "@/lib/formatter";
 import { FormField } from "@/type/form";
 import { AddLegalForm, AddPlan, AddTermsForm, AddValuationForm, ApplicationBase, ApplicationStage, MockApplications} from "@/type/pages/dashboard/application";
+import { humanizeSnakeCase } from "@/utils/common/humanizeSnakeCase";
 import {ClockIcon, CheckCircleIcon, XCircleIcon} from '@heroicons/react/24/outline';
 
 export const APPLICATION_STAGES: ApplicationStage[] = [
@@ -37,7 +38,8 @@ export const APPLICATION_STAGES: ApplicationStage[] = [
 export const columns: TableColumn<ApplicationBase>[] = [
   { key: 'application_number', header: 'Approval ID', sortable: false},
   { key: 'property', header: 'Property', sortable: false, accessor: (row) => row.properties?.title || 'ongoing'},
-  { key: 'current_stage', header: 'Current stage', sortable: false,},
+  { key: 'current_stage', header: 'Current stage', sortable: false, accessor: (row) => humanizeSnakeCase(row.current_stage)},
+
   { key: 'created_at', header: 'Date Created', sortable: false, accessor: (row) => formatDate(row.created_at)},
 ];
 
