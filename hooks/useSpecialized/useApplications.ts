@@ -1,23 +1,18 @@
 import { ApplicationBase } from "@/type/pages/dashboard/application";
 import { useCrud } from "../useCrud";
 import { useQuery } from "@tanstack/react-query";
-import { queryKeys } from "@/lib/query-keys";
-import apiClient from "@/lib/api-client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useAuthContext } from "@/providers/auth-provider";
 import { useMemo } from "react";
 
 
-export function useApplicationStatistics() {
-  return useQuery({
-    queryKey: queryKeys.applications.statistics(),
-    queryFn: async () => {
-      const response = await apiClient.get('/api/applications/statistics');
-      return response;
-    },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
+interface PaymentStatus {
+  status: 'pending' | 'processing' | 'succeeded' | 'failed' | 'cancelled';
+  amount: number;
+  receipt_url: string | null;
+  transaction_id?: string;
+  payment_date?: string;
 }
 
 export function useApplications(params?: any) {
@@ -255,14 +250,6 @@ export function useApplicationStageUpdates(application: ApplicationBase) {
     updateMortgageActivation,
     isUpdating
   };
-}
-
-interface PaymentStatus {
-  status: 'pending' | 'processing' | 'succeeded' | 'failed' | 'cancelled';
-  amount: number;
-  receipt_url: string | null;
-  transaction_id?: string;
-  payment_date?: string;
 }
 
 export function usePaymentStatus(sessionId: string | null) {

@@ -1,5 +1,18 @@
 import { FilterConfig } from "@/components/common/FilterDropdown";
 
+const statusOptions:FilterConfig = {
+  key: 'status',
+  label: 'Status',
+  placeholder: 'All Statuses',
+  type: 'select', 
+  options: [
+    { value: '', label: 'All Statuses' },
+    { value: 'active', label: 'Active' },
+    { value: 'draft', label: 'Draft' },
+    { value: 'archived', label: 'Archived' },
+  ],
+}
+
 export const templateConfigs: FilterConfig[] = [
   {
     key: 'status',
@@ -29,18 +42,7 @@ export const templateConfigs: FilterConfig[] = [
 ];
 
 export const partnerConfigs: FilterConfig[] = [
-  {
-    key: 'status',
-    label: 'Status',
-    placeholder: 'All Statuses',
-    type: 'select', 
-    options: [
-      { value: '', label: 'All Statuses' },
-      { value: 'active', label: 'Active' },
-      { value: 'draft', label: 'Draft' },
-      { value: 'archived', label: 'Archived' },
-    ],
-  },
+  statusOptions,
   {
     key: 'partner_type',
     label: 'Type',
@@ -52,4 +54,8 @@ export const partnerConfigs: FilterConfig[] = [
       { value: 'Bank', label: 'Bank' },
     ],
   },
+];
+
+export const sellerConfigs: FilterConfig[] = [
+ statusOptions
 ];

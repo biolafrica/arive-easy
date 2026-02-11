@@ -4,6 +4,7 @@ import { getEntityCacheConfig } from "@/lib/cache-config";
 import { useAuthContext } from "@/providers/auth-provider";
 import apiClient from "@/lib/api-client";
 import { toast } from "sonner";
+import { useMemo } from "react";
 
 export function useTemplateDocuments(params?: any) {
   const crud = useCrud<TemplateBase>({
@@ -36,6 +37,42 @@ export function usePartnerDocuments(params?: any) {
     partners: data?.data || [],
     pagination: data?.pagination,
     isLoading,
+    error,
+    ...crud,
+  };
+}
+
+export function useSellerPartnerDocuments(params?: any) {
+  const { user, loading: isUserLoading } = useAuthContext();
+
+  const crud = useCrud<PartnerDocumentBase>({
+    resource: 'documents/partner',
+    interfaceType: 'buyer',
+    cacheConfig: getEntityCacheConfig('documents', 'partners'),
+  });
+
+  const queryParams = useMemo(() => {
+    if (!user?.id) return null; 
+    
+    return {
+      ...params,
+      filters: {
+        ...params?.filters,
+        partner_id: user.id,
+      }
+    };
+  }, [params, user?.id]);
+
+
+  const { data, isLoading, error } = crud.useGetAll(
+    queryParams || undefined, 
+    !isUserLoading && !!user?.id 
+  );
+
+  return {
+    sellers: data?.data || [],
+    pagination: data?.pagination,
+    isLoading: isLoading || isUserLoading,
     error,
     ...crud,
   };

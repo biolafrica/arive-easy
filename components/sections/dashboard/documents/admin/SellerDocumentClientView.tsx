@@ -11,6 +11,7 @@ import { partnerColumns, partnerStatusConfig } from "@/data/pages/dashboard/docu
 import FilterDropdown from "@/components/common/FilterDropdown";
 import { partnerConfigs } from "../common/DocumentFilter";
 import ActiveFilters from "@/components/common/ActiveFilters";
+import { TableHeader } from "@/components/common/TableHeader";
 
 export default function SellerDocumentClientView() {
   const detailPanel = useSidePanel<PartnerDocumentBase>();
@@ -25,7 +26,7 @@ export default function SellerDocumentClientView() {
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: [],
   }), [baseQueryParams]);
 
-  const{partners, isLoading, pagination} = usePartnerDocuments(queryParams);
+  const{ partners, isLoading, pagination} = usePartnerDocuments(queryParams);
 
   const emptyMessage = useMemo(
     () => getTableEmptyMessage(hasActiveFilters, 'partner documents'),
@@ -37,13 +38,23 @@ export default function SellerDocumentClientView() {
       <SidePanel
         isOpen={detailPanel.isOpen}
         onClose={detailPanel.close}
-        title="Partner Document Detail"
+        title={detailPanel.mode === 'edit' ? 'Partner Document Details' : 'Create Partner Document'}
       >
-        {detailPanel.selectedItem && (
-          <PartnerDetail/>
-        )}
+        
+        {detailPanel.mode === 'edit' && detailPanel.selectedItem ? 
+          (<PartnerDetail/>):
+          (<PartnerDetail/>)
+        }
 
       </SidePanel>
+
+      <TableHeader
+        title="Partner Documents"
+        subtitle="List of all partner documents in the system."
+        createLabel="Create Document"
+        onCreate={detailPanel.openAdd}
+      />
+
 
       <DataTable
         title="Partners Table"
@@ -58,7 +69,7 @@ export default function SellerDocumentClientView() {
         loading={isLoading}
         searchValue={searchValue}
         onSearchChange={handleSearchChange}
-        searchPlaceholder="Search name"
+        searchPlaceholder="Search document name"
         filterDropdown={
           <FilterDropdown
             filters={filters}

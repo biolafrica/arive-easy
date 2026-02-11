@@ -1,20 +1,22 @@
+'use client';
+
 import { getTableEmptyMessage } from "@/components/common/TableEmptyMessage";
 import SidePanel from "@/components/ui/SidePanel";
 import { useSidePanel } from "@/hooks/useSidePanel";
-import { useTemplateDocuments } from "@/hooks/useSpecialized/useDocuments";
+import { useSellerPartnerDocuments } from "@/hooks/useSpecialized/useDocuments";
 import { useTableFilters } from "@/hooks/useTableQuery";
-import { TemplateBase } from "@/type/pages/dashboard/documents";
+import { PartnerDocumentBase } from "@/type/pages/dashboard/documents";
 import { useMemo } from "react";
-import TemplateDetail from "./TemplateDetail";
+import PartnerDetail from "../admin/PartnerDetail";
 import DataTable from "@/components/common/DataTable";
-import { columns, statusConfig } from "@/data/pages/dashboard/documents";
+import { partnerStatusConfig, sellerColumns } from "@/data/pages/dashboard/documents";
 import FilterDropdown from "@/components/common/FilterDropdown";
+import { sellerConfigs } from "../common/DocumentFilter";
 import ActiveFilters from "@/components/common/ActiveFilters";
-import { templateConfigs } from "../common/DocumentFilter";
 import { TableHeader } from "@/components/common/TableHeader";
 
-export default function TemplateClientView() {
-  const detailPanel = useSidePanel<TemplateBase>();
+export default function DocumentClientView() {
+  const detailPanel = useSidePanel<PartnerDocumentBase>();
 
   const { sortBy, sortOrder, searchValue, filters, queryParams: baseQueryParams,     
     hasActiveFilters, handlePageChange, handleItemsPerPageChange, handleSort,
@@ -26,11 +28,10 @@ export default function TemplateClientView() {
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: [],
   }), [baseQueryParams]);
 
-  const{templates, isLoading, pagination} = useTemplateDocuments(queryParams);
-
+  const{ sellers, isLoading, pagination} = useSellerPartnerDocuments(queryParams);
 
   const emptyMessage = useMemo(
-    () => getTableEmptyMessage(hasActiveFilters, 'template documents'),
+    () => getTableEmptyMessage(hasActiveFilters, 'seller documents'),
     [hasActiveFilters]
   );
 
@@ -39,26 +40,26 @@ export default function TemplateClientView() {
       <SidePanel
         isOpen={detailPanel.isOpen}
         onClose={detailPanel.close}
-        title={detailPanel.mode === 'edit' ? 'Template Document Details' : 'Create Template Document'}
+        title={detailPanel.mode === 'edit' ? 'Document Details' : 'Create Document'}
       >
         {detailPanel.mode === 'edit' && detailPanel.selectedItem ? 
-          (<TemplateDetail/>):
-          (<TemplateDetail/>)
+          (<PartnerDetail/>):
+          (<PartnerDetail/>)
         }
 
       </SidePanel>
 
       <TableHeader
-        title="Template Documents"
-        subtitle="List of all template documents in the system"
+        title="Documents"
+        subtitle="List of all documents you created."
         createLabel="Create Document"
         onCreate={detailPanel.openAdd}
       />
 
       <DataTable
-        title="Template Table"
-        columns={columns}
-        data={templates}
+        title="Document Table"
+        columns={sellerColumns}
+        data={sellers}
         pagination={pagination || {
           page: 1,
           limit: 10,
@@ -68,22 +69,22 @@ export default function TemplateClientView() {
         loading={isLoading}
         searchValue={searchValue}
         onSearchChange={handleSearchChange}
-        searchPlaceholder="Search name"
+        searchPlaceholder="Search document name"
         filterDropdown={
           <FilterDropdown
             filters={filters}
-            filterConfigs={templateConfigs}
+            filterConfigs={sellerConfigs}
             onFilterChange={handleFilterChange}
           />
         }
         activeFiltersSlot={
           <ActiveFilters
             filters={filters}
-            filterConfigs={templateConfigs}
+            filterConfigs={sellerConfigs}
             onFilterChange={handleFilterChange}
           />
         }
-        statusConfig={statusConfig}
+        statusConfig={partnerStatusConfig}
         getStatus={(row) => row.status}
         onMore={detailPanel.openEdit}
         onPageChange={handlePageChange}
@@ -93,7 +94,6 @@ export default function TemplateClientView() {
         sortOrder={sortOrder}
         emptyMessage={emptyMessage}
       />
-
     </div>
   );
 }

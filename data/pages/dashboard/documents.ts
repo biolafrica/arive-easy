@@ -45,6 +45,13 @@ export const partnerColumns:TableColumn<PartnerDocumentBase>[] = [
   {key: 'partner_type', header: 'Document Type' , sortable: false,},  
 ]
 
+export const sellerColumns:TableColumn<PartnerDocumentBase>[] = [
+  {key: 'partner_document_number', header: 'ID' , sortable: false},
+  {key: 'document_name', header: 'Name' , sortable: false},
+  {key: "created_at", header: 'Created At' , sortable: false, accessor:(value) =>formatDate(value.created_at)},
+  {key: 'template_version', header: 'Template Version' , sortable: false},
+]
+
 export const statusConfig: StatusConfig[] = [
   { value: 'active', label: 'Active', variant: 'green',  },
   { value: 'inactive', label: 'InActive', variant: 'blue' },

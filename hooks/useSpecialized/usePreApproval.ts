@@ -7,7 +7,7 @@ import { useAuthContext } from '@/providers/auth-provider';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import * as stage from '@/type/pages/dashboard/approval';
-import { useEffect, useMemo } from 'react';
+import { useEffect, } from 'react';
 
 
 export function usePreApprovals(params?: any) {
@@ -401,36 +401,19 @@ export async function processDocumentFiles(
 }
 
 export function useAdminPrepApprovals(params?: any) {
-  const { user, loading: isUserLoading } = useAuthContext();
-  
   const crud = useCrud<stage.PreApprovalBase>({
     resource: 'pre-approvals',
     interfaceType: 'admin',
     optimisticUpdate: true,
     invalidateOnMutation: true,
   });
-
-  const queryParams = useMemo(() => {
-    if (!user?.id) return null; 
-    
-    return {
-      ...params,
-      filters: {
-        ...params?.filters,
-      }
-    };
-  }, [params, user?.id]);
-
-
-  const { data, isLoading, error } = crud.useGetAll(
-    queryParams || undefined, 
-    !isUserLoading && !!user?.id 
-  );
-
+ 
+  const { data, isLoading, error } = crud.useGetAll(params);
+  
   return {
     pre_approvals: data?.data || [],
     pagination: data?.pagination,
-    isLoading: isLoading || isUserLoading,
+    isLoading: isLoading,
     error,
     ...crud,
   };
