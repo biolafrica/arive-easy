@@ -76,7 +76,7 @@ export function useSellerTransactionAnalytics() {
     queryKey: queryKeys.analytics.dashboard('seller'),
     queryFn: async () => {
       const response = await apiClient.get<SellerTransactionAnalytics>(`/api/analytics/seller/transaction`, {
-        sellerId: user?.id
+        developerId: user?.id
       });
       return response || {
         totalEscrow: 0,

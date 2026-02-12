@@ -7,8 +7,6 @@ import { MortgageCardProps, MortgageStatus } from '@/type/pages/dashboard/proper
 import { StatusBadge } from '@/components/sections/dashboard/mortgage/MortgageUtils';
 
 
-
-
 function LoanProgressBar({ 
   paid, 
   total,

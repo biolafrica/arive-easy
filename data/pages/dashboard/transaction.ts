@@ -1,32 +1,8 @@
 import { StatusConfig, TableColumn } from '@/components/common/DataTable';
-import { formatCurrency,formatNumberDate, formatUSD, toNumber } from '@/lib/formatter';
+import { formatNumberDate, formatUSD, toNumber } from '@/lib/formatter';
 import { TransactionBase } from '@/type/pages/dashboard/transactions';
 import * as icon from '@heroicons/react/24/outline';
 
-
-export const MOCK_MORTGAGE_STATS = [
-  {
-    id: 'balance',
-    title: 'Escrow Balance',
-    value: `${formatCurrency(41000000)}`,
-    subText: 'AF123 down payment',
-    icon: icon.LockClosedIcon,
-  },
-  {
-    id: 'progress',
-    title: 'Next Payment Due',
-    value: `${formatNumberDate('2025-12-25 14:46:52.681411+00')}`,
-    subText: '$1,200 mortgage payment',
-    icon: icon.CalendarDaysIcon,
-  },
-  {
-    id: 'next-payment',
-    title: 'Payment Method',
-    value: 'Direct Debit',
-    subText: '**** **** 5679',
-    icon: icon.CreditCardIcon,
-  },
-];
 
 export const columns: TableColumn<TransactionBase>[] = [
   { key: 'id', header: 'Transaction ID', sortable: false},
@@ -56,11 +32,49 @@ export const SellerTransactionstatusConfig: StatusConfig[] = [
   { value: 'release', label: 'Released', variant: 'blue' },
 ];
 
-export const MOCK_SELLER_TRANSACTION_STATS = [
-  { id: 'balance', title: 'Escrow Balance', value: `${formatCurrency(41000000)}`, icon: icon.LockClosedIcon},
-  { id: 'progress', title: 'Properties Ready for Payout', value: '3', icon: icon.CheckCircleIcon},
-  { id: 'next-payment', title: 'Pending Payout ', value: '2', icon: icon.ExclamationCircleIcon},
-];
+export const sellerTransactionStat=(
+  escrowBalance: number, readyPayout: number, pendingPayout: number
+) => {
+  return[
+    { 
+      id: 'escrow_balance', title: 'Escrow Balance', 
+      value:formatUSD({amount:escrowBalance, fromCents:true}), 
+      icon: icon.LockClosedIcon
+    }, 
+    { 
+      id: 'total_revenue', title: 'Total Revenue', 
+      value: formatUSD({amount:readyPayout, fromCents:true}), 
+      icon: icon.CurrencyDollarIcon
+    }, 
+    { 
+      id: 'pending_revenue', title: 'Pending Revenue', 
+      value: formatUSD({amount:pendingPayout, fromCents:true}),
+      icon: icon.CurrencyDollarIcon
+    } 
+  ]
+}
+
+export const userTransactionStat=(
+  totalEscrow: number, pendingPayment: number, totalSpent: number 
+) => { 
+  return[ 
+    { 
+      id: 'total_escrow', title: 'Total Escrow', 
+      value: formatUSD({amount:totalEscrow, fromCents:true}), 
+      icon: icon.LockClosedIcon 
+    }, 
+    { 
+      id: 'pending_payment', title: 'Pending Payments', 
+      value: formatUSD({amount:pendingPayment, fromCents:true}), 
+      icon: icon.CurrencyDollarIcon 
+    }, 
+    { 
+      id: 'total_spent', title: 'Total Spent', 
+      value: formatUSD({amount:totalSpent, fromCents:true}), 
+      icon: icon.CurrencyDollarIcon 
+    } 
+  ]
+}
 
 export const adminTransactionscolumns: TableColumn<TransactionBase>[] = [
   { key: 'id', header: 'Transaction ID', sortable: false},
@@ -69,7 +83,6 @@ export const adminTransactionscolumns: TableColumn<TransactionBase>[] = [
   { key: 'created_at', header: 'Date', sortable: false, accessor: (row) => formatNumberDate(row.created_at)},
   { key: 'amount', header: 'Deposited Amount', sortable: false, accessor: (row) => formatUSD({ amount: row.amount, fromCents: true, decimals: 2 })},
 ];
-
 
 export const PAYMENT_TYPES = {
   'processing_fee': {

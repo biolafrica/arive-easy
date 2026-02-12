@@ -1,7 +1,7 @@
-import { MortgageForm } from "./mortgage";
+import { Mortgage } from "./mortgage";
 
 export interface MortgageCardProps {
-  mortgage: MortgageForm;
+  mortgage: Mortgage;
   onMakePayment?: (mortgageId: string) => void;
 }
 

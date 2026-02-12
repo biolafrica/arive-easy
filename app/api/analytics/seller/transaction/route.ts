@@ -15,9 +15,9 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url);
-    const sellerId = searchParams.get('sellerId');
+    const developerId = searchParams.get('developerId');
 
-    if (!sellerId) {
+    if (!developerId) {
       return NextResponse.json({ error: 'Seller ID is required' }, { status: 400 });
     }
 
@@ -29,19 +29,19 @@ export async function GET(request: NextRequest) {
       pendingRevenue
     ] = await Promise.all([
       transactionsQB.sumWithConditions('amount', {
-        seller_id: sellerId,
+        developer_id: developerId,
         type: 'escrow_down_payment',
         status: 'succeeded',
         state: 'holding'
       }),
       
       transactionsQB.sumWithConditions('amount', {
-        seller_id: sellerId,
+        developer_id: developerId,
         status: 'succeeded'
       }),
       
       transactionsQB.sumWithConditions('amount', {
-        seller_id: sellerId,
+        developer_id: developerId,
         status: 'pending'
       })
     ]);

@@ -67,7 +67,6 @@ export function PaymentStatusBadge({ status }: { status: string }) {
   );
 }
 
-
 export function ProgressSection({ mortgage }: { mortgage: Mortgage }) {
   const paidAmount = (mortgage.payments_made || 0) * mortgage.monthly_payment;
   const totalAmount = mortgage.approved_loan_amount;
@@ -127,7 +126,6 @@ export function ProgressSection({ mortgage }: { mortgage: Mortgage }) {
     </div>
   );
 }
-
 
 export  function PropertyInfoSection({property}: {property:PropertyBase}) {
 
@@ -306,7 +304,6 @@ export function LoanDetailsSection({ mortgage }: { mortgage: Mortgage }) {
     </InfoCard>
   );
 }
-
 
 
 
