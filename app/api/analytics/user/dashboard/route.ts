@@ -4,13 +4,7 @@ import { ApplicationBase } from '@/type/pages/dashboard/application';
 import { Mortgage } from '@/type/pages/dashboard/mortgage';
 import { TransactionBase } from '@/type/pages/dashboard/transactions';
 import { requireAuth } from '@/utils/server/authMiddleware';
-
-export interface UserDashboardAnalytics {
-  totalApplications: number;
-  propertiesOwned: number;
-  totalTransactions: number;
-  totalDownPayments: number;
-}
+import { UserDashboardAnalytics } from '@/type/pages/dashboard/analytics';
 
 
 export async function GET(request: NextRequest) {

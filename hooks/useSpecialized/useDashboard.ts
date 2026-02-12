@@ -3,8 +3,7 @@ import { queryKeys } from "@/lib/query-keys";
 import { useAuthContext } from "@/providers/auth-provider";
 import { useQuery } from "@tanstack/react-query";
 import { getEntityCacheConfig } from '@/lib/cache-config';
-import { UserDashboardAnalytics } from "@/app/api/analytics/user/dashboard/route";
-import { SellerDashboardAnalytics } from "@/app/api/analytics/seller/dashboard/route";
+import { SellerDashboardAnalytics, SellerTransactionAnalytics, UserDashboardAnalytics, UserTransactionAnalytics } from "@/type/pages/dashboard/analytics";
 
 
 export function useUserDashboardAnalytics() {
@@ -28,6 +27,27 @@ export function useUserDashboardAnalytics() {
   });
 }
 
+export function useUserTransactionAnalytics() {
+  const { user, loading: isUserLoading } = useAuthContext();
+
+  return useQuery({
+    queryKey: queryKeys.analytics.dashboard('user'),
+    queryFn: async () => {
+      const response = await apiClient.get<UserTransactionAnalytics>(`/api/analytics/user/transaction`, {
+        userId: user?.id
+      });
+      
+      return response || {
+        totalEscrow: 0,
+        pendingTransactions: 0,
+        totalSpent: 0
+      };
+    },
+    enabled: !!user?.id && !isUserLoading, 
+    ...getEntityCacheConfig('analytics', 'dashboard') 
+  });
+}
+
 export function useSellerDashboardAnalytics() {
   const { user, loading: isUserLoading } = useAuthContext();
   
@@ -42,6 +62,26 @@ export function useSellerDashboardAnalytics() {
         activeListings: 0,
         escrowTransactionCount: 0,
         totalEscrowBalance: 0
+      };
+    },
+    enabled: !!user?.id && !isUserLoading,
+    ...getEntityCacheConfig('analytics', 'dashboard'), 
+  });
+}
+
+export function useSellerTransactionAnalytics() {
+  const { user, loading: isUserLoading } = useAuthContext();
+  
+  return useQuery({
+    queryKey: queryKeys.analytics.dashboard('seller'),
+    queryFn: async () => {
+      const response = await apiClient.get<SellerTransactionAnalytics>(`/api/analytics/seller/transaction`, {
+        sellerId: user?.id
+      });
+      return response || {
+        totalEscrow: 0,
+        totalRevenue: 0,
+        pendingRevenue: 0,
       };
     },
     enabled: !!user?.id && !isUserLoading,

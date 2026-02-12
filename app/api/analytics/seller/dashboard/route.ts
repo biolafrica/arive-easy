@@ -4,13 +4,8 @@ import { OfferBase } from '@/type/pages/dashboard/offer';
 import { PropertyBase } from '@/type/pages/property';
 import { TransactionBase } from '@/type/pages/dashboard/transactions';
 import { requireAuth } from '@/utils/server/authMiddleware';
+import { SellerDashboardAnalytics } from '@/type/pages/dashboard/analytics';
 
-export interface SellerDashboardAnalytics {
-  totalPendingOffers: number;
-  activeListings: number;
-  totalEscrowBalance: number;
-  escrowTransactionCount: number;
-}
 
 export async function GET(request: NextRequest) {
   try {
@@ -26,10 +21,7 @@ export async function GET(request: NextRequest) {
     const developerId = searchParams.get('developerId');
 
     if (!developerId) {
-      return NextResponse.json(
-        { error: 'Developer ID is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Developer ID is required' },{ status: 400 });
     }
 
     const offersQB = createQueryBuilder<OfferBase>('offers');
@@ -82,8 +74,7 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error('Seller analytics error:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch analytics', details: error.message },
-      { status: 500 }
+      { error: 'Failed to fetch analytics', details: error.message },{ status: 500 }
     );
   }
 }
