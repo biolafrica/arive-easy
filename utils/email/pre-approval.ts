@@ -53,14 +53,14 @@ export const preApprovalReceivedBody = ({userName, referenceNumber}: {
         <div>
           <div style="position: absolute; left: 0; width: 20px; height: 20px; background-color: #e5e7eb; border-radius: 50%;"></div>
           <h4 style="color: #1f2937; margin: 0 0 5px 0; font-size: 16px;">Step 3: Identity and Income Verification</h4>
-          <p style="color: #6b7280; margin: 0; font-size: 14px;">Browse and select properties within your approved range</p>
+          <p style="color: #6b7280; margin: 0; font-size: 14px;">Verify both you immigration and home identity</p>
         </div>
       </div>
     </div>
 
     <!-- CTA Button -->
     <div style="text-align: center; margin: 30px 0;">
-      <a href="${process.env.NEXT_PUBLIC_BASE_URL}/dashboard" 
+      <a href="${process.env.NEXT_PUBLIC_BASE_URL}/user-dashboard/applications/" 
          style="display: inline-block; padding: 12px 30px; background-color: #4F46E5; color: white; text-decoration: none; border-radius: 6px; font-weight: 600;">
         View Application Status
       </a>
@@ -213,8 +213,8 @@ export const preApprovalRejectedBody = ({
         <!-- Option 1 -->
         <div style="margin-bottom: 25px;">
           <div style="position: absolute; left: 0; width: 20px; height: 20px; background-color: #3b82f6; border-radius: 50%;"></div>
-          <h4 style="color: #1f2937; margin: 0 0 5px 0; font-size: 16px;">Review Your Finances</h4>
-          <p style="color: #6b7280; margin: 0; font-size: 14px;">Take time to improve your credit score, increase savings, or stabilize employment</p>
+          <h4 style="color: #1f2937; margin: 0 0 5px 0; font-size: 16px;">Review Rejection Reasons</h4>
+          <p style="color: #6b7280; margin: 0; font-size: 14px;">Review the rejection reason stated above, fix in your application and then submit again</p>
         </div>
         
         <!-- Option 2 -->
@@ -235,22 +235,5 @@ export const preApprovalRejectedBody = ({
       </a>
     </div>
 
-    <!-- Helpful Resources -->
-    <div style="background-color: #f0f9ff; padding: 20px; border-radius: 8px; margin-top: 30px;">
-      <h4 style="color: #1e40af; margin: 0 0 10px 0; font-size: 16px;">
-        📚 Helpful Resources
-      </h4>
-      <ul style="color: #3b82f6; font-size: 14px; line-height: 1.8; margin: 0; padding-left: 20px;">
-        <li><a href="${process.env.NEXT_PUBLIC_BASE_URL}/articles" style="color: #3b82f6;">How to Improve Your Credit Score</a></li>
-        <li><a href="${process.env.NEXT_PUBLIC_BASE_URL}/articles" style="color: #3b82f6;">Understanding Mortgage Requirements</a></li>
-        <li><a href="${process.env.NEXT_PUBLIC_BASE_URL}/faq" style="color: #3b82f6;">Frequently Asked Questions</a></li>
-      </ul>
-    </div>
-
-    <!-- Closing Message -->
-    <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin: 25px 0 0 0;">
-      We understand this may be disappointing news, but we're here to help you succeed in your homeownership journey. 
-      Please don't hesitate to reach out to our support team for guidance.
-    </p>
   `;
 };

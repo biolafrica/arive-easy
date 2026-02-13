@@ -46,9 +46,8 @@ export const columns: TableColumn<ApplicationBase>[] = [
 export const statusConfig: StatusConfig[] = [
   { value: 'in_progress', label: 'In Progress', variant: 'yellow' },
   { value: 'rejected', label: 'Rejected', variant: 'red' },
-  { value: 'completed', label: 'Draft', variant: 'green' },
+  { value: 'active', label: 'Completed', variant: 'green' },
 ];
-
 
 export const STATUS_CONFIG = {
   pending: {

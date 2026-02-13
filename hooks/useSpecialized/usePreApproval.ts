@@ -169,6 +169,10 @@ export function useAdminUpdatePreApproval() {
       guidance_notes?: string;
       status?: string;
       max_loan_amount?:number;
+      current_step?:number;
+      completed_steps:number;
+      is_complete:boolean;
+
     }
 
   ) => {
@@ -290,7 +294,7 @@ export function usePreApprovalState(preApprovalId: string) {
 
       const currentPreApproval = preApprovals[0];
       
-      if (currentPreApproval.status !== 'draft' && currentPreApproval.status !== 'pending') {
+      if (currentPreApproval.status !== 'draft' && currentPreApproval.status !== 'pending' && currentPreApproval.status !== 'rejected') {
         toast.error('This pre-approval has already been completed');
         router.push('/user-dashboard');
         return;

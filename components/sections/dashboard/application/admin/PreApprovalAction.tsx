@@ -47,6 +47,9 @@ export const PreApprovalActions = ({ pre_approvals, onSubmit, isUpdating }: PreA
       reviewed_at: new Date().toISOString(),
       reviewed_by: `${user?.id}`,
       updated_at: new Date().toISOString(),
+      completed_steps: data.action === 'approve' ? pre_approvals.completed_steps : 0,
+      is_complete: data.action === 'approve' ? pre_approvals.is_complete : false,
+      current_step: data.action === 'approve' ? pre_approvals.current_step : 1,
     };
 
     if (data.action === 'approve' && data.items && data.items.length > 0) {

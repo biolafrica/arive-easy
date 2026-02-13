@@ -90,7 +90,7 @@ export const PRE_APPROVAL_UI_CONFIG = {
     title: 'Not pre-approved yet',
     description:
       "You're not pre-approved at this time. See guidance below to improve your chances.",
-    primaryAction: 'Reapply for pre-approval',
+    primaryAction: 'Fix issues & re-apply',
   },
 
   expired: {

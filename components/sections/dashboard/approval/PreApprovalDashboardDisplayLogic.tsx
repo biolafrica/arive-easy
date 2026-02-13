@@ -1,6 +1,7 @@
 "use client"
 
 import { PreApprovalCard } from "@/components/cards/dashboard/preApprovalCard";
+import ErrorState from "@/components/feedbacks/ErrorState";
 import { getStepPath, useCreatePreApproval, usePreApprovals } from "@/hooks/useSpecialized/usePreApproval";
 import { useAuthContext } from "@/providers/auth-provider";
 import { generateApplicationRefNo } from "@/utils/common/generateApplicationRef";
@@ -13,11 +14,21 @@ export default function PreApprovalDashboardDisplayLogic() {
   const router = useRouter();
   const [isCreating, setIsCreating] = useState(false);
 
-  const { preApprovals, isLoading } = usePreApprovals({
+  const { preApprovals, isLoading, error ,refresh} = usePreApprovals({
     filters: {
       user_id: user?.id,
     }
   });
+
+  if (error) {
+    return (
+      <ErrorState
+        message="Error loading your dashboard data."
+        retryLabel="Reload dashboard data"
+        onRetry={refresh}
+      />
+    );
+  }
 
   const { submitPreApproval } = useCreatePreApproval();
 
@@ -148,7 +159,9 @@ export default function PreApprovalDashboardDisplayLogic() {
             ...(latestPreApproval.rejection_reasons || []),
             ...(latestPreApproval.guidance_notes ? [latestPreApproval.guidance_notes] : [])
           ],
-          onPrimaryAction: handleReapply
+          onPrimaryAction: () => {
+            router.push(`/user-dashboard/applications/${latestPreApproval.id}/pre-approval/personal-info`);
+          }
         };
 
       default:

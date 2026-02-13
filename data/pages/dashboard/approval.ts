@@ -14,7 +14,7 @@ export const personalInfoFields:FormField[] = [
   { name: 'street2', label: 'Street 2', type: 'text', placeholder: 'Enter street', required: false },
   { name: 'city', label: 'City', type: 'text', placeholder: 'Enter city', required: true },
   { name: 'state', label: 'State', type: 'text', placeholder: 'Enter state/province', required: true },
-  { name: 'zip_postal_code', label: 'Zip/Postal Code', type: 'text', placeholder: 'Enter zip/postal code', required: true },
+  { name: 'postal_code', label: 'Zip/Postal Code', type: 'text', placeholder: 'Enter zip/postal code', required: true },
   { name: 'residence_country', label: 'Country', type: 'select', required: true,
     options: [
       { label: 'Select country', value: '' },

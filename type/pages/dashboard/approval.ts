@@ -120,7 +120,7 @@ export interface PreApprovalBase{
   affordability_score:string;
   debt_to_income_ration:string;
 }
-export type PreAprovalStatus = Pick<PreApprovalBase, 'updated_at' | 'reviewed_at' | 'reviewed_by'| 'status' | 'conditions' | 'rejection_reasons'>;
+export type PreAprovalStatus = Pick<PreApprovalBase, 'updated_at' | 'reviewed_at' | 'reviewed_by'| 'status' | 'conditions' | 'rejection_reasons' | 'completed_steps' | 'is_complete' | 'current_step'>;
 
 export type BackendPreApprovalForm = Omit<PreApprovalBase, 'id' | 'created_at' | 'updated_at'>;
 
