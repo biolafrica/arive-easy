@@ -1,28 +1,7 @@
 import { StatusConfig, TableColumn } from "@/components/common/DataTable";
 import {formatDate } from "@/lib/formatter";
-import { FormField } from "@/type/form";
 import { PartnerDocumentBase, TemplateBase } from "@/type/pages/dashboard/documents";
 import { humanizeSnakeCase } from "@/utils/common/humanizeSnakeCase";
-
-export const templateDocumentFields:FormField[] = [
-  { name:'name', label:'Template Name', type:'text', required:true, placeholder:'Enter template name'},
-  { name:'description', label:'Description', type:'textarea', required:false, placeholder:'Enter description'},
-  { name:'type', label:'Document Type', type:'select', required:true, options:[
-    { label:'Contract of Sales', value:'contract_of_sales' },
-    { label:'Mortgage Agreement', value:'mortgage_agreement' },
-    { label:'Certificate of Occupancy', value:'certificate_of_occupancy' },
-    { label:'Title Deed', value:'title_deed' },
-  ]},
-  { name:'requires_signature', label:'Signatures Required', type:'select', required:true, options:[
-    { label:'Buyer', value:'buyer' },
-    { label:'Seller', value:'seller' },
-    { label:'Buyer and Seller', value:'both' },
-    { label:'None', value:'' },
-  ]},
-
-  { name:'version', label:'Template Version', type:'number', required:true},
-  { name:'template_file_url', label:'Template pdf', type:'file', required:true, accept:'.pdf', helperText:'Upload a PDF file for the template'},
-]
 
 export const columns:TableColumn<TemplateBase>[] = [
   {key: 'template_number', header: 'ID' , sortable: false},

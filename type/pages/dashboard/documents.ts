@@ -1,4 +1,3 @@
-import { string } from "zod";
 
 interface Signature{
   buyer:boolean;
@@ -17,8 +16,6 @@ interface TransactionSignature{
   seller?: SignatureDetails;
   banker?: SignatureDetails;
 }
-
-
 
 export type TemplateType = 'contract_of_sales' | 'mortgage_agreement' | 'certificate_of_occupancy' | 'title_deed';
 export type TemplateCategory = 'online_generated' | 'scanned_upload';
