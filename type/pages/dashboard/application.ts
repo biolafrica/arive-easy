@@ -217,11 +217,8 @@ export interface Props {
   isUpdating?: boolean;
 }
 
-
 export interface AdminApplicationModalProps{
   showModal:boolean
   setShowModal:(value:boolean)=>void
   id:string
 }
-
-

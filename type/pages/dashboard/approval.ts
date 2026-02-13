@@ -24,7 +24,6 @@ export interface PersonalInfoType {
 
 export type PersonalInfoFormValues = Omit<PersonalInfoType, 'address'> & Address;
 
-
 export interface EmploymentInfoType {
   employment_status:string;
   employer_name?:string;
@@ -89,7 +88,6 @@ export const propertyPreferenceInitialValues:PropertyPreferenceType ={
   existing_mortgage:""
 };
 
-
 export interface PreApprovalBase{
   id:string;
   reference_number:string;
@@ -124,8 +122,6 @@ export type PreAprovalStatus = Pick<PreApprovalBase, 'updated_at' | 'reviewed_at
 
 export type BackendPreApprovalForm = Omit<PreApprovalBase, 'id' | 'created_at' | 'updated_at'>;
 
-
-
 export interface DocumentInfoTypes {
   pay_stubs: File | string | null;
   tax_returns: File | string | null;
@@ -138,6 +134,4 @@ export const documentInfoInitialValues:DocumentInfoTypes ={
   tax_returns: '',
   bank_statements: '',
   employment_verification: '',
- 
-
 }
