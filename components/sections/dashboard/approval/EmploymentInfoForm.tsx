@@ -84,14 +84,12 @@ export default function EmploymentInfoForm({
     };
 
     if (values.employment_status === 'business_owner') {
-      // Keep only business owner relevant fields
       cleanedValues = {
         ...cleanedValues,
         business_type: values.business_type || '',
         incorporation_years: values.incorporation_years || '',
       };
     } else if (values.employment_status === 'employed' || values.employment_status === 'self_employed') {
-      // Keep only employee relevant fields
       cleanedValues = {
         ...cleanedValues,
         employer_name: values.employer_name || '',
@@ -108,7 +106,6 @@ export default function EmploymentInfoForm({
     if (name === 'employment_status') {
       setEmploymentStatus(value);
       
-      // Update current values to preserve user input
       setCurrentValues(prev => ({
         ...prev,
         [name]: value
@@ -116,9 +113,7 @@ export default function EmploymentInfoForm({
     }
   };
 
-  // Update initial values when employment status changes
   const dynamicInitialValues = useMemo(() => {
-    // Preserve values that the user has entered
     return {
       ...initialValues,
       ...currentValues,

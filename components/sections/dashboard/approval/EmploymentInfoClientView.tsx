@@ -1,15 +1,28 @@
 'use client'
 
-import { EmploymentInfoType} from "@/type/pages/dashboard/approval";
-import { usePreApprovalStages, usePreApprovalState } from "@/hooks/useSpecialized/usePreApproval";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { usePreApprovalStages, usePreApprovalState } from "@/hooks/useSpecialized/usePreApproval";
+import { EmploymentInfoType} from "@/type/pages/dashboard/approval";
 import { Skeleton } from "@/utils/skeleton";
 import EmploymentInfoForm from "./EmploymentInfoForm";
+import ErrorState from "@/components/feedbacks/ErrorState";
 
 export default function EmploymentInfoClientView({id}:{id:string}){
   const router = useRouter();
-  const { preApproval, isLoading, validateStepAccess} = usePreApprovalState(id);
+  const { preApproval, isLoading, validateStepAccess, error, refresh} = usePreApprovalState(id);
+
+
+  if (error) {
+    return (
+      <ErrorState
+        message="Error loading your pre-approval employment info"
+        retryLabel="Reload employment data"
+        onRetry={refresh}
+      />
+    );
+  }
+
   const { updateEmploymentInfo} = usePreApprovalStages(id);
   const [initialValues, setInitialValues] = useState<EmploymentInfoType | null>(null);
 

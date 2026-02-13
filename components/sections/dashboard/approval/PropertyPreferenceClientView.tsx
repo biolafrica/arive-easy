@@ -1,15 +1,26 @@
 'use client'
 
-import { PropertyPreferenceType } from "@/type/pages/dashboard/approval";
-import { usePreApprovalStages, usePreApprovalState } from "@/hooks/useSpecialized/usePreApproval";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { usePreApprovalStages, usePreApprovalState } from "@/hooks/useSpecialized/usePreApproval";
+import { PropertyPreferenceType } from "@/type/pages/dashboard/approval";
 import { Skeleton } from "@/utils/skeleton";
 import PropertyPreferenceForm from "./PropertyPreference";
+import ErrorState from "@/components/feedbacks/ErrorState";
 
 export default function PropertyPreferenceClientView({id}:{id:string}){
   const router = useRouter();
-  const { preApproval, isLoading, validateStepAccess} = usePreApprovalState(id);
+  const { preApproval, isLoading, validateStepAccess, error, refresh} = usePreApprovalState(id);
+
+  if (error) {
+    return (
+      <ErrorState
+        message="Error loading your pre-approval property preference info"
+        retryLabel="Reload property preference data"
+        onRetry={refresh}
+      />
+    );
+  }
   const { updatePropertyInfo} = usePreApprovalStages(id);
   const [initialValues, setInitialValues] = useState<PropertyPreferenceType | null>(null);
 
@@ -40,7 +51,7 @@ export default function PropertyPreferenceClientView({id}:{id:string}){
   };
  
   const handleCancel = () => {
-    router.push(`/user-dashboard/applications/${id}/employment-info`);
+    router.push(`/user-dashboard/applications/${id}/pre-approval/employment-info`);
   };
 
   if (isLoading || !initialValues) {

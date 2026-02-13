@@ -17,7 +17,7 @@ export function usePreApprovals(params?: any) {
     cacheConfig: getEntityCacheConfig('preApprovals', 'list'),
   });
   
-  const { data, isLoading, error } = crud.useGetAll(params);
+  const { data, isLoading, error} = crud.useGetAll(params);
   
   return {
     preApprovals: data?.data || [],
@@ -274,7 +274,7 @@ export function usePreApprovalState(preApprovalId: string) {
   const [preApproval, setPreApproval] = useState<stage.PreApprovalBase | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   
-  const { preApprovals, isLoading: fetchingPreApprovals } = usePreApprovals({
+  const { preApprovals, isLoading: fetchingPreApprovals, error, refresh } = usePreApprovals({
     filters: {
       id: preApprovalId
     }
@@ -334,6 +334,8 @@ export function usePreApprovalState(preApprovalId: string) {
   return {
     preApproval,
     isLoading,
+    error,
+    refresh,
     validateStepAccess,
     getStepPath,
     isStepCompleted,

@@ -1,15 +1,27 @@
 'use client'
 
-import { DocumentInfoTypes, } from "@/type/pages/dashboard/approval";
-import { usePreApprovalStages, usePreApprovalState } from "@/hooks/useSpecialized/usePreApproval";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { usePreApprovalStages, usePreApprovalState } from "@/hooks/useSpecialized/usePreApproval";
+import { DocumentInfoTypes, } from "@/type/pages/dashboard/approval";
 import { Skeleton } from "@/utils/skeleton";
 import DocumentUploadForm from "./DocumentUploadForm";
+import ErrorState from "@/components/feedbacks/ErrorState";
 
 export default function DocumentInfoClientView({id}:{id:string}){
   const router = useRouter();
-  const { preApproval, isLoading, validateStepAccess} = usePreApprovalState(id);
+  const { preApproval, isLoading, validateStepAccess, error, refresh} = usePreApprovalState(id);
+
+  if (error) {
+    return (
+      <ErrorState
+        message="Error loading your pre-approval document info"
+        retryLabel="Reload document data"
+        onRetry={refresh}
+      />
+    );
+  }
+
   const { updateDocumentInfo} = usePreApprovalStages(id);
   const [initialValues, setInitialValues] = useState<DocumentInfoTypes | null>(null);
 

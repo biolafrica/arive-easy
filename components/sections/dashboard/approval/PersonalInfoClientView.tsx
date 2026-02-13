@@ -1,19 +1,32 @@
 'use client'
 
-import { PersonalInfoFormValues, PersonalInfoType } from "@/type/pages/dashboard/approval";
-import PersonalInfoForm from "./PersonalInfoForm";
-import { usePreApprovalStages, usePreApprovalState } from "@/hooks/useSpecialized/usePreApproval";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Skeleton } from "@/utils/skeleton";
 import { useAuthContext } from "@/providers/auth-provider";
+import { usePreApprovalStages, usePreApprovalState } from "@/hooks/useSpecialized/usePreApproval";
+import { PersonalInfoFormValues, PersonalInfoType } from "@/type/pages/dashboard/approval";
+import PersonalInfoForm from "./PersonalInfoForm";
+import { Skeleton } from "@/utils/skeleton";
+import ErrorState from "@/components/feedbacks/ErrorState";
+
 
 export default function PersonalInfoClientView({id}:{id:string}){
   const [initialValues, setInitialValues] = useState<PersonalInfoFormValues | null>(null);
   const router = useRouter();
   const { user } = useAuthContext();
 
-  const { preApproval, isLoading, validateStepAccess} = usePreApprovalState(id);
+  const { preApproval, isLoading, validateStepAccess, error, refresh} = usePreApprovalState(id);
+
+  if (error) {
+    return (
+      <ErrorState
+        message="Error loading your pre-approval personal info"
+        retryLabel="Reload personal information data"
+        onRetry={refresh}
+      />
+    );
+  }
+
   const { updatePersonalInfo} = usePreApprovalStages(id);
 
 

@@ -72,8 +72,8 @@ export const employmentInfoFields:FormField[] = [
     ],
   },
 
-  { name: 'gross_income', label: 'Gross Income Amount($)', type: 'text', placeholder: 'Enter amount', required: true },
-  { name: 'other_income', label: 'Other income Amount($)', type: 'text', placeholder: 'Enter amount', required: false },
+  { name: 'gross_income', label: 'Gross Income Amount($)', type: 'money', placeholder: 'Enter amount', required: true , currency:"USD", locale:"en-US", showCurrencySymbol:true },
+  { name: 'other_income', label: 'Other income Amount($)', type: 'money', placeholder: 'Enter amount', required: false, currency:"USD", locale:"en-US", showCurrencySymbol:true },
 
   { name: 'income_frequency', label: 'Frequency of Income', type: 'select', required: true,
     options: [
@@ -112,9 +112,9 @@ export const propertyPreferenceFields:FormField[] = [
     ],
   },
 
-  { name: 'down_payment_amount', label: 'Down Payment Amount($)', type: 'text', placeholder: 'Enter amount', required: true, helperText:'MINIMUM 20% OF PROPERTY VALUE' },
+  { name: 'down_payment_amount', label: 'Down Payment Amount($)', type: 'money', placeholder: 'Enter amount', required: true, helperText:'MINIMUM 20% OF PROPERTY VALUE', currency:"USD", locale:"en-US", showCurrencySymbol:true },
 
-    { name: 'preffered_loan_term', label: 'Preffered Loan Term', type: 'select', required: true,
+  { name: 'preffered_loan_term', label: 'Preffered Loan Term', type: 'select', required: true,
     options: [
       { label: 'Select loan term', value: '' },
       { value: '0-5', label: '0-5 years' },
@@ -125,9 +125,9 @@ export const propertyPreferenceFields:FormField[] = [
     ],
   },
 
-  { name: 'other_loan_amount', label: 'Other Loan Amount($)', type: 'text', placeholder: 'Enter amount', required: false, helperText:'IF YOU HAVE AN OUTSATNDING LOAN' },
+  { name: 'other_loan_amount', label: 'Other Loan Amount($)', type: 'money', placeholder: 'Enter amount', required: false, helperText:'IF YOU HAVE AN OUTSATNDING LOAN', currency:"USD", locale:"en-US", showCurrencySymbol:true },
 
-  { name: 'existing_mortgage', label: 'Existing Mortgage Amount($)', type: 'text', placeholder: 'Enter amount', required: false, helperText:'IF YOU HAVE AN OUTSTANDING MORTGAGE' },
+  { name: 'existing_mortgage', label: 'Existing Mortgage Amount($)', type: 'money', placeholder: 'Enter amount', required: false, helperText:'IF YOU HAVE AN OUTSTANDING MORTGAGE', currency:"USD", locale:"en-US", showCurrencySymbol:true },
 
 ]
 
@@ -163,8 +163,8 @@ export const getEmploymentInfoFields = (employmentStatus: string): FormField[] =
       ...baseFields,
       { name: 'business_type', label: 'Business Type', type: 'text',  placeholder: 'Enter type of business', required: true },
       { name: 'incorporation_years', label: 'Years of Incorporation', type: 'text', placeholder: 'Enter year incorporated', required: true},
-      { name: 'gross_income', label: 'Gross Business Income Amount($)', type: 'text', placeholder: 'Enter amount', required: true },
-      { name: 'other_income', label: 'Other income Amount($)', type: 'text', placeholder: 'Enter amount', required: false },
+      { name: 'gross_income', label: 'Gross Business Income Amount($)', type: 'money', placeholder: 'Enter amount', required: true, currency:"USD", locale:"en-US", showCurrencySymbol:true },
+      { name: 'other_income', label: 'Other income Amount($)', type: 'money', placeholder: 'Enter amount', required: false, currency:"USD", locale:"en-US", showCurrencySymbol:true },
       { name: 'income_frequency', label: 'Frequency of Income', type: 'select', required: true,
         options: [
           { label: 'Select frequency', value: '' },
@@ -191,8 +191,8 @@ export const getEmploymentInfoFields = (employmentStatus: string): FormField[] =
         { label: 'Temporary', value: 'temporary' },
       ],
     },
-    { name: 'gross_income', label: 'Gross Income Amount($)', type: 'text', placeholder: 'Enter amount', required: true },
-    { name: 'other_income', label: 'Other income Amount($)', type: 'text', placeholder: 'Enter amount', required: false },
+    { name: 'gross_income', label: 'Gross Income Amount($)', type: 'money', placeholder: 'Enter amount', required: true , currency:"USD", locale:"en-US", showCurrencySymbol:true},
+    { name: 'other_income', label: 'Other income Amount($)', type: 'money', placeholder: 'Enter amount', required: false , currency:"USD", locale:"en-US", showCurrencySymbol:true},
     { name: 'income_frequency', label: 'Frequency of Income', type: 'select', required: true,
       options: [
         { label: 'Select frequency', value: '' },
