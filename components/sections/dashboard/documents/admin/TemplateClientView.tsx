@@ -34,6 +34,11 @@ export default function TemplateClientView() {
     [hasActiveFilters]
   );
 
+  const handleClosePanel=()=>{
+    detailPanel.close();
+
+  }
+
   return (
     <div className="space-y-5">
       <SidePanel
@@ -42,8 +47,8 @@ export default function TemplateClientView() {
         title={detailPanel.mode === 'edit' ? 'Template Document Details' : 'Create Template Document'}
       >
         {detailPanel.mode === 'edit' && detailPanel.selectedItem ? 
-          (<TemplateDetail/>):
-          (<TemplateDetail/>)
+          (<TemplateDetail close={handleClosePanel}/>):
+          (<TemplateDetail close={handleClosePanel}/>)
         }
 
       </SidePanel>

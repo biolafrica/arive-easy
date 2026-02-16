@@ -1,8 +1,9 @@
+import { TemplateField } from "@/type/form";
 
 interface Signature{
-  buyer:boolean;
-  seller:boolean;
-  banker:boolean;
+  buyer?:boolean;
+  seller?:boolean;
+  banker?:boolean;
 }
 
 interface SignatureDetails{
@@ -30,15 +31,21 @@ export interface TemplateBase {
   requires_signature: Signature;
   type: TemplateType;
   version: number;
-  template_file_url: string; 
-  template_fields : string[];
+  template_file_url: string | null ; 
+  template_fields : TemplateField[];
   status: 'active' | 'inactive';
   description?: string;
   replaced_by?: string; 
   parent_template_id?: string;
-  created_at: string;
+  created_at?: string;
   created_by: string;
-  updated_at: string;
+  updated_at?: string;
+  category:string
+}
+
+export type TemplateForm = Pick<TemplateBase, 'name' | 'type' | 'version' | 'template_fields' | 'description' | 'category' > &{
+  template_file_url: File | null
+  requires_signature : string[]
 }
 
 export interface PartnerDocumentBase {

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { TemplateField } from '@/type/form';
 import DynamicFieldBuilder from '@/components/form/Dynamicfieldbuilder';
 import { Button } from '@/components/primitives/Button';
+import {TemplateForm } from '@/type/pages/dashboard/documents';
 
 export interface TemplateFormData {
   name: string;
@@ -17,26 +18,26 @@ export interface TemplateFormData {
 }
 
 interface TemplateFormProps {
-  initialValues?: Partial<TemplateFormData>;
-  onSubmit: (values: TemplateFormData) => Promise<void>;
+  initialValues?: Partial<TemplateForm>;
+  onSubmit: (values: TemplateForm) => Promise<void>;
   onCancel?: () => void;
   submitLabel?: string;
   isEdit?: boolean;
 }
 
-export function TemplateForm({ 
+export function TemplateFormComponent({ 
   initialValues = {}, 
   onSubmit, 
   onCancel,
   submitLabel = 'Create Template',
   isEdit = false 
 }: TemplateFormProps) {
-  const [values, setValues] = useState<TemplateFormData>({
+  const [values, setValues] = useState<TemplateForm>({
     name: '',
     description: '',
-    type: '',
+    type: 'contract_of_sales',
     category: 'online_generated',
-    requires_signatures: [],
+    requires_signature: [],
     version: 1,
     template_file_url: null,
     template_fields: [],
@@ -46,7 +47,7 @@ export function TemplateForm({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const updateField = (name: keyof TemplateFormData, value: any) => {
+  const updateField = (name: keyof TemplateForm, value: any) => {
     setValues(prev => ({ ...prev, [name]: value }));
     // Clear error when field changes
     if (errors[name]) {
@@ -54,7 +55,7 @@ export function TemplateForm({
     }
   };
 
-  const toggleMultiSelect = (name: keyof TemplateFormData, value: string) => {
+  const toggleMultiSelect = (name: keyof TemplateForm, value: string) => {
     const currentValues = (values[name] as string[]) || [];
     const newValues = currentValues.includes(value)
       ? currentValues.filter(v => v !== value)
@@ -69,7 +70,7 @@ export function TemplateForm({
     if (!values.name.trim()) newErrors.name = 'Template name is required';
     if (!values.type) newErrors.type = 'Document type is required';
     if (!values.category) newErrors.category = 'Category is required';
-    if (values.requires_signatures.length === 0) newErrors.requires_signatures = 'Select required signatures';
+    if (values.requires_signature.length === 0) newErrors.requires_signatures = 'Select required signatures';
     if (!isEdit && !values.template_file_url) newErrors.template_file_url = 'PDF template is required';
     if (values.template_fields.length === 0) newErrors.template_fields = 'At least one template field is required';
 
@@ -113,7 +114,7 @@ export function TemplateForm({
   );
 
   const renderMultiSelect = (
-    name: keyof TemplateFormData, 
+    name: keyof TemplateForm, 
     options: Array<{ label: string; value: string }>,
     error?: string
   ) => (
@@ -200,7 +201,7 @@ export function TemplateForm({
       {/* Signature Requirements */}
       <div>
         <h4 className="text-sm font-medium text-heading mb-2">Signatures Required *</h4>
-        {renderMultiSelect('requires_signatures', [
+        {renderMultiSelect('requires_signature', [
           { label: 'Buyer', value: 'buyer' },
           { label: 'Seller', value: 'seller' },
           { label: 'Bank', value: 'bank' },
@@ -255,4 +256,4 @@ export function TemplateForm({
   );
 }
 
-export default TemplateForm;
+export default TemplateFormComponent;

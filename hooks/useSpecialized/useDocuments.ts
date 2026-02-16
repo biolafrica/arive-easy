@@ -1,10 +1,12 @@
-import { PartnerDocumentBase, TemplateBase } from "@/type/pages/dashboard/documents";
+import { PartnerDocumentBase, TemplateBase, TemplateForm } from "@/type/pages/dashboard/documents";
 import { useCrud } from "../useCrud";
 import { getEntityCacheConfig } from "@/lib/cache-config";
 import { useAuthContext } from "@/providers/auth-provider";
 import apiClient from "@/lib/api-client";
 import { toast } from "sonner";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { generateApplicationRefNo } from "@/utils/common/generateApplicationRef";
+import { toSlug } from "@/utils/common/toSlug";
 
 export function useTemplateDocuments(params?: any) {
   const crud = useCrud<TemplateBase>({
@@ -78,8 +80,11 @@ export function useSellerPartnerDocuments(params?: any) {
   };
 }
 
-export function useUploadTemplateDocument() {
+
+export function useUploadTemplateDocuments() {
   const { user } = useAuthContext();
+  const [isUploading, setIsUploading] = useState(false);
+  
   const { create, isCreating } = useCrud<TemplateBase>({
     resource: 'documents/template',
     interfaceType: 'admin',
@@ -87,32 +92,74 @@ export function useUploadTemplateDocument() {
     optimisticUpdate: false,
     onSuccess: {
       create: (data) => {
-        toast.success('template document uploaded successfully');
+        toast.success('Template document created successfully');
       },
     },
     onError: {
       create: (error) => {
-        toast.error(error?.error?.message || 'Failed to upload document');
+        toast.error(error?.error?.message || 'Failed to create template document');
       },
     },
   });
 
-  const uploadDocument = async (file: File, metadata?: Partial<TemplateBase>) => {
+  const uploadDocument = async ( formData:TemplateForm) => {
+
     if (!user?.id) {
       toast.error('Please login to upload documents');
       return;
     }
 
-    const  template_file_url = await apiClient.uploadToSupabase(file)
-    return create({
-      ...metadata,
-      created_by: user.id,
-      template_file_url : template_file_url || '',
-    })
+    setIsUploading(true);
+
+    try {
+      let template_file_url:string|null = '';
+
+      if (formData.template_file_url) {
+        template_file_url = await apiClient.uploadToSupabase(
+          formData.template_file_url, 
+          'documents', 
+          'templates'
+        );
+      }
+
+      const template_number = generateApplicationRefNo('TEMP');
+      const slug = toSlug(formData.name);
+
+      const requires_signature = formData.requires_signature.reduce((acc, sig) => {
+        acc[sig] = true;
+        return acc;
+      }, {} as Record<string, boolean>);
+
+      const templateData: Omit<TemplateBase, 'id'> = {
+        name: formData.name,
+        slug,
+        description: formData.description || '',
+        type: formData.type,
+        category: formData.category,
+        version: formData.version,
+        requires_signature,
+        template_file_url,
+        template_fields: formData.template_fields,
+        template_number,
+        status: 'active',
+        created_by: user.id,
+      };
+
+      const result = await create(templateData);
+      return result;
+
+    } catch (error) {
+      console.error('Template upload error:', error);
+      toast.error('Failed to upload template document');
+      throw error;
+
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return {
     uploadDocument,
-    isUploading: isCreating,
+    isUploading: isUploading || isCreating,
   };
 }
