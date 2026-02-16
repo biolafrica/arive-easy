@@ -1,5 +1,3 @@
-import { DescriptionList } from "@/components/common/DescriptionList";
-import { formatUSD, toNumber } from "@/lib/formatter";
 import { PreApprovalBase, PreAprovalStatus } from "@/type/pages/dashboard/approval";
 import { PreApprovalActions } from "./PreApprovalAction";
 import { useAdminPreApprovalStatus } from "@/hooks/useSpecialized/usePreApproval";

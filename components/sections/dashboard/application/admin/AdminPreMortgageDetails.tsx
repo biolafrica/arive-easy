@@ -1,19 +1,21 @@
-import { DescriptionList, DescriptionListEmpty } from "@/components/common/DescriptionList";
-import { StepProgress } from "@/components/ui/ProgressBar";
-import { ApplicationBase} from "@/type/pages/dashboard/application";
-import * as icon from "@heroicons/react/24/outline";
-import { getbadge } from "../../listing/SellerPropertyViewTop";
-import { formatDate, formatUSD } from "@/lib/formatter";
-import { Button } from "@/components/primitives/Button";
 import { useState } from "react";
+import { useConfirmAction } from "@/hooks/useConfirmation";
+import { useUpdateApplication } from "@/hooks/useSpecialized/useApplications";
+
+import { ApplicationBase} from "@/type/pages/dashboard/application";
+import { formatDate, formatUSD } from "@/lib/formatter";
+
+import { DescriptionList,} from "@/components/common/DescriptionList";
+import { StepProgress } from "@/components/ui/ProgressBar";
+import { getbadge } from "../../listing/SellerPropertyViewTop";
+import { Button } from "@/components/primitives/Button";
 import AddPayment from "./AddPayment";
 import AddDocuments from "./AddDocuments";
 import AddTerms from "./AddTerms";
 import ConfirmBanner from "@/components/feedbacks/ConfirmBanner";
-import { useConfirmAction } from "@/hooks/useConfirmation";
-import { confirmConfig } from "@/data/pages/dashboard/application";
-import { useUpdateApplication } from "@/hooks/useSpecialized/useApplications";
+import { confirmConfig, STAGE_EMPTY_CONFIG } from "@/data/pages/dashboard/application";
 import CreatePlan from "./CreatePlan";
+import { StageDescriptionEmpty } from "../common/StageDescriptionEmpty";
 
 interface Props {
   applications: ApplicationBase;
@@ -49,7 +51,7 @@ export default function AdminPreMortgageDetails ({ applications }: Props){
     }
   }
 
-  const handleType = async (type: 'terms' | 'payment' | 'mortgage') => {
+  const handleType = async (type: 'terms' | 'payment' | 'mortgage' | 'identity' | 'property') => {
     if (type === 'terms') {
       await updateApplication(applications.id, {
         stages_completed: {
@@ -93,6 +95,14 @@ export default function AdminPreMortgageDetails ({ applications }: Props){
     if (type === 'mortgage') {
       // activate mortgage
     }
+
+    if (type === 'identity') {
+      // activate identity
+    }
+
+    if (type === 'property') {
+      // activate property
+    }
   };
 
   const {open, banner, openConfirm, closeConfirm} = useConfirmAction(confirmConfig, handleType);
@@ -111,12 +121,7 @@ export default function AdminPreMortgageDetails ({ applications }: Props){
         <div className="space-y-5 mt-5">
 
           {applications.stages_completed.identity_verification?.status === "upcoming" ? (
-            <DescriptionListEmpty
-              title="Identity Verification Stage"
-              subtitle="User Identity Verification Stage."
-              icon={<icon.IdentificationIcon className="h-8 w-8" />}
-              message="User is yet to reach identity verification stage."
-            />
+            <StageDescriptionEmpty key={0}  {...STAGE_EMPTY_CONFIG[0]}/>
             ):(
             <DescriptionList
               title="Identity Verification"
@@ -162,18 +167,21 @@ export default function AdminPreMortgageDetails ({ applications }: Props){
                     </div>
                   )
                 }},
+
+                { label: 'Complete Stage', value: { type: 'custom', 
+                  node:(
+                    <Button onClick={()=>openConfirm('mortgage')} size='xs' >
+                      Complete Stage
+                    </Button>
+                  ) 
+                }},
       
               ]}
             />
           )}
 
           {applications.stages_completed.property_selection?.status === "upcoming" ? (
-            <DescriptionListEmpty
-              title="Property Selection Stage"
-              subtitle="User Property Selection Stage."
-              icon={<icon.HomeIcon className="h-8 w-8" />}
-              message="User is yet to reach property selection stage."
-            />
+           <StageDescriptionEmpty key={1}  {...STAGE_EMPTY_CONFIG[1]}/>
           ):(
             <DescriptionList
               title="Property Selection"
@@ -184,17 +192,19 @@ export default function AdminPreMortgageDetails ({ applications }: Props){
                 { label: 'Type', value: { type: 'text', value:`${property?.data.type || 'No Action Yet'}` }},
                 { label: 'Date Submitted', value: { type: 'text', value:`${formatDate(property?.data.submitted_at) || 'No Action Yet'}` }},
                 { label: 'Reason', value: { type: 'text', value:`${property?.data.reason|| 'No Action Yet'}` }},
+                { label: 'Complete Stage', value: { type: 'custom', 
+                  node:(
+                    <Button onClick={()=>openConfirm('mortgage')} size='xs' >
+                      Complete Stage
+                    </Button>
+                  ) 
+                }},
               ]}
             />
           )}
 
           {applications.stages_completed.terms_agreement?.status === "upcoming" ? (
-            <DescriptionListEmpty
-              title="Terms Agreement Stage"
-              subtitle="User Terms Agreement Stage."
-              icon={<icon.DocumentIcon className="h-8 w-8" />}
-              message="User is yet to reach Terms Agreement stage."
-            />
+            <StageDescriptionEmpty key={2}  {...STAGE_EMPTY_CONFIG[2]}/>
           ): (
             <DescriptionList
               title="Terms Agreement"
@@ -233,12 +243,7 @@ export default function AdminPreMortgageDetails ({ applications }: Props){
           )}
 
           {applications.stages_completed.payment_setup?.status === 'upcoming' ? (
-            <DescriptionListEmpty
-              title="Payment Setup Stage"
-              subtitle="User Payment Setup Stage."
-              icon={<icon.CreditCardIcon className="h-8 w-8" />}
-              message="User is yet to reach payment setup stage."
-            />
+           <StageDescriptionEmpty key={3}  {...STAGE_EMPTY_CONFIG[3]}/>
           ): (
             <DescriptionList
               title="Payment Setup"
@@ -312,12 +317,7 @@ export default function AdminPreMortgageDetails ({ applications }: Props){
           )}
 
           {applications.stages_completed.mortgage_activation?.status === "upcoming" ? (
-            <DescriptionListEmpty
-              title="Mortgage Activation Stage"
-              subtitle="User Mortgage Activation Stage."
-              icon={<icon.HomeModernIcon className="h-8 w-8" />}
-              message="User is yet to reach mortgage activation stage."
-            />
+            <StageDescriptionEmpty key={4}  {...STAGE_EMPTY_CONFIG[4]}/>
           ): (
             <DescriptionList
               title="Mortgage Activation"
@@ -342,7 +342,6 @@ export default function AdminPreMortgageDetails ({ applications }: Props){
             />
           )}
     
-
         </div >
 
       </div>
