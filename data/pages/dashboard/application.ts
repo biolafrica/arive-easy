@@ -3,7 +3,8 @@ import { formatDate} from "@/lib/formatter";
 import { FormField } from "@/type/form";
 import { AddLegalForm, AddPlan, AddTermsForm, AddValuationForm, ApplicationBase, ApplicationStage,} from "@/type/pages/dashboard/application";
 import { humanizeSnakeCase } from "@/utils/common/humanizeSnakeCase";
-import {ClockIcon, CheckCircleIcon, XCircleIcon} from '@heroicons/react/24/outline';
+import * as icon  from '@heroicons/react/24/outline';
+
 
 export const APPLICATION_STAGES: ApplicationStage[] = [
   {
@@ -51,7 +52,7 @@ export const statusConfig: StatusConfig[] = [
 
 export const STATUS_CONFIG = {
   pending: {
-    icon: ClockIcon,
+    icon: icon.ClockIcon,
     container: 'bg-blue-50 border-blue-200',
     iconColor: 'text-blue-500',
     title: 'Awaiting Seller Review',
@@ -62,7 +63,7 @@ export const STATUS_CONFIG = {
   },
 
   approved: {
-    icon: CheckCircleIcon,
+    icon: icon.CheckCircleIcon,
     container: 'bg-green-50 border-green-200',
     iconColor: 'text-green-500',
     title: 'Property Approved!',
@@ -73,7 +74,7 @@ export const STATUS_CONFIG = {
   },
 
   declined: {
-    icon: XCircleIcon,
+    icon: icon.XCircleIcon,
     container: 'bg-red-50 border-red-200',
     iconColor: 'text-red-500',
     title: 'Property Selection Declined',
@@ -166,6 +167,51 @@ export const confirmConfig = {
     message: 'Are you sure you want to activate mortgage for this user',
     variant: 'warning',
   },
+  identity: {
+    title: 'Identity Verification',
+    message: 'Are you sure you want to complete Verification stage for this user',
+    variant: 'warning',
+  },
+  property: {
+    title: 'Property Selection',
+    message: 'Are you sure you want to complete property selection for this user',
+    variant: 'warning',
+  },
+
 } as const;
+
+
+export const STAGE_EMPTY_CONFIG = [
+  {
+    title: 'Identity Verification Stage',
+    subtitle: 'User Identity Verification Stage.',
+    message: 'User is yet to reach identity verification stage.',
+    Icon: icon.IdentificationIcon,
+  },
+  {
+    title: 'Property Selection Stage',
+    subtitle: 'User Property Selection Stage.',
+    message: 'User is yet to reach property selection stage.',
+    Icon: icon.HomeIcon,
+  },
+  {
+    title: 'Terms Agreement Stage',
+    subtitle: 'User Terms Agreement Stage.',
+    message: 'User is yet to reach Terms Agreement stage.',
+    Icon: icon.DocumentIcon,
+  },
+  {
+    title: 'Payment Setup Stage',
+    subtitle: 'User Payment Setup Stage.',
+    message: 'User is yet to reach payment setup stage.',
+    Icon: icon.CreditCardIcon,
+  },
+  {
+    title: 'Mortgage Activation Stage',
+    subtitle: 'User Mortgage Activation Stage.',
+    message: 'User is yet to reach mortgage activation stage.',
+    Icon: icon.HomeModernIcon,
+  },
+];
 
 

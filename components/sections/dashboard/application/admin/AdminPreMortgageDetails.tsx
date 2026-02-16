@@ -1,117 +1,49 @@
 import { useState } from "react";
 import { useConfirmAction } from "@/hooks/useConfirmation";
-import { useUpdateApplication } from "@/hooks/useSpecialized/useApplications";
-
-import { ApplicationBase} from "@/type/pages/dashboard/application";
-import { formatDate, formatUSD } from "@/lib/formatter";
-
-import { DescriptionList,} from "@/components/common/DescriptionList";
+import { useStageTransition } from "@/hooks/useStageTransition";
+import { ApplicationBase,  } from "@/type/pages/dashboard/application";
 import { StepProgress } from "@/components/ui/ProgressBar";
-import { getbadge } from "../../listing/SellerPropertyViewTop";
-import { Button } from "@/components/primitives/Button";
+import { confirmConfig } from "@/data/pages/dashboard/application";
+import ConfirmBanner from "@/components/feedbacks/ConfirmBanner";
+
+import { IdentityStage } from "../stages/verification/AdminIdentityVerification";
+import { PropertyStage } from "../stages/property-selection/AdminPropertySelection";
+import { TermsStage } from "../stages/terms-agreement/AdminTermsAgreement";
+import { PaymentStage } from "../stages/payment-setup/AdminPaymentStage";
+
 import AddPayment from "./AddPayment";
 import AddDocuments from "./AddDocuments";
 import AddTerms from "./AddTerms";
-import ConfirmBanner from "@/components/feedbacks/ConfirmBanner";
-import { confirmConfig, STAGE_EMPTY_CONFIG } from "@/data/pages/dashboard/application";
 import CreatePlan from "./CreatePlan";
-import { StageDescriptionEmpty } from "../common/StageDescriptionEmpty";
+import { MortgageActivationStage } from "../stages/mortgage-activation/AdminMortgageActivation";
 
 interface Props {
   applications: ApplicationBase;
 }
 
-export default function AdminPreMortgageDetails ({ applications }: Props){
+export default function AdminPreMortgageDetails({ applications }: Props) {
   const [paymentShowModal, setPaymentShowModal] = useState(false);
   const [documentShowModal, setDocumentShowModal] = useState(false);
   const [termShowModal, setTermShowModal] = useState(false);
   const [planShowModal, setPlanShowModal] = useState(false);
 
-  const { updateApplication} = useUpdateApplication()
-
-  const home = applications.stages_completed.identity_verification?.data;
-  const immigration = applications.stages_completed.identity_verification?.data;
-  const property = applications.stages_completed.property_selection;
-  const payment = applications.stages_completed.payment_setup;
+  const { completeStage } = useStageTransition(applications.id, applications.stages_completed);
+  const { open, banner, openConfirm, closeConfirm } = useConfirmAction(confirmConfig, completeStage);
 
   const getStep=()=>{
     switch (applications.current_stage) {
-      case 'identity_verification':
-        return 1;
-      case 'property_selection':
-        return 2;
-      case 'terms_agreement':
-        return 3;
-      case 'payment_setup':
-        return 4;
-      case 'mortgage_activation':
-        return 5;
-      default:
-        return 1;
+      case 'identity_verification': return 1;
+      case 'property_selection': return 2;
+      case 'terms_agreement': return 3
+      case 'payment_setup': return 4
+      case 'mortgage_activation': return 5
+      default: return 1
     }
   }
 
-  const handleType = async (type: 'terms' | 'payment' | 'mortgage' | 'identity' | 'property') => {
-    if (type === 'terms') {
-      await updateApplication(applications.id, {
-        stages_completed: {
-          ...applications.stages_completed,
-          terms_agreement: {
-            ...applications.stages_completed.terms_agreement,
-            completed: true,
-            completed_at: new Date().toISOString(),
-            status: 'completed',
-          },
-          payment_setup: {
-            status: 'current',
-            completed: false,
-          }
-        },
-      current_stage: 'payment_setup',
-      current_step: 8
-      },{successMessage: 'Completed terms and agreement stage'})
-    }
-
-    if (type === 'payment') {
-      await updateApplication(applications.id, {
-        stages_completed: {
-          ...applications.stages_completed,
-          payment_setup: {
-            ...applications.stages_completed.payment_setup,
-            completed: true,
-            completed_at: new Date().toISOString(),
-            status: 'completed',
-          },
-          mortgage_activation: {
-            status: 'current',
-            completed: false,
-          }
-        },
-        current_stage: 'mortgage_activation',
-        current_step: 9
-      },{successMessage: 'Completed payment setup stage'})
-    }
-
-    if (type === 'mortgage') {
-      // activate mortgage
-    }
-
-    if (type === 'identity') {
-      // activate identity
-    }
-
-    if (type === 'property') {
-      // activate property
-    }
-  };
-
-  const {open, banner, openConfirm, closeConfirm} = useConfirmAction(confirmConfig, handleType);
-
-
-  return(
+  return (
     <>
       <div>
-
         <StepProgress
           currentStep={getStep()}
           totalSteps={5}
@@ -119,237 +51,41 @@ export default function AdminPreMortgageDetails ({ applications }: Props){
         />
 
         <div className="space-y-5 mt-5">
+          <IdentityStage
+            application={applications}
+            onComplete={() => openConfirm('identity')}
+          />
 
-          {applications.stages_completed.identity_verification?.status === "upcoming" ? (
-            <StageDescriptionEmpty key={0}  {...STAGE_EMPTY_CONFIG[0]}/>
-            ):(
-            <DescriptionList
-              title="Identity Verification"
-              subtitle="User Identity Verification Stage"
-              items={[
+          <PropertyStage
+            application={applications}
+            onComplete={() => openConfirm('property')}
+          />
 
-                { label: 'Processing Fee', value: { type: 'custom',  
-                  node:( 
-                    <div className="flex items-center gap-10">
-                      <h4 className={getbadge(applications.processing_fee_payment_status || "upcoming")}>
-                        {applications.processing_fee_payment_status || "upcoming"}
-                      </h4> 
-                      <h4>
-                        {formatDate( applications.processing_fee_payment_date || "")}
-                      </h4> 
-                    </div>
-                  )
-                }},
+          <TermsStage
+            application={applications}
+            onComplete={() => openConfirm('terms')}
+            onAddTerms={() => setTermShowModal(true)}
+            onAddDocuments={() => setDocumentShowModal(true)}
+          />
 
-                { label: 'Home Verification', value: { type: 'custom', 
-                  node:( 
-                    <div className="flex items-center gap-10">
-                      <h4 className={getbadge( home?.home_country_status || "upcoming")}>
-                        {home?.home_country_status|| "upcoming"}
-                      </h4>
-                      <h4>
-                        {formatDate( home?.home_country_verified_at || '')}
-                      </h4> 
-                      
-                    </div>
-                  )
-                }},
+          <PaymentStage
+            application={applications}
+            onComplete={() => openConfirm('payment')}
+            onAddPayments={() => setPaymentShowModal(true)}
+          />
 
-                { label: 'Immigration Verification', value: { type: 'custom', 
-                  node:(
-                    <div className="flex items-center gap-10">
-                      <h4 className={getbadge( immigration?.immigration_status || "upcoming")}>
-                        {immigration?.home_country_status || "upcoming"}
-                      </h4> 
-                      <h4>
-                        {formatDate(home?.immigration_verified_at || '')}
-                      </h4> 
-                    </div>
-                  )
-                }},
-
-                { label: 'Complete Stage', value: { type: 'custom', 
-                  node:(
-                    <Button onClick={()=>openConfirm('mortgage')} size='xs' >
-                      Complete Stage
-                    </Button>
-                  ) 
-                }},
-      
-              ]}
-            />
-          )}
-
-          {applications.stages_completed.property_selection?.status === "upcoming" ? (
-           <StageDescriptionEmpty key={1}  {...STAGE_EMPTY_CONFIG[1]}/>
-          ):(
-            <DescriptionList
-              title="Property Selection"
-              subtitle="User Property Selection Stage"
-              items={[
-                { label: 'Status', value: { type: 'text', value:`${property?.data.status || 'No Action Yet'}` }},
-                { label: 'Property Name', value: { type: 'text', value:`${property?.data.property_name || 'No Action Yet'}` }},
-                { label: 'Type', value: { type: 'text', value:`${property?.data.type || 'No Action Yet'}` }},
-                { label: 'Date Submitted', value: { type: 'text', value:`${formatDate(property?.data.submitted_at) || 'No Action Yet'}` }},
-                { label: 'Reason', value: { type: 'text', value:`${property?.data.reason|| 'No Action Yet'}` }},
-                { label: 'Complete Stage', value: { type: 'custom', 
-                  node:(
-                    <Button onClick={()=>openConfirm('mortgage')} size='xs' >
-                      Complete Stage
-                    </Button>
-                  ) 
-                }},
-              ]}
-            />
-          )}
-
-          {applications.stages_completed.terms_agreement?.status === "upcoming" ? (
-            <StageDescriptionEmpty key={2}  {...STAGE_EMPTY_CONFIG[2]}/>
-          ): (
-            <DescriptionList
-              title="Terms Agreement"
-              subtitle="User Terms Agreement Stage"
-              items={[
-                { label: 'Terms Details', value: { type: 'custom', 
-                  node:(
-                    <Button onClick={()=>setTermShowModal(true)} size='xs' >
-                      Add Terms
-                    </Button>
-                  ) 
-                }},
-
-                {label: 'Loan Amount', value:{type:'text', value:`${applications.approved_loan_amount || 'Not set'}`}},
-                {label: 'Loan Month', value:{type:'text', value:`${applications.loan_term_months || 'Not set'}`}},
-                {label: 'Loan Interest', value:{type:'text', value:`${applications.interest_rate || 'Not set'}`}},
-                {label: 'Down Payment Percentage', value:{type:'text', value:`${applications.down_payment_percentage || 'Not set'}`}},
-
-
-                { label: 'Agreement Documents', value: { type: 'custom', 
-                  node:(
-                    <Button onClick={()=>setDocumentShowModal(true)} size='xs' >
-                      Add Documents
-                    </Button>
-                  ) 
-                }},
-                { label: 'Complete Stage', value: { type: 'custom', 
-                  node:(
-                    <Button onClick={()=>openConfirm('terms')} size='xs' >
-                      Complete Stage
-                    </Button>
-                  ) 
-                }},
-              ]}
-            />
-          )}
-
-          {applications.stages_completed.payment_setup?.status === 'upcoming' ? (
-           <StageDescriptionEmpty key={3}  {...STAGE_EMPTY_CONFIG[3]}/>
-          ): (
-            <DescriptionList
-              title="Payment Setup"
-              subtitle="User Payment Setup Stage"
-              items={[
-                { label: 'Payments', value: { type: 'custom', 
-                  node:(
-                    <Button onClick={()=>setPaymentShowModal(true)} size='xs' >
-                      Add Payments
-                    </Button>
-                  ) 
-                }},
-                
-                { label: 'Down Payment', value: { type: 'custom',
-                  node:(
-                    <div className="flex items-center gap-10">
-                      <h4 className={getbadge( payment?.data.down_payment_status || "upcoming")}>
-                        { payment?.data.down_payment_status || "upcoming"}
-                      </h4> 
-                      <h4>
-                        {formatUSD({amount:payment?.data.down_payment_amount}) || ''}
-                      </h4> 
-                      <h4>
-                        {formatDate(payment?.data.down_payment_date || '')}
-                      </h4> 
-                    </div>
-                  )
-                }},
-
-                { label: 'Valuation Fee', value: { type: 'custom',   
-                  node:(
-                    <div className="flex items-center gap-10">
-                      <h4 className={getbadge( payment?.data.valuation_fee_status || "upcoming")}>
-                        { payment?.data.valuation_fee_status || "upcoming"}
-                      </h4> 
-                      <h4>
-                        { formatUSD({amount:payment?.data.valuation_fee_amount})  || ''}
-                      </h4> 
-                      <h4>
-                        {formatDate(payment?.data.valuation_fee_date || '')}
-                      </h4> 
-                    </div>
-                  ) 
-                }},
-
-                { label: 'Legal Fee', value: { type: 'custom',
-                  node:(
-                    <div className="flex items-center gap-10">
-                      <h4 className={getbadge( payment?.data.legal_fee_status || "upcoming")}>
-                        { payment?.data.valuation_fee_status || "upcoming"}
-                      </h4> 
-                      <h4>
-                        { formatUSD({amount:payment?.data.legal_fee_amount})  || ''}
-                      </h4> 
-                      <h4>
-                        {formatDate(payment?.data.legal_fee_date || '')}
-                      </h4> 
-                    </div>
-                  )  
-                }},
-
-                { label: 'Complete Stage', value: { type: 'custom', 
-                  node:(
-                    <Button onClick={()=>openConfirm('payment')} size='xs' >
-                      Complete Stage
-                    </Button>
-                  ) 
-                }},
-              ]}
-            />
-          )}
-
-          {applications.stages_completed.mortgage_activation?.status === "upcoming" ? (
-            <StageDescriptionEmpty key={4}  {...STAGE_EMPTY_CONFIG[4]}/>
-          ): (
-            <DescriptionList
-              title="Mortgage Activation"
-              subtitle="User Mortgage Activation Stage"
-              items={[
-                { label: 'Payment Plan', value: { type: 'custom',
-                  node:(
-                    <Button onClick={()=>setPlanShowModal(true)} size='xs' >
-                      Create Plan
-                    </Button>
-                  )
-                }},
-                { label: 'Mortgage Activation', value: { type: 'custom',
-                  node:(
-                    <Button onClick={()=>openConfirm('mortgage')} size='xs' >
-                      Activate Mortgage
-                    </Button>
-                  )
-                }},
-      
-              ]}
-            />
-          )}
-    
-        </div >
-
+          <MortgageActivationStage
+            application={applications}
+            onActivate={() => openConfirm('mortgage')}
+            onCreatePlan={() => setPlanShowModal(true)}
+          />
+        </div>
       </div>
 
-      <AddPayment showModal={paymentShowModal} setShowModal={setPaymentShowModal} id={applications.id}/>
-      <AddDocuments showModal={documentShowModal} setShowModal={setDocumentShowModal}/>
-      <AddTerms showModal={termShowModal} setShowModal={setTermShowModal} id={applications.id}/>
-      <CreatePlan showModal={planShowModal} setShowModal={setPlanShowModal} id={applications.id}/>
+      <AddPayment showModal={paymentShowModal} setShowModal={setPaymentShowModal} id={applications.id} />
+      <AddDocuments showModal={documentShowModal} setShowModal={setDocumentShowModal} />
+      <AddTerms showModal={termShowModal} setShowModal={setTermShowModal} id={applications.id} />
+      <CreatePlan showModal={planShowModal} setShowModal={setPlanShowModal} id={applications.id} />
 
       {banner && (
         <ConfirmBanner
@@ -361,8 +97,7 @@ export default function AdminPreMortgageDetails ({ applications }: Props){
           onCancel={closeConfirm}
         />
       )}
-      
     </>
-  )
+  );
 }
 
