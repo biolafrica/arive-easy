@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { TemplateField } from '@/type/form';
 import { Button } from '@/components/primitives/Button';
-import { PartnerDocumentData, TemplateBase } from '@/type/pages/dashboard/documents';
+import {PartnerDocumentData, TemplateBase } from '@/type/pages/dashboard/documents';
 
 interface PartnerDocumentFormProps {
   template: TemplateBase;

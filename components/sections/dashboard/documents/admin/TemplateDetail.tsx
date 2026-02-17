@@ -1,19 +1,14 @@
 import { useUploadTemplateDocuments } from "@/hooks/useSpecialized/useDocuments";
-import { useRouter } from "next/navigation";
 import { TemplateForm } from "@/type/pages/dashboard/documents";
 import { TemplateFormComponent } from "../common/TemplateForm";
 
 export default function TemplateDetail({close}:{
   close: ()=>void
 }) {
-  
-  const router = useRouter();
   const { uploadDocument, isUploading } = useUploadTemplateDocuments();
 
   const handleSubmit = async (values: TemplateForm) => {
     try {
-      console.log("Submitting template values:", values);
-      
       const result = await uploadDocument(values);
       
       if (result) {

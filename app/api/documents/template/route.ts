@@ -40,7 +40,7 @@ const documentTemplateHandlers = createCRUDHandlers<TemplateBase>({
       body.created_by = context.auth?.userId!;
 
       const existingTemplate = await templateQueryBuilder.findOneByCondition({
-        type: body.type,
+        document_type: body.type,
         status: 'active'
       })
 

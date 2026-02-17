@@ -1,18 +1,49 @@
-import {useTemplateDocument } from "@/hooks/useSpecialized/useDocuments";
-import { PartnerDocumentData } from "@/type/pages/dashboard/documents";
+import {useTemplateDocument, useUploadPartnerDocuments } from "@/hooks/useSpecialized/useDocuments";
+import { FinalPartnerDocument, PartnerDocumentData } from "@/type/pages/dashboard/documents";
 import PartnerDocumentForm from "../common/PartnerForm";
 import { useState } from "react";
 import { DescriptionList } from "@/components/common/DescriptionList";
 import { documentTypes } from "@/data/pages/dashboard/documents";
+import { generateApplicationRefNo } from "@/utils/common/generateApplicationRef";
 
 
-export default function PartnerDetail() {
+export default function PartnerDetail({close}:{
+  close: ()=>void
+}) {
   const [selectedDocumentType, setSelectedDocumentType] = useState<string>('');
 
   const { template: masterTemplate, isLoading: loadingTemplate, error } = useTemplateDocument(selectedDocumentType);
 
-  const createPartnerDocument= async (values:PartnerDocumentData)=>{
-    console.log(values)
+  const { uploadDocument, isUploading } = useUploadPartnerDocuments();
+
+
+  const createPartnerDocument = async (values:PartnerDocumentData)=>{
+    const partner_document_number = generateApplicationRefNo('PART');
+
+    const formData:FinalPartnerDocument = {
+      template_id: masterTemplate?.id || '',
+      partner_document_number,
+      document_type: masterTemplate?.type || "",
+      template_version: masterTemplate?.version || 1,
+      template_document_url: masterTemplate?.template_file_url || null,
+      ...values
+    }
+
+    console.log("Creating partner document with data:", formData);
+
+    try {
+      const result = await uploadDocument(formData);
+      if (result) {
+        console.log("Document created successfully:", result);
+        setTimeout(()=>{
+          close()
+        }, 1500)
+      }
+      
+    } catch (error) {
+      console.error("Failed to create template:", error);
+      
+    }
 
   }
 
@@ -83,7 +114,7 @@ export default function PartnerDetail() {
             createPartnerDocument(values)
             
           }}
-          submitLabel="Save My Template"
+          submitLabel={isUploading ? "Creating..." : "Save Template"}
         />
       )}
 

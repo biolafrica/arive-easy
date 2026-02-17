@@ -1,4 +1,4 @@
-import { PartnerDocumentBase, TemplateBase, TemplateForm } from "@/type/pages/dashboard/documents";
+import { FinalPartnerDocument, PartnerDocumentBase, TemplateBase, TemplateForm } from "@/type/pages/dashboard/documents";
 import { useCrud } from "../useCrud";
 import { getEntityCacheConfig } from "@/lib/cache-config";
 import { useAuthContext } from "@/providers/auth-provider";
@@ -167,6 +167,64 @@ export function useUploadTemplateDocuments() {
   };
 }
 
+export function useUploadPartnerDocuments() {
+  const { user } = useAuthContext();
+  const [isUploading, setIsUploading] = useState(false);
+  
+  const { create, isCreating } = useCrud<PartnerDocumentBase>({
+    resource: 'documents/partner',
+    interfaceType: 'admin',
+    showNotifications: true,
+    optimisticUpdate: false,
+    onSuccess: {
+      create: (data) => {
+        toast.success('Partner document created successfully');
+      },
+    },
+    onError: {
+      create: (error) => {
+        toast.error(error?.error?.message || 'Failed to create partner document');
+      },
+    },
+  });
+
+  const uploadDocument = async ( formData:FinalPartnerDocument) => {
+
+    if (!user?.id) {
+      toast.error('Please login to upload documents');
+      return;
+    }
+
+    setIsUploading(true);
+
+    if(formData.document_type !== "contract_of_sales"){
+      return toast.error('Only seller can create this document type');
+    }
+
+    try {
+      const result = await create({
+        ...formData,
+        partner_id: user.id,
+        partner_type: 'bank'
+      });
+      return result;
+
+    } catch (error) {
+      console.error('Partner Document upload error:', error);
+      toast.error('Failed to upload partner document');
+      throw error;
+
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  return {
+    uploadDocument,
+    isUploading: isUploading || isCreating,
+  };
+}
+
 
 export function useTemplateDocument(documentType?: string) {
   const crud = useCrud<TemplateBase>({
@@ -196,4 +254,5 @@ export function useTemplateDocument(documentType?: string) {
     ...crud,
   };
 }
+
 

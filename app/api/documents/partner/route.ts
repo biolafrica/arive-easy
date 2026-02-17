@@ -1,6 +1,7 @@
 import { PartnerDocumentBase } from "@/type/pages/dashboard/documents";
 import { requireAuth } from "@/utils/server/authMiddleware";
 import { createCRUDHandlers } from "@/utils/server/crudFactory";
+import { SupabaseQueryBuilder } from "@/utils/supabase/queryBuilder";
 import { NextRequest } from "next/server";
 
 const partnerTemplateHandlers = createCRUDHandlers<PartnerDocumentBase>({
@@ -29,6 +30,33 @@ const partnerTemplateHandlers = createCRUDHandlers<PartnerDocumentBase>({
       return true;
     }
   },
+  hooks: {
+    beforeCreate:async(body, context)=>{
+      const partnerQueryBuilder = new SupabaseQueryBuilder<PartnerDocumentBase>("partner_documents");
+
+      const now = new Date().toISOString();
+      body.created_at = now;
+      body.updated_at = now;
+      body.partner_id = context.auth?.userId!;
+
+      const existingTemplate = await partnerQueryBuilder.findOneByCondition({
+        document_type: body.document_type,
+        status: 'active',
+        partner_id: context.auth?.userId!,
+
+      })
+
+      if(existingTemplate){ 
+        await partnerQueryBuilder.update(existingTemplate.id, {
+          status: 'archived', 
+          updated_at: now 
+        })
+      }
+
+      body.status = 'active'; 
+
+    }
+  }
   
 });
 

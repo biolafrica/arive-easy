@@ -33,6 +33,11 @@ export default function SellerDocumentClientView() {
     [hasActiveFilters]
   );
 
+  const handleClosePanel=()=>{
+    detailPanel.close();
+
+  }
+
   return (
     <div className="space-y-5">
       <SidePanel
@@ -42,8 +47,8 @@ export default function SellerDocumentClientView() {
       >
         
         {detailPanel.mode === 'edit' && detailPanel.selectedItem ? 
-          (<PartnerDetail/>):
-          (<PartnerDetail/>)
+          (<PartnerDetail  close={handleClosePanel}/>):
+          (<PartnerDetail  close={handleClosePanel}/>)
         }
 
       </SidePanel>

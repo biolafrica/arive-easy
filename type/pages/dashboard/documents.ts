@@ -22,7 +22,6 @@ export type TemplateType = 'contract_of_sales' | 'mortgage_agreement' | 'certifi
 export type TemplateCategory = 'online_generated' | 'scanned_upload';
 export type TransactionStatus = 'pending' |'generating' | 'sent' | 'viewed' |'partially_signed' | 'completed' | 'voided' | 'expired'
 
-
 export interface TemplateBase {
   id: string;
   name: string;
@@ -55,10 +54,11 @@ export interface PartnerDocumentBase {
   partner_id :string
 
 
-  template_version :string
+  template_version :number
   partner_type :string
   document_name :string
   document_description :string
+  document_type :string
 
   static_data :Record<string, any>;
   custom_clauses :string[]
@@ -69,12 +69,14 @@ export interface PartnerDocumentBase {
   
   last_generated_at: string | null;
   template_document_url: string | null;
-  created_at: string;
-  updated_at: string;
-  activated_at: string | null;
+  created_at?: string;
+  updated_at?: string;
+  activated_at?: string | null;
 }
 
 export type PartnerDocumentData = Pick<PartnerDocumentBase, 'document_name'|'document_description' | 'custom_clauses' | "custom_terms" | 'static_data' >
+
+export type FinalPartnerDocument = PartnerDocumentData & Pick<PartnerDocumentBase, 'template_id' | 'partner_document_number' | 'document_type' | 'template_version' | 'template_document_url'>
 
 export interface TransactionDocumentBase {
   id: string;

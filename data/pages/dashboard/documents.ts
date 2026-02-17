@@ -19,7 +19,7 @@ export const columns:TableColumn<TemplateBase>[] = [
 export const partnerColumns:TableColumn<PartnerDocumentBase>[] = [
   {key: 'partner_document_number', header: 'ID' , sortable: false},
   {key: 'document_name', header: 'Name' , sortable: false},
-  {key: "created_at", header: 'Created At' , sortable: false, accessor:(value) =>formatDate(value.created_at)},
+  {key: "created_at", header: 'Created At' , sortable: false, accessor:(value) =>formatDate(value?.created_at || '')},
   {key: 'template_version', header: 'Template Version' , sortable: false},
   {key: 'partner_type', header: 'Document Type' , sortable: false,},  
 ]
@@ -27,7 +27,7 @@ export const partnerColumns:TableColumn<PartnerDocumentBase>[] = [
 export const sellerColumns:TableColumn<PartnerDocumentBase>[] = [
   {key: 'partner_document_number', header: 'ID' , sortable: false},
   {key: 'document_name', header: 'Name' , sortable: false},
-  {key: "created_at", header: 'Created At' , sortable: false, accessor:(value) =>formatDate(value.created_at)},
+  {key: "created_at", header: 'Created At' , sortable: false, accessor:(value) =>formatDate(value?.created_at || '')},
   {key: 'template_version', header: 'Template Version' , sortable: false},
 ]
 
