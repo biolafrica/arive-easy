@@ -8,14 +8,18 @@ import { useMemo, useState } from "react";
 import { generateApplicationRefNo } from "@/utils/common/generateApplicationRef";
 import { toSlug } from "@/utils/common/toSlug";
 
+
 export function useTemplateDocuments(params?: any) {
   const crud = useCrud<TemplateBase>({
     resource: 'documents/template',
     interfaceType: 'admin',
     cacheConfig: getEntityCacheConfig('documents', 'templates'),
   });
+  console.log('params received', params)
 
   const { data, isLoading, error } = crud.useGetAll(params);
+
+  console.log('data sent', data)
 
   return {
     templates: data?.data || [],
@@ -79,7 +83,6 @@ export function useSellerPartnerDocuments(params?: any) {
     ...crud,
   };
 }
-
 
 export function useUploadTemplateDocuments() {
   const { user } = useAuthContext();
@@ -163,3 +166,34 @@ export function useUploadTemplateDocuments() {
     isUploading: isUploading || isCreating,
   };
 }
+
+
+export function useTemplateDocument(documentType?: string) {
+  const crud = useCrud<TemplateBase>({
+    resource: 'documents/template',
+    interfaceType: 'admin',
+    cacheConfig: getEntityCacheConfig('documents', 'templates'),
+  });
+
+  const queryParams = useMemo(() => ({
+    filters: {
+      ...(documentType && { type: documentType }),
+      status: 'active',
+    },
+    limit: 1, 
+  }), [documentType]);
+
+  const { data, isLoading, error } = crud.useGetAll(queryParams);
+
+
+  console.log('data sent', data)
+
+  return {
+    template: data?.data[0] || null,
+    pagination: data?.pagination,
+    isLoading,
+    error,
+    ...crud,
+  };
+}
+

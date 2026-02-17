@@ -41,3 +41,10 @@ export const partnerStatusConfig: StatusConfig[] = [
   { value: 'active', label: 'active', variant: 'green' },
   { value: 'archived', label: 'Archived', variant: 'blue' },
 ];
+
+export const documentTypes = [
+  { value: 'contract_of_sales', label: 'Contract of Sales' },
+  { value: 'mortgage_agreement', label: 'Mortgage Agreement' },
+  { value: 'certificate_of_occupancy', label: 'Certificate Of Occupancy' },
+  { value: 'title_deed', label: 'Title Deed' }
+]

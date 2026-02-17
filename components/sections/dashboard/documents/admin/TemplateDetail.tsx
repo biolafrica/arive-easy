@@ -6,8 +6,7 @@ import { TemplateFormComponent } from "../common/TemplateForm";
 export default function TemplateDetail({close}:{
   close: ()=>void
 }) {
-
-
+  
   const router = useRouter();
   const { uploadDocument, isUploading } = useUploadTemplateDocuments();
 

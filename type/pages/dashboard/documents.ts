@@ -60,9 +60,9 @@ export interface PartnerDocumentBase {
   document_name :string
   document_description :string
 
-  static_data :string
-  custom_clauses :string
-  custom_terms :string
+  static_data :Record<string, any>;
+  custom_clauses :string[]
+  custom_terms :Record<string, any>;
   default_values :string
 
   status : 'draft' | 'active' | 'archived';
@@ -73,6 +73,8 @@ export interface PartnerDocumentBase {
   updated_at: string;
   activated_at: string | null;
 }
+
+export type PartnerDocumentData = Pick<PartnerDocumentBase, 'document_name'|'document_description' | 'custom_clauses' | "custom_terms" | 'static_data' >
 
 export interface TransactionDocumentBase {
   id: string;

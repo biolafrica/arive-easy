@@ -1,21 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { TemplateField } from '@/type/form';
 import DynamicFieldBuilder from '@/components/form/Dynamicfieldbuilder';
 import { Button } from '@/components/primitives/Button';
 import {TemplateForm } from '@/type/pages/dashboard/documents';
+import { documentTypes } from '@/data/pages/dashboard/documents';
 
-export interface TemplateFormData {
-  name: string;
-  description: string;
-  type: string;
-  category: string;
-  requires_signatures: string[];
-  version: number;
-  template_file_url: File | null;
-  template_fields: TemplateField[];
-}
 
 interface TemplateFormProps {
   initialValues?: Partial<TemplateForm>;
@@ -49,7 +39,6 @@ export function TemplateFormComponent({
 
   const updateField = (name: keyof TemplateForm, value: any) => {
     setValues(prev => ({ ...prev, [name]: value }));
-    // Clear error when field changes
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -74,7 +63,6 @@ export function TemplateFormComponent({
     if (!isEdit && !values.template_file_url) newErrors.template_file_url = 'PDF template is required';
     if (values.template_fields.length === 0) newErrors.template_fields = 'At least one template field is required';
 
-    // Validate template fields
     const invalidFields = values.template_fields.filter(field => 
       !field.placeholder || !field.label || !field.field_key
     );
@@ -137,7 +125,6 @@ export function TemplateFormComponent({
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Template Name */}
         {renderField('Template Name *', errors.name, 
           <input
             type="text"
@@ -148,7 +135,6 @@ export function TemplateFormComponent({
           />
         )}
 
-        {/* Document Type */}
         {renderField('Document Type *', errors.type,
           <select
             value={values.type}
@@ -156,14 +142,14 @@ export function TemplateFormComponent({
             className="w-full px-3 py-2 border border-border rounded-lg"
           >
             <option value="">Select document type...</option>
-            <option value="contract_of_sales">Contract of Sales</option>
-            <option value="mortgage_agreement">Mortgage Agreement</option>
-            <option value="certificate_of_occupancy">Certificate of Occupancy</option>
-            <option value="title_deed">Title Deed</option>
+            {documentTypes.map(type => (
+              <option key={type.value} value={type.value}>
+                {type.label}
+              </option>
+            ))}
           </select>
         )}
 
-        {/* Category */}
         {renderField('Category *', errors.category,
           <select
             value={values.category}
@@ -187,7 +173,6 @@ export function TemplateFormComponent({
         )}
       </div>
 
-      {/* Description */}
       {renderField('Description', errors.description,
         <textarea
           value={values.description}
@@ -198,7 +183,6 @@ export function TemplateFormComponent({
         />
       )}
 
-      {/* Signature Requirements */}
       <div>
         <h4 className="text-sm font-medium text-heading mb-2">Signatures Required *</h4>
         {renderMultiSelect('requires_signature', [
@@ -209,7 +193,6 @@ export function TemplateFormComponent({
         ], errors.requires_signatures)}
       </div>
 
-      {/* PDF Upload */}
       {!isEdit && renderField('Template PDF *', errors.template_file_url,
         <input
           type="file"
@@ -219,7 +202,6 @@ export function TemplateFormComponent({
         />
       )}
 
-      {/* Dynamic Field Builder */}
       <div>
         <DynamicFieldBuilder
           name="template_fields"
@@ -232,7 +214,6 @@ export function TemplateFormComponent({
         />
       </div>
 
-      {/* Submit Buttons */}
       <div className="flex gap-4 pt-4">
         {onCancel && (
           <Button
