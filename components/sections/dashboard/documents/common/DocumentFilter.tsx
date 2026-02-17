@@ -51,7 +51,7 @@ export const partnerConfigs: FilterConfig[] = [
     options: [
       { value: '', label: 'All Steps' },
       { value: 'seller', label: 'Seller' },
-      { value: 'Bank', label: 'Bank' },
+      { value: 'bank', label: 'Bank' },
     ],
   },
 ];

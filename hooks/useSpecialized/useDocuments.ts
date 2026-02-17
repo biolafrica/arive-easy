@@ -8,6 +8,16 @@ import { useMemo, useState } from "react";
 import { generateApplicationRefNo } from "@/utils/common/generateApplicationRef";
 import { toSlug } from "@/utils/common/toSlug";
 
+export interface TransactionalDocumentResponse {
+  success: boolean;
+  transaction_document: {
+    id: string;
+    status: string;
+    generated_document_url: string;
+    signing_urls: Record<string, string>;
+  };
+  message: string;
+}
 
 export function useTemplateDocuments(params?: any) {
   const crud = useCrud<TemplateBase>({
@@ -225,7 +235,6 @@ export function useUploadPartnerDocuments() {
   };
 }
 
-
 export function useTemplateDocument(documentType?: string) {
   const crud = useCrud<TemplateBase>({
     resource: 'documents/template',
@@ -252,6 +261,50 @@ export function useTemplateDocument(documentType?: string) {
     isLoading,
     error,
     ...crud,
+  };
+}
+
+export function useTransactionalDocuments() {
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const generateContractDocument = async (params: {
+    applicationId: string;
+    documentType: string;
+  }): Promise<TransactionalDocumentResponse | null> => {
+    setIsGenerating(true);
+    
+    try {
+      const response = await fetch('/api/documents/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(params),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to generate document');
+      }
+
+      const result: TransactionalDocumentResponse = await response.json();
+      
+      toast.success('Document generated and sent for signature successfully!');
+      
+      return result;
+
+    } catch (error) {
+      console.error('Error generating document:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to generate document');
+      return null;
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  return {
+    generateContractDocument,
+    isGenerating,
   };
 }
 

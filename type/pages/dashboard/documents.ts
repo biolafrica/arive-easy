@@ -83,25 +83,45 @@ export interface TransactionDocumentBase {
   partner_document_id :string
   transaction_document_number :string;
   application_id :string
-  buyer_id :string
+  buyer_id :string;
+  seller_id :string;
+  property_id :string;
+  template_id :string
+  document_type :string
 
-  populated_data :string[]
+  populated_data :Record<string, any>;
   generated_document_url :string
-  esign_provider :string
+
+  esign_provider :"esignatures.com"
   esign_document_id :string
   esign_envelope_id :string
-  signing_url :string
-  signatures :TransactionSignature;
+  signing_urls : Record<string, string> | {}; // { buyer: url, seller: url }
+
+  signatures :Record<string, any>;
   required_signatures :string[]
-  audit_log :string[];  
-  signed_document_url:string;  
+
   status:TransactionStatus
 
-  generated_at :string;
-  sent_at :string;
-  viewed_at :string;
-  completed_at :string;
-  expires_at :string;
-  created_at: string;
-  updated_at: string;
+  generated_at?: string;
+  sent_at?: string;
+  viewed_at?: string;
+  completed_at?: string;
+  expires_at?: string;
+  
+  created_at?: string;
+  updated_at?: string;
 }
+
+export interface Signers{
+  role:string;
+  name:string;
+  email:string;
+}
+
+export interface SendToESignatureProps{
+  documentUrl:string;
+  applicationId:string;
+  documentType:string;
+  signers : Signers[];
+}
+
