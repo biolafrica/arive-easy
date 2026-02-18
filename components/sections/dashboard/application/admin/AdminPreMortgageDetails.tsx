@@ -16,6 +16,7 @@ import AddDocuments from "./AddDocuments";
 import AddTerms from "./AddTerms";
 import CreatePlan from "./CreatePlan";
 import { MortgageActivationStage } from "../stages/mortgage-activation/AdminMortgageActivation";
+import AddStaticDocuments from "./AddStaticDocument";
 
 interface Props {
   applications: ApplicationBase;
@@ -24,6 +25,7 @@ interface Props {
 export default function AdminPreMortgageDetails({ applications }: Props) {
   const [paymentShowModal, setPaymentShowModal] = useState(false);
   const [documentShowModal, setDocumentShowModal] = useState(false);
+  const [staticDocumentShowModal, setStaticDocumentShowModal] = useState(false);
   const [termShowModal, setTermShowModal] = useState(false);
   const [planShowModal, setPlanShowModal] = useState(false);
 
@@ -78,12 +80,14 @@ export default function AdminPreMortgageDetails({ applications }: Props) {
             application={applications}
             onActivate={() => openConfirm('mortgage')}
             onCreatePlan={() => setPlanShowModal(true)}
+            onAddStaticDocuments={()=>setStaticDocumentShowModal(true)}
           />
         </div>
       </div>
 
       <AddPayment showModal={paymentShowModal} setShowModal={setPaymentShowModal} id={applications.id} />
-      <AddDocuments showModal={documentShowModal} setShowModal={setDocumentShowModal} />
+      <AddDocuments showModal={documentShowModal} setShowModal={setDocumentShowModal} id={applications.id} />
+      <AddStaticDocuments showModal={staticDocumentShowModal} setShowModal={setStaticDocumentShowModal} id={applications.id} />
       <AddTerms showModal={termShowModal} setShowModal={setTermShowModal} id={applications.id} />
       <CreatePlan showModal={planShowModal} setShowModal={setPlanShowModal} id={applications.id} />
 

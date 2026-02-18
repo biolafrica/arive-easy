@@ -1,6 +1,7 @@
 import { StatusConfig, TableColumn } from "@/components/common/DataTable";
 import {formatDate } from "@/lib/formatter";
-import { PartnerDocumentBase, TemplateBase } from "@/type/pages/dashboard/documents";
+import { FormField } from "@/type/form";
+import { DynamicDocumentForm, PartnerDocumentBase, StaticDocumentForm, TemplateBase } from "@/type/pages/dashboard/documents";
 import { humanizeSnakeCase } from "@/utils/common/humanizeSnakeCase";
 
 export const columns:TableColumn<TemplateBase>[] = [
@@ -45,6 +46,51 @@ export const partnerStatusConfig: StatusConfig[] = [
 export const documentTypes = [
   { value: 'contract_of_sales', label: 'Contract of Sales' },
   { value: 'mortgage_agreement', label: 'Mortgage Agreement' },
-  { value: 'certificate_of_occupancy', label: 'Certificate Of Occupancy' },
-  { value: 'title_deed', label: 'Title Deed' }
+  { value: 'under_writtten', label: 'Under Written'},
 ]
+
+export const staticDocumentTypes = [
+  { value: 'certificate_of_occupancy', label: 'Certificate Of Occupancy' },
+  { value: 'valuation_report', label: 'Property Valuation Report' },
+  { value: 'governor-consent', label: "Governor's Consent" },
+  { value: 'deed_of_conveyance', label: 'Dead of Conveyance' },
+  { value: 'survery_plan', label: 'Survey Plan' },
+  { value: 'building_plan', label: 'Approved Building Plan' },
+]
+
+
+export const staticDocumentField:FormField[]=[
+  { name: 'document_type', label: 'Document Type', type: 'select', required: true,
+    options: [
+      { label: 'Select document', value: '' },
+      { value: 'certificate_of_occupancy', label: 'Certificate Of Occupancy' },
+      { value: 'valuation_report', label: 'Property Valuation Report' },
+      { value: 'governor-consent', label: "Governor's Consent" },
+      { value: 'deed_of_conveyance', label: 'Dead of Conveyance' },
+      { value: 'survery_plan', label: 'Survey Plan' },
+      { value: 'building_plan', label: 'Approved Building Plan' },
+    ],
+  },
+  {name:'generated_document_url', label:"Upload Document", type:'file', required:true, placeholder:"Upload document file", accept:"image/*,application/pdf"},
+]
+
+export const dynamicDocumentField:FormField[]=[
+  { name: 'document_type', label: 'Document Type', type: 'select', required: true,
+    options: [
+      { label: 'Select document', value: '' },
+      { value: 'contract_of_sales', label: 'Contract of Sales' },
+      { value: 'mortgage_agreement', label: 'Mortgage Agreement' },
+      { value: 'under_writtten', label: 'Under Written'},
+    ],
+  },
+]
+
+export const staticDocumentInitialValue:StaticDocumentForm = {
+  document_type:'',
+  generated_document_url:null
+}
+
+export const dynamicDocumentInitialValue:DynamicDocumentForm = {
+  document_type:'',
+  
+}

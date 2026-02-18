@@ -1,11 +1,11 @@
+import { useState } from "react";
 import Modal from "@/components/common/ContentModal";
 import Form from "@/components/form/Form";
 import { Button } from "@/components/primitives/Button";
 import { legalField, legalInitialValue, valuationField, valuationInitialValue } from "@/data/pages/dashboard/application";
 import { useUpdateApplication } from "@/hooks/useSpecialized/useApplications";
 import { AddLegalForm, AddValuationForm, AdminApplicationModalProps } from "@/type/pages/dashboard/application";
-import { useState } from "react";
-import { set } from "zod";
+
 
 export default function AddPayment(
   {showModal, setShowModal, id}:AdminApplicationModalProps)
@@ -98,3 +98,4 @@ export default function AddPayment(
     </div>
   )
 }
+

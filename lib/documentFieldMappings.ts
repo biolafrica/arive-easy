@@ -6,7 +6,6 @@ export interface FieldMapping {
   format?: 'currency' | 'date' | 'phone' | 'address';
 }
 
-
 export const DOCUMENT_FIELD_MAPPINGS: FieldMapping[] = [
   { fieldKey: 'buyer.full_name', dataSource: 'buyer', mapping: (buyer) => buyer.full_name || `${buyer.first_name || ''} ${buyer.last_name || ''}`.trim() },
   { fieldKey: 'buyer.first_name', dataSource: 'buyer', mapping: 'first_name' },

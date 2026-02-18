@@ -8,9 +8,10 @@ interface MortgageActivationStageProps {
   application: ApplicationBase;
   onActivate: () => void;
   onCreatePlan: () => void;
+  onAddStaticDocuments: () => void;
 }
 
-export function MortgageActivationStage({ application, onActivate, onCreatePlan }: MortgageActivationStageProps) {
+export function MortgageActivationStage({ application, onActivate, onCreatePlan, onAddStaticDocuments }: MortgageActivationStageProps) {
   const stage = application.stages_completed.mortgage_activation;
 
   if (stage?.status === "upcoming") {
@@ -22,6 +23,13 @@ export function MortgageActivationStage({ application, onActivate, onCreatePlan 
       title="Mortgage Activation"
       subtitle="User Mortgage Activation Stage"
       items={[
+        {
+          label: 'Agreement Documents',
+          value: {
+            type: 'custom',
+            node: <Button onClick={onAddStaticDocuments} size='xs'>Add Documents</Button>
+          }
+        },
         {
           label: 'Payment Plan',
           value: {

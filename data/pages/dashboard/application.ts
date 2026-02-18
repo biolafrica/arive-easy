@@ -1,7 +1,7 @@
 import { StatusConfig, TableColumn } from "@/components/common/DataTable";
 import { formatDate} from "@/lib/formatter";
 import { FormField } from "@/type/form";
-import { AddLegalForm, AddPlan, AddTermsForm, AddValuationForm, ApplicationBase, ApplicationStage,} from "@/type/pages/dashboard/application";
+import { AddLegalForm, AddPlan, AddTermsForm, AddValuationForm, ApplicationBase, ApplicationStage} from "@/type/pages/dashboard/application";
 import { humanizeSnakeCase } from "@/utils/common/humanizeSnakeCase";
 import * as icon  from '@heroicons/react/24/outline';
 
@@ -130,6 +130,7 @@ export const termField:FormField[]=[
 export const valuationInitialValue:AddValuationForm = {
   valuation_fee:0
 }
+
 
 export const legalInitialValue:AddLegalForm = {
   legal_fee:0

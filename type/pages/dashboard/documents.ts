@@ -80,7 +80,7 @@ export type FinalPartnerDocument = PartnerDocumentData & Pick<PartnerDocumentBas
 
 export interface TransactionDocumentBase {
   id: string;
-  partner_document_id :string
+  partner_document_id :string 
   transaction_document_number :string;
   application_id :string
   buyer_id :string;
@@ -90,7 +90,7 @@ export interface TransactionDocumentBase {
   document_type :string
 
   populated_data :Record<string, any>;
-  generated_document_url :string
+  generated_document_url :string | File | null
 
   esign_provider :"esignatures.com"
   esign_document_id :string
@@ -125,3 +125,5 @@ export interface SendToESignatureProps{
   signers : Signers[];
 }
 
+export type DynamicDocumentForm = Pick<TransactionDocumentBase, 'document_type'>
+export type StaticDocumentForm = Pick<TransactionDocumentBase, 'document_type' | 'generated_document_url'>
