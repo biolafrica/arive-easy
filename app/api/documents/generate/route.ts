@@ -1,10 +1,10 @@
-import apiClient from "@/lib/api-client";
 import { resolveFieldValue } from "@/lib/documentFieldMappings";
 import { ApplicationBase } from "@/type/pages/dashboard/application";
+import { PreApprovalBase } from "@/type/pages/dashboard/approval";
 import { PartnerDocumentBase, SendToESignatureProps, TemplateBase, TransactionDocumentBase } from "@/type/pages/dashboard/documents";
 import { PropertyBase } from "@/type/pages/property";
-import { UserBase } from "@/type/user";
 import { requireAuth } from "@/utils/server/authMiddleware";
+import { storageManager } from "@/utils/server/storageManager";
 import { SupabaseQueryBuilder } from "@/utils/supabase/queryBuilder";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     const applicationQueryBuilder = new SupabaseQueryBuilder<ApplicationBase>('applications');
     const partnerDocumentQueryBuilder = new SupabaseQueryBuilder<PartnerDocumentBase>('partner_documents');
     const propertyQueryBuilder = new SupabaseQueryBuilder<PropertyBase>('properties');
-    const userQueryBuilder = new SupabaseQueryBuilder<UserBase>('users');
+    const preApprovalQueryBuilder = new SupabaseQueryBuilder<PreApprovalBase>('pre_approvals');
     const transactionDocumentQueryBuilder = new SupabaseQueryBuilder<TransactionDocumentBase>('document_transactions'); 
     const templateQueryBuilder = new SupabaseQueryBuilder<TemplateBase>('document_templates');
     
@@ -31,12 +31,14 @@ export async function POST(request: NextRequest) {
     if (!application) {
       return NextResponse.json({ error: 'Application not found' }, { status: 404 });
     }
+    console.log("application", application)
 
     const partnerDocument = await partnerDocumentQueryBuilder.findOneByCondition({
       partner_id: application.developer_id,
       document_type: documentType,
       status: 'active',
     });
+    console.log("partnerDocument", partnerDocument)
 
     if (!partnerDocument) {
       return NextResponse.json({ error: 'No active template found for this document type' }, { status: 404 });
@@ -46,11 +48,15 @@ export async function POST(request: NextRequest) {
     if (!masterTemplate) {
       return NextResponse.json({ error: 'Master template not found' }, { status: 404 });
     }
+    console.log("master template", masterTemplate)
 
     const [buyer, property] = await Promise.all([
-      userQueryBuilder.findById(application.user_id),
+      preApprovalQueryBuilder.findById(application.pre_approval_id),
       propertyQueryBuilder.findById(application.property_id)
     ]);
+
+    console.log("buyer", buyer)
+    console.log("property", property)
 
     if (!buyer || !property) {
       return NextResponse.json({ error: 'Buyer or property data not found' }, { status: 404 });
@@ -60,7 +66,7 @@ export async function POST(request: NextRequest) {
       templateFields: masterTemplate.template_fields,
       data: {
         partnerDocument,
-        buyer,
+        buyer : buyer.personal_info,
         property,
         application,
         applicationId
@@ -83,13 +89,13 @@ export async function POST(request: NextRequest) {
       signers: [
         {
           role: 'buyer',
-          name: buyer.name,
-          email: buyer.email,
+          name: `${buyer.personal_info.first_name} ${buyer.personal_info.last_name}`,
+          email: buyer.personal_info.email,
         },
         {
           role: 'seller',
-          name: partnerDocument.static_data.signatory_name || partnerDocument.static_data.company_name,
-          email: partnerDocument.static_data.email,
+          name: partnerDocument.static_data.seller.company_name,
+          email: partnerDocument.static_data.seller.email,
         }
       ]
     });
@@ -213,9 +219,12 @@ async function generatePdfFromTemplate({
     });
     console.log('Created file object for upload:', file);
     
-    const uploadedUrl = await apiClient.uploadToSupabase(file, 'documents', 'transaction');
+    const uploadedUrl = await storageManager.uploadFile(file, {
+      bucket: 'documents',
+      folder: 'transactions'
+    });
 
-    return uploadedUrl || '';
+    return uploadedUrl.publicUrl;
 
   } catch (error) {
     console.error('PDF generation error:', error);
