@@ -3,7 +3,6 @@
 import { useForm } from '@/hooks/useForm';
 import { Button } from '../primitives/Button';
 import ImageField from './ImageField'; 
-import RichTextEditor from './RichTextEditor';
 import { FormField, FormProps } from '@/type/form';
 import { CompositeDatePicker} from '../ui/DatePicker';
 import { useCallback } from 'react';
@@ -139,20 +138,6 @@ function Form<T extends Record<string, any>>({
           preview={preview !== false}
           aspectRatio={aspectRatio}
         />
-      );
-    }
-
-    if (type === 'richtext') {
-      return (
-        <div>
-          <RichTextEditor
-            content={values[name] || ''}
-            onChange={(html) => {
-              setFieldValue(name as keyof T, html as any);
-              setFieldTouched(name as keyof T, true);
-            }}
-          />
-        </div>
       );
     }
 

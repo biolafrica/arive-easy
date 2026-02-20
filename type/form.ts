@@ -14,7 +14,6 @@ export type FieldType =
 | 'radio'
 | 'image'
 | 'file'
-| 'richtext'
 | 'money'
 
 

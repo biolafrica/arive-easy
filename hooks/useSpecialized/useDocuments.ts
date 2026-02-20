@@ -1,4 +1,4 @@
-import { FinalPartnerDocument, PartnerDocumentBase, TemplateBase, TemplateForm } from "@/type/pages/dashboard/documents";
+import { FinalPartnerDocument, PartnerDocumentBase, TemplateBase, TemplateData, TemplateForm } from "@/type/pages/dashboard/documents";
 import { useCrud } from "../useCrud";
 import { getEntityCacheConfig } from "@/lib/cache-config";
 import { useAuthContext } from "@/providers/auth-provider";
@@ -143,7 +143,7 @@ export function useUploadTemplateDocuments() {
         return acc;
       }, {} as Record<string, boolean>);
 
-      const templateData: Omit<TemplateBase, 'id'> = {
+      const templateData: TemplateData = {
         name: formData.name,
         slug,
         description: formData.description || '',
@@ -156,6 +156,8 @@ export function useUploadTemplateDocuments() {
         template_number,
         status: 'active',
         created_by: user.id,
+        uses_signwell: true,
+        signwell_template_id: null,
       };
 
       const result = await create(templateData);
@@ -163,7 +165,13 @@ export function useUploadTemplateDocuments() {
 
     } catch (error) {
       console.error('Template upload error:', error);
-      toast.error('Failed to upload template document');
+      
+      if (error instanceof Error ? error.message?.includes('SignWell'): '') {
+        toast.error('Template created but SignWell integration failed. You can retry later.');
+      } else {
+        toast.error('Failed to upload template document');
+      }
+
       throw error;
 
     } finally {

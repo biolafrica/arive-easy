@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
       populated_data: mergeData,
       generated_document_url: generatedDocumentUrl,
       
-      esign_provider: 'esignatures.com',
+      esign_provider: 'signwell.com',
       esign_document_id: esignResult.document_id,
       esign_envelope_id: esignResult.envelope_id,
       signing_urls: esignResult.signing_urls,

@@ -35,6 +35,10 @@ export default function DocumentClientView() {
     [hasActiveFilters]
   );
 
+  const handleClose =()=>{
+    detailPanel.close()
+  }
+
   return (
     <div className="space-y-5">
       <SidePanel
@@ -43,8 +47,8 @@ export default function DocumentClientView() {
         title={detailPanel.mode === 'edit' ? 'Document Details' : 'Create Document'}
       >
         {detailPanel.mode === 'edit' && detailPanel.selectedItem ? 
-          (<PartnerDetail/>):
-          (<PartnerDetail/>)
+          (<PartnerDetail close={handleClose}/>):
+          (<PartnerDetail close={handleClose}/>)
         }
 
       </SidePanel>

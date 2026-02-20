@@ -21,7 +21,7 @@ interface TransactionSignature{
 export type TemplateType = 'contract_of_sales' | 'mortgage_agreement' | 'certificate_of_occupancy' | 'title_deed';
 export type TemplateCategory = 'online_generated' | 'scanned_upload';
 export type TransactionStatus = 'pending' |'generating' | 'sent' | 'viewed' |'partially_signed' | 'completed' | 'voided' | 'expired'
-
+ 
 export interface TemplateBase {
   id: string;
   name: string;
@@ -33,14 +33,21 @@ export interface TemplateBase {
   template_file_url: string | null ; 
   template_fields : TemplateField[];
   status: 'active' | 'inactive';
-  description?: string;
-  replaced_by?: string; 
+  description: string;
+  replaced_by: string; 
   parent_template_id?: string;
-  created_at?: string;
+  created_at: string;
   created_by: string;
-  updated_at?: string;
+  updated_at: string;
   category:string
+
+  uses_signwell: boolean;
+  signwell_template_id: string | null; 
+  signwell_integration_status: 'pending' | 'success' | 'failed' | null;
+  signwell_error_message: string | null;
+  signwell_created_at: string | null;  
 }
+export type TemplateData = Omit<TemplateBase, 'created_at' | 'signwell_error_message' | 'signwell_integration_status' | 'updated_at' | 'replaced_by' | ' signwell_created_at' | 'id' | 'parent_template_id' | 'signwell_created_at'>
 
 export type TemplateForm = Pick<TemplateBase, 'name' | 'type' | 'version' | 'template_fields' | 'description' | 'category' > &{
   template_file_url: File | null
@@ -92,7 +99,7 @@ export interface TransactionDocumentBase {
   populated_data :Record<string, any>;
   generated_document_url :string | File | null
 
-  esign_provider :"esignatures.com"
+  esign_provider :"signwell.com"
   esign_document_id :string
   esign_envelope_id :string
   signing_urls : Record<string, string> | {}; // { buyer: url, seller: url }
