@@ -31,6 +31,7 @@ export function TemplateFormComponent({
     version: 1,
     template_file_url: null,
     template_fields: [],
+    anvil_template_id:'',
     ...initialValues
   });
 
@@ -58,6 +59,7 @@ export function TemplateFormComponent({
 
     if (!values.name.trim()) newErrors.name = 'Template name is required';
     if (!values.type) newErrors.type = 'Document type is required';
+    if (!values.anvil_template_id) newErrors.type = 'Anvil template is required';
     if (!values.category) newErrors.category = 'Category is required';
     if (values.requires_signature.length === 0) newErrors.requires_signatures = 'Select required signatures';
     if (!isEdit && !values.template_file_url) newErrors.template_file_url = 'PDF template is required';
@@ -161,6 +163,18 @@ export function TemplateFormComponent({
           </select>
         )}
 
+        {renderField('Anvil Template ID *', errors.anvil_template_id,
+          <input
+            type='text'
+            value={values.anvil_template_id}
+            onChange={(e) => updateField('anvil_template_id', e.target.value)}
+            className="w-full px-3 py-2 border border-border rounded-lg"
+            placeholder="Enter template from anvil"
+
+          />
+        
+        )}
+
         {/* Version */}
         {renderField('Version', '',
           <input
@@ -171,6 +185,7 @@ export function TemplateFormComponent({
             min="1"
           />
         )}
+
       </div>
 
       {renderField('Description', errors.description,

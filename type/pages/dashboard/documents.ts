@@ -27,6 +27,8 @@ export interface TemplateBase {
   name: string;
   slug: string; 
   template_number: string;
+  anvil_template_id: string
+
   requires_signature: Signature;
   type: TemplateType;
   version: number;
@@ -40,16 +42,10 @@ export interface TemplateBase {
   created_by: string;
   updated_at: string;
   category:string
-
-  uses_signwell: boolean;
-  signwell_template_id: string | null; 
-  signwell_integration_status: 'pending' | 'success' | 'failed' | null;
-  signwell_error_message: string | null;
-  signwell_created_at: string | null;  
 }
 export type TemplateData = Omit<TemplateBase, 'created_at' | 'signwell_error_message' | 'signwell_integration_status' | 'updated_at' | 'replaced_by' | ' signwell_created_at' | 'id' | 'parent_template_id' | 'signwell_created_at'>
 
-export type TemplateForm = Pick<TemplateBase, 'name' | 'type' | 'version' | 'template_fields' | 'description' | 'category' > &{
+export type TemplateForm = Pick<TemplateBase, 'name' | 'type' | 'version' | 'template_fields' | 'description' | 'category' | 'anvil_template_id' > &{
   template_file_url: File | null
   requires_signature : string[]
 }

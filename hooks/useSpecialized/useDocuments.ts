@@ -156,8 +156,7 @@ export function useUploadTemplateDocuments() {
         template_number,
         status: 'active',
         created_by: user.id,
-        uses_signwell: true,
-        signwell_template_id: null,
+        anvil_template_id: formData.anvil_template_id
       };
 
       const result = await create(templateData);

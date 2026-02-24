@@ -50,7 +50,7 @@ const documentTemplateHandlers = createCRUDHandlers<TemplateBase>({
 
         await templateQueryBuilder.update(existingTemplate.id, {
           status: 'inactive', 
-          replaced_by: body.slug,
+          replaced_by: body.id,
           updated_at: now 
         })
 
@@ -58,136 +58,10 @@ const documentTemplateHandlers = createCRUDHandlers<TemplateBase>({
         body.version = 1
       }
 
-      if (body.uses_signwell !== false) {
-        body.uses_signwell = true;
-        body.signwell_integration_status = 'pending';
-        body.signwell_template_id = null;
-        body.signwell_error_message = null;
-        body.signwell_created_at = null;
-      } else {
-        body.uses_signwell = false;
-        body.signwell_integration_status = null;
-      }
   
-    },
-    afterCreate:async(created, body, context)=> {
-      if (created.uses_signwell && created.template_file_url) {
-        createSignwellTemplateAsync(created).catch(error => {
-          console.error(`SignWell template creation failed for ${created.id}:`, error);
-        });
-      }
-
     },
   }
 });
 
-async function createSignwellTemplateAsync(template: TemplateBase) {
-  const templateQueryBuilder = new SupabaseQueryBuilder<TemplateBase>("document_templates");
-  
-  try {
-    console.log(`Creating SignWell template for: ${template.name}`);
-
-    const signwellTemplate = await createSignwellTemplate({
-      name: template.name,
-      description: template.description || '',
-      file_url: template.template_file_url!,
-      template_fields: template.template_fields
-    });
-
-    await templateQueryBuilder.update(template.id, {
-      signwell_template_id: signwellTemplate.id,
-      signwell_integration_status: 'success',
-      signwell_created_at: new Date().toISOString(),
-      signwell_error_message: null,
-      updated_at: new Date().toISOString()
-    });
-
-
-  } catch (error) {
-    console.error(` SignWell template creation failed for ${template.id}:`, error);
-
-    await templateQueryBuilder.update(template.id, {
-      signwell_integration_status: 'failed',
-      signwell_error_message: error instanceof Error ? error.message : 'Unknown error',
-      updated_at: new Date().toISOString()
-    });
-  }
-}
-
-async function createSignwellTemplate({
-  name,
-  description,
-  file_url,
-  template_fields
-}: {
-  name: string;
-  description: string;
-  file_url: string;
-  template_fields: any[];
-}): Promise<{ id: string; name: string }> {
-
-  const SIGNWELL_API_KEY = process.env.SIGNWELL_API_KEY;
-  const SIGNWELL_API_URL = 'https://www.signwell.com/api/v1/document_templates/';
-
-  if (!SIGNWELL_API_KEY) {
-    console.warn('SignWell API key not configured - using mock data');
-    return {
-      id: `mock_template_${Date.now()}`,
-      name: name
-    };
-  }
-
-  const transformed = template_fields.map(item => ({
-    id: item.id,
-    name: item.placeholder
-  }));
-
-  try {
-    const options={
-      method: 'POST',
-      headers:{
-        accept: 'application/json',
-        'content-type': 'application/json',
-        'X-Api-Key': SIGNWELL_API_KEY
-      },
-      body:JSON.stringify({
-        draft: true,
-        reminders: true,
-        apply_signing_order: false,
-        text_tags: false,
-        allow_decline: true,
-        allow_reassign: true,
-        files:[
-          {
-            name:`${name.replace(/[^a-zA-Z0-9\s]/g, '')}.pdf`,
-            file_url:file_url
-          }
-        ],
-        name,
-        subject:`Please sign: ${name}`,
-        message:`Please review and sign this document.`,
-        placeholders:transformed
-      })
-    }
-
-    const response = await fetch(SIGNWELL_API_URL,options);
-
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`SignWell API error: ${response.status} - ${errorText}`);
-    }
-
-    const result = await response.json();
-    
-    return {
-      id: result.id,
-      name: result.name || name
-    };
-
-  } catch (error) {
-    throw new Error(`Failed to create SignWell template: ${error instanceof Error ? error.message : 'Unknown error'}`);
-  }
-}
 
 export const { GET, PUT, POST, PATCH } = documentTemplateHandlers;

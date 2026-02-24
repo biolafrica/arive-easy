@@ -31,7 +31,6 @@ const FieldRow: React.FC<{
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        {/* Placeholder */}
         <div>
           <label className="block text-sm font-medium mb-1">Placeholder *</label>
           <input
@@ -44,7 +43,6 @@ const FieldRow: React.FC<{
           />
         </div>
 
-        {/* Label */}
         <div>
           <label className="block text-sm font-medium mb-1">Label *</label>
           <input
@@ -57,7 +55,6 @@ const FieldRow: React.FC<{
           />
         </div>
 
-        {/* Field Key - Auto-generated but editable */}
         <div>
           <label className="block text-sm font-medium mb-1">Field Key *</label>
           <input
@@ -71,7 +68,6 @@ const FieldRow: React.FC<{
           <p className="text-xs text-gray-500 mt-1">Auto-generated from placeholder</p>
         </div>
 
-        {/* Data Source */}
         <div>
           <label className="block text-sm font-medium mb-1">Data Source</label>
           <select
@@ -90,7 +86,6 @@ const FieldRow: React.FC<{
           </select>
         </div>
 
-        {/* Field Type */}
         <div>
           <label className="block text-sm font-medium mb-1">Field Type</label>
           <select
@@ -108,7 +103,6 @@ const FieldRow: React.FC<{
           </select>
         </div>
 
-        {/* Fill Stage */}
         <div>
           <label className="block text-sm font-medium mb-1">Fill Stage</label>
           <select
@@ -271,7 +265,6 @@ const DynamicFieldBuilder: React.FC<DynamicFieldBuilderProps> = ({
         </div>
       </div>
 
-      {/* Fields */}
       <div className="space-y-4">
         {fields.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
