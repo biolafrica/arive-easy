@@ -43,7 +43,7 @@ export interface TemplateBase {
   updated_at: string;
   category:string
 }
-export type TemplateData = Omit<TemplateBase, 'created_at' | 'signwell_error_message' | 'signwell_integration_status' | 'updated_at' | 'replaced_by' | ' signwell_created_at' | 'id' | 'parent_template_id' | 'signwell_created_at'>
+export type TemplateData = Omit<TemplateBase, 'created_at' | 'updated_at' | 'replaced_by'  | 'id' | 'parent_template_id'>
 
 export type TemplateForm = Pick<TemplateBase, 'name' | 'type' | 'version' | 'template_fields' | 'description' | 'category' | 'anvil_template_id' > &{
   template_file_url: File | null
@@ -95,10 +95,10 @@ export interface TransactionDocumentBase {
   populated_data :Record<string, any>;
   generated_document_url :string | File | null
 
-  esign_provider :"signwell.com"
+  esign_provider :"anvil"
   esign_document_id :string
   esign_envelope_id :string
-  signing_urls : Record<string, string> | {}; // { buyer: url, seller: url }
+  signing_urls : Record<string, string> | {}; 
 
   signatures :Record<string, any>;
   required_signatures :string[]
@@ -119,13 +119,6 @@ export interface Signers{
   role:string;
   name:string;
   email:string;
-}
-
-export interface SendToESignatureProps{
-  documentUrl:string;
-  applicationId:string;
-  documentType:string;
-  signers : Signers[];
 }
 
 export type DynamicDocumentForm = Pick<TransactionDocumentBase, 'document_type'>

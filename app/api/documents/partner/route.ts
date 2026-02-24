@@ -47,10 +47,13 @@ const partnerTemplateHandlers = createCRUDHandlers<PartnerDocumentBase>({
       })
 
       if(existingTemplate){ 
+        body.template_version = existingTemplate.template_version + 1
         await partnerQueryBuilder.update(existingTemplate.id, {
           status: 'archived', 
           updated_at: now 
         })
+      }else{
+        body.template_version = 1
       }
 
       body.status = 'active'; 
