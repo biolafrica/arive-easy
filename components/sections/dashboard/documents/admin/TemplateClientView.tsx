@@ -12,6 +12,7 @@ import FilterDropdown from "@/components/common/FilterDropdown";
 import ActiveFilters from "@/components/common/ActiveFilters";
 import { templateConfigs } from "../common/DocumentFilter";
 import { TableHeader } from "@/components/common/TableHeader";
+import CreateTemplateDetail from "./CreateTemplateDetail";
 
 export default function TemplateClientView() {
   const detailPanel = useSidePanel<TemplateBase>();
@@ -47,8 +48,8 @@ export default function TemplateClientView() {
         title={detailPanel.mode === 'edit' ? 'Template Document Details' : 'Create Template Document'}
       >
         {detailPanel.mode === 'edit' && detailPanel.selectedItem ? 
-          (<TemplateDetail close={handleClosePanel}/>):
-          (<TemplateDetail close={handleClosePanel}/>)
+          (<TemplateDetail document={detailPanel.selectedItem}/>):
+          (<CreateTemplateDetail close={handleClosePanel}/>)
         }
 
       </SidePanel>

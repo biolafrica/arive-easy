@@ -5,13 +5,14 @@ import { usePartnerDocuments } from "@/hooks/useSpecialized/useDocuments";
 import { useTableFilters } from "@/hooks/useTableQuery";
 import { PartnerDocumentBase } from "@/type/pages/dashboard/documents";
 import { useMemo } from "react";
-import PartnerDetail from "./PartnerDetail";
 import DataTable from "@/components/common/DataTable";
 import { partnerColumns, partnerStatusConfig } from "@/data/pages/dashboard/documents";
 import FilterDropdown from "@/components/common/FilterDropdown";
 import { partnerConfigs } from "../common/DocumentFilter";
 import ActiveFilters from "@/components/common/ActiveFilters";
 import { TableHeader } from "@/components/common/TableHeader";
+import CreatePartnerDetails from "./CreatePartnerDetails";
+import EditPartnerDetails from "./EditPartnerDetails";
 
 export default function SellerDocumentClientView() {
   const detailPanel = useSidePanel<PartnerDocumentBase>();
@@ -47,8 +48,8 @@ export default function SellerDocumentClientView() {
       >
         
         {detailPanel.mode === 'edit' && detailPanel.selectedItem ? 
-          (<PartnerDetail  close={handleClosePanel}/>):
-          (<PartnerDetail  close={handleClosePanel}/>)
+          (<EditPartnerDetails  document={detailPanel.selectedItem}/>):
+          (<CreatePartnerDetails  close={handleClosePanel}/>)
         }
 
       </SidePanel>

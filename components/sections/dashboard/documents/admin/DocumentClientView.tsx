@@ -1,19 +1,17 @@
 'use client';
 
-import { SegmentedTabs } from "@/components/common/SegmentedTabs";
 import { useState } from "react";
+import { SegmentedTabs } from "@/components/common/SegmentedTabs";
 import SellerDocumentClientView from "./SellerDocumentClientView";
 import TemplateClientView from "./TemplateClientView";
-import BankDocumentClientView from "./BankDocumentClientView";
 
 export const TABS = [
-  { id: 'seller', label: 'Seller' },
-  { id: 'templates', label: 'Template' },
-  { id: 'banks', label: 'Banks' },
+  { id: 'partners', label: 'Partners' },
+  { id: 'templates', label: 'Templates' },
 ];
 
 export default function DocumentClientView() {
-  const [tab, setTab] = useState('seller');
+  const [tab, setTab] = useState('partners');
 
   return (
     <div className="space-y-4">
@@ -25,9 +23,8 @@ export default function DocumentClientView() {
         />
       </div>
 
-      {tab === 'seller' && (<SellerDocumentClientView />)}
+      {tab === 'partners' && (<SellerDocumentClientView />)}
       {tab === 'templates' && (<TemplateClientView />)}
-      {tab === 'banks' && (<BankDocumentClientView />)}
       
     </div>
   );
