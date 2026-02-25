@@ -1,7 +1,7 @@
 import Modal from "@/components/common/ContentModal";
 import Form from "@/components/form/Form";
 import { dynamicDocumentField, dynamicDocumentInitialValue} from "@/data/pages/dashboard/documents";
-import { useTransactionalDocuments } from "@/hooks/useSpecialized/useDocuments";
+import { useTransactionalDocument} from "@/hooks/useSpecialized/useDocuments";
 import { DynamicDocumentForm } from "@/type/pages/dashboard/documents";
 
 export default function AddDocuments({showModal, setShowModal, id}:{
@@ -9,7 +9,7 @@ export default function AddDocuments({showModal, setShowModal, id}:{
   setShowModal:(value:boolean)=>void
   id:string
 }){
-  const { generateContractDocument, isGenerating } = useTransactionalDocuments();
+  const { generateContractDocument, isGenerating } = useTransactionalDocument();
 
   const handleCreateDocument = async (values:DynamicDocumentForm) => {
     try {

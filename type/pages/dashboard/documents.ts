@@ -95,7 +95,7 @@ export interface TransactionDocumentBase {
   populated_data :Record<string, any>;
   generated_document_url :string | File | null
 
-  esign_provider :"anvil"
+  esign_provider : "anvil" | "static"
   esign_document_id :string
   esign_envelope_id :string
   signing_urls : Record<string, string> | {}; 

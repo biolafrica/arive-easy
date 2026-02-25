@@ -1,10 +1,13 @@
+import { useMemo, useState } from "react";
+import { useAuthContext } from "@/providers/auth-provider";
+
 import * as document from "@/type/pages/dashboard/documents";
+
+import { toast } from "sonner";
+
+import apiClient from "@/lib/api-client";
 import { useCrud } from "../useCrud";
 import { getEntityCacheConfig } from "@/lib/cache-config";
-import { useAuthContext } from "@/providers/auth-provider";
-import apiClient from "@/lib/api-client";
-import { toast } from "sonner";
-import { useMemo, useState } from "react";
 import { generateApplicationRefNo } from "@/utils/common/generateApplicationRef";
 import { toSlug } from "@/utils/common/toSlug";
 
@@ -36,6 +39,83 @@ export function useTemplateDocuments(params?: any) {
     pagination: data?.pagination,
     isLoading,
     error,
+    ...crud,
+  };
+}
+
+export function useTransactionalDocuments(applicationId?: string) {
+  const crud = useCrud<document.TransactionDocumentBase>({
+    resource: 'documents/transaction',
+    interfaceType: 'buyer',
+    cacheConfig: getEntityCacheConfig('documents', 'transactions'),
+  });
+
+  const baseParams = useMemo(() => {
+    if (!applicationId) return null;
+    
+    return {
+      filters: {
+        application_id: applicationId,
+      },
+    };
+  }, [applicationId]);
+
+  const useAll = () => {
+    const { data, isLoading, error } = crud.useGetAll(baseParams || undefined);
+    
+    return {
+      documents: data?.data || [],
+      isLoading,
+      error,
+    };
+  };
+
+  const useStatic = () => {
+    const queryParams = useMemo(() => {
+      if (!applicationId) return null;
+      
+      return {
+        filters: {
+          application_id: applicationId,
+          esign_provider: 'static',
+        },
+      };
+    }, [applicationId]);
+
+    const { data, isLoading, error } = crud.useGetAll(queryParams || undefined);
+    
+    return {
+      documents: data?.data || [],
+      isLoading,
+      error,
+    };
+  };
+
+  const useAnvil = () => {
+    const queryParams = useMemo(() => {
+      if (!applicationId) return null;
+      
+      return {
+        filters: {
+          application_id: applicationId,
+          esign_provider: 'anvil',
+        },
+      };
+    }, [applicationId]);
+
+    const { data, isLoading, error } = crud.useGetAll(queryParams || undefined);
+    
+    return {
+      documents: data?.data || [],
+      isLoading,
+      error,
+    };
+  };
+
+  return {
+    useAll,
+    useStatic,
+    useAnvil,
     ...crud,
   };
 }
@@ -278,6 +358,8 @@ export function useUploadPartnerDocuments() {
       return;
     }
 
+    const partner_type = user.user_metadata.role === "admin" ? 'bank' : 'seller'
+
     setIsUploading(true);
 
     if(formData.document_type !== "contract_of_sales"){
@@ -288,7 +370,7 @@ export function useUploadPartnerDocuments() {
       const result = await create({
         ...formData,
         partner_id: user.id,
-        partner_type: 'bank'
+        partner_type
       });
       return result;
 
@@ -337,7 +419,7 @@ export function useTemplateDocument(documentType?: string) {
   };
 }
 
-export function useTransactionalDocuments() {
+export function useTransactionalDocument() {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const generateContractDocument = async (params: {

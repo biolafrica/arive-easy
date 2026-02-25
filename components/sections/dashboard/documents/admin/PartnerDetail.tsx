@@ -1,7 +1,7 @@
+import { useState } from "react";
 import {useTemplateDocument, useUploadPartnerDocuments } from "@/hooks/useSpecialized/useDocuments";
 import { FinalPartnerDocument, PartnerDocumentData } from "@/type/pages/dashboard/documents";
 import PartnerDocumentForm from "../common/PartnerForm";
-import { useState } from "react";
 import { DescriptionList } from "@/components/common/DescriptionList";
 import { documentTypes } from "@/data/pages/dashboard/documents";
 import { generateApplicationRefNo } from "@/utils/common/generateApplicationRef";

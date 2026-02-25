@@ -1,10 +1,13 @@
-import { getTableEmptyMessage } from "@/components/common/TableEmptyMessage";
-import SidePanel from "@/components/ui/SidePanel";
+import { useMemo } from "react";
+
 import { useSidePanel } from "@/hooks/useSidePanel";
 import { usePartnerDocuments } from "@/hooks/useSpecialized/useDocuments";
 import { useTableFilters } from "@/hooks/useTableQuery";
+
 import { PartnerDocumentBase } from "@/type/pages/dashboard/documents";
-import { useMemo } from "react";
+
+import { getTableEmptyMessage } from "@/components/common/TableEmptyMessage";
+import SidePanel from "@/components/ui/SidePanel";
 import DataTable from "@/components/common/DataTable";
 import { partnerColumns, partnerStatusConfig } from "@/data/pages/dashboard/documents";
 import FilterDropdown from "@/components/common/FilterDropdown";

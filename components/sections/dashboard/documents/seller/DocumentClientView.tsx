@@ -1,19 +1,23 @@
 'use client';
 
+import { useMemo } from "react";
+
+import { useTableFilters } from "@/hooks/useTableQuery";
+import { useSellerPartnerDocuments } from "@/hooks/useSpecialized/useDocuments";
+import { useSidePanel } from "@/hooks/useSidePanel";
+
+import { PartnerDocumentBase } from "@/type/pages/dashboard/documents";
+
 import { getTableEmptyMessage } from "@/components/common/TableEmptyMessage";
 import SidePanel from "@/components/ui/SidePanel";
-import { useSidePanel } from "@/hooks/useSidePanel";
-import { useSellerPartnerDocuments } from "@/hooks/useSpecialized/useDocuments";
-import { useTableFilters } from "@/hooks/useTableQuery";
-import { PartnerDocumentBase } from "@/type/pages/dashboard/documents";
-import { useMemo } from "react";
-import PartnerDetail from "../admin/PartnerDetail";
 import DataTable from "@/components/common/DataTable";
 import { partnerStatusConfig, sellerColumns } from "@/data/pages/dashboard/documents";
 import FilterDropdown from "@/components/common/FilterDropdown";
 import { sellerConfigs } from "../common/DocumentFilter";
 import ActiveFilters from "@/components/common/ActiveFilters";
 import { TableHeader } from "@/components/common/TableHeader";
+import EditPartnerDetails from "../admin/EditPartnerDetails";
+import CreatePartnerDetails from "../admin/CreatePartnerDetails";
 
 export default function DocumentClientView() {
   const detailPanel = useSidePanel<PartnerDocumentBase>();
@@ -47,8 +51,8 @@ export default function DocumentClientView() {
         title={detailPanel.mode === 'edit' ? 'Document Details' : 'Create Document'}
       >
         {detailPanel.mode === 'edit' && detailPanel.selectedItem ? 
-          (<PartnerDetail close={handleClose}/>):
-          (<PartnerDetail close={handleClose}/>)
+          (<EditPartnerDetails document={detailPanel.selectedItem}/>):
+          (<CreatePartnerDetails  close={handleClose}/>)
         }
 
       </SidePanel>

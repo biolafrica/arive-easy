@@ -58,7 +58,7 @@ const transactionTemplateHandlers = createCRUDHandlers<TransactionDocumentBase>(
       body.buyer_id = application.user_id
       body.seller_id =application.developer_id
       body.property_id = application.property_id
-      body.esign_provider = 'anvil'
+      body.esign_provider = 'static'
          
     }
     

@@ -28,9 +28,6 @@ export default function CreatePartnerDetails({close}:{
       template_document_url: masterTemplate?.template_file_url || null,
       ...values
     }
-
-    console.log("Creating partner document with data:", formData);
-
     try {
       const result = await uploadDocument(formData);
       if (result) {
