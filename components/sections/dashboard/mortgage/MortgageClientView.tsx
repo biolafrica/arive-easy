@@ -35,6 +35,7 @@ export default function MortgageClientView({ id }: { id: string }) {
   return (
     <div>
       {isLoading && (<PropertyDetailsPageSkeleton/>) }
+
       {!isLoading && mortgage && mortgage.properties && (
         <div className="min-h-screen bg-gray-50">
           

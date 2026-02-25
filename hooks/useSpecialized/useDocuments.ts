@@ -61,12 +61,13 @@ export function useTransactionalDocuments(applicationId?: string) {
   }, [applicationId]);
 
   const useAll = () => {
-    const { data, isLoading, error } = crud.useGetAll(baseParams || undefined);
+    const { data, isLoading, error, refetch } = crud.useGetAll(baseParams || undefined);
     
     return {
       documents: data?.data || [],
       isLoading,
       error,
+      refetch
     };
   };
 
@@ -82,12 +83,13 @@ export function useTransactionalDocuments(applicationId?: string) {
       };
     }, [applicationId]);
 
-    const { data, isLoading, error } = crud.useGetAll(queryParams || undefined);
+    const { data, isLoading, error, refetch } = crud.useGetAll(queryParams || undefined);
     
     return {
       documents: data?.data || [],
       isLoading,
       error,
+      refetch
     };
   };
 
@@ -103,12 +105,13 @@ export function useTransactionalDocuments(applicationId?: string) {
       };
     }, [applicationId]);
 
-    const { data, isLoading, error } = crud.useGetAll(queryParams || undefined);
+    const { data, isLoading, error, refetch } = crud.useGetAll(queryParams || undefined);
     
     return {
       documents: data?.data || [],
       isLoading,
       error,
+      refetch
     };
   };
 

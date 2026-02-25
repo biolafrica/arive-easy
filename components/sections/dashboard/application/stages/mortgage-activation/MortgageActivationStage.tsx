@@ -6,6 +6,7 @@ import { ReviewStep, SetupStep } from "./MortgageUtilsComponents";
 import { useDirectDebitSetup } from "@/hooks/useDirectDebitSetup";
 import { DirectDebitPaymentForm } from "./DirectDebitPaymentForm";
 import { DirectDebitSuccess } from "./DirectDebitSuccess";
+import UserMortgageDocument from "./UserMortgageDocument";
 
 
 export interface MortgageActivationData {
@@ -135,6 +136,7 @@ export default function MortgageActivationStage({
 
   return (
     <div className="space-y-6 mt-5">
+
       {currentStep === 'review' && (
         <ReviewStep
           loanDetails={loanDetails}
@@ -163,6 +165,9 @@ export default function MortgageActivationStage({
           isPendingVerification={isPendingVerification}
         />
       )}
+
+      <UserMortgageDocument id={application.id}/>
+      
     </div>
   );
 }
