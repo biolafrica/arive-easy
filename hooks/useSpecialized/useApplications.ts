@@ -83,7 +83,9 @@ export function useUpdateApplication() {
       successMessage?: string;
     }
   ) => {
+    console.log('Sending update:', { id, data })
     const result = await update(id, data);
+    console.log('Update result:', result);
     
     if (options?.redirectOnSuccess && result) {
       const path = options.redirectPath || `/user-dashboard/applications`;

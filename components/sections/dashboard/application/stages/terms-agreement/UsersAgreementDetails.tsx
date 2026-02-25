@@ -9,8 +9,9 @@ export default function UserAgreementDocumentList({documents}:{
 }){
   
   const pendingDocument = documents.filter((document)=>{
-    document.status === 'sent'
+    return document.status === 'sent'
   })
+
 
   return(
     <div>
@@ -26,7 +27,7 @@ export default function UserAgreementDocumentList({documents}:{
             </div>
 
             <p className="text-sm text-gray-600 mt-1">
-              Awaiting You or seller to sign {humanizeSnakeCase(pendingDocument[0].document_type)}
+              Awaiting You or seller to sign {humanizeSnakeCase(pendingDocument[0].document_type)} document
             </p>
           </div>
         </div>

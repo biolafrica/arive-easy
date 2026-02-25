@@ -1,13 +1,14 @@
 import { StatusConfig, TableColumn } from "@/components/common/DataTable";
 import {formatUSD } from "@/lib/formatter";
 import { ApplicationBase, } from "@/type/pages/dashboard/application";
+import { humanizeSnakeCase } from "@/utils/common/humanizeSnakeCase";
 import { LockClosedIcon, HomeModernIcon, FolderIcon, } from '@heroicons/react/24/outline';
   
 
 export const columns: TableColumn<ApplicationBase>[] = [
   { key: 'application_number', header: 'Application ID', sortable: true,},
   { key: 'property_name', header: 'Property Name', sortable: true, accessor:(row)=>row.properties.title},
-  { key: 'current_stage', header: 'Current Step', sortable: false},
+  { key: 'current_stage', header: 'Current Step', sortable: false, accessor: (row) => humanizeSnakeCase(row.current_stage)},
   { key: 'progress', header: 'Progress', sortable: false, accessor:(row)=>getStagePercentage(row.current_stage)},
 ];
 

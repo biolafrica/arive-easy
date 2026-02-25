@@ -29,6 +29,7 @@ const applicationHandlers = createCRUDHandlers<ApplicationBase>({
       } : null;
     },
     permissions: async (action, context) => {
+      console.log('context', context.auth)
       if (!context.auth?.userId) {
         return false;
       }
@@ -37,6 +38,8 @@ const applicationHandlers = createCRUDHandlers<ApplicationBase>({
   },
   hooks: {
     afterUpdate: async (updated, previous, context) => {
+      console.log("pass through here")
+
       const propertyQueryBuilder = new SupabaseQueryBuilder<PropertyBase>("properties");
       const offerQueryBuilder = new SupabaseQueryBuilder<OfferBase>("offers");
       const userQueryBuilder = new SupabaseQueryBuilder<UserBase>('users');

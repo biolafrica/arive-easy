@@ -22,11 +22,11 @@ export function PropertyStage({ application, onComplete }: PropertyStageProps) {
       title="Property Selection"
       subtitle="User Property Selection Stage"
       items={[
-        { label: 'Status', value: { type: 'text', value: `${property?.data.status || 'No Action Yet'}` }},
-        { label: 'Property Name', value: { type: 'text', value: `${property?.data.property_name || 'No Action Yet'}` }},
-        { label: 'Type', value: { type: 'text', value: `${property?.data.type || 'No Action Yet'}` }},
-        { label: 'Date Submitted', value: { type: 'text', value: `${formatDate(property?.data.submitted_at) || 'No Action Yet'}` }},
-        { label: 'Reason', value: { type: 'text', value: `${property?.data.reason || 'No Action Yet'}` }},
+        { label: 'Status', value: { type: 'text', value: `${property?.data?.status || 'No Action Yet'}` }},
+        { label: 'Property Name', value: { type: 'text', value: `${property?.data?.property_name || 'No Action Yet'}` }},
+        { label: 'Type', value: { type: 'text', value: `${property?.data?.type || 'No Action Yet'}` }},
+        { label: 'Date Submitted', value: { type: 'text', value: `${formatDate(property?.data?.submitted_at) || 'No Action Yet'}` }},
+        { label: 'Reason', value: { type: 'text', value: `${property?.data?.reason || 'No Action Yet'}` }},
         {
           label: 'Complete Stage',
           value: {
