@@ -115,6 +115,12 @@ export interface TransactionDocumentBase {
   updated_at?: string;
 }
 
+export type StaticTransactionDocumentForm = Pick<TransactionDocumentBase, 'application_id' | 'transaction_document_number' |'document_type' > & {
+  generated_document_url : File | null
+}
+
+export type StaticTransactionData = Pick<TransactionDocumentBase, 'application_id' | 'generated_document_url' | 'transaction_document_number' | 'document_type'>
+
 export interface Signers{
   role:string;
   name:string;

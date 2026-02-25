@@ -1,11 +1,13 @@
+import { ApplicationBase } from "@/type/pages/dashboard/application";
 import { TransactionDocumentBase } from "@/type/pages/dashboard/documents";
 import { requireAuth } from "@/utils/server/authMiddleware";
 import { createCRUDHandlers } from "@/utils/server/crudFactory";
-import { NextRequest } from "next/server";
+import { SupabaseQueryBuilder } from "@/utils/supabase/queryBuilder";
+import { NextRequest, NextResponse } from "next/server";
 
 const transactionTemplateHandlers = createCRUDHandlers<TransactionDocumentBase>({
   table: 'document_transactions',
-  requiredFields: ['partner_document_id','application_id', 'buyer_id', 'populated_data', 'generated_document_url','status'],
+  requiredFields: ['application_id', 'generated_document_url'],
   defaultSort: {
     field: 'created_at',
     order: 'desc'
@@ -26,8 +28,46 @@ const transactionTemplateHandlers = createCRUDHandlers<TransactionDocumentBase>(
         return false;
       }
       return true;
-    }
+    },
+  
   },
+  hooks:{
+    beforeCreate:async(body, context)=>{
+      const transactionDocumentQueryBuilder = new SupabaseQueryBuilder<TransactionDocumentBase>('document_transactions'); 
+      const applicationQueryBuilder = new SupabaseQueryBuilder<ApplicationBase>('applications');
+   
+      try {
+        const previousTransactionTemplate = await transactionDocumentQueryBuilder.findOneByCondition({
+          application_id: body.application_id,
+          document_type:body.document_type
+        });
+
+        if(previousTransactionTemplate){
+          throw new Error( `you already created ${body.document_type} for this application`)
+        }
+
+        const application = await applicationQueryBuilder.findById(body.application_id)
+        if(!application){
+          throw new Error('application not found')
+        }
+
+        const now = new Date().toISOString();
+
+        body.created_at = now;
+        body.updated_at = now;
+        body.status = 'completed'
+        body.buyer_id = application.user_id
+        body.seller_id =application.developer_id
+        body.property_id = application.property_id
+        body.esign_provider = 'anvil'
+        
+      } catch (error) {
+        throw new Error('error creating template')
+      }
+      
+    }
+    
+  }
   
 });
 

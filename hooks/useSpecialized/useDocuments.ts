@@ -1,4 +1,4 @@
-import { FinalPartnerDocument, PartnerDocumentBase, TemplateBase, TemplateData, TemplateForm } from "@/type/pages/dashboard/documents";
+import { FinalPartnerDocument, PartnerDocumentBase, StaticTransactionData, StaticTransactionDocumentForm, TemplateBase, TemplateData, TemplateForm, TransactionDocumentBase } from "@/type/pages/dashboard/documents";
 import { useCrud } from "../useCrud";
 import { getEntityCacheConfig } from "@/lib/cache-config";
 import { useAuthContext } from "@/providers/auth-provider";
@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { useMemo, useState } from "react";
 import { generateApplicationRefNo } from "@/utils/common/generateApplicationRef";
 import { toSlug } from "@/utils/common/toSlug";
+import { TransactionBase } from "@/type/pages/dashboard/transactions";
 
 export interface TransactionalDocumentResponse {
   success: boolean;
@@ -105,7 +106,7 @@ export function useUploadTemplateDocuments() {
     optimisticUpdate: false,
     onSuccess: {
       create: (data) => {
-        toast.success('Template document created successfully');
+        toast.success(`${data.type} created successfully`);
       },
     },
     onError: {
@@ -164,13 +165,7 @@ export function useUploadTemplateDocuments() {
 
     } catch (error) {
       console.error('Template upload error:', error);
-      
-      if (error instanceof Error ? error.message?.includes('SignWell'): '') {
-        toast.error('Template created but SignWell integration failed. You can retry later.');
-      } else {
-        toast.error('Failed to upload template document');
-      }
-
+      toast.error('Failed to upload template document');
       throw error;
 
     } finally {
@@ -178,10 +173,83 @@ export function useUploadTemplateDocuments() {
     }
   };
 
+
   return {
     uploadDocument,
     isUploading: isUploading || isCreating,
   };
+}
+
+export function useUploadStaticDocuments() {
+  const { user } = useAuthContext();
+  const [isUploading, setIsUploading] = useState(false);
+
+  const { create, isCreating } = useCrud<TransactionDocumentBase>({
+    resource: 'documents/transaction',
+    interfaceType: 'admin',
+    showNotifications: true,
+    optimisticUpdate: false,
+    onSuccess: {
+      create: (data) => {
+        toast.success(`${data.document_type} created successfully`);
+      },
+    },
+    onError: {
+      create: (error) => {
+        toast.error(error?.error?.message || `Failed to create document`);
+      },
+    },
+  });
+
+  const uploadDocument = async ( formData:StaticTransactionDocumentForm) => {
+    if (!user?.id) {
+      toast.error('Please login to upload documents');
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+
+      let generated_document_url:string|null = '';
+
+      if (formData.generated_document_url) {
+        generated_document_url = await apiClient.uploadToSupabase(
+          formData.generated_document_url, 
+          'documents', 
+          'transactions'
+        );
+      }
+
+      const transaction_document_number = generateApplicationRefNo('TRD')
+
+      const transactionDocumentData:StaticTransactionData ={
+        transaction_document_number,
+        generated_document_url,
+        application_id: formData.application_id,
+        document_type:formData.document_type
+      }
+
+      const result = await create(transactionDocumentData)
+      return result
+      
+    } catch (error) {
+      console.error('Template upload error:', error);
+      toast.error('Failed to upload template document');
+      throw error;
+      
+    }finally{
+      setIsUploading(false);
+
+    }
+
+  }
+
+  return {
+    uploadDocument,
+    isUploading: isUploading || isCreating,
+  };
+
 }
 
 export function useUploadPartnerDocuments() {

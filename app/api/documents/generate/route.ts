@@ -9,6 +9,7 @@ import { ApplicationBase } from "@/type/pages/dashboard/application";
 import { PreApprovalBase } from "@/type/pages/dashboard/approval";
 import { PartnerDocumentBase,TemplateBase, TransactionDocumentBase } from "@/type/pages/dashboard/documents";
 import { PropertyBase } from "@/type/pages/property";
+import { generateApplicationRefNo } from "@/utils/common/generateApplicationRef";
 
 
 export async function POST(request: NextRequest) {
@@ -170,6 +171,7 @@ export async function POST(request: NextRequest) {
       application_id: applicationId,
       partner_document_id: partnerDocument.id,
       template_id: partnerDocument.template_id,
+      transaction_document_number:generateApplicationRefNo('TRD'),
       document_type: documentType,
       buyer_id: application.user_id,
       seller_id: application.developer_id,
