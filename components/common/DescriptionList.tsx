@@ -1,4 +1,6 @@
 import { PaperClipIcon, ArrowDownTrayIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
+import { ReactNode } from 'react';
+
 
 export type DescriptionValue = 
   | { type: 'text'; value: string } 
@@ -139,10 +141,6 @@ function DescriptionValueRenderer({ value}: {value: DescriptionValue}) {
       return null;
   }
 }
-
-import { ReactNode } from 'react';
-
-
 
 export function DescriptionListEmpty({
   title,

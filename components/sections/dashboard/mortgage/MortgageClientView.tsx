@@ -13,6 +13,7 @@ import { StatsCard } from "@/components/cards/dashboard/StatsCard";
 import { StatsGrid } from "@/components/layouts/dashboard/StatGrid";
 import { statData, tabs } from "@/data/pages/dashboard/mortgage";
 import { BackButton } from "@/components/primitives/BackButton";
+import MortgageDocuments from "./MortgageDocuments";
 
 export default function MortgageClientView({ id }: { id: string }) {
 
@@ -158,14 +159,7 @@ export default function MortgageClientView({ id }: { id: string }) {
             )}
 
             {activeTab === 'documents' && (
-              <div className="bg-white rounded-xl border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Documents</h3>
-                <div className="text-center py-8 text-gray-500">
-                  <icon.DocumentTextIcon className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                  <p>No documents available</p>
-                  <p className="text-sm mt-1">Mortgage documents will appear here once available.</p>
-                </div>
-              </div>
+              <MortgageDocuments id={mortgage.application_id} />
             )}
           </div>
         </div>

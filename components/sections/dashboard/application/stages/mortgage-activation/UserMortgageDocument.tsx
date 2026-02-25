@@ -1,5 +1,6 @@
 import { DescriptionList } from "@/components/common/DescriptionList";
 import ErrorState from "@/components/feedbacks/ErrorState";
+import { DescriptionListSkeleton } from "@/components/skeleton/DescriptionListSkeleton";
 import { useTransactionalDocuments } from "@/hooks/useSpecialized/useDocuments";
 import { TransactionDocumentBase } from "@/type/pages/dashboard/documents";
 import { humanizeSnakeCase } from "@/utils/common/humanizeSnakeCase";
@@ -22,7 +23,7 @@ export default function UserMortgageDocument({id}:{
   const { documents, isLoading, error, refetch } = transactionDocs.useStatic();
 
   if(isLoading){
-    <h4>Document loading</h4>
+    <DescriptionListSkeleton rows={6}/>
   }
 
   if(error){

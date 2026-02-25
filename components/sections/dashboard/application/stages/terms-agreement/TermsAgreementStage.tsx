@@ -4,6 +4,7 @@ import { StageDescriptionEmpty } from "../../common/StageDescriptionEmpty";
 import { DocumentIcon } from "@heroicons/react/24/outline";
 import UserAgreementDocumentList from "./UsersAgreementDetails";
 import ErrorState from "@/components/feedbacks/ErrorState";
+import { DescriptionListSkeleton } from "@/components/skeleton/DescriptionListSkeleton";
 
 interface Props {
   application: ApplicationBase;
@@ -26,7 +27,7 @@ export default function TermsAgreementStage({
   const { documents, isLoading, error, refetch } = transactionDocs.useAnvil();
 
   if(isLoading){
-    <h4>Document loading</h4>
+    <DescriptionListSkeleton rows={6}/>
   }
 
   if(error){
