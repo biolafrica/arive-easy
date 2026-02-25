@@ -3,7 +3,7 @@ import { TransactionDocumentBase } from "@/type/pages/dashboard/documents";
 import { requireAuth } from "@/utils/server/authMiddleware";
 import { createCRUDHandlers } from "@/utils/server/crudFactory";
 import { SupabaseQueryBuilder } from "@/utils/supabase/queryBuilder";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest} from "next/server";
 
 const transactionTemplateHandlers = createCRUDHandlers<TransactionDocumentBase>({
   table: 'document_transactions',
@@ -36,35 +36,30 @@ const transactionTemplateHandlers = createCRUDHandlers<TransactionDocumentBase>(
       const transactionDocumentQueryBuilder = new SupabaseQueryBuilder<TransactionDocumentBase>('document_transactions'); 
       const applicationQueryBuilder = new SupabaseQueryBuilder<ApplicationBase>('applications');
    
-      try {
-        const previousTransactionTemplate = await transactionDocumentQueryBuilder.findOneByCondition({
-          application_id: body.application_id,
-          document_type:body.document_type
-        });
+      const previousTransactionTemplate = await transactionDocumentQueryBuilder.findOneByCondition({
+        application_id: body.application_id,
+        document_type:body.document_type
+      });
 
-        if(previousTransactionTemplate){
-          throw new Error( `you already created ${body.document_type} for this application`)
-        }
-
-        const application = await applicationQueryBuilder.findById(body.application_id)
-        if(!application){
-          throw new Error('application not found')
-        }
-
-        const now = new Date().toISOString();
-
-        body.created_at = now;
-        body.updated_at = now;
-        body.status = 'completed'
-        body.buyer_id = application.user_id
-        body.seller_id =application.developer_id
-        body.property_id = application.property_id
-        body.esign_provider = 'anvil'
-        
-      } catch (error) {
-        throw new Error('error creating template')
+      if(previousTransactionTemplate){
+        throw new Error( `you already created ${body.document_type} for this application`)
       }
-      
+
+      const application = await applicationQueryBuilder.findById(body.application_id)
+      if(!application){
+        throw new Error('application not found')
+      }
+
+      const now = new Date().toISOString();
+
+      body.created_at = now;
+      body.updated_at = now;
+      body.status = 'completed'
+      body.buyer_id = application.user_id
+      body.seller_id =application.developer_id
+      body.property_id = application.property_id
+      body.esign_provider = 'anvil'
+         
     }
     
   }

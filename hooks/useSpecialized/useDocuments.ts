@@ -1,4 +1,4 @@
-import { FinalPartnerDocument, PartnerDocumentBase, StaticTransactionData, StaticTransactionDocumentForm, TemplateBase, TemplateData, TemplateForm, TransactionDocumentBase } from "@/type/pages/dashboard/documents";
+import * as document from "@/type/pages/dashboard/documents";
 import { useCrud } from "../useCrud";
 import { getEntityCacheConfig } from "@/lib/cache-config";
 import { useAuthContext } from "@/providers/auth-provider";
@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import { useMemo, useState } from "react";
 import { generateApplicationRefNo } from "@/utils/common/generateApplicationRef";
 import { toSlug } from "@/utils/common/toSlug";
-import { TransactionBase } from "@/type/pages/dashboard/transactions";
 
 export interface TransactionalDocumentResponse {
   success: boolean;
@@ -21,7 +20,7 @@ export interface TransactionalDocumentResponse {
 }
 
 export function useTemplateDocuments(params?: any) {
-  const crud = useCrud<TemplateBase>({
+  const crud = useCrud<document.TemplateBase>({
     resource: 'documents/template',
     interfaceType: 'admin',
     cacheConfig: getEntityCacheConfig('documents', 'templates'),
@@ -42,7 +41,7 @@ export function useTemplateDocuments(params?: any) {
 }
 
 export function usePartnerDocuments(params?: any) {
-  const crud = useCrud<PartnerDocumentBase>({
+  const crud = useCrud<document.PartnerDocumentBase>({
     resource: 'documents/partner',
     interfaceType: 'admin',
     cacheConfig: getEntityCacheConfig('documents', 'partners'),
@@ -62,7 +61,7 @@ export function usePartnerDocuments(params?: any) {
 export function useSellerPartnerDocuments(params?: any) {
   const { user, loading: isUserLoading } = useAuthContext();
 
-  const crud = useCrud<PartnerDocumentBase>({
+  const crud = useCrud<document.PartnerDocumentBase>({
     resource: 'documents/partner',
     interfaceType: 'buyer',
     cacheConfig: getEntityCacheConfig('documents', 'partners'),
@@ -99,7 +98,7 @@ export function useUploadTemplateDocuments() {
   const { user } = useAuthContext();
   const [isUploading, setIsUploading] = useState(false);
   
-  const { create, isCreating } = useCrud<TemplateBase>({
+  const { create, isCreating } = useCrud<document.TemplateBase>({
     resource: 'documents/template',
     interfaceType: 'admin',
     showNotifications: true,
@@ -116,7 +115,7 @@ export function useUploadTemplateDocuments() {
     },
   });
 
-  const uploadDocument = async ( formData:TemplateForm) => {
+  const uploadDocument = async ( formData:document.TemplateForm) => {
 
     if (!user?.id) {
       toast.error('Please login to upload documents');
@@ -144,7 +143,7 @@ export function useUploadTemplateDocuments() {
         return acc;
       }, {} as Record<string, boolean>);
 
-      const templateData: TemplateData = {
+      const templateData: document.TemplateData = {
         name: formData.name,
         slug,
         description: formData.description || '',
@@ -184,7 +183,7 @@ export function useUploadStaticDocuments() {
   const { user } = useAuthContext();
   const [isUploading, setIsUploading] = useState(false);
 
-  const { create, isCreating } = useCrud<TransactionDocumentBase>({
+  const { create, isCreating } = useCrud<document.TransactionDocumentBase>({
     resource: 'documents/transaction',
     interfaceType: 'admin',
     showNotifications: true,
@@ -196,12 +195,13 @@ export function useUploadStaticDocuments() {
     },
     onError: {
       create: (error) => {
+        console.log(error)
         toast.error(error?.error?.message || `Failed to create document`);
       },
     },
   });
 
-  const uploadDocument = async ( formData:StaticTransactionDocumentForm) => {
+  const uploadDocument = async ( formData:document.StaticTransactionDocumentForm) => {
     if (!user?.id) {
       toast.error('Please login to upload documents');
       return;
@@ -221,10 +221,8 @@ export function useUploadStaticDocuments() {
         );
       }
 
-      const transaction_document_number = generateApplicationRefNo('TRD')
-
-      const transactionDocumentData:StaticTransactionData ={
-        transaction_document_number,
+      const transactionDocumentData:document.StaticTransactionData ={
+        transaction_document_number : formData.transaction_document_number,
         generated_document_url,
         application_id: formData.application_id,
         document_type:formData.document_type
@@ -256,7 +254,7 @@ export function useUploadPartnerDocuments() {
   const { user } = useAuthContext();
   const [isUploading, setIsUploading] = useState(false);
   
-  const { create, isCreating } = useCrud<PartnerDocumentBase>({
+  const { create, isCreating } = useCrud<document.PartnerDocumentBase>({
     resource: 'documents/partner',
     interfaceType: 'admin',
     showNotifications: true,
@@ -273,7 +271,7 @@ export function useUploadPartnerDocuments() {
     },
   });
 
-  const uploadDocument = async ( formData:FinalPartnerDocument) => {
+  const uploadDocument = async ( formData:document.FinalPartnerDocument) => {
 
     if (!user?.id) {
       toast.error('Please login to upload documents');
@@ -311,7 +309,7 @@ export function useUploadPartnerDocuments() {
 }
 
 export function useTemplateDocument(documentType?: string) {
-  const crud = useCrud<TemplateBase>({
+  const crud = useCrud<document.TemplateBase>({
     resource: 'documents/template',
     interfaceType: 'admin',
     cacheConfig: getEntityCacheConfig('documents', 'templates'),

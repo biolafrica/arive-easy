@@ -1,7 +1,9 @@
 import Modal from "@/components/common/ContentModal";
 import Form from "@/components/form/Form";
 import { staticDocumentField, staticDocumentInitialValue } from "@/data/pages/dashboard/documents";
-import { StaticDocumentForm } from "@/type/pages/dashboard/documents";
+import { useUploadStaticDocuments } from "@/hooks/useSpecialized/useDocuments";
+import { StaticDocumentForm, StaticTransactionDocumentForm } from "@/type/pages/dashboard/documents";
+import { generateApplicationRefNo } from "@/utils/common/generateApplicationRef";
 
 export default function AddStaticDocuments({showModal, setShowModal, id}:{
   showModal:boolean
@@ -9,8 +11,30 @@ export default function AddStaticDocuments({showModal, setShowModal, id}:{
   id:string
 }){
 
+  const { uploadDocument, isUploading } = useUploadStaticDocuments();
+
   const handleSubmit = async (values:StaticDocumentForm) => {
-   console.log(values)
+    console.log(values)
+    const transaction_document_number = generateApplicationRefNo('TRD')
+
+    const formData:StaticTransactionDocumentForm ={
+      application_id :id,
+      transaction_document_number ,
+      ...values,
+    }
+
+    try {
+      const result = await uploadDocument(formData);
+      if (result) {
+        console.log("document created successfully:", result);
+        setTimeout(()=>{
+          setShowModal(false)
+        }, 1500)
+      }
+      
+    } catch (error) {
+      console.error("Failed to create static document:", error);
+    }
   };
 
   const validate =(values:StaticDocumentForm)=>{
@@ -30,7 +54,7 @@ export default function AddStaticDocuments({showModal, setShowModal, id}:{
           initialValues={staticDocumentInitialValue}
           validate={validate}
           onSubmit={handleSubmit}
-          submitLabel="Upload Document"
+          submitLabel={isUploading ? "Uploading..." : "Upload Document"}
         />
         
       </Modal>

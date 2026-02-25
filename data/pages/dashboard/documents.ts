@@ -1,10 +1,10 @@
 import { StatusConfig, TableColumn } from "@/components/common/DataTable";
 import {formatDate } from "@/lib/formatter";
 import { FormField } from "@/type/form";
-import { DynamicDocumentForm, PartnerDocumentBase, StaticDocumentForm, TemplateBase } from "@/type/pages/dashboard/documents";
+import * as document from "@/type/pages/dashboard/documents";
 import { humanizeSnakeCase } from "@/utils/common/humanizeSnakeCase";
 
-export const columns:TableColumn<TemplateBase>[] = [
+export const columns:TableColumn<document.TemplateBase>[] = [
   {key: 'template_number', header: 'ID' , sortable: false},
   {key: 'name', header: 'Name' , sortable: false},
   {key: 'type', header: 'Type' , sortable: false, accessor:(value) => humanizeSnakeCase(value.type)},
@@ -17,7 +17,7 @@ export const columns:TableColumn<TemplateBase>[] = [
   }},
 ]
 
-export const partnerColumns:TableColumn<PartnerDocumentBase>[] = [
+export const partnerColumns:TableColumn<document.PartnerDocumentBase>[] = [
   {key: 'partner_document_number', header: 'ID' , sortable: false},
   {key: 'document_name', header: 'Name' , sortable: false},
   {key: "created_at", header: 'Created At' , sortable: false, accessor:(value) =>formatDate(value?.created_at || '')},
@@ -25,7 +25,7 @@ export const partnerColumns:TableColumn<PartnerDocumentBase>[] = [
   {key: 'partner_type', header: 'Document Type' , sortable: false,},  
 ]
 
-export const sellerColumns:TableColumn<PartnerDocumentBase>[] = [
+export const sellerColumns:TableColumn<document.PartnerDocumentBase>[] = [
   {key: 'partner_document_number', header: 'ID' , sortable: false},
   {key: 'document_name', header: 'Name' , sortable: false},
   {key: "created_at", header: 'Created At' , sortable: false, accessor:(value) =>formatDate(value?.created_at || '')},
@@ -85,12 +85,12 @@ export const dynamicDocumentField:FormField[]=[
   },
 ]
 
-export const staticDocumentInitialValue:StaticDocumentForm = {
+export const staticDocumentInitialValue:document.StaticDocumentForm = {
   document_type:'',
   generated_document_url:null
 }
 
-export const dynamicDocumentInitialValue:DynamicDocumentForm = {
+export const dynamicDocumentInitialValue:document.DynamicDocumentForm = {
   document_type:'',
   
 }

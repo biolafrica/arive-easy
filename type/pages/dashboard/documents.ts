@@ -115,7 +115,7 @@ export interface TransactionDocumentBase {
   updated_at?: string;
 }
 
-export type StaticTransactionDocumentForm = Pick<TransactionDocumentBase, 'application_id' | 'transaction_document_number' |'document_type' > & {
+export type StaticTransactionDocumentForm = Pick<TransactionDocumentBase, 'application_id' | 'transaction_document_number' |'document_type' | 'transaction_document_number' > & {
   generated_document_url : File | null
 }
 
@@ -128,4 +128,7 @@ export interface Signers{
 }
 
 export type DynamicDocumentForm = Pick<TransactionDocumentBase, 'document_type'>
-export type StaticDocumentForm = Pick<TransactionDocumentBase, 'document_type' | 'generated_document_url'>
+export type StaticDocumentForm = Pick<TransactionDocumentBase, 'document_type' > &{
+  generated_document_url: File | null
+
+}

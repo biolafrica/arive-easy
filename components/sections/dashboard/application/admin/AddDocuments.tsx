@@ -12,7 +12,6 @@ export default function AddDocuments({showModal, setShowModal, id}:{
   const { generateContractDocument, isGenerating } = useTransactionalDocuments();
 
   const handleCreateDocument = async (values:DynamicDocumentForm) => {
-   console.log(values)
     try {
       const result = await generateContractDocument({
         applicationId: id,
