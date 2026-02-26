@@ -6,6 +6,7 @@ import { UserBackendFormProps } from "@/type/user";
 const handlers = createCRUDHandlers<UserBackendFormProps>({
   table: "users",
   requiredFields: ["email", "name", "role"],
+    searchFields: ['name'],
   
   hooks: {
     beforeCreate: async (data, context) => {

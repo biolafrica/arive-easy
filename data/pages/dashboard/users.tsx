@@ -1,4 +1,7 @@
+import { TableColumn } from "@/components/common/DataTable";
+import { formatDate } from "@/lib/formatter";
 import { FormField } from "@/type/form";
+import { UserBase } from "@/type/user";
 
 export const buyerUserFields:FormField[] = [
   { name: 'avatar', label: 'Photo', type: 'file', required: true, accept:'image/jpeg,image/png', aspectRatio: "1:1", helperText: 'Recommended size: 1MB max', },
@@ -30,4 +33,11 @@ export const passwordFields:FormField[] = [
   { name: 'password', label: 'Password', type: 'password', placeholder: 'Old password', required: true },
   { name: 'new_password', label: 'New Password', type: 'password', placeholder: 'New password', required: true },
   { name: 'confirm_password', label: 'Confirm Password', type: 'password', placeholder: 'Confirm password', required: true },
+]
+
+export const columns:TableColumn<UserBase>[]=[
+  { key: 'created_at', header: 'Date Created', sortable: false, accessor: (row) => formatDate(row.created_at)},
+  { key: 'name', header: 'Name', sortable: false},
+  { key: 'role', header: 'Role', sortable: false},
+  { key: 'email', header: 'Email', sortable: false},
 ]

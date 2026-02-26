@@ -364,6 +364,8 @@ export function useRelatedArticles(
 }
 
 
+
+
 export function useCurrentUsers() {
   const { user, loading: authLoading } = useAuthContext();
 
@@ -452,6 +454,27 @@ export function useUpdateProfile() {
     },
   });
 }
+
+
+export function useAdminUsers(params?: any) {
+  const crud = useCrud<UserBase>({
+    resource: 'user',
+    interfaceType: 'admin',
+    optimisticUpdate: true,
+    invalidateOnMutation: true,
+  });
+
+  const { data, isLoading, error } = crud.useGetAll(params);
+
+  return {
+    users: data?.data || [],
+    pagination: data?.pagination,
+    isLoading: isLoading,
+    error,
+    ...crud,
+  };
+}
+
 
 interface Subscriber {
   id: string;
