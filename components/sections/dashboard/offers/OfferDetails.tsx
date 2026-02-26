@@ -1,5 +1,4 @@
 import { DescriptionList } from "@/components/common/DescriptionList";
-import { Button } from "@/components/primitives/Button";
 import { formatUSD, toNumber } from "@/lib/formatter";
 import { OfferBase, } from "@/type/pages/dashboard/offer";
 import { OfferActions } from "./OfferAction";

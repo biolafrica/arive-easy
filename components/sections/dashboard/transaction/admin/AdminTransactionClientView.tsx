@@ -61,7 +61,7 @@ export default function AdminTransactionClientView() {
         loading={isLoading}
         searchValue={searchValue}
         onSearchChange={handleSearchChange}
-        searchPlaceholder="Search user"
+        searchPlaceholder="Search user or type"
         filterDropdown={
           <FilterDropdown
             filters={filters}

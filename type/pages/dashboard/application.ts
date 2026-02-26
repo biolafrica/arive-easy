@@ -80,6 +80,7 @@ export interface ApplicationBase{
 
   property_id: string;
   properties:PropertyBase;
+  property_name:string;
 
   user_id: string;
   developer_id: string;
@@ -168,7 +169,7 @@ export type AddLegalForm = Pick<ApplicationBase, "legal_fee">
 export type AddTermsForm = Pick<ApplicationBase, "loan_term_months" | "interest_rate" |"down_payment_percentage" | "approved_loan_amount">
 export type AddPlan = Pick<ApplicationBase, "monthly_payment" | "first_payment_date" | "last_payment_date" | "total_payment" | "loan_term_months" |"payment_day_of_month" >
 
-export type CreateApplication = Pick<ApplicationBase, 'application_number'| 'current_stage' | 'created_at' | 'current_step' | 'user_id' |'pre_approval_id' | 'stages_completed' | 'status' | 'property_id' >
+export type CreateApplication = Pick<ApplicationBase, 'application_number'| 'current_stage' | 'created_at' | 'current_step' | 'user_id' |'pre_approval_id' | 'stages_completed' | 'status' | 'property_id'|'property_name' >
 
 export interface MockApplications {
   id: string;

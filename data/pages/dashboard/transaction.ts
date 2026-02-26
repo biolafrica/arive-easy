@@ -80,7 +80,7 @@ export const userTransactionStat=(
 export const adminTransactionscolumns: TableColumn<TransactionBase>[] = [
   { key: 'id', header: 'Transaction ID', sortable: false},
   { key: 'user', header: 'User', sortable: false, accessor: (row) => row.users?.name},
-  { key: 'type', header: 'Description', sortable: false},
+  { key: 'type', header: 'Description', sortable: false, accessor: (row) => humanizeSnakeCase(row.type)},
   { key: 'created_at', header: 'Date', sortable: false, accessor: (row) => formatNumberDate(row.created_at)},
   { key: 'amount', header: 'Deposited Amount', sortable: false, accessor: (row) => formatUSD({ amount: row.amount, fromCents: true, decimals: 2 })},
 ];

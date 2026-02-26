@@ -12,7 +12,7 @@ import { NextRequest } from "next/server";
 const applicationHandlers = createCRUDHandlers<ApplicationBase>({
   table: 'applications',
   requiredFields: ['user_id', 'pre_approval_id', 'application_number'],
-  searchFields: ['property_id', 'application_number'],
+  searchFields: ['property_name'],
   defaultSort: {
     field: 'created_at',
     order: 'desc'

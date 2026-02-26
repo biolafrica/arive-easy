@@ -1,7 +1,7 @@
 import { TemplateBase} from "@/type/pages/dashboard/documents";
-import { getStatusBadge } from "../../transaction/user/UserTransactionDetails";
 import { humanizeSnakeCase } from "@/utils/common/humanizeSnakeCase";
 import { DescriptionList } from "@/components/common/DescriptionList";
+import { getStatusBadge } from "@/utils/common/statusBadge";
 
 export default function TemplateDetail({document}:{
   document: TemplateBase
@@ -34,7 +34,7 @@ export default function TemplateDetail({document}:{
             { label: 'Document Name', value: { type: 'text', value: document.name || ''}},
             { label: 'Description', value: { type: 'paragraph', value: document.description || ''}},
             { label: 'Version', value: { type: 'text', value: `${document.version}` || ''}},
-            { label: 'Category', value: { type: 'text', value: document.category || ''}},
+            { label: 'Category', value: { type: 'text', value: humanizeSnakeCase(document.category) || ''}},
             { label: 'Anvil Template ID', value: { type: 'text', value: document.anvil_template_id || ''}},
           ]}
         />

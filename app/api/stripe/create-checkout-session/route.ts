@@ -62,7 +62,7 @@ export async function POST(request:NextRequest){
       amount:10000,
       currency:'usd',
       status:"pending",
-      type:"processing fee",
+      type:"processing_fee",
       metadata:{
         session_url: session.url,
         expires_at: new Date(session.expires_at * 1000).toISOString(),

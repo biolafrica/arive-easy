@@ -1,7 +1,7 @@
 import { PartnerDocumentBase } from "@/type/pages/dashboard/documents"
-import { getStatusBadge } from "../../transaction/user/UserTransactionDetails"
 import { humanizeSnakeCase } from "@/utils/common/humanizeSnakeCase"
 import { DescriptionList } from "@/components/common/DescriptionList"
+import { getStatusBadge } from "@/utils/common/statusBadge";
 
 export function formatLabel(key:any) {
   return key

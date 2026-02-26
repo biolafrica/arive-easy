@@ -38,7 +38,7 @@ export const APPLICATION_STAGES: ApplicationStage[] = [
 
 export const columns: TableColumn<ApplicationBase>[] = [
   { key: 'application_number', header: 'Approval ID', sortable: false},
-  { key: 'property', header: 'Property', sortable: false, accessor: (row) => row.properties?.title || 'ongoing'},
+  { key: 'property_name', header: 'Property', sortable: false},
   { key: 'current_stage', header: 'Current stage', sortable: false, accessor: (row) => humanizeSnakeCase(row.current_stage)},
 
   { key: 'created_at', header: 'Date Created', sortable: false, accessor: (row) => formatDate(row.created_at)},

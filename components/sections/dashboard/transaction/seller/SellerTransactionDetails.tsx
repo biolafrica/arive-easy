@@ -2,25 +2,13 @@ import { DescriptionList } from "@/components/common/DescriptionList";
 import { Button } from "@/components/primitives/Button";
 import { formatDate, formatUSD, toNumber } from "@/lib/formatter";
 import { TransactionBase } from "@/type/pages/dashboard/transactions";
+import { humanizeSnakeCase } from "@/utils/common/humanizeSnakeCase";
+import { getStatusBadge } from "@/utils/common/statusBadge";
 import { useRouter } from "next/navigation";
 
 interface Props {
   transaction: TransactionBase;
 }
-
-export const getStatusBadge = (status:string): string => {
-  switch (status) {
-    case 'succeeded':
-      return 'badge badge-green'
-    case 'pending':
-      return 'badge badge-yellow'
-    case 'released':
-      return 'badge badge-red'
-    default:
-      return 'badge';
-  }
-  
-};
 
 export default function SellerTransactionDetail({ transaction }: Props){
   const router = useRouter();
@@ -54,7 +42,7 @@ export default function SellerTransactionDetail({ transaction }: Props){
             { label: 'Transacion ID', value: { type: 'text', value: transaction.id}},
             { label: 'Date', value: { type: 'text', value: formatDate(transaction.created_at)}},
             { label: 'Time', value: { type: 'text', value: formatDate(transaction.created_at,)}},
-            { label: 'type', value: { type: 'text', value: transaction.type}},
+            { label: 'type', value: { type: 'text', value: humanizeSnakeCase(transaction.type)}},
             { label: 'Payment Method', value: { type: 'text', value: transaction.payment_method }},
           ]}
         />

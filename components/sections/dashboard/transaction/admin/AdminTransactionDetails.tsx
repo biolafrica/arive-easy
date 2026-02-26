@@ -1,9 +1,10 @@
 import { TransactionBase } from "@/type/pages/dashboard/transactions";
-import { getStatusBadge } from "../user/UserTransactionDetails";
 import { formatDate, formatTime, formatUSD } from "@/lib/formatter";
 import { DescriptionList } from "@/components/common/DescriptionList";
 import { Button } from "@/components/primitives/Button";
 import { useRouter } from "next/navigation";
+import { humanizeSnakeCase } from "@/utils/common/humanizeSnakeCase";
+import { getStatusBadge } from "@/utils/common/statusBadge";
 
 interface Props {
   transaction: TransactionBase;
@@ -43,7 +44,7 @@ export default function AdminTransactionDetail({ transaction }: Props){
             { label: 'Transacion ID', value: { type: 'text', value: transaction.id}},
             { label: 'Date', value: { type: 'text', value: formatDate(transaction.created_at)}},
             { label: 'Time', value: { type: 'text', value: formatTime(transaction.created_at,)}},
-            { label: 'type', value: { type: 'text', value: transaction.type}},
+            { label: 'type', value: { type: 'text', value: humanizeSnakeCase(transaction.type)}},
             { label: 'Payment Method', value: { type: 'text', value: transaction.payment_method }},
             { label: `${transaction.application_id? "Application ID" : "Property ID"}`, value: { type: 'text', value: transaction.application_id || transaction.property_id || '' }},
           ]}

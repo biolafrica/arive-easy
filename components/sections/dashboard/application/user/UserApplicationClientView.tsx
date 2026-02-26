@@ -12,46 +12,28 @@ import { ApplicationDetails } from '@/components/sections/dashboard/application/
 import { applicationFilterConfigs } from '@/components/sections/dashboard/application/common/ApplicationFilters';
 import { ApplicationBase } from '@/type/pages/dashboard/application';
 import { useTableFilters } from '@/hooks/useTableQuery';
+import { getTableEmptyMessage } from '@/components/common/TableEmptyMessage';
 
 
 export default function UserApplicationClientView() {
   const detailPanel = useSidePanel<ApplicationBase>();
 
-  const {
-    sortBy,
-    sortOrder,
-    searchValue,
-    filters,
-    queryParams: baseQueryParams,
-    hasActiveFilters,
-    handlePageChange,
-    handleItemsPerPageChange,
-    handleSort,
-    handleFilterChange,
-    handleSearchChange,
+  const { sortBy, sortOrder, searchValue, filters, queryParams: baseQueryParams, hasActiveFilters,
+    handlePageChange, handleItemsPerPageChange, handleSort, handleFilterChange, handleSearchChange,
   } = useTableFilters({
-    initialFilters: {
-      status: '',
-      current_stage: '',
-    },
-    searchFields: ['properties.title'],
-    defaultLimit: 10,
+    initialFilters: { status: '', current_stage: ''},
+    searchFields: [], defaultLimit: 10,
   });
 
-  const queryParams = useMemo(() => ({
-    ...baseQueryParams,
-    include: ['properties', 'pre_approvals'],
+  const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['properties', 'pre_approvals'],
   }), [baseQueryParams]);
 
   const { applications, pagination, isLoading } = useApplications(queryParams);
 
-  const emptyMessage = useMemo(() => {
-    if (hasActiveFilters) {
-      return { title: 'No applications found', message: 'Try adjusting your filters or search query'};
-    }
-    return { title: 'No applications found', message: 'Your applications will appear here'};
-
-  }, [hasActiveFilters]);
+  const emptyMessage = useMemo(
+    () => getTableEmptyMessage(hasActiveFilters, 'applications'),
+    [hasActiveFilters]
+  );
 
   return (
     <>

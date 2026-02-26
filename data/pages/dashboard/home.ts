@@ -22,21 +22,19 @@ export const statusConfig: StatusConfig[] = [
 
 export const getStagePercentage = (stage:string): string => {
   switch (stage) {
-    case 'property_selection':
-      return '15%'
     case 'identity_verification':
+      return '15%'
+    case 'property_selection':
       return '25%'
-    case 'seller_review':
+    case 'terms_agreement':
       return '45%'
-    case 'bank_underwriting':
+    case 'payment_setup':
       return '50%'
     case 'terms_agreement':
       return '65%'
     case 'payment_setup':
       return '80%'
-    case 'down_payment':
-      return '90%'
-    case 'active':
+    case 'mortgage_activation':
       return '100%'
     default:
       return '10%';
