@@ -92,7 +92,7 @@ const applicationHandlers = createCRUDHandlers<ApplicationBase>({
             try {
               await sendEmail({
                 to:  `${user.email}`,
-                subject: 'Property Offer Feedback',
+                subject: `Offer for ${property.title}`,
                 html: offerNotificationBody({
                   sellerName: user.name,
                   propertyId: property.id,

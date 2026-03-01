@@ -86,26 +86,26 @@ export const LISTING_TAGS:SelectOption[] = [
 
 
 export const AMENITIES = [
-  { id: 'swimming-pool', label: 'Swimming Pool', icon: '🏊' },
-  { id: 'gym', label: 'Gym / Fitness Center', icon: '🏋️' },
-  { id: 'security', label: '24/7 Security', icon: '🛡️' },
-  { id: 'internet', label: 'High-Speed Internet', icon: '📶' },
-  { id: 'garden', label: 'Garden & Landscaping', icon: '🌳' },
-  { id: 'generator', label: 'Backup Generator', icon: '⚡' },
-  { id: 'parking', label: 'Parking Space', icon: '🚗' },
-  { id: 'balcony', label: 'Balcony / Terrace', icon: '🏠' },
-  { id: 'air-conditioning', label: 'Air Conditioning', icon: '❄️' },
-  { id: 'elevator', label: 'Elevator', icon: '🛗' },
-  { id: 'cctv', label: 'CCTV Surveillance', icon: '📹' },
-  { id: 'water', label: 'Borehole / Water Supply', icon: '💧' },
-  { id: 'smart-home', label: 'Smart Home Features', icon: '🏠' },
-  { id: 'servant-quarters', label: 'Servant Quarters', icon: '🏘️' },
-  { id: 'laundry', label: 'Laundry Room', icon: '🧺' },
+  { id: 'swimming-pool', label: 'Swimming Pool'},
+  { id: 'gym', label: 'Gym / Fitness Center'},
+  { id: 'security', label: '24/7 Security'},
+  { id: 'internet', label: 'High-Speed Internet'},
+  { id: 'garden', label: 'Garden & Landscaping'},
+  { id: 'generator', label: 'Backup Generator'},
+  { id: 'parking', label: 'Parking Space'},
+  { id: 'balcony', label: 'Balcony / Terrace'},
+  { id: 'air-conditioning', label: 'Air Conditioning'},
+  { id: 'elevator', label: 'Elevator'},
+  { id: 'cctv', label: 'CCTV Surveillance' },
+  { id: 'water', label: 'Borehole / Water Supply'},
+  { id: 'smart-home', label: 'Smart Home Features'},
+  { id: 'servant-quarters', label: 'Servant Quarters'},
+  { id: 'laundry', label: 'Laundry Room'}
 ] as const;
 
 
 export const VALIDATION_RULES = {
-  title: { minLength: 30, maxLength: 50, required: true },
+  title: { minLength: 20, maxLength: 30, required: true },
   description: { minLength: 100, maxLength: 200, required: true },
   price: { min: 1000, max: 100000000, required: true },
   bedrooms: { min: 0, max: 20, required: true },

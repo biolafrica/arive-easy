@@ -34,6 +34,7 @@ export function PropertyGrid<T>({
   errorMessage = "Error loading properties",
   skeleton,
 }: PropertyGridProps<T>) {
+  
   if (error && onRetry) {
     return (
       <ErrorState

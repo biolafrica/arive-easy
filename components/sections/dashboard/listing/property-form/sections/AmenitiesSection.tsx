@@ -33,8 +33,6 @@ export function AmenitiesSection() {
                 }
               `}
             >
-              <span className="text-xl flex-shrink-0">{amenity.icon}</span>
-
               <span className="text-sm font-medium flex-1 leading-tight">
                 {amenity.label}
               </span>

@@ -23,14 +23,18 @@ interface PropertyFilters {
 }
 
 export default function SellerDashboardListingsClientView() {
-  const [filters, setFilters] = useState<PropertyFilters>({ status: '' });
+
+  const [filters, setFilters] = useState<PropertyFilters>({ 
+    status: ''
+  });
+
   const [searchTerm, setSearchTerm] = useState('');
   
   const debouncedSearch = useDebounce(searchTerm, 500);
   const detailPanel = useSidePanel<Property>();
 
   const queryParams = useMemo(() => ({
-    filters: filters.status ? { status: filters.status } : {},
+    filters: filters.status ? { status: filters.status} : {},
     search: debouncedSearch,
     sortBy: 'price',
     sortOrder: 'desc' as const,

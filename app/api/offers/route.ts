@@ -38,16 +38,22 @@ const offersHandlers = createCRUDHandlers<OfferBase>({
     afterUpdate: async (updated, previous, context) => {
       const applicationQueryBuilder = new SupabaseQueryBuilder<ApplicationBase>("applications");
       const userQueryBuilder = new SupabaseQueryBuilder<UserBase>("users");
-      
+
+      console.log("data after update",updated)
+      console.log("data before update",previous)
+      console.log("seller that rejected the offer",context.auth)
+
 
       try {
         const application = await applicationQueryBuilder.findById(updated.application_id)
+        console.log("checked application")
         if (!application) {
           console.error('Failed to fetch application');
           return;
         }
 
         const user = await userQueryBuilder.findById(updated.user_id)
+        console.log("checked user, so it is not application")
       
         if (updated.status === 'accepted') {
 
@@ -63,12 +69,20 @@ const offersHandlers = createCRUDHandlers<OfferBase>({
                   status: 'approved',
                   reason: 'Property selection approved by seller'
                 }
+              },
+              terms_agreement:{
+                completed: false,
+                status: "current",
+                completed_at: '',
+                data:null
               }
             },
             current_stage: 'terms_agreement',
             current_step: 7,
             updated_at: new Date().toISOString()
           })
+
+          console.log("updated application, so it is not user")
            
           if (!updatedApplication) {
             console.error('Failed to update application on offer accept');
@@ -93,7 +107,7 @@ const offersHandlers = createCRUDHandlers<OfferBase>({
 
         } else if (updated.status === 'declined') {
           const updatedApplication = await applicationQueryBuilder.update(updated.application_id,{
-            property_id: "",
+            property_id: '0ca3e480-6a3e-4c47-bed0-637386b5f64c',
             property_price: 0,
             stages_completed: {
               ...application.stages_completed,

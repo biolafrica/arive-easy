@@ -18,12 +18,21 @@ export default function SellerPropertyNew({close}:Props) {
   });
 
   const handleSubmit = async (payload: PropertyCreatePayload) => {
+    console.log('received payload', payload)
     try {
       const newProperty = await create(payload);
       toast.success('Property created successfully!');
       setTimeout(()=>{ close()}, 1500)
     } catch (error) {
-      throw error;
+      if (error instanceof Error) {
+        if (error.message.includes("properties_slug_key")) {
+          throw 'Title already chosen'
+        } else {
+          throw error
+        }
+      } else {
+        throw "Something went wrong." ;
+      }
     }
   };
 

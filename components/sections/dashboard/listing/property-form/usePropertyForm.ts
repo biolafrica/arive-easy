@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { INITIAL_PROPERTY_VALUES, Property, PropertyCreatePayload, PropertyFormErrors, PropertyFormValues } from './pattern/types';
 import { generateFullAddress, generatePropertyNumber, generateSlug } from './pattern/constants';
 import { isFormValid, validatePropertyForm } from './functions/validation';
@@ -40,6 +40,7 @@ export function usePropertyForm({ initialValues, onSubmit, mode = 'create', prop
     property_number: initialValues?.property_number || (mode === 'create' ? generatePropertyNumber() : ''),
   }), [initialValues, mode]);
 
+
   const [values, setValues] = useState<PropertyFormValues>(mergedInitialValues);
   const [errors, setErrors] = useState<PropertyFormErrors>({});
   const [touched, setTouched] = useState<Partial<Record<string, boolean>>>({});
@@ -47,13 +48,22 @@ export function usePropertyForm({ initialValues, onSubmit, mode = 'create', prop
   const [globalError, setGlobalError] = useState('');
   const [isDirty, setIsDirty] = useState(false);
 
+  const isInitialized = useRef(false);
+
   useEffect(() => {
-    setValues(mergedInitialValues);
-    setErrors({});
-    setTouched({});
-    setGlobalError('');
-    setIsDirty(false);
-  }, [mergedInitialValues]);
+    if (!isInitialized.current) {
+      isInitialized.current = true;
+      return;
+    }
+    
+    if (mode === 'edit' && initialValues) {
+      setValues(mergedInitialValues);
+      setErrors({});
+      setTouched({});
+      setGlobalError('');
+      setIsDirty(false);
+    }
+  }, [mergedInitialValues, mode, initialValues]);
 
   useEffect(() => {
     const validationErrors = validatePropertyForm(values);
@@ -108,6 +118,7 @@ export function usePropertyForm({ initialValues, onSubmit, mode = 'create', prop
     const imageUrls = values.images
     .filter(img => img.url)
     .map(img => img.url!);
+    console.log("values.tours", values.tours)
 
     const tours = (values.tours?.video?.url || values.tours?.virtual3D?.url)
     ? {
@@ -117,7 +128,7 @@ export function usePropertyForm({ initialValues, onSubmit, mode = 'create', prop
         ? { url: values.tours.virtual3D.url, provider: 'custom' }
         : undefined,
       }
-    : null;
+    : {video:undefined, virtual3D:undefined};
 
     return {
       slug: values.slug,

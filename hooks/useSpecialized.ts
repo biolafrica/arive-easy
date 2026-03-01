@@ -88,20 +88,41 @@ export function useInfiniteProperties(params?: any) {
 }
 
 export function useSellerInfiniteProperties(params?: FilterParams) {
-  const stableParams = useMemo(() => ({ ...params,
-    filters: params?.filters ? Object.fromEntries(
-      Object.entries(params.filters).filter(([_, v]) => v !== '' && v !== undefined && v !== null)
-    ) : undefined,
+  const { user, loading: isUserLoading } = useAuthContext();
 
-    search: params?.search?.trim() || undefined,
-  }), [ params?.filters, params?.search, params?.sortBy, params?.sortOrder, params?.limit ]);
+  const stableParams = useMemo(() => {
+    if (!user?.id) return null;
+
+    return {
+      ...params,
+      filters: {
+        developer_id: user.id,
+        ...(params?.filters
+          ? Object.fromEntries(
+              Object.entries(params.filters).filter(
+                ([_, v]) => v !== '' && v !== undefined && v !== null
+              )
+            )
+          : {}),
+      },
+      search: params?.search?.trim() || undefined,
+    };
+  }, [
+    user?.id,
+    params?.filters,
+    params?.search,
+    params?.sortBy,
+    params?.sortOrder,
+    params?.limit,
+  ]);
 
   return useInfiniteList<Property>({
     resource: 'properties',
     interfaceType: 'buyer',
-    params: stableParams,
+    params: stableParams || undefined,
     limit: 15,
     autoFetch: true,
+    enabled: !!user?.id && !isUserLoading,
   });
 }
 
@@ -362,7 +383,6 @@ export function useRelatedArticles(
     ...getEntityCacheConfig('articles', 'list'),
   });
 }
-
 
 
 

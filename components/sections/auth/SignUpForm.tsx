@@ -7,7 +7,6 @@ import { SignUpForm } from "@/type/auth/signUp";
 import { useRouter } from "next/navigation";
 
 
-
 export default function SignUpFormPage(){
   const router = useRouter();
   const create = useUserRegistration()

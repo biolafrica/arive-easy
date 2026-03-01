@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, ReactNode } from 'react';
-import { PropertyFormErrors, PropertyFormValues, PropertyImage } from './pattern/types';
+import { PropertyFormErrors, PropertyFormValues, PropertyImage, PropertyTours } from './pattern/types';
 
 
 interface PropertyFormContextType {
@@ -98,52 +98,50 @@ export function PropertyFormProvider({
     setFieldValue('images', currentImages);
   };
 
-
   const setVideoTour = (url: string) => {
-    setFieldValue('tours', {
-      ...values.tours,
-      video: {
-        url,
-        provider: 'youtube',
-        thumbnail: extractYouTubeThumbnail(url),
-      },
-    });
+    const thumbnail = extractYouTubeThumbnail(url);
+    setFieldValue('tours', (currentTours: PropertyTours | undefined) => ({
+      ...currentTours,
+      video: { url, provider: 'youtube', thumbnail },
+    }));
   };
 
   const clearVideoTour = () => {
-    setFieldValue('tours', {
-      ...values.tours,
+    setFieldValue('tours', (currentTours: PropertyTours | undefined) => ({
+      ...currentTours,
       video: undefined,
-    });
+    }));
   };
 
   const setVirtual3DTour = (url: string) => {
-    setFieldValue('tours', {
-      ...values.tours,
+    setFieldValue('tours', (currentTours: PropertyTours | undefined) => ({
+      ...currentTours,
       virtual3D: {
         url,
-        provider: 'custom',
+        provider: 'matterport',
       },
-    });
+    }));
   };
 
   const clearVirtual3DTour = () => {
-    setFieldValue('tours', {
-      ...values.tours,
+    setFieldValue('tours', (currentTours: PropertyTours | undefined) => ({
+      ...currentTours,
       virtual3D: undefined,
-    });
+    }));
   };
 
 
   const toggleAmenity = (amenityId: string) => {
-    const currentAmenities = values.amenities || [];
-    const isSelected = currentAmenities.includes(amenityId);
-    
-    if (isSelected) {
-      setFieldValue('amenities', currentAmenities.filter(id => id !== amenityId));
-    } else {
-      setFieldValue('amenities', [...currentAmenities, amenityId]);
-    }
+    setFieldValue('amenities', (currentAmenities: string[]) => {
+      const amenities = currentAmenities || [];
+      const isSelected = amenities.includes(amenityId);
+      
+      if (isSelected) {
+        return amenities.filter(id => id !== amenityId);
+      } else {
+        return [...amenities, amenityId];
+      }
+    });
   };
 
   const characterCounts = {

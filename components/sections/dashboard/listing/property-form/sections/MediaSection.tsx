@@ -6,6 +6,7 @@ import * as icon from '@heroicons/react/24/outline';
 import { VALIDATION_RULES, YOUTUBE_URL_REGEX } from '../pattern/constants';
 import { PropertyImage } from '../pattern/types';
 import { SectionHeader, inputClass } from '../pattern/components';
+import { Button } from '@/components/primitives/Button';
 
 interface ImageUploaderProps {
   onUpload: (file: File) => Promise<string>;
@@ -133,6 +134,7 @@ export function MediaSection({ onUpload }: ImageUploaderProps) {
   const handleVideoUrlSubmit = () => {
     if (videoUrlInput && YOUTUBE_URL_REGEX.test(videoUrlInput)) {
       setVideoTour(videoUrlInput);
+      console.log("video submitted tour", videoUrlInput)
     }
   };
 
@@ -141,6 +143,7 @@ export function MediaSection({ onUpload }: ImageUploaderProps) {
       try {
         new URL(virtual3DInput);
         setVirtual3DTour(virtual3DInput);
+        console.log("virtual submitted tour", virtual3DInput)
       } catch {
         // Invalid URL
       }
@@ -234,6 +237,7 @@ export function MediaSection({ onUpload }: ImageUploaderProps) {
                 <icon.PlayIcon className="w-16 h-16 text-white" />
               </div>
             </div>
+
             <button
               type="button"
               onClick={() => {
@@ -248,6 +252,7 @@ export function MediaSection({ onUpload }: ImageUploaderProps) {
               <p className="text-sm text-secondary truncate">{values.tours.video.url}</p>
             </div>
           </div>
+
         ) : (
           <div className="flex gap-2">
             <input
@@ -257,15 +262,15 @@ export function MediaSection({ onUpload }: ImageUploaderProps) {
               placeholder="https://www.youtube.com/watch?v=..."
               className={inputClass(false)}
             />
-            <button
+
+            <Button
               type="button"
               onClick={handleVideoUrlSubmit}
               disabled={!videoUrlInput || !YOUTUBE_URL_REGEX.test(videoUrlInput)}
-              className="px-4 py-2 rounded-lg bg-accent text-white hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed
-              transition-colors"
+              variant='secondary'
             >
               Add
-            </button>
+            </Button>
           </div>
         )}
 
@@ -308,21 +313,22 @@ export function MediaSection({ onUpload }: ImageUploaderProps) {
               placeholder="https://my.matterport.com/show/?m=..."
               className={inputClass(false)}
             />
-            <button
+            <Button
               type="button"
               onClick={handleVirtual3DSubmit}
               disabled={!virtual3DInput}
-              className="px-4 py-2 rounded-lg bg-accent text-white hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed
-              transition-colors"
+              variant='secondary'
+
             >
               Add
-            </button>
+            </Button>
           </div>
         )}
 
         {showVirtual3DError && (
           <p className="mt-1 text-sm text-red-500">{errors['tours.virtual3D']}</p>
         )}
+        
         <p className="text-xs text-secondary mt-2">
           Add a link to a 3D virtual tour (Matterport, etc.)
         </p>
