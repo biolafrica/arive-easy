@@ -2,27 +2,28 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { BellIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
+import { useUnreadNotificationCount } from '@/hooks/useSpecialized/useNotifications';
+import { NotificationPopup } from '@/components/sections/dashboard/notification/NotificationPopup';
 
+import { BellIcon } from '@heroicons/react/24/outline';
 
-
-export function UserMenu({
-  role,
-  onLogout,
-  userImage,
-  userName,
-}: {
+interface UserMenuProps{
   role: any;
   onLogout: () => void;
   userImage?: string | null;
   userName?: string | null;
-}) {
+}
+
+
+export function UserMenu({role, onLogout, userImage, userName}: UserMenuProps) {
   const [profileOpen, setProfileOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
 
   const profileRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
+
+  const { data: unreadCount = 0 } = useUnreadNotificationCount();
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -60,18 +61,17 @@ export function UserMenu({
           className={`rounded-full p-1.5 transition hover:bg-muted ${notifOpen ? 'bg-muted text-orange-600' : 'text-secondary'}`}
         >
           <BellIcon className="w-6 h-6" />
+
+          {unreadCount > 0 && (
+            <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white leading-none">
+              {unreadCount > 9 ? '9+' : unreadCount}
+            </span>
+          )}
+
         </button>
 
-        {notifOpen && (
-          <div className="absolute right-0 mt-2 w-80 rounded-xl border bg-white shadow-lg z-50">
-            <div className="px-4 py-3 border-b">
-              <p className="text-sm font-semibold text-heading">Notifications</p>
-            </div>
-            <div className="px-4 py-6 text-center text-sm text-secondary">
-              No notifications yet.
-            </div>
-          </div>
-        )}
+        <NotificationPopup open={notifOpen} />
+
       </div>
 
       <div ref={profileRef} className="relative">

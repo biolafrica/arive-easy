@@ -106,7 +106,7 @@ export const NOTIFICATION_CONTENT: Record<NotificationType, ContentBuilder> = {
     message: `Your mortgage payment${m?.amount ? ` of ${m.amount}` : ''} could not be processed. Please update your payment details to avoid late fees.`,
   }),
 
-  // ── Seller ─────────────────────────────────────────────────────
+
   offer_received: (m) => ({
     title: 'New offer received',
     message: `You have received a new offer${m?.property_name ? ` on ${m.property_name}` : ''}${m?.amount ? ` for ${m.amount}` : ''}. Review and respond in your dashboard.`,
