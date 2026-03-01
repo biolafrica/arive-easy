@@ -4,6 +4,8 @@ import { PropertyBase } from "@/type/pages/property";
 import { UserBase } from "@/type/user";
 import { offerNotificationBody } from "@/utils/email/application";
 import { sendEmail } from "@/utils/email/send_email";
+import { createNotification } from "@/utils/notifications/createNotification";
+import { buildNotificationPayload } from "@/utils/notifications/notificationContent";
 import { requireAuth } from "@/utils/server/authMiddleware";
 import { createCRUDHandlers } from "@/utils/server/crudFactory";
 import { SupabaseQueryBuilder } from "@/utils/supabase/queryBuilder";
@@ -38,7 +40,6 @@ const applicationHandlers = createCRUDHandlers<ApplicationBase>({
   },
   hooks: {
     afterUpdate: async (updated, previous, context) => {
-      console.log("pass through here")
 
       const propertyQueryBuilder = new SupabaseQueryBuilder<PropertyBase>("properties");
       const offerQueryBuilder = new SupabaseQueryBuilder<OfferBase>("offers");
@@ -89,6 +90,7 @@ const applicationHandlers = createCRUDHandlers<ApplicationBase>({
           const user = await userQueryBuilder.findById(property.developer_id || '')
           
           if (user?.email) {
+
             try {
               await sendEmail({
                 to:  `${user.email}`,
@@ -103,6 +105,22 @@ const applicationHandlers = createCRUDHandlers<ApplicationBase>({
             } catch (error) {
               console.error('Failed to send seller offer notificatio:', error);
             }
+
+            await createNotification(
+              buildNotificationPayload('offer_received', {
+                user_id:user.id,
+                application_id: updated.id,
+                property_id:updated.property_id,
+                type:'offer_received',
+                channel: 'in_app',
+                metadata: {
+                  reference_number: updated.application_number,
+                  application_number: updated.id,
+                  cta_url: `/seller-dashboard/offers`,
+                   property_name:updated.property_name 
+                },
+              })
+            );
 
           }
           

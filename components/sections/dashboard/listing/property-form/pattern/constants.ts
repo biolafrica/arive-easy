@@ -81,7 +81,6 @@ export const LISTING_TAGS:SelectOption[] = [
   { value: 'new-listing', label: 'New Listing' },
   { value: 'luxury', label: 'Luxury' },
   { value: 'reduced', label: 'Price Reduced' },
-  { value: 'featured', label: 'Featured' },
 ] as const;
 
 

@@ -9,9 +9,12 @@ import { UserBase } from '@/type/user';
 import { sendEmail } from '@/utils/email/send_email';
 import { paymentReceiptBody } from '@/utils/email/payment-receipt';
 import { getPaymentFailedEmailTemplate, getPaymentSuccessEmailTemplate } from '@/utils/email/direct-debit';
+import { createNotification } from '@/utils/notifications/createNotification';
+import { buildNotificationPayload } from '@/utils/notifications/notificationContent';
+import { formatUSD } from '@/lib/formatter';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-12-15.clover"
+  apiVersion: "2026-02-25.clover"
 });
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
@@ -229,20 +232,20 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
   }
 
   const { data: payment, error: paymentError } = await supabaseAdmin
-    .from('mortgage_payments')
-    .update({
-      status: 'succeeded',
-      stripe_invoice_id: invoice.id,
-      stripe_payment_intent_id: paymentIntentId,
-      paid_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    })
-    .eq('mortgage_id', mortgage.id)
-    .eq('status', 'scheduled')
-    .order('payment_number', { ascending: true })
-    .limit(1)
-    .select()
-    .single();
+  .from('mortgage_payments')
+  .update({
+    status: 'succeeded',
+    stripe_invoice_id: invoice.id,
+    stripe_payment_intent_id: paymentIntentId,
+    paid_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  })
+  .eq('mortgage_id', mortgage.id)
+  .eq('status', 'scheduled')
+  .order('payment_number', { ascending: true })
+  .limit(1)
+  .select()
+  .single();
 
   if (paymentError) {
     console.error('Failed to update payment record:', paymentError);
@@ -280,6 +283,7 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
   const user = await userQueryBuilder.findById(mortgage.user_id);
 
   if (user?.email) {
+
     sendEmail({
       to: user.email,
       subject: 'Payment Successful - Kletch',
@@ -292,7 +296,27 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
         applicationNumber: application?.application_number || '',
       }),
     }).catch(err => console.error('Failed to send payment success email:', err));
+
+    await createNotification(
+      buildNotificationPayload('subscription_payment_success', {
+        user_id: user.id,
+        application_id: application.id,
+        property_id:application.property_id,
+        payment_id:payment.id,
+        type:'subscription_payment_success',
+        channel: 'in_app',
+        metadata: {
+          amount: formatUSD({amount:payment.amount,fromCents:true}),
+          currency:'USD',
+          cta_url: `/user-dashboard/properties`,
+          property_name: application.property_name,
+          reference_number:payment.mortgage_id
+        },
+      })
+    )
+
   }
+
   console.log(`Mortgage payment ${newPaymentsMade}/${mortgage.total_payments} succeeded for ${mortgage.id}`);
 }
 
@@ -315,18 +339,18 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
   if (!mortgage) return;
 
   await supabaseAdmin
-    .from('mortgage_payments')
-    .update({
-      status: 'failed',
-      stripe_invoice_id: invoice.id,
-      stripe_payment_intent_id: paymentIntentId,
-      failure_reason: invoice.last_finalization_error?.message || 'Payment failed',
-      updated_at: new Date().toISOString(),
-    })
-    .eq('mortgage_id', mortgage.id)
-    .eq('status', 'scheduled')
-    .order('payment_number', { ascending: true })
-    .limit(1);
+  .from('mortgage_payments')
+  .update({
+    status: 'failed',
+    stripe_invoice_id: invoice.id,
+    stripe_payment_intent_id: paymentIntentId,
+    failure_reason: invoice.last_finalization_error?.message || 'Payment failed',
+    updated_at: new Date().toISOString(),
+  })
+  .eq('mortgage_id', mortgage.id)
+  .eq('status', 'scheduled')
+  .order('payment_number', { ascending: true })
+  .limit(1);
 
   await mortgageQueryBuilder.update(mortgage.id, {
     status: 'payment_failed',
@@ -352,6 +376,24 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
         updatePaymentUrl: `${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/applications`,
       }),
     }).catch(err => console.error('Failed to send payment failure email:', err));
+
+    await createNotification(
+      buildNotificationPayload('subscription_payment_success', {
+        user_id: user.id,
+        application_id: application.id,
+        property_id:application.property_id,
+        payment_id:mortgage.id,
+        type:'subscription_payment_failed',
+        channel: 'in_app',
+        metadata: {
+          amount: formatUSD({amount:invoice.amount_due,fromCents:true}),
+          currency:'USD',
+          cta_url: `/user-dashboard/properties`,
+          property_name: application.property_name,
+          reference_number:mortgage.id
+        },
+      })
+    )
   }
 
   console.log(`Mortgage payment failed for ${mortgage.id}`);
@@ -459,6 +501,24 @@ async function processEscrowPayment(session: Stripe.Checkout.Session, paymentTyp
       type: 'Escrow',
       subject: 'Escrow Payment Confirmed - Kletch',
     });
+
+    await createNotification(
+      buildNotificationPayload('down_payment_success', {
+        user_id: userId,
+        application_id: applicationId,
+        type:'down_payment_success',
+        payment_id:transaction.id,
+        channel: 'in_app',
+        metadata: {
+          application_number:applicationId,
+          currency: "USD",
+          amount: `${session.amount_total}`,
+          cta_url: `/user-dashboard/applications`,
+        },
+      })
+    );
+
+
   }
 }
 
@@ -503,6 +563,23 @@ async function processFeePayment(session: Stripe.Checkout.Session, feeType: 'leg
       type: typeLabel,
       subject: `${typeLabel} Fee Payment Confirmed - Kletch`,
     });
+
+    await createNotification(
+      buildNotificationPayload(`${feeType}_success`, {
+        user_id: userId,
+        application_id: applicationId,
+        type:`${feeType}_success`,
+        payment_id:transaction.id,
+        channel: 'in_app',
+        metadata: {
+          application_number:applicationId,
+          currency: "USD",
+          amount: `${session.amount_total}`,
+          cta_url: `/user-dashboard/applications`,
+        },
+      })
+    );
+
   }
 }
 
@@ -539,6 +616,24 @@ async function processGenericPayment(session: Stripe.Checkout.Session) {
       type: 'Application Processing',
       subject: 'Payment Receipt - Ariveasy',
     });
+
+    await createNotification(
+      buildNotificationPayload('processing_fee_success', {
+        user_id: userId,
+        application_id: applicationId,
+        type:'processing_fee_success',
+        payment_id:transaction.id,
+        channel: 'in_app',
+        metadata: {
+          application_number:applicationId,
+          currency: "USD",
+          amount: `${session.amount_total}`,
+          cta_url: `/user-dashboard/applications`,
+        },
+      })
+    );
+
+    
   }
 }
 
@@ -622,6 +717,8 @@ async function sendPaymentConfirmationEmail(
         type: params.type,
       }),
     });
+
+
     console.log(`Payment confirmation email sent to: ${user.email}`);
   } catch (error) {
     console.error('Failed to send payment confirmation email:', error);

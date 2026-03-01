@@ -3,6 +3,8 @@ import { OfferBase } from "@/type/pages/dashboard/offer";
 import { UserBase } from "@/type/user";
 import { sendOfferAcceptedEmail, sendOfferDeclinedEmail } from "@/utils/email/offers";
 import { sendEmail } from "@/utils/email/send_email";
+import { createNotification } from "@/utils/notifications/createNotification";
+import { buildNotificationPayload } from "@/utils/notifications/notificationContent";
 import { requireAuth } from "@/utils/server/authMiddleware";
 import { createCRUDHandlers } from "@/utils/server/crudFactory";
 import { SupabaseQueryBuilder } from "@/utils/supabase/queryBuilder";
@@ -39,21 +41,14 @@ const offersHandlers = createCRUDHandlers<OfferBase>({
       const applicationQueryBuilder = new SupabaseQueryBuilder<ApplicationBase>("applications");
       const userQueryBuilder = new SupabaseQueryBuilder<UserBase>("users");
 
-      console.log("data after update",updated)
-      console.log("data before update",previous)
-      console.log("seller that rejected the offer",context.auth)
-
-
       try {
         const application = await applicationQueryBuilder.findById(updated.application_id)
-        console.log("checked application")
         if (!application) {
           console.error('Failed to fetch application');
           return;
         }
 
         const user = await userQueryBuilder.findById(updated.user_id)
-        console.log("checked user, so it is not application")
       
         if (updated.status === 'accepted') {
 
@@ -81,14 +76,13 @@ const offersHandlers = createCRUDHandlers<OfferBase>({
             current_step: 7,
             updated_at: new Date().toISOString()
           })
-
-          console.log("updated application, so it is not user")
            
           if (!updatedApplication) {
             console.error('Failed to update application on offer accept');
           }
 
           if (user?.email) {
+
             try {
               await sendEmail({
                 to:  `${user.email}`,
@@ -103,6 +97,22 @@ const offersHandlers = createCRUDHandlers<OfferBase>({
             } catch (error) {
               console.error('Failed to send offer accepted email:', error);
             }
+
+            await createNotification(
+              buildNotificationPayload('offer_accepted', {
+                user_id:user.id,
+                application_id: application.id,
+                property_id:updated.property_id,
+                type:'offer_accepted',
+                channel: 'in_app',
+                metadata: {
+                  reference_number: application.application_number,
+                  application_number: application.id,
+                  cta_url: `/user-dashboard/applications`,
+                   property_name:updated.property_name 
+                },
+              })
+            );
           }
 
         } else if (updated.status === 'declined') {
@@ -130,6 +140,7 @@ const offersHandlers = createCRUDHandlers<OfferBase>({
           }
 
           if (user?.email) {
+
             try {
               await sendEmail({
                 to:  `${user.email}`,
@@ -145,6 +156,22 @@ const offersHandlers = createCRUDHandlers<OfferBase>({
             } catch (error) {
               console.error('Failed to send offer accepted email:', error);
             }
+
+            await createNotification(
+              buildNotificationPayload('offer_rejected', {
+                user_id:user.id,
+                application_id: application.id,
+                property_id:updated.property_id,
+                type:'offer_rejected',
+                channel: 'in_app',
+                metadata: {
+                  reference_number: application.application_number,
+                  application_number: application.id,
+                  cta_url: `/user-dashboard/applications`,
+                   property_name:updated.property_name 
+                },
+              })
+            );
 
           }
 

@@ -4,6 +4,8 @@ import { UserBase } from '@/type/user';
 import { calculateOverallStatus, mapDiditStatus, parseVendorData, verifyStructuredSignature, verifyWebhookSignature } from '@/utils/didit';
 import { identityVerificationDeclineBody, identityVerificationSuccessBody } from '@/utils/email/identity-verification';
 import { sendEmail } from '@/utils/email/send_email';
+import { createNotification } from '@/utils/notifications/createNotification';
+import { buildNotificationPayload } from '@/utils/notifications/notificationContent';
 import { SupabaseQueryBuilder } from '@/utils/supabase/queryBuilder';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -283,6 +285,20 @@ export async function POST(request: NextRequest) {
         console.error('Failed to send success email:', emailError);
       }
 
+      await createNotification(
+        buildNotificationPayload('kyc_approved', {
+          user_id: user.id,
+          application_id:application.id,
+          type:'kyc_approved',
+          channel: 'in_app',
+          metadata: {
+            reference_number: application.application_number,
+            application_number:application.id,
+            cta_url: `/user-dashboard/applications`,
+          },
+        })
+      );
+
       console.log(`Identity verification completed for application ${applicationId}`);
     }
 
@@ -346,6 +362,20 @@ export async function POST(request: NextRequest) {
       } catch (emailError) {
         console.error('Failed to send failure email:', emailError);
       }
+
+      await createNotification(
+        buildNotificationPayload('kyc_rejected', {
+          user_id: user.id,
+          application_id:applicationId,
+          type:'kyc_rejected',
+          channel: 'in_app',
+          metadata: {
+            reference_number: currentApplication.application_number,
+            application_number:applicationId,
+            cta_url: `/user-dashboard/applications`,
+          },
+        })
+      );
 
       console.log(`Identity verification failed for application ${applicationId}`);
     }

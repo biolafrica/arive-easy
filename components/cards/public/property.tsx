@@ -42,9 +42,10 @@ export function PropertyCard({ property, interfaceType = 'client' }: Props) {
             <span
               className={`
                 absolute left-3 top-3 rounded-md px-2 py-1 text-xs font-medium text-white
-                ${property.listing_tag === 'New Listing' && 'bg-blue-600'}
-                ${property.listing_tag === 'Hot Deal' && 'bg-red-500'}
-                ${property.listing_tag === 'Luxury' && 'bg-yellow-500 text-black'}
+                ${property.listing_tag === 'new-listing' && 'bg-blue-600'}
+                ${property.listing_tag === 'hot-deal' && 'bg-red-500'}
+                ${property.listing_tag === 'luxury' && 'bg-yellow-500 text-black'}
+                ${property.listing_tag === 'reduced' && 'bg-green-500'}
               `}
             >
               {property.listing_tag}
