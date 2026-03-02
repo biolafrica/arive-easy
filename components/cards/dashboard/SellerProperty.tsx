@@ -1,6 +1,6 @@
 "use client";
 
-import { PropertyActions, StatusBadge, resolvePropertyStatus } from '@/components/sections/dashboard/listing/PropertyCardUtils';
+import { PropertyActions, StatusBadge } from '@/components/sections/dashboard/listing/PropertyCardUtils';
 import { Property } from '@/components/sections/dashboard/listing/property-form';
 import { formatUSD, toNumber } from '@/lib/formatter';
 import { EyeIcon, TagIcon,} from '@heroicons/react/24/outline';
@@ -13,7 +13,6 @@ interface PropertyListingCardProps {
 }
 
 export function PropertyListingCard({ property, onEdit}: PropertyListingCardProps) {
-  const displayStatus = resolvePropertyStatus(property.status);
 
   return (
     <div className="flex flex-col md:flex-row overflow-hidden rounded-xl border bg-white">
@@ -65,7 +64,7 @@ export function PropertyListingCard({ property, onEdit}: PropertyListingCardProp
         </div>
 
         <div>
-          <StatusBadge {...displayStatus} />
+          <StatusBadge tone={property.is_active || false} label={property.status} />
         </div>
 
       </div>

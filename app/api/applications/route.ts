@@ -1,6 +1,6 @@
 import { ApplicationBase } from "@/type/pages/dashboard/application";
 import { OfferBase } from "@/type/pages/dashboard/offer";
-import { PropertyBase } from "@/type/pages/property";
+import { PropertyBase, PropertyStatus } from "@/type/pages/property";
 import { UserBase } from "@/type/user";
 import { offerNotificationBody } from "@/utils/email/application";
 import { sendEmail } from "@/utils/email/send_email";
@@ -46,6 +46,7 @@ const applicationHandlers = createCRUDHandlers<ApplicationBase>({
       const userQueryBuilder = new SupabaseQueryBuilder<UserBase>('users');
 
       const currentStageData = updated.stages_completed?.property_selection?.data;
+      const mortgageActivationData = updated.stages_completed?.mortgage_activation;
 
       if ( currentStageData?.status === 'sent' && updated.property_id) {
         try {
@@ -85,6 +86,9 @@ const applicationHandlers = createCRUDHandlers<ApplicationBase>({
             if (!offer) {
               console.error('Failed to create offer');
             }
+
+            await updateProperty(updated.property_id, 'offers')
+
           }
 
           const user = await userQueryBuilder.findById(property.developer_id || '')
@@ -128,8 +132,29 @@ const applicationHandlers = createCRUDHandlers<ApplicationBase>({
           console.error('Error in afterUpdate hook:', error);
         }
       }
+
+      if(mortgageActivationData?.completed === true && mortgageActivationData.status === 'completed'){
+        await updateProperty(updated.property_id, 'sold')
+      }
     }
   }
 });
+
+async function updateProperty(id: string, status: PropertyStatus) {
+
+  const propertyQueryBuilder = new SupabaseQueryBuilder<PropertyBase>("properties");
+
+  const property = await propertyQueryBuilder.findById(id)
+  if (!property) {
+    console.error('Failed to fetch property for offer creation:');
+    return;
+  }
+
+  await propertyQueryBuilder.update(property.id,{
+    status
+  })
+
+
+}
 
 export const { GET, PUT, POST, PATCH } = applicationHandlers;

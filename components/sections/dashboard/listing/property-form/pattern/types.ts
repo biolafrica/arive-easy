@@ -25,7 +25,6 @@ export interface PropertyImage {
   error?: string;
 }
 
-
 export interface PropertyFormValues {
   slug: string;
   property_number: string;
@@ -146,4 +145,5 @@ export interface Property extends PropertyCreatePayload {
   updated_at: string;
   offers:number;
   views:number;
+  is_active?: boolean;
 }

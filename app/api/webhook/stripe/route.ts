@@ -12,6 +12,7 @@ import { getPaymentFailedEmailTemplate, getPaymentSuccessEmailTemplate } from '@
 import { createNotification } from '@/utils/notifications/createNotification';
 import { buildNotificationPayload } from '@/utils/notifications/notificationContent';
 import { formatUSD } from '@/lib/formatter';
+import { PropertyBase } from '@/type/pages/property';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2026-02-25.clover"
@@ -492,6 +493,8 @@ async function processEscrowPayment(session: Stripe.Checkout.Session, paymentTyp
     });
   }
 
+  await updatePropertyStatus(applicationId || '');
+
   if (userId) {
     await sendPaymentConfirmationEmail(userId, {
       amount: session.amount_total || 0,
@@ -715,6 +718,7 @@ async function updateTermsStageData(applicationId: string, stageDataUpdate: Reco
   });
 
 }
+
 async function sendPaymentConfirmationEmail(
   userId: string,
   params: { amount: number; currency: string; transactionId: string; applicationId: string; type: string; subject: string }
@@ -787,3 +791,17 @@ function getPaymentIntentId(invoice: Stripe.Invoice): string | undefined {
   if (!paymentIntent) return undefined;
   return typeof paymentIntent === 'string' ? paymentIntent : (paymentIntent as Stripe.PaymentIntent).id;
 }
+
+async function updatePropertyStatus(applicationId: string): Promise<void> {
+  const propertyQueryBuilder = new SupabaseQueryBuilder<PropertyBase>("properties");
+  const applicationQueryBuilder = new SupabaseQueryBuilder<ApplicationBase>("application");
+
+  const application = await applicationQueryBuilder.findById(applicationId);
+  if (!application || !application.property_id) return;
+
+  await propertyQueryBuilder.update(application.property_id, {
+    status: 'reserved',
+    updated_at: new Date().toISOString(),
+  });
+  
+} 

@@ -5,8 +5,8 @@ import { PropertyStatus } from '@/type/pages/property';
 import { Property } from './property-form';
 
 type DisplayStatus = {
-  tone: 'active' | 'inactive';
-  label: string;
+  tone: boolean;
+  label: PropertyStatus;
 };
 
 interface PropertyActionsProps {
@@ -14,48 +14,34 @@ interface PropertyActionsProps {
   onEdit: (property: Property) => void;
 }
 
-export const getbabge = (step:string): string => {
+export const getbabge = (step:any): string => {
   const base = 'badge px-3 py-2 rounded-lg'
 
   switch(step) {
     case 'active':
+    case true:
+    case 'sold':
+    case 'resevered':
       return `${base} badge-green`;
     case 'inactive':
-      return `${base} badge-red`;
+    case false:
     case 'withdrawn':
       return `${base} badge-red`;
     case 'offers':
-      return `${base} badge-yellow`;
-    case 'sold':
-      return `${base} badge-green`;
     case 'inprogress':
-      return `${base} badge-yellow`;
     case 'draft':
-      return `${base} badge-yellow`;
     case 'paused':
-      return `${base} badge-red`;
-    case 'reserved':
-      return `${base} badge-green`;
+      return `${base} badge-yellow`;
     default:
       return `${base}`;
   }
 };
 
 
-export function resolvePropertyStatus(status: PropertyStatus): DisplayStatus {
-  const inactiveStatuses = ['draft', 'paused', 'withdrawn'] as const;
-  
-  if (inactiveStatuses.includes(status as any)) {
-    return { tone: 'inactive', label: status.replace(/_/g, ' ')};
-  }
-  
-  return { tone: 'active', label: status.replace(/_/g, ' ') };
-}
-
 export function StatusBadge({ tone, label }: DisplayStatus) {
   return (
     <div className='flex gap-2 items-center' >
-      <span className={`${getbabge(tone)} `}>{tone}</span>
+      <span className={`${getbabge(tone)} `}>{true ? 'active' : 'inactive'}</span>
       <span className={`${getbabge(label)}`}>{label}</span>
     </div>
   );
