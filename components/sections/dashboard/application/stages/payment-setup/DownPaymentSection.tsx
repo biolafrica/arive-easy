@@ -88,8 +88,8 @@ export function DownPaymentSection({
 
     if (!values.down_payment) {
       errors.down_payment = 'down payment is required';
-    }else if(toNumber(values.down_payment) < toNumber(suggestedDownPayment)){
-      errors.down_payment = `down payment should be at east ${application.down_payment_percentage}% of the property value `;
+    }else if(toNumber(values.down_payment) < suggestedDownPayment){
+      errors.down_payment = `down payment should be at east 20% of the property value `;
     }
     return errors;
 
@@ -124,6 +124,9 @@ export function DownPaymentSection({
                   <li>• Seller cannot access funds until completion</li>
                   <li>• Full refund if transaction fails</li>
                   <li>• Transparent tracking for both parties</li>
+                  <li>• You can pay a minimum of 
+                      {formatUSD({amount:suggestedDownPayment})}
+                  </li>
                 </ul>
               </div>
             </div>
@@ -134,7 +137,7 @@ export function DownPaymentSection({
             initialValues={downPaymentInitialValue}
             validate={validate}
             onSubmit={handleDownPayment}
-            submitLabel={isProcessing ? 'Processing...' : `Pay ${formatUSD({amount:customAmount, fromCents:false, decimals:2})} to Escrow`}
+            submitLabel={isProcessing ? 'Processing...' : 'Make Down Payment'}
             fullWidthSubmit={true}
           />
 

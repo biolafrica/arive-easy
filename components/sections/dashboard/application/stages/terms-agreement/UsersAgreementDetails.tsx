@@ -12,7 +12,6 @@ export default function UserAgreementDocumentList({documents}:{
     return document.status === 'sent'
   })
 
-
   return(
     <div>
 

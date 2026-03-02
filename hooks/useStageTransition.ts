@@ -78,6 +78,10 @@ export function useStageTransition(applicationId: string, currentStages: Applica
           payment_setup: {
             status: 'current' as const,
             completed: false,
+            data:{
+              ...currentStages.payment_setup?.data,
+              terms_agreement_signed:true,
+            }
           }
         },
         current_stage: 'payment_setup' as const,

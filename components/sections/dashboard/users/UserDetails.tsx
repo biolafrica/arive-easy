@@ -1,12 +1,36 @@
 import { DescriptionList } from "@/components/common/DescriptionList"
 import { formatDate } from "@/lib/formatter"
 import { UserBase } from "@/type/user"
+import Image from "next/image"
 
 export default function UserDetails({user}:{
   user:UserBase
 }){
+
+  const initials = user.name
+    ? user.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
+    : 'U';
+
   return(
-    <div>
+    <div className="space-y-6">
+
+      <div className="relative w-24 h-24 rounded-full overflow-hidden border bg-gray-50 flex items-center justify-center">
+        {user.avatar ? (
+          <Image
+            src={`${user.avatar}`}
+            alt={user.name ?? "User avatar"}
+            fill
+            sizes="96px"
+            className="object-cover"
+            priority
+          />
+        ) : (
+          <span className="flex items-center justify-center w-full h-full bg-orange-100 text-lg font-semibold text-orange-700">
+            {initials}
+          </span>
+        )}
+      </div>
+
       <DescriptionList
         title={`${user.name} Details`}
         subtitle='More information about user'

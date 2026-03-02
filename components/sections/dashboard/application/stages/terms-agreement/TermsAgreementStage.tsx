@@ -1,17 +1,21 @@
-import { useTransactionalDocuments } from "@/hooks/useSpecialized/useDocuments";
 import { ApplicationBase } from "@/type/pages/dashboard/application";
-import { StageDescriptionEmpty } from "../../common/StageDescriptionEmpty";
-import { DocumentIcon } from "@heroicons/react/24/outline";
-import UserAgreementDocumentList from "./UsersAgreementDetails";
-import ErrorState from "@/components/feedbacks/ErrorState";
-import { DescriptionListSkeleton } from "@/components/skeleton/DescriptionListSkeleton";
+import AgreementClientView from "./AgreementClientView";
+import { DownPaymentSection } from "../payment-setup/DownPaymentSection";
 
 interface Props {
   application: ApplicationBase;
-  stageData?: any; 
+  stageData?: TermsAgreementData; 
   onUpdate: (data: any) => void;
   isReadOnly: boolean;
   isUpdating: boolean;
+}
+
+export interface TermsAgreementData {
+  down_payment_amount: number;
+  down_payment_status: 'pending' | 'paid' | 'escrowed' | 'released' | 'refunded';
+  down_payment_transaction_id?: string;
+  down_payment_date?: string;
+  terms_agreement_signed: boolean;
 }
 
 
@@ -23,37 +27,31 @@ export default function TermsAgreementStage({
   isUpdating
 }: Props){
 
-  const transactionDocs = useTransactionalDocuments(application.id);
-  const { documents, isLoading, error, refetch } = transactionDocs.useAnvil();
+  const suggestedDownPayment = Math.round(
+    application.property_price * (20 / 100)
+  );
 
-  if(isLoading){
-    <DescriptionListSkeleton rows={6}/>
+  const termsData:TermsAgreementData = {
+    down_payment_amount: stageData?.down_payment_amount || 0,
+    down_payment_status: stageData?.down_payment_status || 'pending',
+    down_payment_date: stageData?.down_payment_date || "",
+    down_payment_transaction_id: stageData?.down_payment_transaction_id || "",
+    terms_agreement_signed: stageData?.terms_agreement_signed || false,
   }
-
-  if(error){
-    return (
-      <ErrorState
-        message="Error loading documents details"
-        retryLabel="Reload application documents data"
-        onRetry={refetch}
-      />
-    );
-  }
-
+  
   return(
     <div>
 
-      {!isLoading && documents.length === 0 && (
-        <StageDescriptionEmpty 
-          title="Agreement Documents Table"  
-          subtitle="Your Application Agreement Document" 
-          message="All the Agreement you signed will appear here" 
-          Icon={DocumentIcon} 
-        />
-      )}
+      <DownPaymentSection
+        application={application}
+        paymentData={termsData}
+        suggestedDownPayment={suggestedDownPayment}
+        isReadOnly={isReadOnly}
+        isUpdating={isUpdating}
+      />
 
-      {!isLoading && documents.length > 0 && (
-        <UserAgreementDocumentList documents={documents}/>
+      { stageData?.down_payment_status === 'escrowed' && (
+        <AgreementClientView id={application.id}/>
       )}
 
     </div>

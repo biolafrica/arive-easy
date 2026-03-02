@@ -1,7 +1,6 @@
 'use client';
 
 import { ApplicationBase } from "@/type/pages/dashboard/application";
-import { DownPaymentSection } from './DownPaymentSection';
 import { LegalValuationFeesSection } from './LegalValuationFeesSection';
 import {PaymentSummary } from './PaymentSummary';
 
@@ -15,10 +14,6 @@ interface Props {
 }
 
 export interface PaymentSetupData {
-  down_payment_amount: number;
-  down_payment_status: 'pending' | 'paid' | 'escrowed' | 'released' | 'refunded';
-  down_payment_transaction_id?: string;
-  down_payment_date?: string;
   legal_fee_amount?: number;
   legal_fee_status?: 'pending' | 'paid';
   legal_fee_transaction_id?: string;
@@ -40,10 +35,6 @@ export default function PaymentSetupStage({
 }: Props) {
 
   const paymentData:PaymentSetupData = {
-    down_payment_amount: stageData?.down_payment_amount || 0,
-    down_payment_status: stageData?.down_payment_status || 'pending',
-    down_payment_date: stageData?.down_payment_date || "",
-    down_payment_transaction_id: stageData?.down_payment_transaction_id || "",
     legal_fee_amount: stageData?.legal_fee_amount || 0,
     legal_fee_status: stageData?.legal_fee_status || 'pending',
     legal_fee_date: stageData?.legal_fee_date || "",
@@ -55,10 +46,6 @@ export default function PaymentSetupStage({
     total_fees_paid: 0,
 
   } 
-
-  const suggestedDownPayment = Math.round(
-    (application.property_price * application.down_payment_percentage) / 100
-  );
  
   return (
     <div className="space-y-8">
@@ -66,15 +53,6 @@ export default function PaymentSetupStage({
       <PaymentSummary
         application={application}
         paymentData={paymentData}
-        suggestedDownPayment={suggestedDownPayment}
-      />
-
-      <DownPaymentSection
-        application={application}
-        paymentData={paymentData}
-        suggestedDownPayment={suggestedDownPayment}
-        isReadOnly={isReadOnly}
-        isUpdating={isUpdating}
       />
 
       {(application.legal_fee > 0 || application.valuation_fee > 0) && (

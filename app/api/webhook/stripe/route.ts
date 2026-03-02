@@ -484,7 +484,7 @@ async function processEscrowPayment(session: Stripe.Checkout.Session, paymentTyp
       });
     }
 
-    await updatePaymentStageData(applicationId, {
+    await updateTermsStageData(applicationId, {
       [`${escrowType}_amount`]: originalAmount,
       [`${escrowType}_status`]: 'escrowed',
       [`${escrowType}_transaction_id`]: transaction.id,
@@ -694,6 +694,27 @@ async function updatePaymentStageData(applicationId: string, stageDataUpdate: Re
   });
 }
 
+async function updateTermsStageData(applicationId: string, stageDataUpdate: Record<string, any>): Promise<void> {
+  const applicationQueryBuilder = new SupabaseQueryBuilder<ApplicationBase>("applications");
+
+  const application = await applicationQueryBuilder.findById(applicationId);
+  if (!application) return;
+
+  const currentStageData = application.stages_completed?.terms_agreement?.data || {};
+
+  await applicationQueryBuilder.update(applicationId, {
+    stages_completed: {
+      ...application.stages_completed,
+      terms_agreement: {
+        ...application.stages_completed?.terms_agreement,
+        status: 'current',
+        completed: false,
+        data: { ...currentStageData, ...stageDataUpdate },
+      },
+    },
+  });
+
+}
 async function sendPaymentConfirmationEmail(
   userId: string,
   params: { amount: number; currency: string; transactionId: string; applicationId: string; type: string; subject: string }
