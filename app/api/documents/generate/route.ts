@@ -69,7 +69,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Buyer or property data not found' }, { status: 404 });
     }
 
-    //existing document type
+    const existingDocumentType = await transactionDocumentQueryBuilder.findOneByCondition({
+      application_id: applicationId,
+      document_type: documentType
+    })
+
+    if (existingDocumentType) {
+      return NextResponse.json({ error: `A document of type ${documentType} has already been generated for this application` }, { status: 400 });
+    }
 
     const anvilData = buildAnvilPayload(masterTemplate.template_fields, {
       partnerDocument,

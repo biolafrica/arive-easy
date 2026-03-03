@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import Anvil from '@anvilco/anvil';
 import { storageManager } from "@/utils/server/storageManager";
 import { SupabaseQueryBuilder } from "@/utils/supabase/queryBuilder";
 import { TransactionDocumentBase } from "@/type/pages/dashboard/documents";
@@ -70,18 +69,26 @@ async function handleEtchPacketComplete(data: any) {
     return;
   }
 
-  // ✅ Option A — use downloadZipURL directly (simpler, no extra API call)
-  const anvilClient = new Anvil({ apiKey: process.env.ANVIL_API_KEY! });
-  const { statusCode, data: pdfBuffer } = await anvilClient.downloadDocuments(
-    documentGroup.eid
-  );
+  // Fetch the zip directly from Anvil's URL
+  const response = await fetch(downloadZipURL, {
+    headers: {
+      // Anvil requires auth even on download URLs
+      Authorization: `Basic ${Buffer.from(`${process.env.ANVIL_API_KEY}:`).toString('base64')}`,
+    },
+  });
 
-  if (statusCode !== 200 || !pdfBuffer) {
-    throw new Error(`Anvil download returned unexpected status: ${statusCode}`);
+  if (!response.ok) {
+    throw new Error(`Failed to download zip from Anvil: ${response.status} ${response.statusText}`);
   }
 
+  const arrayBuffer = await response.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+
+  console.log('Anvil webhook: Downloaded zip, size:', buffer.byteLength, 'bytes');
+
+  // Upload to Supabase storage
   const file = new File(
-    [pdfBuffer],
+    [buffer],
     `signed-${transactionDoc.id}-${Date.now()}.zip`,
     { type: 'application/zip' }
   );
@@ -91,9 +98,9 @@ async function handleEtchPacketComplete(data: any) {
     folder: 'transactions',
   });
 
-  if (!publicUrl) {
-    throw new Error('Supabase upload returned no public URL');
-  }
+  if (!publicUrl) throw new Error('Supabase upload returned no public URL');
+
+  console.log('Anvil webhook: Uploaded to storage:', publicUrl);
 
   await transactionDocumentQueryBuilder.update(transactionDoc.id, {
     generated_document_url: publicUrl,

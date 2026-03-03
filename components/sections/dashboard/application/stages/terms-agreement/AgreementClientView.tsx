@@ -22,6 +22,7 @@ export default function AgreementClientView({id}:{id:string}){
       />
     );
   }
+  
   return(
     <div>
       

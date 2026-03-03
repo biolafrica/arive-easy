@@ -5,17 +5,16 @@ import { ClockIcon } from "@heroicons/react/24/solid";
 import { files } from "../mortgage-activation/UserMortgageDocument";
 
 export default function UserAgreementDocumentList({documents}:{
-  documents:TransactionDocumentBase[]
+  documents: TransactionDocumentBase[]
 }){
   
-  const pendingDocument = documents.filter((document)=>{
-    return document.status === 'sent'
-  })
+  const pendingDocument = documents.filter((document) => document.status === 'sent')
+  const hasPending = pendingDocument.length > 0
 
   return(
     <div>
 
-      {pendingDocument && (
+      {hasPending && (
         <div className="bg-yellow-50 border-yellow-200 border rounded-lg p-4 mb-6">
           <div className="flex items-center gap-3">
             <ClockIcon className='h-6 w-6 text-yellow-600' />
@@ -26,7 +25,7 @@ export default function UserAgreementDocumentList({documents}:{
             </div>
 
             <p className="text-sm text-gray-600 mt-1">
-              Awaiting You or seller to sign {humanizeSnakeCase(pendingDocument[0].document_type)} document
+              Awaiting Your to sign {humanizeSnakeCase(pendingDocument[0].document_type)} document
             </p>
           </div>
         </div>
