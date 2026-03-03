@@ -8,6 +8,7 @@ const ANVIL_WEBHOOK_TOKEN = process.env.ANVIL_WEBHOOK_TOKEN!;
 
 export async function POST(request: NextRequest) {
   let body: any;
+  console.log('Anvil webhook raw body:', JSON.stringify(body, null, 2));
 
   try {
     body = await request.json();
@@ -20,7 +21,9 @@ export async function POST(request: NextRequest) {
     console.error('Anvil webhook: Invalid token');
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  
+
+  console.log('Anvil webhook raw body:', JSON.stringify(body, null, 2));
+
   const { action, data } = body;
   console.log('Anvil webhook received:', action);
 

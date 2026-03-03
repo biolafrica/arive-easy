@@ -167,8 +167,8 @@ const preApprovalHandlers = createCRUDHandlers<PreApprovalBase>({
       
       }
 
-      if(created.status === 'rejected'){
-        
+      // change to admin when you setup admin 
+      if(created.status === 'rejected' && context?.auth?.roles?.includes('seller')){
         try {
           await sendEmail({
             to:  `${created.personal_info.email}`,

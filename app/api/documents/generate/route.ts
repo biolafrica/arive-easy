@@ -69,6 +69,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Buyer or property data not found' }, { status: 404 });
     }
 
+    //existing document type
+
     const anvilData = buildAnvilPayload(masterTemplate.template_fields, {
       partnerDocument,
       buyerInfo: buyer.personal_info,
@@ -84,7 +86,6 @@ export async function POST(request: NextRequest) {
         name: `${documentType} - ${applicationId}`,
         isDraft: false,
         isTest: process.env.NODE_ENV !== 'production',
-        webhookURL: 'https://www.usekletch.com/api/webhook/anvil',
 
         files: [{
           id: 'contractTemplate',
@@ -197,5 +198,3 @@ export async function POST(request: NextRequest) {
   }
 
 }
-
-
