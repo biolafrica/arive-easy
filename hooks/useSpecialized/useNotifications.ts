@@ -6,8 +6,12 @@ import { NotificationBase } from '@/type/pages/dashboard/notification';
 import { getEntityCacheConfig } from '@/lib/cache-config';
 import { queryKeys } from '@/lib/query-keys';
 import apiClient from '@/lib/api-client';
+import { useAuthContext } from '@/providers/auth-provider';
+import { useMemo } from 'react';
 
-export function useNotifications(params?: Record<string, unknown>) {
+export function useNotifications(params?: any) {
+  const { user, loading: isUserLoading } = useAuthContext();
+
   const crud = useCrud<NotificationBase>({
     resource: 'notifications',
     interfaceType: 'buyer',
@@ -15,7 +19,23 @@ export function useNotifications(params?: Record<string, unknown>) {
     showNotifications: false,
   });
 
-  const { data, isLoading, error } = crud.useGetAll(params);
+  const queryParams = useMemo(() => {
+    if (!user?.id) return null; 
+    
+    return {
+      ...params,
+      filters: {
+        ...params?.filters,
+        user_id: user.id,
+      },
+    };
+  }, [params, user?.id]);
+
+
+  const { data, isLoading, error } = crud.useGetAll(
+    queryParams || undefined, 
+    !isUserLoading && !!user?.id 
+  );
 
   return {
     notifications: data?.data ?? [],

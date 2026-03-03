@@ -97,7 +97,7 @@ export const preApprovalAcceptedBody = ({userName, referenceNumber}: {
       </div>
       
       <div style="background-color: #fef3c7; padding: 10px; border-radius: 6px; margin-top: 20px;">
-        <span style="color: #92400e; font-size: 14px;">⏱️ Valid For:</span>
+        <span style="color: #92400e; font-size: 14px;">Valid For:</span>
         <span style="color: #92400e; font-size: 14px; font-weight: 600; margin-left: 10px;">3 months</span>
       </div>
     </div>

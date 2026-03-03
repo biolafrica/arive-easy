@@ -134,7 +134,7 @@ export function createCRUDHandlers<T>({
   searchFields = ['title', 'description'],
   defaultSort = { field: 'created_at', order: 'desc' },
   hooks = {},
-  customHandlers = {},
+  customHandlers = {},  
   middleware = {},
   validation = {},
   caching = { enabled: false },
@@ -250,8 +250,6 @@ export function createCRUDHandlers<T>({
           } else if (endpoint === 'export' && features.export) {
             data = await handleExport(queryBuilder, filters);
           } else {
-            console.log('Filters being applied:', filters);
-            
             data = await queryBuilder.findPaginated({
               ...params,
               searchFields,

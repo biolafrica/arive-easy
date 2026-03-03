@@ -58,7 +58,7 @@ export default function ResetFormPage(){
       errors.password = 'New password must contain uppercase, lowercase, and numbers';
     }
 
-    if (values.confirm_password !== values.confirm_password) {
+    if (values.confirm_password !== values.password) {
       errors.confirm_password = 'Passwords do not match';
     }
 

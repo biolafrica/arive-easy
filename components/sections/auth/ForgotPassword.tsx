@@ -24,8 +24,6 @@ export default function ForgotPasswordFormPage(){
 
   const handleEventSubmit = async (values: ForgotPassword) => {
     const supabase = createClient()
-
-    console.log("submitted values", values)
     try {
 
       const { error } = await supabase.auth.resetPasswordForEmail(values.email, {
@@ -38,7 +36,7 @@ export default function ForgotPasswordFormPage(){
         return;
       }
 
-      localStorage.setItem("reset-email", values.email )
+      localStorage.setItem("reset_email", values.email )
       router.push('/check-email');
 
     } catch (error) {

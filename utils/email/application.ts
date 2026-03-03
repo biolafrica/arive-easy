@@ -25,9 +25,7 @@ export const offerNotificationBody = ({
 
     <!-- Offer Summary -->
     <div style="background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); padding: 30px; border-radius: 8px; text-align: center; margin: 25px 0;">
-      <div style="display: inline-flex; align-items: center; justify-content: center; width: 80px; height: 80px; background-color: rgba(255,255,255,0.2); border-radius: 50%; margin-bottom: 15px;">
-        <span style="color: white; font-size: 36px;">💰</span>
-      </div>
+      <div style="display: inline-flex; align-items: center; justify-content: center; width: 80px; height: 80px; background-color: rgba(255,255,255,0.2); 
       <h3 style="color: white; margin: 0 0 10px 0; font-size: 20px;">
         Offer Amount
       </h3>
@@ -74,7 +72,7 @@ export const offerNotificationBody = ({
     <div style="text-align: center; margin: 30px 0;">
       <a href="${process.env.NEXT_PUBLIC_BASE_URL}/seller-dashboard/offers" 
          style="display: inline-block; padding: 15px 35px; background-color: #10b981; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; margin-right: 15px;">
-        📋 Review Offer
+         Review Offer
       </a>
 
     </div>

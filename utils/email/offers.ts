@@ -240,7 +240,7 @@ export const sendOfferDeclinedEmail = ({
     <!-- Encouragement -->
     <div style="background-color: #f0f9ff; border-left: 4px solid #3b82f6; padding: 15px; margin-top: 30px; border-radius: 4px;">
       <h4 style="color: #1e40af; margin: 0 0 10px 0; font-size: 14px; font-weight: 600;">
-        💪 Don't Give Up!
+        Don't Give Up!
       </h4>
       <p style="color: #1e40af; margin: 0; font-size: 14px; line-height: 1.6;">
         Property negotiations are a normal part of the home buying process. With your pre-approved mortgage, 

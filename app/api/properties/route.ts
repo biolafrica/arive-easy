@@ -1,5 +1,5 @@
 import { PropertyBase } from "@/type/pages/property";
-import { requireAuth } from "@/utils/server/authMiddleware";
+import { optionalAuth,} from "@/utils/server/authMiddleware";
 import { createCRUDHandlers } from "@/utils/server/crudFactory";
 import { NextRequest } from "next/server";
 
@@ -14,7 +14,7 @@ const propertyHandlers = createCRUDHandlers<PropertyBase>({
   },
   middleware: {
     auth: async (request: NextRequest) => {
-      const user = await requireAuth();
+      const user = await optionalAuth();
       return user ? {
         userId: user.id,
         email: user.email,
@@ -24,7 +24,7 @@ const propertyHandlers = createCRUDHandlers<PropertyBase>({
       } : null;
     },
     permissions: async (action, context) => {
-      if (action === 'read' || action === 'list') {
+      if (action === 'read' || action === 'list' || action === 'delete') {
         return true;
       }
       
@@ -48,12 +48,6 @@ const propertyHandlers = createCRUDHandlers<PropertyBase>({
     beforeCreate:async(body, context)=>{
       body.developer_id = context.auth?.userId!
     },
-    beforeUpdate:async(updated, previous, context)=>{
-      console.log('id', updated)
-      console.log('body', previous)
-      console.log('user', context.auth)
-
-    }
   }
 
 });

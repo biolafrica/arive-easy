@@ -223,7 +223,7 @@ export const identityVerificationDeclineBody = ({
     <!-- Document Requirements Help -->
     <div style="background-color: #f9fafb; padding: 20px; border-radius: 8px; margin-top: 30px;">
       <h4 style="color: #374151; margin: 0 0 10px 0; font-size: 16px;">
-        📋 Document Guidelines
+        Document Guidelines
       </h4>
       <ul style="color: #6b7280; font-size: 14px; line-height: 1.8; margin: 0; padding-left: 20px;">
         <li>Documents must be in color and high resolution</li>

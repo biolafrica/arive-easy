@@ -263,15 +263,15 @@ export const EmailSupportAcknowledgement = (data: AcknowledgementData) => {
                     <div>
                       <a href="https://ariveasy.com/faq" 
                          style="display: inline-block; margin: 5px; padding: 10px 20px; background-color: #f3f4f6; color: #667eea; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: 600;">
-                        📚 FAQ
+                        FAQ
                       </a>
                       <a href="https://ariveasy.com/guides" 
                          style="display: inline-block; margin: 5px; padding: 10px 20px; background-color: #f3f4f6; color: #667eea; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: 600;">
-                        📖 User Guides
+                        User Guides
                       </a>
                       <a href="https://ariveasy.com/contact" 
                          style="display: inline-block; margin: 5px; padding: 10px 20px; background-color: #f3f4f6; color: #667eea; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: 600;">
-                        📞 Contact Info
+                        Contact Info
                       </a>
                     </div>
                   </div>

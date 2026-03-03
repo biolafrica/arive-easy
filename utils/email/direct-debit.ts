@@ -512,7 +512,7 @@ export function getPaymentReminderEmailTemplate(params: PaymentReminderParams): 
               <tr>
                 <td style="background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); padding: 40px; text-align: center;">
                   <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 600;">
-                    📅 Payment Reminder
+                    Payment Reminder
                   </h1>
                 </td>
               </tr>
