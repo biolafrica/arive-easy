@@ -8,7 +8,6 @@ const ANVIL_WEBHOOK_TOKEN = process.env.ANVIL_WEBHOOK_TOKEN!;
 
 export async function POST(request: NextRequest) {
   let body: any;
-  console.log('Anvil webhook raw body:', JSON.stringify(body, null, 2));
 
   try {
     body = await request.json();
@@ -30,22 +29,23 @@ export async function POST(request: NextRequest) {
   try {
     if (action === 'etchPacketComplete') {
       await handleEtchPacketComplete(data);
+    } else if (action === 'signerComplete') {
+      await handleSignerComplete(data);
     } else {
       console.log('Anvil webhook: Unhandled action', action);
     }
   } catch (error) {
     console.error(`Anvil webhook: Error handling action "${action}"`, error);
-    // Optional: save failed webhook to DB for manual retry later
   }
 
   return NextResponse.json({ ok: true });
 }
 
 async function handleEtchPacketComplete(data: any) {
-  const { etchPacketEid, documentGroup } = data;
+  const { eid: etchPacketEid, documentGroup, downloadZipURL } = data;
 
   if (!etchPacketEid) {
-    throw new Error('Missing etchPacketEid in webhook payload');
+    throw new Error('Missing eid in webhook payload');
   }
 
   if (!documentGroup?.eid) {
@@ -70,20 +70,15 @@ async function handleEtchPacketComplete(data: any) {
     return;
   }
 
+  // ✅ Option A — use downloadZipURL directly (simpler, no extra API call)
   const anvilClient = new Anvil({ apiKey: process.env.ANVIL_API_KEY! });
-  const { statusCode, data: pdfBuffer, errors } = await anvilClient.downloadDocuments(
+  const { statusCode, data: pdfBuffer } = await anvilClient.downloadDocuments(
     documentGroup.eid
   );
-
-  if (errors && errors.length > 0) {
-    throw new Error(`Anvil download failed: ${errors.map((e: any) => e.message).join(', ')}`);
-  }
 
   if (statusCode !== 200 || !pdfBuffer) {
     throw new Error(`Anvil download returned unexpected status: ${statusCode}`);
   }
-
-  console.log('Anvil webhook: Downloaded signed document, size:', pdfBuffer.byteLength ?? 'unknown');
 
   const file = new File(
     [pdfBuffer],
@@ -93,14 +88,12 @@ async function handleEtchPacketComplete(data: any) {
 
   const { publicUrl } = await storageManager.uploadFile(file, {
     bucket: 'documents',
-    folder: 'transactions', 
+    folder: 'transactions',
   });
 
   if (!publicUrl) {
     throw new Error('Supabase upload returned no public URL');
   }
-
-  console.log('Anvil webhook: Uploaded signed document to storage:', publicUrl);
 
   await transactionDocumentQueryBuilder.update(transactionDoc.id, {
     generated_document_url: publicUrl,
@@ -109,4 +102,53 @@ async function handleEtchPacketComplete(data: any) {
   });
 
   console.log('Anvil webhook: Transaction completed successfully:', transactionDoc.id);
+}
+
+async function handleSignerComplete(data: any) {
+  const { etchPacket, aliasId, eid, name, email, status, completedAt, routingOrder, signers } = data;
+
+  if (!etchPacket?.eid) {
+    throw new Error('Missing etchPacket.eid in signerComplete payload');
+  }
+
+  const transactionDocumentQueryBuilder = new SupabaseQueryBuilder<TransactionDocumentBase>(
+    'document_transactions'
+  );
+
+  const transactionDoc = await transactionDocumentQueryBuilder.findOneByCondition({
+    esign_document_id: etchPacket.eid,
+  });
+
+  if (!transactionDoc) {
+    console.warn('Anvil webhook: No transaction document found for etchPacketEid:', etchPacket.eid);
+    return;
+  }
+
+  // Build the updated signatures object by merging into existing
+  const existingSignatures = (transactionDoc.signatures as Record<string, any>) || {};
+
+  const updatedSignatures = {
+    ...existingSignatures,
+    [aliasId]: {                        // keyed by "buyer" or "seller"
+      eid,
+      name,
+      email,
+      status,
+      routingOrder,
+      completedAt,
+    },
+  };
+
+  // Derive overall transaction status from all signers
+  const allSigners = signers ?? [];
+  const completedCount = allSigners.filter((s: any) => s.status === 'completed').length;
+  const totalCount = allSigners.length;
+  const transactionStatus = completedCount === totalCount ? 'completed' : 'partially_signed';
+
+  await transactionDocumentQueryBuilder.update(transactionDoc.id, {
+    signatures: updatedSignatures,
+    status: transactionStatus,
+  });
+
+  console.log(`Anvil webhook: Signer "${aliasId}" (${name}) completed. ${completedCount}/${totalCount} signed.`);
 }
