@@ -1,5 +1,5 @@
 import { ApplicationBase } from "@/type/pages/dashboard/application";
-import { formatDate, formatUSD } from "@/lib/formatter";
+import { formatDate, formatUSD, toNumber } from "@/lib/formatter";
 import { DescriptionList } from "@/components/common/DescriptionList";
 import { Button } from "@/components/primitives/Button";
 import { STAGE_EMPTY_CONFIG } from "@/data/pages/dashboard/application";
@@ -33,21 +33,6 @@ export function PaymentStage({ application, onComplete, onAddPayments }: Payment
           }
         },
         {
-          label: 'Down Payment',
-          value: {
-            type: 'custom',
-            node: (
-              <div className="flex items-center gap-10">
-                <h4 className={getbadge(payment?.data.down_payment_status || "upcoming")}>
-                  {payment?.data.down_payment_status || "upcoming"}
-                </h4>
-                <h4>{formatUSD({ amount: payment?.data.down_payment_amount }) || ''}</h4>
-                <h4>{formatDate(payment?.data.down_payment_date || '')}</h4>
-              </div>
-            )
-          }
-        },
-        {
           label: 'Valuation Fee',
           value: {
             type: 'custom',
@@ -56,7 +41,7 @@ export function PaymentStage({ application, onComplete, onAddPayments }: Payment
                 <h4 className={getbadge(payment?.data.valuation_fee_status || "upcoming")}>
                   {payment?.data.valuation_fee_status || "upcoming"}
                 </h4>
-                <h4>{formatUSD({ amount: payment?.data.valuation_fee_amount }) || ''}</h4>
+                <h4>{formatUSD({ amount: toNumber(payment?.data.valuation_fee_amount) }) || ''}</h4>
                 <h4>{formatDate(payment?.data.valuation_fee_date || '')}</h4>
               </div>
             )
@@ -71,7 +56,7 @@ export function PaymentStage({ application, onComplete, onAddPayments }: Payment
                 <h4 className={getbadge(payment?.data.legal_fee_status || "upcoming")}>
                   {payment?.data.legal_fee_status || "upcoming"}
                 </h4>
-                <h4>{formatUSD({ amount: payment?.data.legal_fee_amount }) || ''}</h4>
+                <h4>{formatUSD({ amount: toNumber(payment?.data.legal_fee_amount) }) || 0}</h4>
                 <h4>{formatDate(payment?.data.legal_fee_date || '')}</h4>
               </div>
             )

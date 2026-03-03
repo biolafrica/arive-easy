@@ -4,6 +4,7 @@ import { Button } from "@/components/primitives/Button";
 import { STAGE_EMPTY_CONFIG } from "@/data/pages/dashboard/application";
 import { StageDescriptionEmpty } from "../../common/StageDescriptionEmpty";
 import { CompleteStageButton } from "../../common/StageActionButton";
+import { formatUSD } from "@/lib/formatter";
 
 interface TermsStageProps {
   application: ApplicationBase;
@@ -31,10 +32,11 @@ export function TermsStage({ application, onComplete, onAddTerms, onAddDocuments
             node: <Button onClick={onAddTerms} size='xs'>Add Terms</Button>
           }
         },
-        { label: 'Loan Amount', value: { type: 'text', value: `${application.approved_loan_amount || 'Not set'}` }},
-        { label: 'Loan Month', value: { type: 'text', value: `${application.loan_term_months || 'Not set'}` }},
-        { label: 'Loan Interest', value: { type: 'text', value: `${application.interest_rate || 'Not set'}` }},
-        { label: 'Down Payment Percentage', value: { type: 'text', value: `${application.down_payment_percentage || 'Not set'}` }},
+        { label: 'Loan Amount', value: { type: 'text', value: `${formatUSD({amount:application.approved_loan_amount}) || 0}` }},
+        { label: 'Loan Month', value: { type: 'text', value: `${application.loan_term_months || 0 } months` }},
+        { label: 'Loan Interest', value: { type: 'text', value: `${(application.interest_rate) || 0 } %`  }},
+        { label: 'Down Payment Percentage', value: { type: 'text', value: `${application.down_payment_percentage || 0} %` }},
+        { label: 'Down Payment', value: { type: 'text', value: `${formatUSD({amount:stage?.data.down_payment_amount})  || 0} ` }},
 
         {
           label: 'Agreement Documents',
