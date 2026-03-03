@@ -4,11 +4,20 @@ import Form from "@/components/form/Form";
 import { forgotPasswordFields, initialValues } from "@/data/auth/forgotPassword";
 import { ForgotPassword } from "@/type/auth/forgotPassword";
 import { createClient } from "@/utils/supabase/client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 import { toast } from "sonner";
 
 export default function ForgotPasswordFormPage(){
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const error = searchParams.get('error');
+    if (error === 'invalid_link') {
+      toast.error('Your reset link has expired or is invalid. Please request a new one.');
+    }
+  }, [searchParams]);
 
   const validateProfile = (values: ForgotPassword) => {
     const errors: Partial<Record<keyof ForgotPassword, string>> = {};
@@ -27,7 +36,8 @@ export default function ForgotPasswordFormPage(){
     try {
 
       const { error } = await supabase.auth.resetPasswordForEmail(values.email, {
-        redirectTo: `${process.env.NEXT_PUBLIC_API_URL}/auth/reset-password`,
+        redirectTo: `${process.env.NEXT_PUBLIC_API_URL}/auth/confirm?next=/auth/reset-password`,
+
       });
 
       if (error) {
