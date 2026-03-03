@@ -40,7 +40,7 @@ export default function TermsAgreementStage({
   }
   
   return(
-    <div>
+    <div className="space-y-6">
 
       <DownPaymentSection
         application={application}

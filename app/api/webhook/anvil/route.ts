@@ -4,6 +4,7 @@ import { storageManager } from "@/utils/server/storageManager";
 import { SupabaseQueryBuilder } from "@/utils/supabase/queryBuilder";
 import { TransactionDocumentBase } from "@/type/pages/dashboard/documents";
 
+const ANVIL_WEBHOOK_TOKEN = process.env.ANVIL_WEBHOOK_TOKEN!;
 
 export async function POST(request: NextRequest) {
   let body: any;
@@ -15,6 +16,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
   }
 
+  if (body.token !== ANVIL_WEBHOOK_TOKEN) {
+    console.error('Anvil webhook: Invalid token');
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  
   const { action, data } = body;
   console.log('Anvil webhook received:', action);
 

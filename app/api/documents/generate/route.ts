@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
         name: `${documentType} - ${applicationId}`,
         isDraft: false,
         isTest: process.env.NODE_ENV !== 'production',
-        webhookURL: 'https://usekletch.com/api/webhook/anvil',
+        webhookURL: 'https://www.usekletch.com/api/webhook/anvil',
 
         files: [{
           id: 'contractTemplate',

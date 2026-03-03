@@ -12,7 +12,7 @@ import FilterDropdown from "@/components/common/FilterDropdown";
 import { sellerTransactionFilterConfigs } from "../common/TransactionFilter";
 import ActiveFilters from "@/components/common/ActiveFilters";
 import { getTableEmptyMessage } from "@/components/common/TableEmptyMessage";
-import { useTransactions } from "@/hooks/useSpecialized/useTransaction";
+import { useSellerTransactions,} from "@/hooks/useSpecialized/useTransaction";
 
 
 export default function SellerTransactionClientView (){
@@ -30,7 +30,7 @@ export default function SellerTransactionClientView (){
   }), [baseQueryParams]);
 
  
-  const { transactions, pagination, isLoading } = useTransactions(queryParams);
+  const { transactions, pagination, isLoading } =  useSellerTransactions(queryParams);
 
   const emptyMessage = useMemo(
     () => getTableEmptyMessage(hasActiveFilters, 'transactions'),

@@ -40,6 +40,43 @@ export function useTransactions(params?: any) {
   };
 }
 
+export function useSellerTransactions(params?: any) {
+  const { user, loading: isUserLoading } = useAuthContext();
+  
+  const crud = useCrud<TransactionBase>({
+    resource: 'transactions',
+    interfaceType: 'buyer',
+    optimisticUpdate: true,
+    invalidateOnMutation: true,
+  });
+
+  const queryParams = useMemo(() => {
+    if (!user?.id) return null; 
+    
+    return {
+      ...params,
+      filters: {
+        ...params?.filters,
+        developer_id: user.id,
+      },
+    };
+  }, [params, user?.id]);
+
+
+  const { data, isLoading, error } = crud.useGetAll(
+    queryParams || undefined, 
+    !isUserLoading && !!user?.id 
+  );
+
+  return {
+    transactions: data?.data || [],
+    pagination: data?.pagination,
+    isLoading: isLoading || isUserLoading,
+    error,
+    ...crud,
+  };
+}
+
 export function useAdminTransactions(params?: any) {
   const crud = useCrud<TransactionBase>({
     resource: 'transactions',
