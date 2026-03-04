@@ -36,7 +36,6 @@ export function TermsStage({ application, onComplete, onAddTerms, onAddDocuments
         { label: 'Loan Month', value: { type: 'text', value: `${application.loan_term_months || 0 } months` }},
         { label: 'Loan Interest', value: { type: 'text', value: `${(application.interest_rate) || 0 } %`  }},
         { label: 'Down Payment Percentage', value: { type: 'text', value: `${application.down_payment_percentage || 0} %` }},
-        { label: 'Down Payment', value: { type: 'text', value: `${formatUSD({amount:stage?.data.down_payment_amount})  || 0} ` }},
 
         {
           label: 'Agreement Documents',
