@@ -5,7 +5,6 @@ import { loadStripe } from "@stripe/stripe-js";
 
 import { Button } from "@/components/primitives/Button";
 import { formatDate, formatUSD } from "@/lib/formatter";
-import { Mortgage } from "@/type/pages/dashboard/mortgage";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -16,7 +15,6 @@ interface PaymentGroup {
   dueDate: string;
   status: 'failed' | 'scheduled' | 'succeeded';
   isOverdue: boolean;
-  isSelected: boolean;
 }
 
 interface PaymentSelectViewProps {
@@ -24,7 +22,7 @@ interface PaymentSelectViewProps {
   selectedPaymentIds: Set<string>;
   togglePayment: (id: string) => void;
   selectAllUpTo: (id: string) => void;
-  mortgage: Mortgage;
+  paymentMethodDisplay?: string ;
 }
 
 interface PaymentConfirmViewProps {
@@ -40,7 +38,7 @@ export function PaymentSelectView({
   selectedPaymentIds,
   togglePayment,
   selectAllUpTo,
-  mortgage,
+  paymentMethodDisplay,
 }: PaymentSelectViewProps) {
 
   if (paymentList.length === 0) {
@@ -59,6 +57,21 @@ export function PaymentSelectView({
 
   return (
     <div className="p-6">
+
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+        <div className="flex gap-3">
+          <icon.InformationCircleIcon className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm text-blue-800">
+              Select one or more payments to process. The earliest payment is pre-selected.
+            </p>
+            <p className="text-xs text-blue-600 mt-1">
+              Tip: Click "Select up to here" to select multiple consecutive payments.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className="space-y-3">
         {paymentList.map((payment) => {
           const isSelected = selectedPaymentIds.has(payment.id);
@@ -78,12 +91,10 @@ export function PaymentSelectView({
                   : 'border-gray-200 bg-white hover:border-gray-300'
               }`}
             >
-              {/* Main Row */}
               <button
                 onClick={() => togglePayment(payment.id)}
                 className="w-full p-4 flex items-center gap-4 text-left"
               >
-                {/* Checkbox */}
                 <div
                   className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
                     isSelected
@@ -96,7 +107,6 @@ export function PaymentSelectView({
                   )}
                 </div>
 
-                {/* Payment Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-gray-900">
@@ -118,7 +128,6 @@ export function PaymentSelectView({
                   </p>
                 </div>
 
-                {/* Amount */}
                 <div className="text-right">
                   <p className={`text-lg font-semibold ${
                     isFailed ? 'text-red-700' : 'text-gray-900'
@@ -128,7 +137,6 @@ export function PaymentSelectView({
                 </div>
               </button>
 
-              {/* Select up to here button */}
               {!isSelected && payment.paymentNumber > 1 && (
                 <button
                   onClick={() => selectAllUpTo(payment.id)}
@@ -142,7 +150,6 @@ export function PaymentSelectView({
         })}
       </div>
 
-      {/* Payment Method */}
       <div className="mt-6 pt-6 border-t border-gray-200">
         <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
           <div className="p-2 bg-white rounded-lg border border-gray-200">
@@ -151,7 +158,7 @@ export function PaymentSelectView({
           <div className="flex-1">
             <p className="text-sm font-medium text-gray-900">Payment Method</p>
             <p className="text-sm text-gray-500">
-              {mortgage.payment_method_display || 'Default payment method'}
+              {paymentMethodDisplay || 'Default payment method'}
             </p>
           </div>
           <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
@@ -162,7 +169,6 @@ export function PaymentSelectView({
     </div>
   );
 }
-
 
 export function PaymentConfirmView({
   clientSecret,
@@ -181,7 +187,6 @@ export function PaymentConfirmView({
 
   return (
     <div className="p-6 space-y-6">
-      {/* Back Button */}
       <button
         onClick={onBack}
         className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
@@ -190,7 +195,6 @@ export function PaymentConfirmView({
         Back to selection
       </button>
 
-      {/* Summary */}
       <div className="bg-blue-50 rounded-xl p-6 text-center">
         <p className="text-sm text-blue-600 mb-1">Total Payment</p>
         <p className="text-3xl font-bold text-blue-700">
@@ -201,7 +205,6 @@ export function PaymentConfirmView({
         </p>
       </div>
 
-      {/* Selected Payments Summary */}
       <div className="bg-gray-50 rounded-lg p-4">
         <p className="text-sm font-medium text-gray-700 mb-2">Payments included:</p>
         <div className="space-y-1">
@@ -214,7 +217,6 @@ export function PaymentConfirmView({
         </div>
       </div>
 
-      {/* Stripe Payment Element */}
       <stripes.Elements stripe={stripePromise} options={{ clientSecret, appearance }}>
         <PaymentForm onSuccess={onSuccess} />
       </stripes.Elements>
