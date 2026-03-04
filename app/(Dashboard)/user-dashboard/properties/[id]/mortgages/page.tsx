@@ -6,6 +6,7 @@ export default async function MortgageDetailsPage(
   { params }: { params: Promise<{ id: string }> } 
 ) {
   const {id} =  await params;
+  
   return (
     <Suspense fallback={<AllPropertyGridSkeleton/>}>
       <MortgageClientView id={id} /> 
