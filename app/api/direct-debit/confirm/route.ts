@@ -8,6 +8,7 @@ import { PreApprovalBase } from '@/type/pages/dashboard/approval';
 import { supabaseAdmin } from '@/utils/supabase/supabaseAdmin';
 import { sendEmail } from '@/utils/email/send_email';
 import { getDirectDebitConfirmationEmailTemplate } from '@/utils/email/direct-debit';
+import { calculateNumberOfPayments } from '../initiate/route';
 
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -103,6 +104,21 @@ export async function POST(request: NextRequest) {
       mortgage.payment_day_of_month
     );
 
+    const numberOfPayments = calculateNumberOfPayments(
+      mortgage.first_payment_date,
+      mortgage.last_payment_date,
+      mortgage.loan_term_months
+    );
+
+    console.log('Payment schedule calculation:', {
+      first_payment_date: mortgage.first_payment_date,
+      last_payment_date: mortgage.last_payment_date,
+      loan_term_months: mortgage.loan_term_months,
+      calculated_number_of_payments: numberOfPayments,
+      total_payments_amount: mortgage.total_payments,
+      monthly_payment: mortgage.monthly_payment,
+    });
+
     const subscription = await stripe.subscriptions.create({
       customer: mortgage.stripe_customer_id,
       items: [{ price: price.id }],
@@ -116,7 +132,7 @@ export async function POST(request: NextRequest) {
       metadata: {
         application_id: application_id,
         mortgage_id: mortgage.id,
-        total_payments: mortgage.total_payments.toString(),
+        number_of_payments: numberOfPayments.toString()
       },
       cancel_at: mortgage.last_payment_date 
         ? Math.floor(new Date(mortgage.last_payment_date).getTime() / 1000) + (30 * 24 * 60 * 60)
@@ -165,7 +181,7 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    await createPaymentSchedule(supabaseAdmin, mortgage, subscription.id);
+    await createPaymentSchedule(supabaseAdmin, mortgage, subscription.id, numberOfPayments);
 
     const preApproval = await preApprovalQueryBuilder.findById(application.pre_approval_id);
     const userEmail = preApproval?.personal_info?.email || user.email;
@@ -196,6 +212,7 @@ export async function POST(request: NextRequest) {
       mortgage_id: mortgage.id,
       status: mortgageStatus,
       is_pending_verification: isProcessing,
+      number_of_payments: numberOfPayments,
     });
 
   } catch (error) {
@@ -225,12 +242,13 @@ function calculateBillingCycleAnchor(firstPaymentDate: string | null, paymentDay
 async function createPaymentSchedule(
   supabaseAdmin: any, 
   mortgage: any, 
-  subscriptionId: string
+  subscriptionId: string,
+  numberOfPayments: number 
 ) {
   const payments = [];
   const startDate = new Date(mortgage.first_payment_date);
   
-  for (let i = 0; i < mortgage.total_payments; i++) {
+  for (let i = 0; i < numberOfPayments; i++) {
     const dueDate = new Date(startDate);
     dueDate.setMonth(dueDate.getMonth() + i);
 
@@ -245,6 +263,8 @@ async function createPaymentSchedule(
     });
   }
 
+  console.log(`Created ${payments.length} payment entries. First: ${payments[0]?.due_date}, Last: ${payments[payments.length - 1]?.due_date}`);
+
   // Insert in batches of 50
   for (let i = 0; i < payments.length; i += 50) {
     const batch = payments.slice(i, i + 50);
@@ -256,4 +276,6 @@ async function createPaymentSchedule(
       console.error('Failed to create payment schedule batch:', error);
     }
   }
+
+  console.log(`Successfully created payment schedule with ${payments.length} payments`);
 }

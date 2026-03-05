@@ -25,6 +25,7 @@ export interface Mortgage {
   loan_term_months: number;
   property_id: string;
   properties?: PropertyBase;
+  number_of_payments:number;
   
   monthly_payment: number;
   total_payments: number;

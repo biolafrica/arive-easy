@@ -245,6 +245,8 @@ function PaymentForm({ onSuccess }: { onSuccess: (paymentIntentId: string) => vo
       redirect: 'if_required',
     });
 
+    console.log('Stripe confirmPayment result:', { submitError, paymentIntent });
+
     if (submitError) {
       setError(submitError.message || 'Payment failed');
       setIsProcessing(false);

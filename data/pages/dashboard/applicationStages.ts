@@ -59,7 +59,7 @@ export const STAGE_CONFIGURATIONS: StageConfig[] = [
     description: 'Complete identity verification with our partners',
     requiresAction: true,
     actionLabel: 'Complete Verification',
-    nextStageCondition: (app) => app.kyc_status === 'verified'
+    nextStageCondition: (app) => app.identity_verification_status === 'approved'
   },
    {
     step: 6,
@@ -68,7 +68,7 @@ export const STAGE_CONFIGURATIONS: StageConfig[] = [
     description: 'Select and confirm your property choice',
     requiresAction: true,
     actionLabel: 'Select Property',
-    nextStageCondition: (app) => !!app.property_id && app.developer_status === 'approved'
+    nextStageCondition: (app) => app.property_name !== 'null' && app.current_step > 6
   },
   {
     step: 7,
@@ -77,7 +77,7 @@ export const STAGE_CONFIGURATIONS: StageConfig[] = [
     description: 'Review and accept the mortgage terms',
     requiresAction: true,
     actionLabel: 'Review Offer Letter',
-    nextStageCondition: (app) => !!app.terms_accepted_at && !!app.contract_signed_at
+    nextStageCondition: (app) => app.current_step > 7
   },
   {
     step: 8,
@@ -86,7 +86,7 @@ export const STAGE_CONFIGURATIONS: StageConfig[] = [
     description: 'Setup payment method and make down payment',
     requiresAction: true,
     actionLabel: 'Make Down Payment',
-    nextStageCondition: (app) => !!app.stripe_payment_method_id
+    nextStageCondition: (app) => app.current_step > 8
   },
   {
     step: 9,

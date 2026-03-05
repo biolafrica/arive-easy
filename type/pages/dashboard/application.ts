@@ -1,3 +1,4 @@
+import { number } from "zod";
 import { PropertyBase } from "../property";
 import { PreApprovalBase } from "./approval";
 
@@ -101,26 +102,22 @@ export interface ApplicationBase{
     mortgage_activation?: StageMetadata;
   };
 
-  kyc_status: string;
-  kyc_provider:string;
-  kyc_session_id: string;
-  kyc_result:string;
-  kyc_verified_at: string;
-  kyc_retry_count: number
-
   property_price: number;
+
   loan_amount: number;
   approved_loan_amount: number;
   down_payment_amount: number;
   down_payment_percentage: number;
   interest_rate: number;
   loan_term_months: number;
+
   monthly_payment:number;
   first_payment_date:string;
   last_payment_date:string;
   total_payment:number;
+
   payment_day_of_month:number;
-   direct_debit_status:string;
+  direct_debit_status:string;
 
   processing_fee:number;
   processing_fee_payment_status:string;
@@ -132,28 +129,6 @@ export interface ApplicationBase{
   legal_fee_payment_status:string;
   legal_fee_payment_date:string
   total_fee:number;
-
-  developer_status: string;
-  developer_reviewed_at:string;
-  developer_reviewed_by:string;
-  developer_notes:string;
-
-  underwriting_status:string;
-  underwriting_started_at:string;
-  underwriting_completed_at:string;
-  underwriter_id:string;
-  underwriting_notes:string;
-  risk_score:string;
-
-  terms_sent_at:string;
-  terms_accepted_at:string;
-  contract_document_url:string;
-  contract_signed_at:string;
-
-  payment_method:string;
-  stripe_customer_id :string;
-  stripe_payment_method_id:string;
-  bank_account_details:string;
 
   identity_verification_status:string;
   identity_verification_completed_at:string;

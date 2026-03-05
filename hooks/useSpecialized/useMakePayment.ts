@@ -56,6 +56,7 @@ export function useMakePayment() {
         }),
       });
 
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to create payment');
@@ -93,6 +94,7 @@ export function useMakePayment() {
       }
 
       const result = await response.json();
+      console.log('Payment confirmation result:', result);
 
       toast.success(`Payment${params.paymentIds.length > 1 ? 's' : ''} completed successfully!`);
 

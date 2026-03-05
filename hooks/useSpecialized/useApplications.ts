@@ -146,10 +146,6 @@ export function useApplicationStageUpdates(application: ApplicationBase) {
   }) => {
     return updateApplication(application.id,
       {
-        kyc_status: data.kyc_status,
-        kyc_session_id: data.kyc_session_id,
-        kyc_result: data.kyc_result,
-        kyc_verified_at: new Date().toISOString(),
         stages_completed: {
           ...application.stages_completed,
           identity_verification: {
@@ -172,8 +168,6 @@ export function useApplicationStageUpdates(application: ApplicationBase) {
     [key: string]: any;
   }) => {
     return updateApplication(application.id, {
-      terms_accepted_at: new Date().toISOString(),
-      contract_signed_at: new Date().toISOString(),
       stages_completed: {
         ...application.stages_completed,
         terms_agreement: {
@@ -197,8 +191,6 @@ export function useApplicationStageUpdates(application: ApplicationBase) {
     [key: string]: any;
   }) => {
     return updateApplication(application.id, {
-      payment_method: data.payment_method,
-      stripe_payment_method_id: data.stripe_payment_method_id,
       down_payment_amount: data.down_payment_amount,
       stages_completed: {
         ...application.stages_completed,

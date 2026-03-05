@@ -9,6 +9,9 @@ export interface Metadata{
   property_id?:string;
   escrow_status?:string;
   payment_type?:string;
+  payment_ids?:string[]
+  payment_numbers?:string[]
+  initiated_at?:string;
 
 }
 
@@ -19,7 +22,9 @@ export interface TransactionBase{
   application_id?:string;
   property_id?:string;
   applications?:ApplicationBase;
+  mortgage_id?:string;  
   properties?:PropertyBase;
+  description?:string;
   stripe_session_id:string;
   type:string;
   stripe_payment_intent_id:string;

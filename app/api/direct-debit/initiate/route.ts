@@ -12,6 +12,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 export async function POST(request: NextRequest) {
+
   try {
     const user = await requireAuth();
     const body = await request.json();
@@ -22,6 +23,7 @@ export async function POST(request: NextRequest) {
     const userQueryBuilder = new SupabaseQueryBuilder<UserBase>("users");
     
     const { application_id, user_country } = body;
+
     if (!application_id) {
       return NextResponse.json(
         { error: 'Application ID is required' }, { status: 400 }
@@ -84,7 +86,7 @@ export async function POST(request: NextRequest) {
     let paymentMethodTypes: ('acss_debit' | 'us_bank_account' | 'card')[];
     let paymentMethodOptions: Stripe.SetupIntentCreateParams['payment_method_options'] = {};
 
-    if (!isCanadian) {
+    if (isCanadian) {
       paymentMethodTypes = ['acss_debit', 'card'];
       paymentMethodOptions = {
         acss_debit: {
@@ -121,19 +123,36 @@ export async function POST(request: NextRequest) {
       usage: 'off_session', 
     });
 
+    const numberOfPayments = calculateNumberOfPayments(
+      application.first_payment_date, 
+      application.last_payment_date,
+      application.loan_term_months
+    );
+
+    console.log('Mortgage data being saved:', {
+      first_payment_date: application.first_payment_date,
+      last_payment_date: application.last_payment_date,
+      loan_term_months: application.loan_term_months,
+      calculated_number_of_payments: numberOfPayments,
+      total_payment_amount: application.total_payment,
+      monthly_payment: application.monthly_payment,
+    });
+
     const mortgageData = {
       application_id: application_id,
       user_id: user.id,
+      property_id: application.property_id,
       
       property_price: application.property_price,
       down_payment_made: application.down_payment_amount,
       approved_loan_amount: application.approved_loan_amount,
       interest_rate_annual: application.interest_rate,
       loan_term_months: application.loan_term_months,
-      property_id: application.property_id,
       
       monthly_payment: application.monthly_payment,
       total_payments: application.total_payment,
+      number_of_payments: numberOfPayments,
+      
       first_payment_date: application.first_payment_date,
       last_payment_date: application.last_payment_date,
       payment_day_of_month: application.payment_day_of_month,
@@ -205,3 +224,56 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+export function calculateNumberOfPayments(
+  firstPaymentDate: string | null | undefined,
+  lastPaymentDate: string | null | undefined,
+  loanTermMonths: number | null | undefined
+): number {
+
+  // Method 1: Calculate from first and last payment dates
+  if (firstPaymentDate && lastPaymentDate) {
+    const start = new Date(firstPaymentDate);
+    const end = new Date(lastPaymentDate);
+    
+    // + because both dates are inclusive1
+    const months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth()) + 1; 
+    
+    console.log(`Calculated ${months} payments from dates: ${firstPaymentDate} to ${lastPaymentDate}`);
+    return Math.max(1, months);
+  }
+  
+  // Method 2: Use loan term months directly
+  if (loanTermMonths && loanTermMonths > 0) {
+    console.log(`Using loan_term_months: ${loanTermMonths}`);
+    return loanTermMonths;
+  }
+  
+  // Fallback: Default to 12 months if nothing else works
+  console.warn('Could not determine number of payments, defaulting to 12');
+  return 12;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
