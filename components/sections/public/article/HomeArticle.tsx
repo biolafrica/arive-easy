@@ -7,13 +7,14 @@ import { FeaturedBlogGridSkeleton } from '@/components/skeleton/BlogCardSkeleton
 import { useArticles } from '@/hooks/useSpecialized';
 import { ArticleEmptyState } from './ArticleEmptyState';
 import { useRouter } from 'next/navigation';
+import ErrorState from '@/components/feedbacks/ErrorState';
 
 
 
 export const ArticleSection = () => {
   const router = useRouter()
 
-  const {articles, isLoading, error } = useArticles({
+  const {articles, isLoading, error , refresh} = useArticles({
     include: ['users'],
     sortBy: 'created_at',
     sortOrder: 'desc',
@@ -21,7 +22,15 @@ export const ArticleSection = () => {
   
   });
 
-  if (error) return <div>Error loading properties</div>;
+  if(error){
+    return (
+      <ErrorState
+        message="Error loading featured articles"
+        retryLabel="Reload articles data"
+        onRetry={refresh}
+      />
+    );
+  }
   return (
 
     <section className="py-20 bg-white">

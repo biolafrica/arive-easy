@@ -13,6 +13,7 @@ import SellerPropertyDetails from './SellerPropertyDetails';
 import { ActiveFiltersBadge, LoadMoreButton, LoadingMoreSkeleton, PropertiesGrid, PropertyStatusFilter } from './ListingComponentUtils';
 import SellerPropertyNew from './SellerPropertyNew';
 import { Property } from './property-form';
+import ErrorState from '@/components/feedbacks/ErrorState';
 
 
 type PropertyStatus = '' |'draft'|'active'|'inactive'|'withdrawn'|'offers'
@@ -68,15 +69,13 @@ export default function SellerDashboardListingsClientView() {
     detailPanel.close()
   }
 
-
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-        <p className="text-red-500 text-center">
-          Error loading properties. Please try again.
-        </p>
-        <Button onClick={refresh}>Retry</Button>
-      </div>
+      <ErrorState
+        message="Error loading property listings"
+        retryLabel="Reload property listings"
+        onRetry={refresh}
+      />
     );
   }
 

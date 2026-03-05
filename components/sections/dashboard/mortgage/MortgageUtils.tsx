@@ -69,7 +69,7 @@ export function PaymentStatusBadge({ status }: { status: string }) {
 
 export function ProgressSection({ mortgage }: { mortgage: Mortgage }) {
   const paidAmount = (mortgage.payments_made || 0) * mortgage.monthly_payment;
-  const totalAmount = mortgage.approved_loan_amount;
+  const totalAmount = mortgage.total_payments;
   const remainingAmount = totalAmount - paidAmount;
   const percentage = totalAmount > 0 ? Math.round((paidAmount / totalAmount) * 100) : 0;
 
@@ -79,7 +79,7 @@ export function ProgressSection({ mortgage }: { mortgage: Mortgage }) {
         <div>
           <h3 className="text-lg font-semibold text-gray-900">Loan Progress</h3>
           <p className="text-sm text-gray-500">
-            {mortgage.payments_made || 0} of {mortgage.total_payments} payments made
+            {mortgage.payments_made || 0} of {mortgage.number_of_payments} payments made
           </p>
         </div>
         <div className="text-right">
@@ -276,7 +276,7 @@ export function LoanDetailsSection({ mortgage }: { mortgage: Mortgage }) {
         )} years)`}
       />
       <InfoItem
-        label="Monthly Payment"
+        label="Monthly Payment Amount"
         value={formatUSD({ amount: mortgage.monthly_payment })}
       />
       <InfoItem
@@ -286,20 +286,20 @@ export function LoanDetailsSection({ mortgage }: { mortgage: Mortgage }) {
         )} of each month`}
       />
       <InfoItem
-        label="First Payment"
+        label="First Payment Date"
         value={
           mortgage.first_payment_date ? formatDate(mortgage.first_payment_date) : "N/A"
         }
       />
       <InfoItem
-        label="Final Payment"
+        label="Final Payment Date"
         value={
           mortgage.last_payment_date ? formatDate(mortgage.last_payment_date): "N/A"
         }
       />
       <InfoItem
-        label="Total Payments"
-        value={mortgage.total_payments}
+        label="Total Payment Amount"
+        value={formatUSD({amount:mortgage.total_payments})}
       />
     </InfoCard>
   );

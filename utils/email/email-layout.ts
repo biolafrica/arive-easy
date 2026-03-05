@@ -14,9 +14,9 @@ export interface EmailLayoutConfig {
 
 const defaultConfig: EmailLayoutConfig = {
   companyName: 'Kletch',
-  companyWebsite: 'https://eatupng.com',
-  supportEmail: 'info@ariveasy.com',
-  companyLogo: 'https://ariveasy.com/logo.png',
+  companyWebsite: 'https://usekletch.com',
+  supportEmail: 'support@usekletch.com',
+  companyLogo: 'https://usekletch.com/logo.png',
 };
 
 export const emailHeader = (config: EmailLayoutConfig = {}) => {

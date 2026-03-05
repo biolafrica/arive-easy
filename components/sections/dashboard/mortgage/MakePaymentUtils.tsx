@@ -149,23 +149,7 @@ export function PaymentSelectView({
           );
         })}
       </div>
-
-      <div className="mt-6 pt-6 border-t border-gray-200">
-        <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-          <div className="p-2 bg-white rounded-lg border border-gray-200">
-            <icon.CreditCardIcon className="w-5 h-5 text-gray-600" />
-          </div>
-          <div className="flex-1">
-            <p className="text-sm font-medium text-gray-900">Payment Method</p>
-            <p className="text-sm text-gray-500">
-              {paymentMethodDisplay || 'Default payment method'}
-            </p>
-          </div>
-          <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
-            Change
-          </button>
-        </div>
-      </div>
+  
     </div>
   );
 }

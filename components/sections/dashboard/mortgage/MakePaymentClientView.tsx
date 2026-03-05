@@ -40,9 +40,6 @@ export default function MakePaymentClientView({
     clearError 
   } = useMakePayment();
 
-  console.log('all mortage Payments:', payments);
-
-
   const paymentList = useMemo((): PaymentGroup[] => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);

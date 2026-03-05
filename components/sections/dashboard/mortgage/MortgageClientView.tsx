@@ -56,7 +56,7 @@ export default function MortgageClientView({ id }: { id: string }) {
       )}
 
       <div>
-
+        
         {isLoading && (<PropertyDetailsPageSkeleton/>) }
 
         {!isLoading && mortgage && mortgage.properties && (

@@ -140,7 +140,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       application_id: mortgage.application_id,
       mortgage_id: mortgageId,
       stripe_payment_intent_id: paymentIntent.id,
-      amount: totalAmount,
+      amount: totalAmount * 100,
       currency: 'usd',
       status: 'pending',
       type: 'mortgage_payment',
@@ -268,7 +268,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     await supabaseAdmin
     .from('transactions')
     .update({
-      status: 'completed',
+      status: 'succeeded',
       metadata: {
         completed_at: new Date().toISOString(),
       },
