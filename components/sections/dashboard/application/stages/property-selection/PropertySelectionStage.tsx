@@ -1,4 +1,4 @@
-import { useApplicationProperties, useProperties } from "@/hooks/useSpecialized";
+import { useApplicationProperties} from "@/hooks/useSpecialized";
 import { PropertySelectionStageData, Props,} from "@/type/pages/dashboard/application";
 import { useMemo, useState } from "react";
 import { PropertyBase } from "@/type/pages/property";

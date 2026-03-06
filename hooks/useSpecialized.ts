@@ -1,4 +1,4 @@
-import { useCrud,} from './useCrud';
+import { useCrud} from './useCrud';
 import { useInfiniteList} from './useInfiniteList';
 import { FilterParams, queryKeys } from '../lib/query-keys';
 import { getEntityCacheConfig } from '../lib/cache-config';
@@ -29,6 +29,23 @@ export function useProperties(params?: any) {
   return {
     properties: data?.data || [],
     pagination: data?.pagination,
+    isLoading,
+    error,
+    ...crud,
+  };
+}
+
+export function usesellerProperty(id: string) {
+  const crud = useCrud<PropertyBase>({
+    resource: 'properties',
+    interfaceType: 'buyer',
+    cacheConfig: getEntityCacheConfig('properties', 'detail'),
+  });
+  
+  const { data, isLoading, error } = crud.useGetOne(id);
+  
+  return {
+    property: data,
     isLoading,
     error,
     ...crud,
