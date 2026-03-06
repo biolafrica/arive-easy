@@ -1,4 +1,10 @@
+import { createMetadata } from '@/components/common/metaData';
 import PropertyClientView from '@/components/sections/public/property/PropertyClientView';
+
+export const metadata = createMetadata({
+  title: "Property Detail",
+  description: "Find your perfect home in Nigeria...",
+});
 
 export default async function PropertyDetailPage(
   { params }: { params: Promise<{ id: string }> } 

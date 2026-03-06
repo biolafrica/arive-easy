@@ -5,7 +5,7 @@ import ListingClientView from "@/components/sections/dashboard/listing/ListingCl
 export const metadata = createMetadata({
   title: "Seller Dashboard - Listing Detail",
   description: "Find your perfect home in Nigeria...",
-  url: "https://useKletch.com/seller-dashboard/listings/[id]",
+  url: "https://useKletch.com/seller-dashboard/listings",
 });
 
 export default async  function UserDashbaordPropertyDetailPage(

@@ -1,7 +1,11 @@
+import { createMetadata } from "@/components/common/metaData";
 import ArticleViewClient from "@/components/sections/public/article/ArticleViewClient";
 import { extractUuidFromSlug } from "@/utils/extractUUID";
 
-
+export const metadata = createMetadata({
+  title: "Article Detail",
+  description: "Find your perfect home in Nigeria...",
+});
 export default async function ArticleViewPage({params}:any){
   const { 'slug-id': slugId } = await params;
   const id = extractUuidFromSlug(slugId);

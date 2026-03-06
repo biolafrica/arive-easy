@@ -1,9 +1,17 @@
+import { createMetadata } from "@/components/common/metaData";
 import { PageContainer } from "@/components/layouts/dashboard/PageContainer";
 import EmploymentInfoClientView from "@/components/sections/dashboard/approval/EmploymentInfoClientView";
 import { SettingsSection } from "@/components/sections/dashboard/settings/settingsSection";
 import { StepProgress } from "@/components/ui/ProgressBar";
 
-export default async function UserApprovalEmploymentInfoPage({params}:{params:{id:string}}){
+export const metadata = createMetadata({
+  title: "User Dashboard - Employment and Income Information",
+  description: "Find your perfect home in Nigeria...",
+});
+
+export default async function UserApprovalEmploymentInfoPage(
+  { params }: { params: Promise<{ id: string }> }
+){
    const {id}= await params
   return(
     <PageContainer className="gap-y-4">
