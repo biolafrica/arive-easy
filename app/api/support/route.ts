@@ -1,6 +1,6 @@
 
 import { sendEmail } from "@/utils/email/send_email";
-import { EmailSupportAcknowledgement, EmailSupportTemplate } from "@/utils/email/support";
+import { EmailSupportAcknowledgement, EmailSupportTemplate } from "@/utils/email/templates/support";
 import { z } from "zod";
 
 
@@ -13,9 +13,9 @@ const supportRequestSchema = z.object({
 
 const SUPPORT_CONFIG = {
   primaryEmail: process.env.SUPPORT_EMAIL || 'biolafrica@gmail.com',
-  fallbackEmail: process.env.SUPPORT_FALLBACK_EMAIL || 'support@ariveasy.com',
-  replyTo: 'no-reply@ariveasy.com',
-  companyName: 'Ariveasy',
+  fallbackEmail: process.env.SUPPORT_FALLBACK_EMAIL || 'support@usekletch.com',
+  replyTo: 'no-reply@usekletch.com',
+  companyName: 'Kletch',
 };
 
 export async function POST(req: Request) {

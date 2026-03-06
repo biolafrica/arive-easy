@@ -7,8 +7,8 @@ import { ApplicationBase } from '@/type/pages/dashboard/application';
 import { Mortgage } from '@/type/pages/dashboard/mortgage';
 import { UserBase } from '@/type/user';
 import { sendEmail } from '@/utils/email/send_email';
-import { paymentReceiptBody } from '@/utils/email/payment-receipt';
-import { getPaymentFailedEmailTemplate, getPaymentSuccessEmailTemplate } from '@/utils/email/direct-debit';
+import { paymentReceiptBody } from '@/utils/email/templates/payment-receipt';
+import { getPaymentFailedEmailTemplate, getPaymentSuccessEmailTemplate } from '@/utils/email/templates/direct-debit';
 import { createNotification } from '@/utils/notifications/createNotification';
 import { buildNotificationPayload } from '@/utils/notifications/notificationContent';
 import { formatUSD } from '@/lib/formatter';
@@ -137,12 +137,10 @@ async function handleCheckoutExpired(session: Stripe.Checkout.Session) {
 async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
   console.log('Payment intent succeeded:', paymentIntent.id);
 
-  // Check if this is a manual mortgage payment
   const mortgageId = paymentIntent.metadata?.mortgage_id;
   const paymentIds = paymentIntent.metadata?.payment_ids;
 
   if (mortgageId && paymentIds) {
-    // This is a manual mortgage payment - handle it
     await handleManualMortgagePaymentSucceeded(paymentIntent);
     return;
   }
@@ -163,12 +161,10 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
 async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
   console.log('Payment intent failed:', paymentIntent.id);
 
-  // Check if this is a manual mortgage payment
   const mortgageId = paymentIntent.metadata?.mortgage_id;
   const paymentIds = paymentIntent.metadata?.payment_ids;
 
   if (mortgageId && paymentIds) {
-    // This is a manual mortgage payment - handle it
     await handleManualMortgagePaymentFailed(paymentIntent);
     return;
   }
@@ -252,28 +248,47 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
     return;
   }
 
-  const { data: payment, error: paymentError } = await supabaseAdmin
+  const { data: nextPayment, error: findError } = await supabaseAdmin
   .from('mortgage_payments')
-  .update({
-    status: 'succeeded',
-    stripe_invoice_id: invoice.id,
-    stripe_payment_intent_id: paymentIntentId,
-    paid_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  })
+  .select('*')
   .eq('mortgage_id', mortgage.id)
   .eq('status', 'scheduled')
   .order('payment_number', { ascending: true })
   .limit(1)
-  .select()
   .single();
 
-  if (paymentError) {
-    console.error('Failed to update payment record:', paymentError);
+  if (findError || !nextPayment) {
+    console.error('No scheduled payment found for mortgage:', mortgage.id, findError);
+  }
+
+  let paymentId: string | null = null;
+  let paymentNumber: number = (mortgage.payments_made || 0) + 1;
+
+  if (nextPayment) {
+    const { data: updatedPayment, error: updateError } = await supabaseAdmin
+      .from('mortgage_payments')
+      .update({
+        status: 'succeeded',
+        stripe_invoice_id: invoice.id,
+        stripe_payment_intent_id: paymentIntentId,
+        paid_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', nextPayment.id) // Update by specific ID, not by conditions
+      .select()
+      .single();
+
+    if (updateError) {
+      console.error('Failed to update payment record:', updateError);
+    } else {
+      paymentId = updatedPayment.id;
+      paymentNumber = updatedPayment.payment_number;
+    }
   }
 
   const newPaymentsMade = (mortgage.payments_made || 0) + 1;
   const isCompleted = newPaymentsMade >= mortgage.total_payments;
+
   const nextPaymentDate = new Date(invoice.period_end * 1000);
   nextPaymentDate.setMonth(nextPaymentDate.getMonth() + 1);
 
@@ -286,19 +301,30 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
     updated_at: new Date().toISOString(),
   });
 
-  await supabaseAdmin.from('transactions').insert({
+  const { error: transactionError } = await supabaseAdmin
+  .from('transactions')
+  .insert({
     user_id: mortgage.user_id,
     application_id: mortgage.application_id,
     mortgage_id: mortgage.id,
+    mortgage_payment_id: paymentId, // Can be null if payment record wasn't found
     stripe_payment_intent_id: paymentIntentId,
     stripe_invoice_id: invoice.id,
     amount: invoice.amount_paid / 100,
     currency: invoice.currency,
     status: 'completed',
     type: 'mortgage_payment',
-    description: `Mortgage payment ${newPaymentsMade} of ${mortgage.total_payments}`,
-    metadata: { payment_number: newPaymentsMade, subscription_id: subscriptionId },
+    description: `Mortgage payment ${newPaymentsMade} of ${mortgage.number_of_payments || mortgage.total_payments}`,
+    metadata: { 
+      payment_number: paymentNumber, 
+      subscription_id: subscriptionId,
+      invoice_id: invoice.id,
+    },
   });
+
+  if (transactionError) {
+    console.error('Failed to create transaction:', transactionError);
+  }
 
   const application = await applicationQueryBuilder.findById(mortgage.application_id);
   const user = await userQueryBuilder.findById(mortgage.user_id);
@@ -310,31 +336,40 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
       subject: 'Payment Successful - Kletch',
       html: getPaymentSuccessEmailTemplate({
         userName: user.name || 'Customer', 
-        amount: invoice.amount_paid / 100,
+        amount: invoice.amount_paid,
         paymentNumber: newPaymentsMade,
         totalPayments: mortgage.total_payments,
+        numberOfPayments: mortgage.number_of_payments,
+        monthlyPayment: mortgage.monthly_payment,
         nextPaymentDate: nextPaymentDate.toISOString().split('T')[0],
         applicationNumber: application?.application_number || '',
       }),
     }).catch(err => console.error('Failed to send payment success email:', err));
 
-    await createNotification(
-      buildNotificationPayload('subscription_payment_success', {
-        user_id: user.id,
-        application_id: application.id,
-        property_id:application.property_id,
-        payment_id:payment.id,
-        type:'subscription_payment_success',
-        channel: 'in_app',
-        metadata: {
-          amount: formatUSD({amount:payment.amount,fromCents:true}),
-          currency:'USD',
-          cta_url: `/user-dashboard/properties`,
-          property_name: application.property_name,
-          reference_number:payment.mortgage_id
-        },
-      })
-    )
+    if (application) {
+      try {
+        await createNotification(
+          buildNotificationPayload('subscription_payment_success', {
+            user_id: user.id,
+            application_id: application.id,
+            property_id:application.property_id,
+            payment_id:paymentId || mortgage.id,
+            type:'subscription_payment_success',
+            channel: 'in_app',
+            metadata: {
+              amount: formatUSD({amount:invoice.amount_paid/100}),
+              currency:'USD',
+              cta_url: `/user-dashboard/properties`,
+              property_name: application.property_name,
+              reference_number:mortgage.id
+            },
+          })
+        )
+      } catch (notificationError) {
+        console.error('Failed to create in-app notification:', notificationError);
+        
+      }
+    }
 
   }
 
@@ -388,13 +423,13 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
       subject: 'Payment Failed - Action Required - Kletch',
       html: getPaymentFailedEmailTemplate({
         userName: user.name || 'Customer',
-        amount: invoice.amount_due / 100,
+        amount: invoice.amount_due ,
         failureReason: invoice.last_finalization_error?.message || 'Your payment could not be processed',
         retryDate: invoice.next_payment_attempt 
           ? new Date(invoice.next_payment_attempt * 1000).toISOString().split('T')[0]
           : null,
         applicationNumber: application?.application_number || '',
-        updatePaymentUrl: `${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/applications`,
+        updatePaymentUrl: `${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/mortgages/${mortgage.id}`,  
       }),
     }).catch(err => console.error('Failed to send payment failure email:', err));
 
@@ -839,18 +874,15 @@ async function handleManualMortgagePaymentSucceeded(paymentIntent: Stripe.Paymen
   const userQueryBuilder = new SupabaseQueryBuilder<UserBase>("users");
   const applicationQueryBuilder = new SupabaseQueryBuilder<ApplicationBase>("applications");
 
-  // Get mortgage
   const mortgage = await mortgageQueryBuilder.findById(mortgage_id);
   if (!mortgage) {
     console.error('Mortgage not found:', mortgage_id);
     return;
   }
 
-  // Parse payment IDs
   const paymentIdArray = payment_ids.split(',');
   const numPayments = parseInt(payment_count || '1');
 
-  // Update all the payments to succeeded
   const { error: updateError } = await supabaseAdmin
     .from('mortgage_payments')
     .update({
@@ -865,7 +897,6 @@ async function handleManualMortgagePaymentSucceeded(paymentIntent: Stripe.Paymen
     console.error('Failed to update mortgage payments:', updateError);
   }
 
-  // Update transaction
   await supabaseAdmin
     .from('transactions')
     .update({
@@ -878,11 +909,9 @@ async function handleManualMortgagePaymentSucceeded(paymentIntent: Stripe.Paymen
     })
     .eq('stripe_payment_intent_id', paymentIntent.id);
 
-  // Update mortgage record
   const newPaymentsMade = (mortgage.payments_made || 0) + numPayments;
   const isCompleted = newPaymentsMade >= mortgage.total_payments;
 
-  // Get next scheduled payment
   const { data: nextScheduled } = await supabaseAdmin
     .from('mortgage_payments')
     .select('due_date')
@@ -901,28 +930,26 @@ async function handleManualMortgagePaymentSucceeded(paymentIntent: Stripe.Paymen
     updated_at: new Date().toISOString(),
   });
 
-  // Get user and application for notifications
   const user = await userQueryBuilder.findById(user_id);
   const application = await applicationQueryBuilder.findById(mortgage.application_id);
 
   if (user?.email) {
-    // Send success email
-    const amountPaid = paymentIntent.amount / 100;
 
     await sendEmail({
       to: user.email,
       subject: `Payment Successful - ${numPayments > 1 ? `${numPayments} Payments` : 'Mortgage Payment'} - Kletch`,
       html: getPaymentSuccessEmailTemplate({
         userName: user.name || 'Customer',
-        amount: amountPaid,
+        amount: paymentIntent.amount,
         paymentNumber: newPaymentsMade,
+        numberOfPayments: mortgage.number_of_payments,
+        monthlyPayment: mortgage.monthly_payment,
         totalPayments: mortgage.total_payments,
         nextPaymentDate: nextScheduled?.due_date || mortgage.last_payment_date,
         applicationNumber: application?.application_number || '',
       }),
     }).catch(err => console.error('Failed to send payment success email:', err));
 
-    // Create notification
     await createNotification(
       buildNotificationPayload('subscription_payment_success', {
         user_id: user.id,
@@ -932,7 +959,7 @@ async function handleManualMortgagePaymentSucceeded(paymentIntent: Stripe.Paymen
         type: 'subscription_payment_success',
         channel: 'in_app',
         metadata: {
-          amount: formatUSD({ amount: amountPaid }),
+          amount: formatUSD({ amount: paymentIntent.amount, fromCents: true }),
           currency: 'USD',
           payment_count: numPayments,
           payment_numbers: payment_numbers,
@@ -959,11 +986,9 @@ async function handleManualMortgagePaymentFailed(paymentIntent: Stripe.PaymentIn
   const userQueryBuilder = new SupabaseQueryBuilder<UserBase>("users");
   const applicationQueryBuilder = new SupabaseQueryBuilder<ApplicationBase>("applications");
 
-  // Parse payment IDs
   const paymentIdArray = payment_ids?.split(',') || [];
 
   // Revert payments back to their appropriate status
-  // Get each payment's due date to determine if it should be 'failed' or 'scheduled'
   const { data: payments } = await supabaseAdmin
     .from('mortgage_payments')
     .select('id, due_date')
@@ -987,7 +1012,6 @@ async function handleManualMortgagePaymentFailed(paymentIntent: Stripe.PaymentIn
       .eq('id', payment.id);
   }
 
-  // Update transaction
   await supabaseAdmin
     .from('transactions')
     .update({
@@ -1000,11 +1024,9 @@ async function handleManualMortgagePaymentFailed(paymentIntent: Stripe.PaymentIn
     })
     .eq('stripe_payment_intent_id', paymentIntent.id);
 
-  // Get mortgage to check if we need to update its status
   const mortgage = await mortgageQueryBuilder.findById(mortgage_id);
   if (!mortgage) return;
 
-  // Check if there are any failed payments now
   const { count: failedCount } = await supabaseAdmin
     .from('mortgage_payments')
     .select('*', { count: 'exact', head: true })
@@ -1018,7 +1040,6 @@ async function handleManualMortgagePaymentFailed(paymentIntent: Stripe.PaymentIn
     });
   }
 
-  // Send failure notification
   const user = await userQueryBuilder.findById(user_id);
   const application = await applicationQueryBuilder.findById(mortgage.application_id);
 
@@ -1028,7 +1049,7 @@ async function handleManualMortgagePaymentFailed(paymentIntent: Stripe.PaymentIn
       subject: 'Payment Failed - Action Required - Kletch',
       html: getPaymentFailedEmailTemplate({
         userName: user.name || 'Customer',
-        amount: paymentIntent.amount / 100,
+        amount: paymentIntent.amount ,
         failureReason: paymentIntent.last_payment_error?.message || 'Your payment could not be processed',
         retryDate: null,
         applicationNumber: application?.application_number || '',
@@ -1045,7 +1066,7 @@ async function handleManualMortgagePaymentFailed(paymentIntent: Stripe.PaymentIn
         type: 'subscription_payment_failed',
         channel: 'in_app',
         metadata: {
-          amount: formatUSD({ amount: paymentIntent.amount / 100 }),
+          amount: formatUSD({ amount: paymentIntent.amount , fromCents: true }),
           currency: 'USD',
           error: paymentIntent.last_payment_error?.message,
           cta_url: `/user-dashboard/mortgages/${mortgage_id}`,

@@ -7,7 +7,7 @@ import { ApplicationBase } from '@/type/pages/dashboard/application';
 import { PreApprovalBase } from '@/type/pages/dashboard/approval';
 import { supabaseAdmin } from '@/utils/supabase/supabaseAdmin';
 import { sendEmail } from '@/utils/email/send_email';
-import { getDirectDebitConfirmationEmailTemplate } from '@/utils/email/direct-debit';
+import { getDirectDebitConfirmationEmailTemplate } from '@/utils/email/templates/direct-debit';
 import { calculateNumberOfPayments } from '../initiate/route';
 
 

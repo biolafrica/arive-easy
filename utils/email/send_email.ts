@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import { emailLayout, EmailLayoutConfig } from './email-layout';
+import { EmailLayout, EmailLayoutConfig } from './layout/EmailLayout';
 
 export interface SendEmailOptions {
   to: string;
@@ -33,7 +33,7 @@ export async function sendEmail({
   }
 
   const finalHtml = html && useLayout 
-    ? emailLayout(html, layoutConfig)
+    ? EmailLayout(html, layoutConfig)
     : html;
 
   const msg = {

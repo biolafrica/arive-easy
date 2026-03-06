@@ -12,7 +12,7 @@ export function PageContainer({
   return (
     <div
       className={cn(
-        'md:border rounded-lg md:bg-white p-1 md:p-5',
+        'md:border rounded-lg md:bg-white p-1 md:p-8',
         className
       )}
     >

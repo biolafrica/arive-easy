@@ -1,7 +1,7 @@
 import { CreateApplication } from "@/type/pages/dashboard/application";
 import {PreApprovalBase } from "@/type/pages/dashboard/approval";
 import { generateApplicationRefNo } from "@/utils/common/generateApplicationRef";
-import { preApprovalAcceptedBody, preApprovalReceivedBody, preApprovalRejectedBody } from "@/utils/email/pre-approval";
+import { preApprovalAcceptedBody, preApprovalReceivedBody, preApprovalRejectedBody } from "@/utils/email/templates/pre-approval";
 import { sendEmail } from "@/utils/email/send_email";
 import { createNotification } from "@/utils/notifications/createNotification";
 import { buildNotificationPayload } from "@/utils/notifications/notificationContent";

@@ -1,7 +1,7 @@
 import { ApplicationBase } from "@/type/pages/dashboard/application";
 import { OfferBase } from "@/type/pages/dashboard/offer";
 import { UserBase } from "@/type/user";
-import { sendOfferAcceptedEmail, sendOfferDeclinedEmail } from "@/utils/email/offers";
+import { sendOfferAcceptedEmail, sendOfferDeclinedEmail } from "@/utils/email/templates/offers";
 import { sendEmail } from "@/utils/email/send_email";
 import { createNotification } from "@/utils/notifications/createNotification";
 import { buildNotificationPayload } from "@/utils/notifications/notificationContent";

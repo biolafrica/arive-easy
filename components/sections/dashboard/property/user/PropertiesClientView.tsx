@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect,} from "react";
 import { SegmentedTabs } from "@/components/common/SegmentedTabs";
 import MyPropertyClientView from "./MyPropertyClientView";
 import SavedPropertyClientView from "./SavedPropertyClientView";

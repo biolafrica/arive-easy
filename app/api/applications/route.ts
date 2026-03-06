@@ -2,7 +2,7 @@ import { ApplicationBase } from "@/type/pages/dashboard/application";
 import { OfferBase } from "@/type/pages/dashboard/offer";
 import { PropertyBase, PropertyStatus } from "@/type/pages/property";
 import { UserBase } from "@/type/user";
-import { offerNotificationBody } from "@/utils/email/application";
+import { offerNotificationBody } from "@/utils/email/templates/application";
 import { sendEmail } from "@/utils/email/send_email";
 import { createNotification } from "@/utils/notifications/createNotification";
 import { buildNotificationPayload } from "@/utils/notifications/notificationContent";
