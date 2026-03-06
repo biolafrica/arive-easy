@@ -7,6 +7,13 @@ import { WhyChooseUs } from "@/components/sections/public/home/WhyChooseUs";
 import { testimonials } from "@/data/pages/public/testimonial";
 import HeroSection from "@/components/sections/public/home/HeroSection";
 import { HomePropertySearchWrapper } from "@/components/propertySearch/PropertySearchWraper";
+import { createMetadata } from "@/components/common/metaData";
+
+export const metadata = createMetadata({
+  title: "Home - Kletch",
+  description: "Find your perfect home in Nigeria...",
+  url: "https://useKletch.com/",
+});
 
 export default function Home() {
   return (

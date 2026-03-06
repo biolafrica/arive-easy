@@ -1,5 +1,7 @@
 import { PagePlaceholder } from "@/components/common/Placeholder";
+import { createMetadata } from "@/components/common/metaData";
 
+export const metadata = createMetadata({ noIndex: true });
 
 export default function UnauthorizedPage() {
   return (

@@ -1,6 +1,14 @@
 
 import { PagePlaceholder } from '@/components/common/Placeholder';
+import { createMetadata } from '@/components/common/metaData';
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
+
+
+export const metadata = createMetadata({
+  title: "Admin Dashboard - Overview",
+  description: "Find your perfect home in Nigeria...",
+  url: "https://useKletch.com/admin-dashboard/",
+});
 
 export default function AdminDashboardPage() {
   return (

@@ -183,10 +183,10 @@ export function getDirectDebitConfirmationEmailTemplate(params: DirectDebitConfi
                 <td style="background-color: #f9fafb; padding: 24px 40px; border-top: 1px solid #e5e7eb;">
                   <p style="color: #6b7280; font-size: 12px; margin: 0; text-align: center;">
                     If you have any questions, please contact us at 
-                    <a href="mailto:support@ariveasy.com" style="color: #2563eb;">support@ariveasy.com</a>
+                    <a href="mailto:support@Kletch.com" style="color: #2563eb;">support@Kletch.com</a>
                   </p>
                   <p style="color: #9ca3af; font-size: 12px; margin: 16px 0 0; text-align: center;">
-                    © ${new Date().getFullYear()} Ariveasy. All rights reserved.
+                    © ${new Date().getFullYear()} Kletch. All rights reserved.
                   </p>
                 </td>
               </tr>
@@ -320,10 +320,10 @@ export function getPaymentSuccessEmailTemplate(params: PaymentSuccessParams): st
                 <td style="background-color: #f9fafb; padding: 24px 40px; border-top: 1px solid #e5e7eb;">
                   <p style="color: #6b7280; font-size: 12px; margin: 0; text-align: center;">
                     If you have any questions, please contact us at 
-                    <a href="mailto:support@ariveasy.com" style="color: #2563eb;">support@ariveasy.com</a>
+                    <a href="mailto:support@usekletch.com" style="color: #2563eb;">support@Kletch.com</a>
                   </p>
                   <p style="color: #9ca3af; font-size: 12px; margin: 16px 0 0; text-align: center;">
-                    © ${new Date().getFullYear()} Ariveasy. All rights reserved.
+                    © ${new Date().getFullYear()} Kletch. All rights reserved.
                   </p>
                 </td>
               </tr>
@@ -453,7 +453,7 @@ export function getPaymentFailedEmailTemplate(params: PaymentFailedParams): stri
                   
                   <p style="color: #6b7280; font-size: 14px; margin: 30px 0 0; text-align: center;">
                     Need help? Contact our support team at 
-                    <a href="mailto:support@ariveasy.com" style="color: #2563eb;">support@ariveasy.com</a>
+                    <a href="mailto:support@usekletch.com" style="color: #2563eb;">support@Kletch.com</a>
                   </p>
                   
                 </td>
@@ -463,7 +463,7 @@ export function getPaymentFailedEmailTemplate(params: PaymentFailedParams): stri
               <tr>
                 <td style="background-color: #f9fafb; padding: 24px 40px; border-top: 1px solid #e5e7eb;">
                   <p style="color: #9ca3af; font-size: 12px; margin: 0; text-align: center;">
-                    © ${new Date().getFullYear()} Ariveasy. All rights reserved.
+                    © ${new Date().getFullYear()} Kletch. All rights reserved.
                   </p>
                 </td>
               </tr>
@@ -586,10 +586,10 @@ export function getPaymentReminderEmailTemplate(params: PaymentReminderParams): 
                 <td style="background-color: #f9fafb; padding: 24px 40px; border-top: 1px solid #e5e7eb;">
                   <p style="color: #6b7280; font-size: 12px; margin: 0; text-align: center;">
                     If you have any questions, please contact us at 
-                    <a href="mailto:support@ariveasy.com" style="color: #2563eb;">support@ariveasy.com</a>
+                    <a href="mailto:support@usekletch.com" style="color: #2563eb;">support@Kletch.com</a>
                   </p>
                   <p style="color: #9ca3af; font-size: 12px; margin: 16px 0 0; text-align: center;">
-                    © ${new Date().getFullYear()} Ariveasy. All rights reserved.
+                    © ${new Date().getFullYear()} Kletch. All rights reserved.
                   </p>
                 </td>
               </tr>

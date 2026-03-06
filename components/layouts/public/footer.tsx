@@ -68,7 +68,7 @@ export const Footer: React.FC<FooterProps> = ({
         <div>
           <Link href="/" className="flex items-center gap-2">
             <HomeModernIcon className="h-8 w-8 text-accent" />
-            <span className="sr-only">Ariveasy</span>
+            <span className="sr-only">Kletch</span>
           </Link>
         </div>
 

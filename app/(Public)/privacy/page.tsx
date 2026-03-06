@@ -1,6 +1,13 @@
+import { createMetadata } from "@/components/common/metaData";
 import { LegalHeader } from "@/components/sections/public/legal/LegalHeader";
 import { LegalPageLayout } from "@/components/sections/public/legal/LegalPageLayout";
 import { LegalSection } from "@/components/sections/public/legal/LegalSection";
+
+export const metadata = createMetadata({
+  title: "Privacy Policy - Kletch",
+  description: "Find your perfect home in Nigeria...",
+  url: "https://useKletch.com/privacy",
+});
 
 export default function PrivacyPolicyPage() {
   return (
@@ -9,7 +16,7 @@ export default function PrivacyPolicyPage() {
         <LegalHeader
           eyebrow="Data Protection"
           title="Privacy Policy"
-          description="This Privacy Policy explains how Ariveasy collects, uses, and protects your personal information."
+          description="This Privacy Policy explains how Kletch collects, uses, and protects your personal information."
         />
       }
     >
@@ -17,16 +24,16 @@ export default function PrivacyPolicyPage() {
         <p>12 December 2025</p>
       </LegalSection>
 
-      <LegalSection title="About Ariveasy">
+      <LegalSection title="About Kletch">
         <p>
-          Ariveasy (“Ariveasy,” “we,” “us,” or “our”) is a federally incorporated
+          Kletch (“Kletch,” “we,” “us,” or “our”) is a federally incorporated
           Canadian company that provides a technology platform enabling property
           buyers, sellers, and lenders to connect, verify documents, complete
           due-diligence steps, and execute agreements through licensed
           third-party services.
         </p>
         <p>
-          Ariveasy is not a lender, financial institution, escrow agent, or
+          Kletch is not a lender, financial institution, escrow agent, or
           property seller. We do not hold or transmit money directly.
         </p>
       </LegalSection>
@@ -35,7 +42,7 @@ export default function PrivacyPolicyPage() {
         <p>
           We collect only the information necessary to facilitate property-related
           transactions and to verify your identity, eligibility, and documentation.
-          Under our minimal data storage model, Ariveasy retains limited information
+          Under our minimal data storage model, Kletch retains limited information
           while using licensed third parties to handle sensitive data.
         </p>
 
@@ -66,7 +73,7 @@ export default function PrivacyPolicyPage() {
         </ul>
 
         <p className="mt-3">
-          Once verification is complete, Ariveasy deletes any sensitive documents
+          Once verification is complete, Kletch deletes any sensitive documents
           not legally or operationally required.
         </p>
       </LegalSection>
@@ -124,7 +131,7 @@ export default function PrivacyPolicyPage() {
       </LegalSection>
 
       <LegalSection title="4. Data Retention">
-        <p>Ariveasy retains only minimal necessary data, including:</p>
+        <p>Kletch retains only minimal necessary data, including:</p>
         <ul className="list-disc space-y-2 pl-5">
           <li>Account details</li>
           <li>Summarized employment and income information</li>
@@ -146,7 +153,7 @@ export default function PrivacyPolicyPage() {
       </LegalSection>
 
       <LegalSection title="5. Security">
-        <p>Ariveasy employs industry-standard security measures, including:</p>
+        <p>Kletch employs industry-standard security measures, including:</p>
         <ul className="list-disc space-y-2 pl-5">
           <li>SOC 2-compliant encrypted storage</li>
           <li>TLS/SSL encryption</li>
@@ -167,7 +174,7 @@ export default function PrivacyPolicyPage() {
           of, or deletion of your personal data, as well as withdrawal of consent.
         </p>
         <p>
-          Requests can be sent to: <strong>info@ariveasy.com</strong>
+          Requests can be sent to: <strong>info@kletch.com</strong>
         </p>
       </LegalSection>
 
@@ -190,7 +197,7 @@ export default function PrivacyPolicyPage() {
 
       <LegalSection title="8. Children">
         <p>
-          Ariveasy is not intended for use by individuals under the age of 18.
+          Kletch is not intended for use by individuals under the age of 18.
         </p>
       </LegalSection>
 
@@ -204,7 +211,7 @@ export default function PrivacyPolicyPage() {
       <LegalSection title="10. Contact">
         <p>
           If you have any questions or concerns regarding this Privacy Policy,
-          please contact us at <strong>info@ariveasy.com</strong>.
+          please contact us at <strong>info@kletch.com</strong>.
         </p>
       </LegalSection>
     </LegalPageLayout>

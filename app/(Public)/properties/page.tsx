@@ -1,6 +1,12 @@
 import { SectionHeading } from "@/components/common/SectionHeading";
+import { createMetadata } from "@/components/common/metaData";
 import AllProperties from "@/components/sections/public/property/AllProperties";
 
+export const metadata = createMetadata({
+  title: "Properties - Kletch",
+  description: "Find your perfect home in Nigeria...",
+  url: "https://useKletch.com/properties",
+});
 
 export default function PropertiesPage() {
   return (

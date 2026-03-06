@@ -1,8 +1,11 @@
+import { createMetadata } from '@/components/common/metaData';
 import { AuthCard } from '@/components/sections/auth/AuthLayout';
 import { GoogleSignInButton } from '@/components/sections/auth/GoogleSignInButton';
 import SignInFormPage from '@/components/sections/auth/SignInForm';
 import { AuthTabs, Divider } from '@/components/sections/auth/TabHeader';
 import Link from 'next/link';
+
+export const metadata = createMetadata({ noIndex: true });
 
 export default function LoginPage() {
   return (

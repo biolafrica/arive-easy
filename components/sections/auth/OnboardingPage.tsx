@@ -141,7 +141,7 @@ export default function OnboardingComponent() {
             <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
               <CheckCircleIcon className="h-6 w-6 text-green-600" />
             </div>
-            <h2 className="text-3xl font-bold text-gray-900">Welcome to Ariveasy!</h2>
+            <h2 className="text-3xl font-bold text-gray-900">Welcome to Kletch!</h2>
             <p className="mt-2 text-gray-600">
               Your account has been created successfully.
             </p>

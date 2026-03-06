@@ -1,7 +1,15 @@
+import { createMetadata } from "@/components/common/metaData";
 import { PageContainer } from "@/components/layouts/dashboard/PageContainer";
 import UserForm from "@/components/sections/dashboard/settings/UserForm";
 import { SettingsSection } from "@/components/sections/dashboard/settings/settingsSection";
 import ResetPasswordForm from "@/components/sections/dashboard/settings/userPasswordReset";
+
+export const metadata = createMetadata({
+  title: "User Dashboard - Settings",
+  description: "Find your perfect home in Nigeria...",
+  url: "https://useKletch.com/user-dashboard/settings",
+});
+
 
 export default function UserDashboardSettings (){
   return(

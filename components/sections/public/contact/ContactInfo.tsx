@@ -20,10 +20,10 @@ export function ContactInfo() {
         <li className="flex items-center gap-3">
           <EnvelopeIcon className="h-5 w-5 text-accent" />
           <a
-            href="mailto:support@ariveasy.com"
+            href="mailto:support@kletch.com"
             className="hover:underline"
           >
-            info@ariveasy.com
+            info@kletch.com
           </a>
         </li>
 

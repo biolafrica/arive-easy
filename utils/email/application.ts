@@ -20,7 +20,7 @@ export const offerNotificationBody = ({
     </p>
     
     <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 25px 0;">
-      You have received a new offer for your property <strong>${propertyName}</strong> through the Ariveasy platform.
+      You have received a new offer for your property <strong>${propertyName}</strong> through the Kletch platform.
     </p>
 
     <!-- Offer Summary -->
@@ -85,7 +85,7 @@ export const offerNotificationBody = ({
       <p style="color: #6b7280; font-size: 14px; margin: 0 0 15px 0;">
         Our team is available to help you evaluate this offer and guide you through the decision process.
       </p>
-      <a href="mailto:seller-support@ariveasy.com" 
+      <a href="mailto:seller-support@kletch.com" 
          style="color: #4F46E5; text-decoration: none; font-weight: 600;">
         Contact Seller Support
       </a>

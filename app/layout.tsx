@@ -1,10 +1,10 @@
 import { Geist, Geist_Mono } from "next/font/google";
-import type { Metadata } from "next";
 import "./globals.css";
 import { QueryProvider } from "@/providers/query-provider";
 import { Toaster } from "sonner";
 import { AuthProvider } from "@/providers/auth-provider";
 import ScrollToTop from "@/components/common/ScrollToTop";
+import { createMetadata } from "@/components/common/metaData";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,10 +16,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Ariveeasy",
-  description: "Making International property ownership accessible for immigrants",
-};
+export const metadata = createMetadata()
 
 export default function RootLayout({
   children,

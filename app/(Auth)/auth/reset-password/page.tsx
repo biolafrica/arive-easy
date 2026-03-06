@@ -1,7 +1,10 @@
+import { createMetadata } from '@/components/common/metaData';
 import { Button } from '@/components/primitives/Button';
 import { AuthCard } from '@/components/sections/auth/AuthLayout';
 import ResetFormPage from '@/components/sections/auth/ResetForm';
 import Link from 'next/link';
+
+export const metadata = createMetadata({ noIndex: true });
 
 export default function ResetPasswordPage() {
   return (

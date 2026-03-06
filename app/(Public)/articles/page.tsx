@@ -1,5 +1,13 @@
 import { SectionHeading } from "@/components/common/SectionHeading";
+import { createMetadata } from "@/components/common/metaData";
 import ArticleViewClient from "@/components/sections/public/article/ArticlesViewClient";
+
+export const metadata = createMetadata({
+  title: "Homeownership Hub - Articles",
+  description: "Find your perfect home in Nigeria...",
+  url: "https://useKletch.com/articles",
+});
+
 
 export default function ArticlePage(){
   return(

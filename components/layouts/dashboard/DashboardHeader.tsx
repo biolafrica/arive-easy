@@ -61,7 +61,7 @@ export function DashboardHeader({ role }: { role: DashboardRole }) {
             className="flex items-center gap-2 text-orange-600"
           >
             <HomeIcon className="h-7 w-7" />
-            <span className="font-semibold text-lg">Ariveasy</span>
+            <span className="font-semibold text-lg">Kletch</span>
           </Link>
 
           <DesktopNav role={role} />

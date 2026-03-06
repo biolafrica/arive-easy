@@ -1,6 +1,13 @@
+import { createMetadata } from "@/components/common/metaData";
 import { LegalHeader } from "@/components/sections/public/legal/LegalHeader";
 import { LegalPageLayout } from "@/components/sections/public/legal/LegalPageLayout";
 import { LegalSection } from "@/components/sections/public/legal/LegalSection";
+
+export const metadata = createMetadata({
+  title: "Terms of Service - Kletch",
+  description: "Find your perfect home in Nigeria...",
+  url: "https://useKletch.com/terms",
+});
 
 export default function TermsPage() {
   return (
@@ -9,7 +16,7 @@ export default function TermsPage() {
         <LegalHeader
           eyebrow="Legal Information"
           title="Terms of Service"
-          description="These Terms govern your access to and use of the Ariveasy platform."
+          description="These Terms govern your access to and use of the Kletch platform."
         />
       }
     >
@@ -19,15 +26,15 @@ export default function TermsPage() {
 
       <LegalSection title="Welcome">
         <p>
-          Welcome to Ariveasy. These Terms of Service (“Terms”) govern your use of
-          the Ariveasy platform. By accessing or using Ariveasy, you agree to be
+          Welcome to Kletch. These Terms of Service (“Terms”) govern your use of
+          the Kletch platform. By accessing or using Kletch, you agree to be
           bound by these Terms.
         </p>
       </LegalSection>
 
-      <LegalSection title="1. What Ariveasy Is">
+      <LegalSection title="1. What Kletch Is">
         <p>
-          Ariveasy is a technology platform that provides tools enabling:
+          Kletch is a technology platform that provides tools enabling:
         </p>
         <ul className="list-disc space-y-2 pl-5">
           <li>Buyers to submit property applications</li>
@@ -39,7 +46,7 @@ export default function TermsPage() {
         </ul>
 
         <p className="mt-3 font-medium">
-          Ariveasy is not:
+          Kletch is not:
         </p>
         <ul className="list-disc space-y-2 pl-5">
           <li>A financial institution</li>
@@ -56,7 +63,7 @@ export default function TermsPage() {
       </LegalSection>
 
       <LegalSection title="2. Eligibility">
-        <p>To use Ariveasy, you must:</p>
+        <p>To use Kletch, you must:</p>
         <ul className="list-disc space-y-2 pl-5">
           <li>Be at least 18 years old</li>
           <li>Be legally capable of entering binding contracts</li>
@@ -70,14 +77,14 @@ export default function TermsPage() {
       </LegalSection>
 
       <LegalSection title="3. Service Fees">
-        <p>Ariveasy may charge:</p>
+        <p>Kletch may charge:</p>
         <ul className="list-disc space-y-2 pl-5">
           <li>Processing fees (e.g., document verification)</li>
           <li>Referral commissions from lenders or sellers</li>
         </ul>
 
         <p className="mt-3">
-          Ariveasy does not charge monthly subscriptions or platform access fees.
+          Kletch does not charge monthly subscriptions or platform access fees.
           All applicable fees are disclosed at the point of use.
         </p>
       </LegalSection>
@@ -103,7 +110,7 @@ export default function TermsPage() {
       </LegalSection>
 
       <LegalSection title="5. Third-Party Services">
-        <p>Ariveasy integrates with third-party providers including:</p>
+        <p>Kletch integrates with third-party providers including:</p>
         <ul className="list-disc space-y-2 pl-5">
           <li>Plaid (bank and identity verification)</li>
           <li>Stripe (payment processing)</li>
@@ -113,18 +120,18 @@ export default function TermsPage() {
         </ul>
 
         <p className="mt-3">
-          Your use of Ariveasy is also subject to the terms and policies of these
+          Your use of Kletch is also subject to the terms and policies of these
           third parties.
         </p>
 
         <p>
-          Ariveasy is not responsible for service interruptions, errors, or losses
+          Kletch is not responsible for service interruptions, errors, or losses
           caused by third-party providers.
         </p>
       </LegalSection>
 
       <LegalSection title="6. No Liability for Real Estate Risks">
-        <p>Ariveasy is not liable for:</p>
+        <p>Kletch is not liable for:</p>
         <ul className="list-disc space-y-2 pl-5">
           <li>Property or title defects</li>
           <li>Fraud committed by sellers or third parties</li>
@@ -144,25 +151,25 @@ export default function TermsPage() {
 
       <LegalSection title="7. Electronic Signatures">
         <p>
-          By signing documents through Ariveasy, you agree that electronic
+          By signing documents through Kletch, you agree that electronic
           signatures are legally binding and authorize the sharing of agreements
           with relevant parties.
         </p>
 
         <p>
-          Ariveasy does not draft, interpret, or provide legal advice regarding
+          Kletch does not draft, interpret, or provide legal advice regarding
           any agreement.
         </p>
       </LegalSection>
 
       <LegalSection title="8. Limitation of Liability">
         <p>
-          To the fullest extent permitted by law, Ariveasy is not liable for any
+          To the fullest extent permitted by law, Kletch is not liable for any
           indirect, incidental, or consequential damages.
         </p>
 
         <p>
-          Our total liability is limited to the amount you paid to Ariveasy in the
+          Our total liability is limited to the amount you paid to Kletch in the
           twelve (12) months preceding the claim.
         </p>
 

@@ -140,7 +140,7 @@ export const EmailSupportTemplate = (data: SupportEmailData) => {
               <tr>
                 <td style="background-color: #f9fafb; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb;">
                   <p style="color: #6b7280; font-size: 12px; margin: 0;">
-                    This is an automated message from Ariveasy Support System
+                    This is an automated message from Kletch Support System
                   </p>
                 </td>
               </tr>
@@ -172,7 +172,7 @@ export const EmailSupportAcknowledgement = (data: AcknowledgementData) => {
               <tr>
                 <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 30px; text-align: center;">
                   <div style="display: inline-block; padding: 15px 25px; background-color: rgba(255,255,255,0.1); border-radius: 8px;">
-                    <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">Ariveasy</h1>
+                    <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">Kletch</h1>
                   </div>
                   <p style="color: #ffffff; margin: 15px 0 0 0; font-size: 16px; opacity: 0.95;">
                     Your Mortgage Journey, Simplified
@@ -235,7 +235,7 @@ export const EmailSupportAcknowledgement = (data: AcknowledgementData) => {
                       Dear ${data.name},
                     </p>
                     <p style="color: #374151; line-height: 1.6; margin: 0 0 15px 0;">
-                      Thank you for reaching out to Ariveasy Support. We understand that your time is valuable, and we're committed to addressing your inquiry as quickly as possible.
+                      Thank you for reaching out to Kletch Support. We understand that your time is valuable, and we're committed to addressing your inquiry as quickly as possible.
                     </p>
                     <p style="color: #374151; line-height: 1.6; margin: 0;">
                       Our support team has been notified and will review your request shortly. You can expect a response within <strong>${data.estimatedResponseTime}</strong>. If your issue is urgent, please don't hesitate to follow up with your ticket ID.
@@ -261,15 +261,15 @@ export const EmailSupportAcknowledgement = (data: AcknowledgementData) => {
                       While you wait, you might find these helpful:
                     </h3>
                     <div>
-                      <a href="https://ariveasy.com/faq" 
+                      <a href="https://usekletch.com/faq" 
                          style="display: inline-block; margin: 5px; padding: 10px 20px; background-color: #f3f4f6; color: #667eea; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: 600;">
                         FAQ
                       </a>
-                      <a href="https://ariveasy.com/guides" 
+                      <a href="https://usekletch.com/guides" 
                          style="display: inline-block; margin: 5px; padding: 10px 20px; background-color: #f3f4f6; color: #667eea; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: 600;">
                         User Guides
                       </a>
-                      <a href="https://ariveasy.com/contact" 
+                      <a href="https://usekletch.com/contact" 
                          style="display: inline-block; margin: 5px; padding: 10px 20px; background-color: #f3f4f6; color: #667eea; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: 600;">
                         Contact Info
                       </a>
@@ -282,7 +282,7 @@ export const EmailSupportAcknowledgement = (data: AcknowledgementData) => {
                       Best regards,
                     </p>
                     <p style="color: #374151; font-weight: 600; margin: 0;">
-                      The Ariveasy Support Team
+                      The Kletch Support Team
                     </p>
                   </div>
                 </td>
@@ -295,7 +295,7 @@ export const EmailSupportAcknowledgement = (data: AcknowledgementData) => {
                     <tr>
                       <td align="center">
                         <p style="color: #6b7280; font-size: 12px; margin: 0 0 10px 0;">
-                          © 2024 Ariveasy. All rights reserved.
+                          © 2025 Kletch. All rights reserved.
                         </p>
                         <p style="color: #9ca3af; font-size: 11px; margin: 0;">
                           Please keep this email for your records. Your ticket ID is: <strong>${data.ticketId}</strong>

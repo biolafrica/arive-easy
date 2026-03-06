@@ -37,7 +37,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <HomeModernIcon className="h-6 w-6 text-accent" />
-            <span className="sr-only">Ariveasy</span>
+            <span className="sr-only">Kletch</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-8">

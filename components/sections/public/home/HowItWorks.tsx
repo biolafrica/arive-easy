@@ -17,8 +17,8 @@ export const HowItWorksSection: React.FC = () => {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Your Path to Global Homeownership"
-          title="How Ariveasy Works"
-          description="Ariveasy simplifies the home buying process, making it accessible and transparent for every aspiring homeowner."
+          title="How Kletch Works"
+          description="Kletch simplifies the home buying process, making it accessible and transparent for every aspiring homeowner."
           size="md"
         />
 

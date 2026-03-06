@@ -16,7 +16,7 @@ export function FAQSection({
   categories = FAQ_CATEGORIES,
   variant = 'sidebar',
   title = 'Frequently Asked Questions',
-  description = 'Find answers to common questions about Ariveasy.',
+  description = 'Find answers to common questions about Kletch.',
 }: FAQSectionProps) {
   const router = useRouter();
   const { active, setActive, filtered, counts } = useFAQ(items);

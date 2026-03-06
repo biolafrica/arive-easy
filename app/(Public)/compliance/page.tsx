@@ -1,6 +1,13 @@
+import { createMetadata } from "@/components/common/metaData";
 import { LegalHeader } from "@/components/sections/public/legal/LegalHeader";
 import { LegalPageLayout } from "@/components/sections/public/legal/LegalPageLayout";
 import { LegalSection } from "@/components/sections/public/legal/LegalSection";
+
+export const metadata = createMetadata({
+  title: "Compliance - Kletch",
+  description: "Find your perfect home in Nigeria...",
+  url: "https://useKletch.com/compliance",
+});
 
 export default function CompliancePage() {
   return (
@@ -9,13 +16,13 @@ export default function CompliancePage() {
         <LegalHeader
           eyebrow="Safety, Trust & Compliance"
           title="Compliance"
-          description="How Ariveasy ensures secure, transparent, and compliant property transactions."
+          description="How Kletch ensures secure, transparent, and compliant property transactions."
         />
       }
     >
       <LegalSection title="Our Commitment">
         <p>
-          At Ariveasy, your security and peace of mind come first. Whether you’re
+          At Kletch, your security and peace of mind come first. Whether you’re
           buying property, selling a verified home, or partnering as a lender,
           we are committed to delivering a transparent and secure experience
           powered by industry-leading technology and licensed third-party
@@ -25,7 +32,7 @@ export default function CompliancePage() {
 
       <LegalSection title="1. We Never Hold Customer Funds">
         <p>
-          Ariveasy does not accept, store, or move money on your behalf. All
+          Kletch does not accept, store, or move money on your behalf. All
           payments, deposits, fees, and transfers are handled exclusively
           through licensed and regulated third-party providers.
         </p>
@@ -40,13 +47,13 @@ export default function CompliancePage() {
 
         <p className="mt-3 font-medium">
           Your money is always held in secure, regulated financial institutions
-          — never by Ariveasy.
+          — never by Kletch.
         </p>
       </LegalSection>
 
       <LegalSection title="2. Secure Identity & Document Verification">
         <p>
-          To maintain a safe marketplace, Ariveasy uses trusted verification
+          To maintain a safe marketplace, Kletch uses trusted verification
           tools and licensed partners for identity and document verification.
         </p>
 
@@ -64,7 +71,7 @@ export default function CompliancePage() {
 
       <LegalSection title="3. Strict Data Privacy & Protection">
         <p>
-          Ariveasy complies with applicable data protection laws and standards,
+          Kletch complies with applicable data protection laws and standards,
           including:
         </p>
 
@@ -85,7 +92,7 @@ export default function CompliancePage() {
 
       <LegalSection title="4. Verified Sellers & Trusted Property Partners">
         <p>
-          Properties listed on Ariveasy undergo screening to reduce fraud and
+          Properties listed on Kletch undergo screening to reduce fraud and
           improve buyer confidence. We verify:
         </p>
 
@@ -104,7 +111,7 @@ export default function CompliancePage() {
 
       <LegalSection title="5. Transparent Transaction Process">
         <p>
-          Every transaction on Ariveasy follows a clear and traceable flow:
+          Every transaction on Kletch follows a clear and traceable flow:
         </p>
 
         <ul className="list-disc space-y-2 pl-5">
@@ -122,14 +129,14 @@ export default function CompliancePage() {
 
       <LegalSection title="6. Independent Decision-Making">
         <p>
-          Ariveasy is not a lender or real estate developer. Decision-making
+          Kletch is not a lender or real estate developer. Decision-making
           remains fully independent:
         </p>
 
         <ul className="list-disc space-y-2 pl-5">
           <li>Sellers decide whether to accept or reject offers</li>
           <li>Lenders make independent approval decisions</li>
-          <li>Ariveasy facilitates the process using technology only</li>
+          <li>Kletch facilitates the process using technology only</li>
         </ul>
 
         <p className="mt-3">
@@ -153,12 +160,12 @@ export default function CompliancePage() {
 
       <LegalSection title="8. Disclaimer">
         <p>
-          Ariveasy does not provide legal, financial, or investment advice.
+          Kletch does not provide legal, financial, or investment advice.
           Users should consult qualified professionals before making decisions.
         </p>
 
         <p className="mt-3">
-          Ariveasy cannot guarantee approval outcomes, property appreciation,
+          Kletch cannot guarantee approval outcomes, property appreciation,
           third-party performance, or lender decisions. Our role is to
           facilitate — not to underwrite, guarantee, or execute financial
           transactions ourselves.
@@ -168,7 +175,7 @@ export default function CompliancePage() {
       <LegalSection title="Contact">
         <p>
           If you have compliance-related questions, please contact us at{" "}
-          <strong>info@ariveasy.com</strong>.
+          <strong>info@kletch.com</strong>.
         </p>
       </LegalSection>
     </LegalPageLayout>

@@ -8,7 +8,7 @@ export interface MetaOptions {
   noIndex?: boolean;
 }
 
-const APP_NAME = "Kletch Inc.";
+const APP_NAME = "Kletch";
 const APP_DEFAULT_DESCRIPTION = "Empowering the African diaspora to invest in home.";
 const APP_BASE_URL = "https://usekletch.com";
 

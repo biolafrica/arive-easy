@@ -1,6 +1,13 @@
 import { SectionHeading } from "@/components/common/SectionHeading";
+import { createMetadata } from "@/components/common/metaData";
 import { ContactForm } from "@/components/sections/public/contact/ContactForm";
 import { ContactInfo } from "@/components/sections/public/contact/ContactInfo";
+
+export const metadata = createMetadata({
+  title: "Contact Us - Kletch",
+  description: "Find your perfect home in Nigeria...",
+  url: "https://useKletch.com/support",
+});
 
 export default function ContactSection() {
   return (
@@ -9,7 +16,7 @@ export default function ContactSection() {
         <SectionHeading
           eyebrow="Find Support"
           title="How can we help you?"
-          description="Find answers to your questions about Ariveasy, properties, and mortgage applications."
+          description="Find answers to your questions about Kletch, properties, and mortgage applications."
         />
 
         <div className="mt-16 grid gap-12 lg:grid-cols-2">
