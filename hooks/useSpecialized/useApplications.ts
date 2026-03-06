@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useAuthContext } from "@/providers/auth-provider";
 import { useMemo } from "react";
+import { property } from "zod";
 
 
 interface PaymentStatus {
@@ -131,7 +132,8 @@ export function useApplicationStageUpdates(application: ApplicationBase) {
             reason: '',
             submitted_at: new Date().toISOString(),
             property_name: data.property_name,
-            type: data.type
+            type: data.type,
+            property_id: data.property_id,
           }
         }
       }

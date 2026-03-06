@@ -1,4 +1,4 @@
-import { useProperties } from "@/hooks/useSpecialized";
+import { useApplicationProperties, useProperties } from "@/hooks/useSpecialized";
 import { PropertySelectionStageData, Props,} from "@/type/pages/dashboard/application";
 import { useMemo, useState } from "react";
 import { PropertyBase } from "@/type/pages/property";
@@ -39,10 +39,19 @@ export default function PropertySelectionStage({
 
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const userBuyingPower = 500000 // change to selected property price later
 
-  const { properties = [], isLoading } = useProperties({
-    filters: { status: 'active' }
-  });
+  const {
+    properties,
+    property: submittedProperty,
+    isLoading,
+    mode,
+    isDefaultProperty,
+  } = useApplicationProperties(
+    application.property_id,
+    userBuyingPower
+  );
 
   const selectionData: PropertySelectionStageData = stageData || {
     status: '',
@@ -51,13 +60,6 @@ export default function PropertySelectionStage({
     property_name: '',
     type: 'mortgage'
   };
-
-  const submittedProperty = useMemo(() => {
-    if (application.property_id) {
-      return properties.find(p => p.id === application.property_id) || null;
-    }
-    return null;
-  }, [application.property_id, properties]);
 
   const selectedProperty = useMemo(() => {
     if (selectedPropertyId) {
@@ -96,9 +98,12 @@ export default function PropertySelectionStage({
   };
 
 
-  if (isLoading) {
+  if (isLoading ) {
     return ( <AllPropertyGridSkeleton/> );
   }
+
+  const shouldShowSubmittedProperty = (currentStatus === 'sent' || currentStatus === 'approved') && 
+  mode === 'single' && submittedProperty;
 
   return (
     <div className="space-y-6">
@@ -118,7 +123,7 @@ export default function PropertySelectionStage({
         />
       )}
 
-      {(currentStatus === 'sent' || currentStatus === 'approved') && submittedProperty ? (
+      {shouldShowSubmittedProperty ? (
         <SelectedPropertyView 
           property={submittedProperty} 
           status={currentStatus}
@@ -130,7 +135,14 @@ export default function PropertySelectionStage({
               {currentStatus === 'declined' ? 'Select Another Property' : 'Select Your Property'}
             </h2>
             <p className="mt-2 text-secondary">
-              Choose the property you'd like to apply for a mortgage
+              Choose a property within your approved budget of{' '}
+              <span className="font-semibold">
+                {formatUSD({
+                  amount: application.approved_loan_amount || 500000,
+                  fromCents: false,
+                  decimals: 0
+                })}
+              </span>
             </p>
           </div>
 

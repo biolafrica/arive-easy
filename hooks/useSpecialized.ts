@@ -2,7 +2,7 @@ import { useCrud,} from './useCrud';
 import { useInfiniteList} from './useInfiniteList';
 import { FilterParams, queryKeys } from '../lib/query-keys';
 import { getEntityCacheConfig } from '../lib/cache-config';
-import { ApiResponse, apiClient } from '../lib/api-client';
+import { ApiResponse, PaginatedResponse, apiClient } from '../lib/api-client';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { PropertyBase, PropertyData } from '@/type/pages/property';
@@ -29,23 +29,6 @@ export function useProperties(params?: any) {
   return {
     properties: data?.data || [],
     pagination: data?.pagination,
-    isLoading,
-    error,
-    ...crud,
-  };
-}
-
-export function usesellerProperty(id: string) {
-  const crud = useCrud<PropertyBase>({
-    resource: 'properties',
-    interfaceType: 'buyer',
-    cacheConfig: getEntityCacheConfig('properties', 'detail'),
-  });
-  
-  const { data, isLoading, error } = crud.useGetOne(id);
-  
-  return {
-    property: data,
     isLoading,
     error,
     ...crud,
@@ -314,7 +297,74 @@ export function useAdminPropertyActions() {
   };
 }
 
+export function useApplicationProperties(
+  propertyId?: string,
+  maxPrice?: number
+) {
+  const DEFAULT_PROPERTY_ID = '0ca3e480-6a3e-4c47-bed0-637386b5f64c';
+  const isDefaultProperty = !propertyId || propertyId === DEFAULT_PROPERTY_ID;
 
+  const {
+    data: propertiesList,
+    isLoading: isLoadingList,
+    error: listError,
+  } = useQuery({
+    queryKey: queryKeys.properties.list({
+      filters: {
+        is_active: true,
+        status: ['active', 'offers'],
+        ...(maxPrice && { 'price.lte': maxPrice }),
+      },
+    }),
+    queryFn: async () => {
+      const response = await apiClient.get<PaginatedResponse<PropertyBase>>(
+        '/api/properties',
+        {
+          filters: {
+            is_active: true,
+            status: ['active', 'offers'],
+            ...(maxPrice && { 'price.lte': maxPrice }),
+          },
+          sortBy: 'created_at',
+          sortOrder: 'desc',
+        }
+      );
+      return response;
+    },
+    enabled: isDefaultProperty,
+    ...getEntityCacheConfig('properties', 'list'),
+  });
+
+  const {
+    data: selectedProperty,
+    isLoading: isLoadingSingle,
+    error: singleError,
+  } = useQuery({
+    queryKey: queryKeys.properties.detail(propertyId || '', {}),
+    queryFn: async () => {
+      const response = await apiClient.get<PropertyBase>('/api/properties', {
+        id: propertyId,
+      });
+      return response;
+    },
+    enabled: !isDefaultProperty && !!propertyId,
+    ...getEntityCacheConfig('properties', 'detail'),
+  });
+
+  return {
+    properties: isDefaultProperty ? (propertiesList?.data || []) : [],
+    pagination: isDefaultProperty ? propertiesList?.pagination : undefined,
+    
+    property: !isDefaultProperty ? selectedProperty : null,
+    
+    isLoading: isDefaultProperty ? isLoadingList : isLoadingSingle,
+    error: isDefaultProperty ? listError : singleError,
+    
+    mode: isDefaultProperty ? ('list' as const) : ('single' as const),
+    isDefaultProperty,
+    canSelectProperty: isDefaultProperty,
+  };
+}
 
 
 export function useArticles(params?: any) {

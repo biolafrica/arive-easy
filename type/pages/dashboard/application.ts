@@ -177,6 +177,7 @@ export interface PropertySelectionStageData {
   submitted_at: string;
   property_name: string;
   type: 'mortgage' | 'outright';
+  property_id?: string ; 
 }
 
 export interface Props {

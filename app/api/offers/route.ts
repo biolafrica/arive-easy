@@ -9,6 +9,7 @@ import { requireAuth } from "@/utils/server/authMiddleware";
 import { createCRUDHandlers } from "@/utils/server/crudFactory";
 import { SupabaseQueryBuilder } from "@/utils/supabase/queryBuilder";
 import { NextRequest } from "next/server";
+import { property } from "zod";
 
 const offersHandlers = createCRUDHandlers<OfferBase>({
   table: 'offers',
@@ -109,7 +110,7 @@ const offersHandlers = createCRUDHandlers<OfferBase>({
                   reference_number: application.application_number,
                   application_number: application.id,
                   cta_url: `/user-dashboard/applications`,
-                   property_name:updated.property_name 
+                  property_name:updated.property_name 
                 },
               })
             );
@@ -128,7 +129,8 @@ const offersHandlers = createCRUDHandlers<OfferBase>({
                 data: {
                   ...application.stages_completed?.property_selection?.data,
                   status: 'declined',
-                  reason: updated.rejection_note || 'Property selection declined by seller'
+                  reason: updated.rejection_note || 'Property selection declined by seller',
+                  property_id: '',
                 }
               }
             },
