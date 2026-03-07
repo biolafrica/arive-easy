@@ -1,4 +1,4 @@
-import { ActionModal, ActionModalConfig, ActionModalData } from "@/components/common/ActionModal";
+import { ActionModal, ActionModalConfig, ActionModalData } from "@/components/table/ActionModal";
 import { Button } from "@/components/primitives/Button";
 import { useSellerOfferActions } from "@/hooks/useSpecialized/useOffers";
 import { OfferBase } from "@/type/pages/dashboard/offer";

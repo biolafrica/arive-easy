@@ -1,12 +1,12 @@
 import { useTableFilters } from "@/hooks/useTableQuery";
 import { useMemo } from "react";
-import DataTable from "@/components/common/DataTable";
+import DataTable from "@/components/table/DataTable";
 import { columns, statusConfig} from "@/data/pages/dashboard/approval";
-import FilterDropdown from "@/components/common/FilterDropdown";
+import FilterDropdown from "@/components/table/FilterDropdown";
 import { adminPreApprovalConfigs } from "./AdminApplicationsFilters";
-import ActiveFilters from "@/components/common/ActiveFilters";
+import ActiveFilters from "@/components/table/ActiveFilters";
 import { useAdminPrepApprovals } from "@/hooks/useSpecialized/usePreApproval";
-import { getTableEmptyMessage } from "@/components/common/TableEmptyMessage";
+import { getTableEmptyMessage } from "@/components/table/TableEmptyMessage";
 
 export default function AdminPreApprovalClientView ({detailPanel}:any){
 

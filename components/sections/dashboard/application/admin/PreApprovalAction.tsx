@@ -1,4 +1,4 @@
-import { ActionModal, ActionModalConfig, ActionModalData } from "@/components/common/ActionModal";
+import { ActionModal, ActionModalConfig, ActionModalData } from "@/components/table/ActionModal";
 import { Button } from "@/components/primitives/Button";
 import { useAuthContext } from "@/providers/auth-provider";
 import { PreApprovalBase, PreAprovalStatus, } from "@/type/pages/dashboard/approval";

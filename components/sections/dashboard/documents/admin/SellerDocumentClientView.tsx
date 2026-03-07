@@ -6,14 +6,14 @@ import { useTableFilters } from "@/hooks/useTableQuery";
 
 import { PartnerDocumentBase } from "@/type/pages/dashboard/documents";
 
-import { getTableEmptyMessage } from "@/components/common/TableEmptyMessage";
+import { getTableEmptyMessage } from "@/components/table/TableEmptyMessage";
 import SidePanel from "@/components/ui/SidePanel";
-import DataTable from "@/components/common/DataTable";
+import DataTable from "@/components/table/DataTable";
 import { partnerColumns, partnerStatusConfig } from "@/data/pages/dashboard/documents";
-import FilterDropdown from "@/components/common/FilterDropdown";
+import FilterDropdown from "@/components/table/FilterDropdown";
 import { partnerConfigs } from "../common/DocumentFilter";
-import ActiveFilters from "@/components/common/ActiveFilters";
-import { TableHeader } from "@/components/common/TableHeader";
+import ActiveFilters from "@/components/table/ActiveFilters";
+import { TableHeader } from "@/components/table/TableHeader";
 import CreatePartnerDetails from "./CreatePartnerDetails";
 import EditPartnerDetails from "./EditPartnerDetails";
 

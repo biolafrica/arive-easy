@@ -8,14 +8,14 @@ import { useSidePanel } from "@/hooks/useSidePanel";
 
 import { PartnerDocumentBase } from "@/type/pages/dashboard/documents";
 
-import { getTableEmptyMessage } from "@/components/common/TableEmptyMessage";
+import { getTableEmptyMessage } from "@/components/table/TableEmptyMessage";
 import SidePanel from "@/components/ui/SidePanel";
-import DataTable from "@/components/common/DataTable";
+import DataTable from "@/components/table/DataTable";
 import { partnerStatusConfig, sellerColumns } from "@/data/pages/dashboard/documents";
-import FilterDropdown from "@/components/common/FilterDropdown";
+import FilterDropdown from "@/components/table/FilterDropdown";
 import { sellerConfigs } from "../common/DocumentFilter";
-import ActiveFilters from "@/components/common/ActiveFilters";
-import { TableHeader } from "@/components/common/TableHeader";
+import ActiveFilters from "@/components/table/ActiveFilters";
+import { TableHeader } from "@/components/table/TableHeader";
 import EditPartnerDetails from "../admin/EditPartnerDetails";
 import CreatePartnerDetails from "../admin/CreatePartnerDetails";
 

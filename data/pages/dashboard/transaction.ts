@@ -1,4 +1,4 @@
-import { StatusConfig, TableColumn } from '@/components/common/DataTable';
+import { StatusConfig, TableColumn } from '@/components/table/DataTable';
 import { formatNumberDate, formatUSD, toNumber } from '@/lib/formatter';
 import { TransactionBase } from '@/type/pages/dashboard/transactions';
 import { humanizeSnakeCase } from '@/utils/common/humanizeSnakeCase';
@@ -20,8 +20,8 @@ export const statusConfig: StatusConfig[] = [
 ];
 
 export const SellerTransactionscolumns: TableColumn<TransactionBase>[] = [
-  { key: 'property', header: 'Property', sortable: false, accessor: (row) => row.properties?.title},
-  { key: 'price', header: 'Property Amount', sortable: false, accessor: (row) => formatUSD({ amount: toNumber(row.properties?.price), fromCents: true, decimals: 2 })},
+  { key: 'property_name', header: 'Property', sortable: false },
+  { key: 'price', header: 'Property Amount', sortable: false, accessor: (row) => formatUSD({ amount: toNumber(row.properties?.price)})},
   { key: 'type', header: 'Description', sortable: false,  accessor: (row) => humanizeSnakeCase(row.type)},
   { key: 'created_at', header: 'Date', sortable: false, accessor: (row) => formatNumberDate(row.created_at)},
   { key: 'amount', header: 'Deposited Amount', sortable: false, accessor: (row) => formatUSD({ amount: row.amount, fromCents: true, decimals: 2 })},

@@ -1,4 +1,4 @@
-import { StatusConfig, TableColumn } from "@/components/common/DataTable";
+import { StatusConfig, TableColumn } from "@/components/table/DataTable";
 import { formatNumberDate, formatUSD } from "@/lib/formatter";
 import { PropertyBase } from "@/type/pages/property";
 

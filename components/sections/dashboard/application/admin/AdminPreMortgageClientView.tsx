@@ -1,11 +1,11 @@
 import { columns, statusConfig } from "@/data/pages/dashboard/application";
 import { useTableFilters } from "@/hooks/useTableQuery";
 import { useMemo } from "react";
-import DataTable from "@/components/common/DataTable";
-import FilterDropdown from "@/components/common/FilterDropdown";
+import DataTable from "@/components/table/DataTable";
+import FilterDropdown from "@/components/table/FilterDropdown";
 import { adminApplicationConfigs } from "./AdminApplicationsFilters";
-import ActiveFilters from "@/components/common/ActiveFilters";
-import { getTableEmptyMessage } from "@/components/common/TableEmptyMessage";
+import ActiveFilters from "@/components/table/ActiveFilters";
+import { getTableEmptyMessage } from "@/components/table/TableEmptyMessage";
 import { useAdminApplications } from "@/hooks/useSpecialized/useApplications";
 
 export default function AdminPreMortgageClientView ({detailPanel}:any){

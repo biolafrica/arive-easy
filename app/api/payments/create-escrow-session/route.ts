@@ -3,6 +3,7 @@ import Stripe from 'stripe';
 import { requireAuth } from '@/utils/server/authMiddleware';
 import { SupabaseQueryBuilder } from '@/utils/supabase/queryBuilder';
 import { TransactionBase } from '@/type/pages/dashboard/transactions';
+import { PropertyBase } from '@/type/pages/property';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2026-02-25.clover"
@@ -14,6 +15,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     const transactionBuilder = new SupabaseQueryBuilder<TransactionBase>("transactions");
+    const propertyBuilder = new SupabaseQueryBuilder<PropertyBase>("properties");
 
     const { application_id, amount, type, seller_id, property_id } = body;
 
@@ -84,12 +86,18 @@ export async function POST(request: NextRequest) {
       }
     });
 
+    const property = await propertyBuilder.findById(property_id);
+    if (!property) {
+      console.warn(`Property with ID ${property_id} not found for escrow transaction`);
+    }
+
     const createdTransaction = await transactionBuilder.create({
       user_id: user.id,
       user_name: user.user_metadata.name,
       application_id,
       stripe_session_id: session.id,
       property_id,
+      property_name: property.title ,
       amount: amount * 100,
       currency: 'usd',
       status: 'pending',

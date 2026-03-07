@@ -1,9 +1,9 @@
 'use client';
 
 import { useMemo } from 'react';
-import DataTable from '@/components/common/DataTable';
-import FilterDropdown from '@/components/common/FilterDropdown';
-import ActiveFilters from '@/components/common/ActiveFilters';
+import DataTable from '@/components/table/DataTable';
+import FilterDropdown from '@/components/table/FilterDropdown';
+import ActiveFilters from '@/components/table/ActiveFilters';
 import SidePanel from '@/components/ui/SidePanel';
 import { columns, statusConfig } from '@/data/pages/dashboard/home';
 import { useSidePanel } from '@/hooks/useSidePanel';
@@ -12,7 +12,7 @@ import { ApplicationDetails } from '@/components/sections/dashboard/application/
 import { applicationFilterConfigs } from '@/components/sections/dashboard/application/common/ApplicationFilters';
 import { ApplicationBase } from '@/type/pages/dashboard/application';
 import { useTableFilters } from '@/hooks/useTableQuery';
-import { getTableEmptyMessage } from '@/components/common/TableEmptyMessage';
+import { getTableEmptyMessage } from '@/components/table/TableEmptyMessage';
 
 
 export default function UserApplicationClientView() {

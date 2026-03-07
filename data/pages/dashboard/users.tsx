@@ -1,4 +1,4 @@
-import { TableColumn } from "@/components/common/DataTable";
+import { TableColumn } from "@/components/table/DataTable";
 import { formatDate } from "@/lib/formatter";
 import { FormField } from "@/type/form";
 import { UserBase } from "@/type/user";

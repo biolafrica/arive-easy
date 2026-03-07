@@ -7,11 +7,11 @@ import { useTableFilters } from "@/hooks/useTableQuery";
 import { TransactionBase } from "@/type/pages/dashboard/transactions";
 import { useMemo } from "react";
 import SellerTransactionDetail from "./SellerTransactionDetails";
-import DataTable from "@/components/common/DataTable";
-import FilterDropdown from "@/components/common/FilterDropdown";
+import DataTable from "@/components/table/DataTable";
+import FilterDropdown from "@/components/table/FilterDropdown";
 import { sellerTransactionFilterConfigs } from "../common/TransactionFilter";
-import ActiveFilters from "@/components/common/ActiveFilters";
-import { getTableEmptyMessage } from "@/components/common/TableEmptyMessage";
+import ActiveFilters from "@/components/table/ActiveFilters";
+import { getTableEmptyMessage } from "@/components/table/TableEmptyMessage";
 import { useSellerTransactions,} from "@/hooks/useSpecialized/useTransaction";
 
 
@@ -23,7 +23,7 @@ export default function SellerTransactionClientView (){
     hasActiveFilters, handlePageChange, handleItemsPerPageChange, handleSort,
     handleFilterChange, handleSearchChange,
   } = useTableFilters({
-    initialFilters: { status: '' },searchFields: [''], defaultLimit: 10,
+    initialFilters: { status: '' },searchFields: [], defaultLimit: 10,
   });
 
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['properties'],

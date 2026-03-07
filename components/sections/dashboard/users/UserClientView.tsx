@@ -1,6 +1,6 @@
 'use client'
 
-import { getTableEmptyMessage } from "@/components/common/TableEmptyMessage";
+import { getTableEmptyMessage } from "@/components/table/TableEmptyMessage";
 import SidePanel from "@/components/ui/SidePanel";
 import { useSidePanel } from "@/hooks/useSidePanel";
 import { useAdminUsers } from "@/hooks/useSpecialized";
@@ -9,11 +9,11 @@ import { UserBase } from "@/type/user";
 import { useMemo } from "react";
 import UserDetails from "./UserDetails";
 import AddUser from "./AddUser";
-import { TableHeader } from "@/components/common/TableHeader";
-import DataTable from "@/components/common/DataTable";
+import { TableHeader } from "@/components/table/TableHeader";
+import DataTable from "@/components/table/DataTable";
 import { columns } from "@/data/pages/dashboard/users";
-import FilterDropdown from "@/components/common/FilterDropdown";
-import ActiveFilters from "@/components/common/ActiveFilters";
+import FilterDropdown from "@/components/table/FilterDropdown";
+import ActiveFilters from "@/components/table/ActiveFilters";
 import { userFilterConfigs } from "./UserFilter";
 
 export default function UserClientView(){

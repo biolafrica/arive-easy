@@ -1,4 +1,4 @@
-import { StatusConfig, TableColumn } from "@/components/common/DataTable";
+import { StatusConfig, TableColumn } from "@/components/table/DataTable";
 import {formatUSD } from "@/lib/formatter";
 import { ApplicationBase, } from "@/type/pages/dashboard/application";
 import { humanizeSnakeCase } from "@/utils/common/humanizeSnakeCase";

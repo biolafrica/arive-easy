@@ -21,6 +21,7 @@ export default function TableSkeleton({
     <>
       {Array.from({ length: rows }).map((_, rowIndex) => (
         <tr key={rowIndex} className="border-b border-separator">
+
           {Array.from({ length: columns }).map((_, colIndex) => (
             <td key={colIndex} className="px-6 py-4">
               <div className="animate-pulse">
@@ -31,6 +32,7 @@ export default function TableSkeleton({
               </div>
             </td>
           ))}
+          
           {showActions && (
             <td className="px-6 py-4">
               <div className="flex items-center gap-2">

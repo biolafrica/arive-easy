@@ -5,14 +5,14 @@ import { useSidePanel } from "@/hooks/useSidePanel";
 import { useTransactions } from "@/hooks/useSpecialized/useTransaction";
 import { useMemo} from "react";
 import UserTransactionDetails from "./UserTransactionDetails";
-import DataTable from "@/components/common/DataTable";
+import DataTable from "@/components/table/DataTable";
 import { columns, statusConfig } from "@/data/pages/dashboard/transaction";
-import FilterDropdown from "@/components/common/FilterDropdown";
-import ActiveFilters from "@/components/common/ActiveFilters";
+import FilterDropdown from "@/components/table/FilterDropdown";
+import ActiveFilters from "@/components/table/ActiveFilters";
 import { transactionFilterConfigs } from "../common/TransactionFilter";
 import { TransactionBase } from "@/type/pages/dashboard/transactions";
 import { useTableFilters } from "@/hooks/useTableQuery";
-import { getTableEmptyMessage } from "@/components/common/TableEmptyMessage";
+import { getTableEmptyMessage } from "@/components/table/TableEmptyMessage";
 
 
 export default function UserTransactionClientView() {

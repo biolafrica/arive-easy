@@ -1,4 +1,4 @@
-import { getTableEmptyMessage } from "@/components/common/TableEmptyMessage";
+import { getTableEmptyMessage } from "@/components/table/TableEmptyMessage";
 import SidePanel from "@/components/ui/SidePanel";
 import { useSidePanel } from "@/hooks/useSidePanel";
 import { useTemplateDocuments } from "@/hooks/useSpecialized/useDocuments";
@@ -6,12 +6,12 @@ import { useTableFilters } from "@/hooks/useTableQuery";
 import { TemplateBase } from "@/type/pages/dashboard/documents";
 import { useMemo } from "react";
 import TemplateDetail from "./TemplateDetail";
-import DataTable from "@/components/common/DataTable";
+import DataTable from "@/components/table/DataTable";
 import { columns, statusConfig } from "@/data/pages/dashboard/documents";
-import FilterDropdown from "@/components/common/FilterDropdown";
-import ActiveFilters from "@/components/common/ActiveFilters";
+import FilterDropdown from "@/components/table/FilterDropdown";
+import ActiveFilters from "@/components/table/ActiveFilters";
 import { templateConfigs } from "../common/DocumentFilter";
-import { TableHeader } from "@/components/common/TableHeader";
+import { TableHeader } from "@/components/table/TableHeader";
 import CreateTemplateDetail from "./CreateTemplateDetail";
 
 export default function TemplateClientView() {

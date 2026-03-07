@@ -1,15 +1,15 @@
 "use client";
 
-import { getTableEmptyMessage } from "@/components/common/TableEmptyMessage";
+import { getTableEmptyMessage } from "@/components/table/TableEmptyMessage";
 import SidePanel from "@/components/ui/SidePanel";
 import { columns, statusConfig } from "@/data/pages/dashboard/property";
 import { useSidePanel } from "@/hooks/useSidePanel";
 import { useTableFilters } from "@/hooks/useTableQuery";
 import { useMemo } from "react";
 import AdminPropertyDetails from "./AdminPropertyDetails";
-import DataTable from "@/components/common/DataTable";
-import FilterDropdown from "@/components/common/FilterDropdown";
-import ActiveFilters from "@/components/common/ActiveFilters";
+import DataTable from "@/components/table/DataTable";
+import FilterDropdown from "@/components/table/FilterDropdown";
+import ActiveFilters from "@/components/table/ActiveFilters";
 import { adminPropertyFilterConfigs } from "./PropertyFilter";
 import { useAdminProperties } from "@/hooks/useSpecialized";
 import { PropertyBase } from "@/type/pages/property";

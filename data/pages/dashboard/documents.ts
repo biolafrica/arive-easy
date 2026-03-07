@@ -1,4 +1,4 @@
-import { StatusConfig, TableColumn } from "@/components/common/DataTable";
+import { StatusConfig, TableColumn } from "@/components/table/DataTable";
 import {formatDate } from "@/lib/formatter";
 import { FormField } from "@/type/form";
 import * as document from "@/type/pages/dashboard/documents";

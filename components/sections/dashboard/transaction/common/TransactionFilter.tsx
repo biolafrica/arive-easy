@@ -1,4 +1,4 @@
-import { FilterConfig } from "@/components/common/FilterDropdown";
+import { FilterConfig } from "@/components/table/FilterDropdown";
 
 
 const statusOptions:FilterConfig = {

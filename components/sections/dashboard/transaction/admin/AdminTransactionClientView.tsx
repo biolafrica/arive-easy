@@ -1,6 +1,6 @@
 'use client';
 
-import { getTableEmptyMessage } from "@/components/common/TableEmptyMessage";
+import { getTableEmptyMessage } from "@/components/table/TableEmptyMessage";
 import SidePanel from "@/components/ui/SidePanel";
 import { adminTransactionscolumns, statusConfig, } from "@/data/pages/dashboard/transaction";
 import { useSidePanel } from "@/hooks/useSidePanel";
@@ -8,9 +8,9 @@ import { useTableFilters } from "@/hooks/useTableQuery";
 import { TransactionBase } from "@/type/pages/dashboard/transactions";
 import { useMemo } from "react";
 import AdminTransactionDetail from "./AdminTransactionDetails";
-import DataTable from "@/components/common/DataTable";
-import FilterDropdown from "@/components/common/FilterDropdown";
-import ActiveFilters from "@/components/common/ActiveFilters";
+import DataTable from "@/components/table/DataTable";
+import FilterDropdown from "@/components/table/FilterDropdown";
+import ActiveFilters from "@/components/table/ActiveFilters";
 import { adminTransactionFilterConfigs } from "../common/TransactionFilter";
 import { useAdminTransactions } from "@/hooks/useSpecialized/useTransaction";
 

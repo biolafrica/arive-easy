@@ -1,17 +1,17 @@
 'use client';
 
-import FilterDropdown from "@/components/common/FilterDropdown";
+import FilterDropdown from "@/components/table/FilterDropdown";
 import SidePanel from "@/components/ui/SidePanel";
 import { columns, statusConfig, } from "@/data/pages/dashboard/offer";
 import { useSidePanel } from "@/hooks/useSidePanel";
 import { useTableFilters } from "@/hooks/useTableQuery";
 import { useMemo } from "react";
 import { offerFilterConfigs } from "./OfferFilter";
-import ActiveFilters from "@/components/common/ActiveFilters";
-import DataTable from "@/components/common/DataTable";
+import ActiveFilters from "@/components/table/ActiveFilters";
+import DataTable from "@/components/table/DataTable";
 import OfferDetails from "./OfferDetails";
 import { useSellerOffers } from "@/hooks/useSpecialized/useOffers";
-import { getTableEmptyMessage } from "@/components/common/TableEmptyMessage";
+import { getTableEmptyMessage } from "@/components/table/TableEmptyMessage";
 import { OfferBase } from "@/type/pages/dashboard/offer";
 
 export interface Props{
