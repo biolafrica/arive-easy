@@ -15,10 +15,10 @@ export function DashboardLayout({ role, children }: Props) {
   const pageTitle = getPageTitle(pathname, role);
 
   return (
-    <div className="min-h-screen bg-muted">
+    <div className="min-h-screen bg-muted flex flex-col">
       <DashboardHeader role={role} />
 
-      <main className="mx-auto max-w-7xl px-4 py-6">
+      <main className="mx-auto max-w-7xl px-4 py-6 w-full flex-1 flex flex-col">
         {pageTitle && (
           <h1 className="mb-6 text-3xl font-semibold text-heading">
             {pageTitle}
@@ -30,4 +30,3 @@ export function DashboardLayout({ role, children }: Props) {
     </div>
   );
 }
-

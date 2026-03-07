@@ -25,7 +25,7 @@ export default function TableSkeleton({
             <td key={colIndex} className="px-6 py-4">
               <div className="animate-pulse">
                 <div 
-                  className="h-4 bg-hover rounded"
+                  className="h-4 bg-gray-300 rounded"
                   style={{ width: getSkeletonWidth(colIndex) }}
                 ></div>
               </div>
@@ -35,10 +35,10 @@ export default function TableSkeleton({
             <td className="px-6 py-4">
               <div className="flex items-center gap-2">
                 <div className="animate-pulse">
-                  <div className="h-8 w-8 bg-hover rounded-lg"></div>
+                  <div className="h-8 w-8 bg-gray-300 rounded-lg"></div>
                 </div>
                 <div className="animate-pulse">
-                  <div className="h-8 w-8 bg-hover rounded-lg"></div>
+                  <div className="h-8 w-8 bg-gray-300 rounded-lg"></div>
                 </div>
               </div>
             </td>

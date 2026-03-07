@@ -238,14 +238,14 @@ function DataTable<T extends { id?: string | number }>({
 
   return (
     <div className={`w-full  ${className}`}>
-      <div className="bg-card rounded-lg border border-border overflow-hidden min-h-96">
+      <div className="bg-card rounded-lg border border-border overflow-hidden ">
 
         {(title || onSearchChange || filterDropdown) && (
           <div className="px-6 py-4 border-b border-separator">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
 
               {title && (
-                <h2 className="text-lg font-semibold text-heading">
+                <h2 className="text-sm md:text-lg font-semibold text-heading">
                   {title}
                 </h2>
               )}
@@ -289,18 +289,23 @@ function DataTable<T extends { id?: string | number }>({
           </div>
         )}
 
+
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="bg-hover border-b border-separator">
+
+                <th className="sticky left-0 z-10 bg-hover w-12 min-w-[3rem] px-3 py-4 text-center text-xs md:text-sm font-medium text-secondary">
+                  #
+                </th>
+
                 {columns.map((column, index) => (
                   <th
                     key={column.key as string}
                     className={`
-                      px-6 py-4 text-left text-sm font-medium text-secondary
+                      px-6 py-4 text-left text-xs md:text-sm font-medium text-secondary
                       ${column.sortable ? 'cursor-pointer select-none hover:text-heading' : ''}
                       ${column.headerClassName || ''}
-                      ${stickyFirstColumn && index === 0 ? 'sticky left-0 z-10 bg-hover' : ''}
                     `}
                     onClick={() => column.sortable && handleSort(column.key as string)}
                   >
@@ -312,13 +317,13 @@ function DataTable<T extends { id?: string | number }>({
                 ))}
 
                 {statusConfig && (
-                  <th className="px-6 py-4 text-left text-sm font-medium text-secondary">
+                  <th className="px-6 py-4 text-left text-xs md:text-sm font-medium text-secondary">
                     Status
                   </th>
                 )}
 
                 {showActions && (
-                  <th className="px-6 py-4 text-left text-sm font-medium text-secondary">
+                  <th className="px-6 py-4 text-left text-xs md:text-sm font-medium text-secondary">
                     Actions
                   </th>
                 )}
@@ -328,14 +333,14 @@ function DataTable<T extends { id?: string | number }>({
             <tbody className="divide-y divide-separator">
               {loading ? (
                 <TableSkeleton
-                  columns={columns.length + (statusConfig ? 1 : 0)} 
+                  columns={columns.length + (statusConfig ? 1 : 0) + 1} 
                   rows={skeletonRows}
                   showActions={showActions}
                 />
               ) : data?.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={columns.length + (statusConfig ? 1 : 0) + (showActions ? 1 : 0)}
+                    colSpan={columns.length + (statusConfig ? 1 : 0) + (showActions ? 1 : 0) + 1}
                     className="px-6 py-12 text-center text-secondary"
                   >
                     <EmptyState
@@ -350,16 +355,18 @@ function DataTable<T extends { id?: string | number }>({
                     key={row.id || rowIndex}
                     className="hover:bg-hover transition-colors"
                   >
+
+                    <td className="sticky left-0 z-10 bg-card w-12 min-w-[3rem] px-3 py-4 text-center text-xs md:text-sm text-secondary font-medium">
+                      {startIndex + rowIndex + 1}
+                    </td>
+
+
                     {columns.map((column, colIndex) => (
                       <td
                         key={`${row.id || rowIndex}-${column.key as string}`}
                         className={`
                           px-6 py-4 text-sm text-text whitespace-nowrap
                           ${column.className || ''}
-                          ${stickyFirstColumn && colIndex === 0 
-                            ? 'sticky left-0 z-10 bg-card font-medium' 
-                            : ''
-                          }
                         `}
                       >
                         {column.accessor
