@@ -21,6 +21,7 @@ interface DProps {
 const fallback = '--:--';
 
 export function PersonalInformationSection({ data }: Props) {
+  if (!data) return null;
   return (
     <DescriptionList
       title="Personal Information"
@@ -48,6 +49,7 @@ export function PersonalInformationSection({ data }: Props) {
 }
 
 export function EmploymentInformationSection({ data }: EProps) {
+  if (!data) return null;
   return (
     <DescriptionList
       title="Employment Information"
@@ -88,6 +90,7 @@ export function EmploymentInformationSection({ data }: EProps) {
 }
 
 export function PropertyPreferenceSection({ data }: PProps) {
+  if (!data) return null;
   return (
     <DescriptionList
       title="Property Preference"
@@ -142,6 +145,8 @@ export function PropertyPreferenceSection({ data }: PProps) {
 }
 
 export function DocumentsInformationSection({ data }: DProps) {
+  if (!data) return null;
+
   const files = [
     data.pay_stubs && { name: 'Pay Stubs', url: data.pay_stubs },
     data.tax_returns && { name: 'Tax Returns', url: data.tax_returns },
@@ -168,6 +173,5 @@ export function DocumentsInformationSection({ data }: DProps) {
     />
   );
 }
-
 
 

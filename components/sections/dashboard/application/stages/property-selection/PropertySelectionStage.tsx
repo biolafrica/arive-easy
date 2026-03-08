@@ -3,11 +3,11 @@ import { PropertySelectionStageData, Props,} from "@/type/pages/dashboard/applic
 import { useMemo, useState } from "react";
 import { PropertyBase } from "@/type/pages/property";
 import { PropertySelectionCard } from "@/components/cards/dashboard/SelectionProperty";
-import { StatusBanner } from "./StatusBanner";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
 import { formatUSD, toNumber } from "@/lib/formatter";
 import { AllPropertyGridSkeleton } from "@/components/skeleton/PropertyCardSkeleton";
+import PropertyStageStatusBanner from "./PropertyStageStatusBanner";
 
 
 function SelectedPropertyView({  property,status
@@ -107,21 +107,12 @@ export default function PropertySelectionStage({
 
   return (
     <div className="space-y-6">
-      {currentStatus === 'sent' && (
-        <StatusBanner propertyName={selectionData.property_name} variant="pending" />
-      )}
 
-      {currentStatus === 'approved' && (
-        <StatusBanner propertyName={selectionData.property_name} variant="approved" />
-      )}
-
-      {currentStatus === 'declined' && (
-        <StatusBanner 
-          propertyName={selectionData.property_name} 
-          reason={selectionData.reason}
-          variant="declined"
-        />
-      )}
+      <PropertyStageStatusBanner 
+        status={currentStatus} 
+        propertyName={selectionData.property_name} 
+        reason={selectionData.reason}
+      />
 
       {shouldShowSubmittedProperty ? (
         <SelectedPropertyView 

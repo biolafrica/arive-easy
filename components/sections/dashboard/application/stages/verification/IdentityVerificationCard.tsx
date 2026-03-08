@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { ArrowPathIcon, CheckCircleIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { VerificationActionCard } from './ActionCard';
 import { DiditVerificationStatus, IdentityVerificationData, VerificationType } from '@/type/common/didit';
+import { StatusBanner } from '@/components/common/Statusbanner';
 
 interface IdentityVerificationCardsProps {
   applicationId: string;
@@ -194,57 +194,41 @@ function StatusAlerts({
 }) {
   if (homeCountryStatus === 'in_progress' || immigrationStatus === 'in_progress') {
     return (
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center gap-3">
-        <ArrowPathIcon className="h-5 w-5 text-blue-600 animate-spin flex-shrink-0" />
-        <div>
-          <p className="text-sm font-medium text-blue-900">Verification in Progress</p>
-          <p className="text-sm text-blue-700 mt-1">
-            Complete the verification in the opened page. Return here when done.
-          </p>
-        </div>
-      </div>
+      <StatusBanner 
+        variant="loading"  
+        title="Verification in Progress"  
+        message="Complete the verification in the opened page. Return here when done." 
+      />
     );
   }
 
   if (homeCountryStatus === 'in_review' || immigrationStatus === 'in_review') {
     return (
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-center gap-3">
-        <ArrowPathIcon className="h-5 w-5 text-yellow-600 animate-spin flex-shrink-0" />
-        <div>
-          <p className="text-sm font-medium text-yellow-900">Under Review</p>
-          <p className="text-sm text-yellow-700 mt-1">
-            Your documents are being reviewed. We'll notify you once complete.
-          </p>
-        </div>
-      </div>
+      <StatusBanner 
+        variant="review"   
+        title="Under Review"              
+        message="Your documents are being reviewed. We'll notify you once complete." 
+      />
     );
   }
 
   if (overallStatus === 'approved') {
     return (
-      <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
-        <CheckCircleIcon className="h-6 w-6 text-green-600 flex-shrink-0" />
-        <div>
-          <p className="text-sm font-medium text-green-900">✓ Identity Fully Verified</p>
-          <p className="text-sm text-green-700 mt-1">
-            Both verifications complete. You can proceed to the next step.
-          </p>
-        </div>
-      </div>
+     <StatusBanner 
+        variant="success"  
+        title="Identity Fully Verified"   
+        message="Both verifications complete. You can proceed to the next step." 
+      />
     );
   }
 
   if (canRetry(homeCountryStatus) || canRetry(immigrationStatus)) {
     return (
-      <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-center gap-3">
-        <ExclamationTriangleIcon className="h-6 w-6 text-amber-600 flex-shrink-0" />
-        <div>
-          <p className="text-sm font-medium text-amber-900">Verification Needs Attention</p>
-          <p className="text-sm text-amber-700 mt-1">
-            Please retry with clear, well-lit photos of your documents.
-          </p>
-        </div>
-      </div>
+     <StatusBanner 
+        variant="warning"  
+        title="Verification Needs Attention" 
+        message="Please retry with clear, well-lit photos of your documents." 
+      />
     );
   }
 
