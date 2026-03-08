@@ -5,12 +5,13 @@ import { useRouter } from "next/navigation";
 import { DashboardWelcomeHeader } from "./DashboardWelcomeHeader";
 import { UserDashboadStats } from "@/components/cards/dashboard/UserDashboard";
 import PreApprovalDashboardDisplayLogic from "../approval/PreApprovalDashboardDisplayLogic";
+import UserTransactionSummaryTable from "./UserTransactionSummaryTable";
 
 export default function UserHomeClientView() {  
   const { user } = useAuthContext();
   const router = useRouter();
   return(
-    <div>
+    <div className="space-y-6">
       <DashboardWelcomeHeader
         name={user?.user_metadata?.name || ""}
         primaryAction={{ label: 'Explore Properties', onClick: () => router.push('/user-dashboard/properties?tab=browse') }}
@@ -21,6 +22,8 @@ export default function UserHomeClientView() {
       <UserDashboadStats/>
 
       <PreApprovalDashboardDisplayLogic/>
+
+      <UserTransactionSummaryTable/>
 
     </div>
   )

@@ -10,6 +10,7 @@ export default function SellerHomeOfferTable({value=''}:{
 
   const {offers, isLoading} = useSellerOffers({
     include: ['properties','users'],
+    limit:5
   }, value);
 
   return(
@@ -19,7 +20,7 @@ export default function SellerHomeOfferTable({value=''}:{
         onViewAll={() => router.push('/seller-dashboard/offers')}
         viewAllLabel="View all" 
         columns={columns}
-        data={offers.slice(0, 5)}
+        data={offers}
         loading={isLoading}
         emptyMessage={{ title: 'No offer yet', message: 'Offers will appear here' }}
         statusConfig={statusConfig}
