@@ -70,10 +70,3 @@ export const statusConfig: StatusConfig[] = [
   { label: 'Pending', value: 'pending', variant: 'yellow' },
   { label: 'Decline', value: 'declined', variant: 'red' }
 ];
-
-export function useOffers(queryParams?: Record<string, any>) {
-  return {
-    offers:MOCK_DATA,
-    isLoading: false,
-  }
-}

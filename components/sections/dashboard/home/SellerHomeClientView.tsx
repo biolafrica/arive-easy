@@ -4,6 +4,7 @@ import { SellerDashboadStats } from "@/components/cards/dashboard/SellerDashboar
 import { DashboardWelcomeHeader } from "./DashboardWelcomeHeader";
 import { useAuthContext } from "@/providers/auth-provider";
 import { useRouter } from "next/navigation";
+import SellerHomeOfferTable from "./SellerHomeOfferTable";
 
 export default function SellerHomeClientView() {
   const { user } = useAuthContext();
@@ -20,6 +21,8 @@ export default function SellerHomeClientView() {
       />
 
       <SellerDashboadStats/>
+
+      <SellerHomeOfferTable value=""/>
     </>
   )
 
