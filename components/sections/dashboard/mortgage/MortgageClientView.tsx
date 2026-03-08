@@ -4,19 +4,18 @@ import { useState } from "react";
 import { Button } from "@/components/primitives/Button";
 import { TabType } from "@/type/pages/dashboard/mortgage";
 import * as icon from '@heroicons/react/24/outline';
-import { formatDate,  } from "@/lib/formatter";
 import * as utils from "./MortgageUtils";
 import { useMortgage} from "@/hooks/useSpecialized/useMortgage";
 import ErrorState from "@/components/feedbacks/ErrorState";
 import { PropertyDetailsPageSkeleton } from "@/components/skeleton/PropertyCardSkeleton";
-import { StatsCard } from "@/components/cards/dashboard/StatsCard";
-import { StatsGrid } from "@/components/layouts/dashboard/StatGrid";
-import { statData, tabs } from "@/data/pages/dashboard/mortgage";
+import {tabs } from "@/data/pages/dashboard/mortgage";
 import { BackButton } from "@/components/primitives/BackButton";
 import MortgageDocuments from "./MortgageDocuments";
 import { useSidePanel } from "@/hooks/useSidePanel";
 import SidePanel from "@/components/ui/SidePanel";
 import MakePaymentDetails from "./MakePaymentDetails";
+import MortgagePaymentTable from "./MortgagePaymentTable";
+import OverviewDetails from "./OverviewDetails";
 
 export default function MortgageClientView({ id }: { id: string }) {
 
@@ -133,61 +132,15 @@ export default function MortgageClientView({ id }: { id: string }) {
 
               {activeTab === 'overview' && (
 
-                <div className="space-y-6">
-
-                  <StatsGrid>
-                    {statData(
-                      (mortgage?.approved_loan_amount || 0) - ((mortgage?.payments_made || 0) * (mortgage?.monthly_payment || 0)),
-                      mortgage?.next_payment_date ? formatDate(mortgage?.next_payment_date) : 'N/A',
-                      mortgage?.last_payment_date,
-                    ).map((stat) => {
-                      const Icon = stat.icon;
-                      return (
-                        <StatsCard
-                          key={stat.id}
-                          icon={<Icon className="h-6 w-6" />}
-                          title={stat.title}
-                          value={stat.value}
-                        />
-                      );
-                    })}
-
-                  </StatsGrid>
-
-                  <utils.ProgressSection mortgage={mortgage} />
-
-
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-2">
-                      <utils.LoanDetailsSection mortgage={mortgage} />
-                    </div>
-                    <div>
-                      <utils.PropertyInfoSection property={mortgage.properties} />
-                    </div>
-                  </div>
-
-                  <div className="bg-white rounded-xl border border-gray-200 p-6">
-
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-semibold text-gray-900">Recent Payments</h3>
-                      <button 
-                        onClick={() => setActiveTab('payments')}
-                        className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-                      >
-                        View All
-                      </button>
-                    </div>
-
-                    <utils.PaymentHistoryTable summary={true} id={mortgage.id} />
-                  </div>
-                </div>
+                <OverviewDetails 
+                  mortgage={mortgage} 
+                  setActiveTab={()=>setActiveTab('payments')} 
+                  property={mortgage.properties}  
+                />
               )}
 
               {activeTab === 'payments' && (
-                <div className="bg-white rounded-xl border border-gray-200 p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Payment History</h3>
-                  <utils.PaymentHistoryTable summary={false} id={mortgage.id} />
-                </div>
+                <MortgagePaymentTable id={mortgage.id} />
               )}
 
               {activeTab === 'documents' && (
