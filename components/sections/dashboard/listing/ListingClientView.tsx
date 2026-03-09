@@ -1,13 +1,12 @@
 'use client'
 
 import { usesellerProperty } from "@/hooks/useSpecialized";
-import { SellerPropertyHead } from "../../public/property/PropertyHead";
 import SellerPropertyViewTop from "./SellerPropertyViewTop";
 import SellerPropertyViewBottom from "./SellerPropertyViewBottom";
 import ErrorState from "@/components/feedbacks/ErrorState";
 import { DescriptionListSkeleton } from "@/components/skeleton/DescriptionListSkeleton";
-import TableSkeleton from "@/components/skeleton/TableSkeleton";
 import { HeaderSkeleton } from "@/utils/skeleton";
+import SellerPropertyHead from "./ListingClientViewHeader";
 
 
 export default function ListingClientView({id}:any){
@@ -28,14 +27,18 @@ export default function ListingClientView({id}:any){
 
       {!isLoading && property && (
 
-        <div className="space-y-5">
-          <SellerPropertyHead title={property.title} address_full={property.address_full}/>
+        <div>
+          <SellerPropertyHead 
+            title={property.title} 
+            address_full={property.address_full}
+            id={property.id}
+            status={property.status}
+          />
 
           <div className="space-y-3">
             <SellerPropertyViewTop status={property.status} id={property.id}/>
             <SellerPropertyViewBottom id={property.id}/>
           </div>
-         
         </div>
 
       )}

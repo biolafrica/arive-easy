@@ -57,9 +57,6 @@ export default function ApplicationStages({id}:{id:string}){
     );
   }
 
-  if(isLoading){
-    <DescriptionListSkeleton rows={6}/>
-  }
 
   if (!application) return null;
 
@@ -74,20 +71,26 @@ export default function ApplicationStages({id}:{id:string}){
 
   return(
     <div className="col-span-2 mb-10">
-      <DescriptionList
-        title="Application Progress"
-        subtitle="Application Progress BreakDown"
-        items={stages.map(({ label, key }) => {
-          const step = resolveStageStep(key, application);
-          return {
-            label,
-            value: {
-              type: "custom",
-              node: <h4 className={getbadge(step)}>{step}</h4>,
-            },
-          };
-        })}
-      />
+
+      {isLoading && <DescriptionListSkeleton rows={6} />}
+
+      {!isLoading && application && (
+        <DescriptionList
+          title="Application Progress"
+          subtitle="Application Progress BreakDown"
+          items={stages.map(({ label, key }) => {
+            const step = resolveStageStep(key, application);
+            return {
+              label,
+              value: {
+                type: "custom",
+                node: <h4 className={getbadge(step)}>{step}</h4>,
+              },
+            };
+          })}
+        />
+      )}
+      
     </div>
   )
 

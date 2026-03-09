@@ -39,7 +39,7 @@ export default function SellerPropertyViewTop({status, id}:{status:string, id:st
   const isActive = status === "reserved" || status === "sold";
 
   if (!isActive) {
-    return <NotAvailableMessage />;
+    return <NotAvailableMessage />
   }
 
   return(

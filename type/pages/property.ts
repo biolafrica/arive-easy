@@ -5,7 +5,7 @@ export type Virtual3DProvider = 'matterport' | 'custom';
 
 
 export type PropertyStatus = |'draft'|'active'|'inactive'|'withdrawn'|'offers'
-| 'reserved'| 'inprogress'| 'sold'| 'paused';
+| 'reserved'| 'inprogress'| 'sold'| 'paused' | 'archived';
 
 export interface PropertyVideoTour {
   url: string;

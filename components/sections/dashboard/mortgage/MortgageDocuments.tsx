@@ -13,7 +13,7 @@ export default function MortgageDocuments({id}:{id:string}){
   const { documents, isLoading, error, refetch } = transactionDocs.useAll();
 
   if(isLoading){
-    <DescriptionListSkeleton rows={6}/>
+    return(<DescriptionListSkeleton rows={6}/>)
   }
 
   if(error){

@@ -383,6 +383,103 @@ export function useApplicationProperties(
   };
 }
 
+export function useDeleteProperty() {
+  const queryClient = useQueryClient();
+  
+  const { remove, update, isDeleting, isUpdating } = useCrud<PropertyBase>({
+    resource: 'properties',
+    interfaceType: 'buyer',
+    showNotifications: false,
+    optimisticUpdate: false,
+    invalidateOnMutation: true,
+    onError: {
+      delete: (error) => {
+        const errorMessage = error?.error?.message || '';
+        
+        if (
+          errorMessage.includes('foreign key constraint') ||
+          errorMessage.includes('violates foreign key') ||
+          errorMessage.includes('still referenced') ||
+          errorMessage.includes('has related') ||
+          errorMessage.includes('linked') ||
+          errorMessage.includes('in use')
+        ) {
+          toast.error(
+            'Cannot delete this property',
+            {
+              description: 'This property has active applications, offers, or other linked records. Please remove or archive those first.',
+              duration: 5000,
+            }
+          );
+        } else if (errorMessage.includes('not found')) {
+          toast.error('Property not found or already deleted');
+        } else if (errorMessage.includes('permission') || errorMessage.includes('unauthorized')) {
+          toast.error('You do not have permission to delete this property');
+        } else {
+          toast.error('Failed to delete property', {
+            description: errorMessage || 'An unexpected error occurred',
+          });
+        }
+      },
+    },
+    onSuccess: {
+      delete: () => {
+        toast.success('Property deleted successfully');
+      },
+    },
+  });
+
+  const deleteProperty = async (propertyId: string): Promise<boolean> => {
+    try {
+      await remove(propertyId);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
+
+  const archiveProperty = async (propertyId: string): Promise<boolean> => {
+    try {
+      await update(propertyId, {
+        status: 'archived',
+        updated_at: new Date().toISOString(),
+      });
+      
+      toast.success('Property archived successfully');
+      return true;
+    } catch (error: any) {
+      toast.error('Failed to archive property', {
+        description: error?.error?.message || 'An unexpected error occurred',
+      });
+      return false;
+    }
+  };
+
+  const removePropertyArchive = async (propertyId: string): Promise<boolean> => {
+    try {
+      await update(propertyId, {
+        status: 'active',
+        updated_at: new Date().toISOString(),
+      });
+      
+      toast.success('Property removed from archive successfully');
+      return true;
+    } catch (error: any) {
+      toast.error('Failed to remove property from archive', {
+        description: error?.error?.message || 'An unexpected error occurred',
+      });
+      return false;
+    }
+  };
+
+  return {
+    deleteProperty,
+    archiveProperty,
+    removePropertyArchive,
+    isDeleting: isDeleting || isUpdating,
+  };
+}
+
 
 export function useArticles(params?: any) {
   const crud = useCrud<ArticleBase>({

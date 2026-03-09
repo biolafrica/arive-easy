@@ -24,7 +24,7 @@ export default function UserMortgageDocument({id}:{
   const { documents, isLoading, error, refetch } = transactionDocs.useStatic();
 
   if(isLoading){
-    <DescriptionListSkeleton rows={6}/>
+    return(<DescriptionListSkeleton rows={6}/>)
   }
 
   if(error){

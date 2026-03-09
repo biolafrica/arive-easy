@@ -29,9 +29,6 @@ export default function PropertyDocuments({id}:{id:string}){
     );
   }
 
-  if(isLoading){
-    <DescriptionListSkeleton rows={6}/>
-  }
 
   if (!documents) return null;
 
@@ -39,21 +36,27 @@ export default function PropertyDocuments({id}:{id:string}){
 
   return(
     <div className="col-span-3 mb-10">
-      <DescriptionList
-        title="Documents Information"
-        subtitle="This Application Documents Uploaded"
-        items={[
-          {
-            label: "Attachments",
-            value: {
-              type: "attachments",
-              files: documentFiles.length > 0
-                ? documentFiles
-                : [{ name: "No documents available", url: "" }],
+      
+      {isLoading && <DescriptionListSkeleton rows={6} />}
+
+      {!isLoading && documents && (
+        <DescriptionList
+          title="Documents Information"
+          subtitle="This Application Documents Uploaded"
+          items={[
+            {
+              label: "Attachments",
+              value: {
+                type: "attachments",
+                files: documentFiles.length > 0
+                  ? documentFiles
+                  : [{ name: "No documents available", url: "" }],
+              },
             },
-          },
-        ]}
-      />
+          ]}
+        />
+      )}
+    
     </div>
   )
 }
