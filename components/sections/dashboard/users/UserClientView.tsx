@@ -15,6 +15,7 @@ import { columns } from "@/data/pages/dashboard/users";
 import FilterDropdown from "@/components/table/FilterDropdown";
 import ActiveFilters from "@/components/table/ActiveFilters";
 import { userFilterConfigs } from "./UserFilter";
+import ErrorState from "@/components/feedbacks/ErrorState";
 
 export default function UserClientView(){
   const detailPanel = useSidePanel<UserBase>();
@@ -29,7 +30,17 @@ export default function UserClientView(){
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: [],
   }), [baseQueryParams]);
 
-  const { users, pagination, isLoading } = useAdminUsers(queryParams);
+  const { users, pagination, isLoading, error, refresh } = useAdminUsers(queryParams);
+
+  if (error) {
+    return (
+      <ErrorState
+        message="Error loading user tables"
+        retryLabel="Reload users"
+        onRetry={refresh}
+      />
+    );
+  }
 
   const emptyMessage = useMemo(
     () => getTableEmptyMessage(hasActiveFilters, 'users'),

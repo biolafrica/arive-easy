@@ -1,5 +1,6 @@
 'use client'
 
+import ErrorState from '@/components/feedbacks/ErrorState';
 import { Button } from '@/components/primitives/Button';
 import { getStepPath, usePreApprovalState } from '@/hooks/useSpecialized/usePreApproval';
 import { Skeleton } from '@/utils/skeleton';
@@ -10,8 +11,17 @@ import { useEffect } from 'react';
 export function PreApprovalSuccess({id}:{id:string}) {
   console.log('PreApprovalSuccess id:', id);
   const router = useRouter()
-  const {preApproval, isLoading } = usePreApprovalState(id);
-  console.log('PreApprovalSuccess preApproval:', preApproval);
+  const {preApproval, isLoading, error, refresh } = usePreApprovalState(id);
+
+  if (error) {
+    return (
+      <ErrorState
+        message="Error loading pre-approval status"
+        retryLabel="Reload status"
+        onRetry={refresh}
+      />
+    );
+  }
 
   useEffect(() => {
     if (!isLoading && preApproval) {

@@ -1,3 +1,4 @@
+import ErrorState from "@/components/feedbacks/ErrorState";
 import SummaryTable from "@/components/table/SummaryTable";
 import { columns, statusConfig } from "@/data/pages/dashboard/offer";
 import { useSellerOffers } from "@/hooks/useSpecialized/useOffers";
@@ -8,10 +9,20 @@ export default function SellerHomeOfferTable({value=''}:{
 }) {
   const router = useRouter();
 
-  const {offers, isLoading} = useSellerOffers({
+  const {offers, isLoading, error, refresh} = useSellerOffers({
     include: ['properties','users'],
     limit:5
   }, value);
+
+  if (error) {
+    return (
+      <ErrorState
+        message="Error loading offer tables"
+        retryLabel="Reload offers"
+        onRetry={refresh}
+      />
+    );
+  }
 
   return(
     <div>

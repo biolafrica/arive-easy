@@ -18,6 +18,7 @@ import ActiveFilters from "@/components/table/ActiveFilters";
 import { TableHeader } from "@/components/table/TableHeader";
 import EditPartnerDetails from "../admin/EditPartnerDetails";
 import CreatePartnerDetails from "../admin/CreatePartnerDetails";
+import ErrorState from "@/components/feedbacks/ErrorState";
 
 export default function DocumentClientView() {
   const detailPanel = useSidePanel<PartnerDocumentBase>();
@@ -32,7 +33,17 @@ export default function DocumentClientView() {
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: [],
   }), [baseQueryParams]);
 
-  const{ sellers, isLoading, pagination} = useSellerPartnerDocuments(queryParams);
+  const{ sellers, isLoading, pagination, error, refresh} = useSellerPartnerDocuments(queryParams);
+
+  if (error) {
+    return (
+      <ErrorState
+        message="Error loading seller documents"
+        retryLabel="Reload documents"
+        onRetry={refresh}
+      />
+    );
+  }
 
   const emptyMessage = useMemo(
     () => getTableEmptyMessage(hasActiveFilters, 'seller documents'),

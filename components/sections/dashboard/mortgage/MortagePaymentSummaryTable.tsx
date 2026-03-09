@@ -1,3 +1,4 @@
+import ErrorState from "@/components/feedbacks/ErrorState"
 import SummaryTable from "@/components/table/SummaryTable"
 import { columns, statusConfig } from "@/data/pages/dashboard/mortgage"
 import { useMortgagePayments } from "@/hooks/useSpecialized/useMortgagePayment"
@@ -7,11 +8,21 @@ export default function MortgagePaymentSummaryTable({id, setActiveTab}: {
   setActiveTab: () => void
 }) {
 
-  const {mortgagePayments, isLoading, error} = useMortgagePayments({
+  const {mortgagePayments, isLoading, error, refresh} = useMortgagePayments({
     filters: {
       mortgage_id:id,
     }
   })
+
+  if (error) {
+    return (
+      <ErrorState
+        message="Error loading mortgage payment tables"
+        retryLabel="Reload mortgage payments"
+        onRetry={refresh}
+      />
+    );
+  }
 
   return(
     <div>

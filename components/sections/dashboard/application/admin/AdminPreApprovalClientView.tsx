@@ -7,6 +7,7 @@ import { adminPreApprovalConfigs } from "./AdminApplicationsFilters";
 import ActiveFilters from "@/components/table/ActiveFilters";
 import { useAdminPrepApprovals } from "@/hooks/useSpecialized/usePreApproval";
 import { getTableEmptyMessage } from "@/components/table/TableEmptyMessage";
+import ErrorState from "@/components/feedbacks/ErrorState";
 
 export default function AdminPreApprovalClientView ({detailPanel}:any){
 
@@ -20,7 +21,17 @@ export default function AdminPreApprovalClientView ({detailPanel}:any){
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['users'],
   }), [baseQueryParams]);
 
-  const{ pre_approvals, pagination, isLoading} = useAdminPrepApprovals(queryParams)
+  const{ pre_approvals, pagination, isLoading, error, refresh} = useAdminPrepApprovals(queryParams)
+
+  if (error) {
+    return (
+      <ErrorState
+        message="Error loading pre-approvals tables"
+        retryLabel="Reload pre-approvals"
+        onRetry={refresh}
+      />
+    );
+  }
 
   const emptyMessage = useMemo(
     () => getTableEmptyMessage(hasActiveFilters, 'pre-approvals'),

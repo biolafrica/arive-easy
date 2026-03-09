@@ -13,6 +13,7 @@ import { transactionFilterConfigs } from "../common/TransactionFilter";
 import { TransactionBase } from "@/type/pages/dashboard/transactions";
 import { useTableFilters } from "@/hooks/useTableQuery";
 import { getTableEmptyMessage } from "@/components/table/TableEmptyMessage";
+import ErrorState from "@/components/feedbacks/ErrorState";
 
 
 export default function UserTransactionClientView() {
@@ -28,7 +29,17 @@ export default function UserTransactionClientView() {
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['applications'],
   }), [baseQueryParams]);
 
-  const { transactions, pagination, isLoading } = useTransactions(queryParams);
+  const { transactions, pagination, isLoading, error, refresh } = useTransactions(queryParams);
+  
+  if (error) {
+    return (
+      <ErrorState
+        message="Error loading transaction tables"
+        retryLabel="Reload transaction"
+        onRetry={refresh}
+      />
+    );
+  }
 
   const emptyMessage = useMemo(
     () => getTableEmptyMessage(hasActiveFilters, 'transactions'),

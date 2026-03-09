@@ -7,6 +7,7 @@ import DataTable from "@/components/table/DataTable";
 import FilterDropdown from "@/components/table/FilterDropdown";
 import { getTableEmptyMessage } from "@/components/table/TableEmptyMessage";
 import { columns, filterConfigs, statusConfig } from "@/data/pages/dashboard/mortgage";
+import ErrorState from "@/components/feedbacks/ErrorState";
 
 
 
@@ -27,7 +28,17 @@ export default function MortgagePaymentTable({id}: {id: string}) {
     mortgage_id:id,
   }
 
-  const {mortgagePayments, isLoading, pagination} = useMortgagePayments(queryParams);
+  const {mortgagePayments, isLoading, pagination, error, refresh} = useMortgagePayments(queryParams);
+
+  if (error) {
+    return (
+      <ErrorState
+        message="Error loading mortgage payments"
+        retryLabel="Reload mortgage payments"
+        onRetry={refresh}
+      />
+    );
+  }
 
   const emptyMessage = useMemo(
     () => getTableEmptyMessage(hasActiveFilters, 'mortage payments'),

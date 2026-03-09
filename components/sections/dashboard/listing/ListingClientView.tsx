@@ -4,10 +4,21 @@ import { usesellerProperty } from "@/hooks/useSpecialized";
 import { SellerPropertyHead } from "../../public/property/PropertyHead";
 import SellerPropertyViewTop from "./SellerPropertyViewTop";
 import SellerPropertyViewBottom from "./SellerPropertyViewBottom";
+import ErrorState from "@/components/feedbacks/ErrorState";
 
 
 export default function ListingClientView({id}:any){
-  const {property, isLoading, error,} = usesellerProperty(id);
+  const {property, isLoading, error, refresh} = usesellerProperty(id);
+
+  if (error) {
+    return (
+      <ErrorState
+        message="Error loading property details"
+        retryLabel="Reload property"
+        onRetry={refresh}
+      />
+    );
+  }
 
   return(
     <div>

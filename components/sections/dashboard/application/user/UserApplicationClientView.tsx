@@ -13,6 +13,7 @@ import { applicationFilterConfigs } from '@/components/sections/dashboard/applic
 import { ApplicationBase } from '@/type/pages/dashboard/application';
 import { useTableFilters } from '@/hooks/useTableQuery';
 import { getTableEmptyMessage } from '@/components/table/TableEmptyMessage';
+import ErrorState from '@/components/feedbacks/ErrorState';
 
 
 export default function UserApplicationClientView() {
@@ -28,7 +29,17 @@ export default function UserApplicationClientView() {
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['properties', 'pre_approvals'],
   }), [baseQueryParams]);
 
-  const { applications, pagination, isLoading } = useApplications(queryParams);
+  const { applications, pagination, isLoading, error, refresh } = useApplications(queryParams);
+
+  if (error) {
+    return (
+      <ErrorState
+        message="Error loading application tables"
+        retryLabel="Reload applications"
+        onRetry={refresh}
+      />
+    );
+  }
 
   const emptyMessage = useMemo(
     () => getTableEmptyMessage(hasActiveFilters, 'applications'),

@@ -13,6 +13,7 @@ import { sellerTransactionFilterConfigs } from "../common/TransactionFilter";
 import ActiveFilters from "@/components/table/ActiveFilters";
 import { getTableEmptyMessage } from "@/components/table/TableEmptyMessage";
 import { useSellerTransactions,} from "@/hooks/useSpecialized/useTransaction";
+import ErrorState from "@/components/feedbacks/ErrorState";
 
 
 export default function SellerTransactionClientView (){
@@ -30,7 +31,17 @@ export default function SellerTransactionClientView (){
   }), [baseQueryParams]);
 
  
-  const { transactions, pagination, isLoading } =  useSellerTransactions(queryParams);
+  const { transactions, pagination, isLoading, error, refresh } =  useSellerTransactions(queryParams);
+
+  if (error) {
+    return (
+      <ErrorState
+        message="Error loading transaction tables"
+        retryLabel="Reload transactions"
+        onRetry={refresh}
+      />
+    );
+  }
 
   const emptyMessage = useMemo(
     () => getTableEmptyMessage(hasActiveFilters, 'transactions'),

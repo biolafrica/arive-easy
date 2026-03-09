@@ -13,6 +13,7 @@ export default function MyPropertyClientView() {
       user_id: user?.id, 
     }
   });
+  
   if (!user) return null;
 
   const handleMakePayment = (mortgageId: string) => {

@@ -13,6 +13,7 @@ import ActiveFilters from "@/components/table/ActiveFilters";
 import { templateConfigs } from "../common/DocumentFilter";
 import { TableHeader } from "@/components/table/TableHeader";
 import CreateTemplateDetail from "./CreateTemplateDetail";
+import ErrorState from "@/components/feedbacks/ErrorState";
 
 export default function TemplateClientView() {
   const detailPanel = useSidePanel<TemplateBase>();
@@ -27,8 +28,17 @@ export default function TemplateClientView() {
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: [],
   }), [baseQueryParams]);
 
-  const{templates, isLoading, pagination} = useTemplateDocuments(queryParams);
+  const{templates, isLoading, pagination, error, refresh} = useTemplateDocuments(queryParams);
 
+  if (error) {
+    return (
+      <ErrorState
+        message="Error loading template documents"
+        retryLabel="Reload documents"
+        onRetry={refresh}
+      />
+    );
+  }
 
   const emptyMessage = useMemo(
     () => getTableEmptyMessage(hasActiveFilters, 'template documents'),

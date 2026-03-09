@@ -1,4 +1,3 @@
-import { useMortgagePayments } from '@/hooks/useSpecialized/useMortgagePayment';
 import { formatDate, formatUSD } from '@/lib/formatter';
 import { Mortgage,  } from '@/type/pages/dashboard/mortgage';
 import * as icon from '@heroicons/react/24/outline';
@@ -179,73 +178,6 @@ export  function PropertyInfoSection({property}: {property:PropertyBase}) {
           <icon.ArrowRightIcon className="w-4 h-4" />
         </Link>
       </div>
-    </div>
-  );
-}
-
-export function PaymentHistoryTable({summary , id}: { summary: boolean , id?: string }) {
-
-  const {mortgagePayments, isLoading, error} = useMortgagePayments({
-    filters: {
-      mortgage_id:id,
-    }
-  })
-  
-  const payments = summary ? mortgagePayments.slice(0, 5) : mortgagePayments;
-
-  if (isLoading) {
-    return (
-      <div className="animate-pulse space-y-3">
-        {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className="h-16 bg-gray-100 rounded-lg" />
-        ))}
-      </div>
-    );
-  }
-
-  if (payments.length === 0) {
-    return (
-      <div className="text-center py-8 text-gray-500">
-        <icon.CalendarIcon className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-        <p>No payments recorded yet</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="overflow-x-auto">
-      <table className="w-full">
-        <thead>
-          <tr className="border-b border-gray-200">
-            <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">#</th>
-            <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Due Date</th>
-            <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Amount</th>
-            <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Status</th>
-            <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Paid On</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-100">
-          {payments.map((payment) => (
-            <tr key={payment.id} className="hover:bg-gray-50">
-              <td className="py-3 px-4 text-sm text-gray-600">
-                {payment.payment_number}
-              </td>
-              <td className="py-3 px-4 text-sm text-gray-900">
-                {formatDate(payment.due_date)}
-              </td>
-              <td className="py-3 px-4 text-sm font-medium text-gray-900">
-                {formatUSD({ amount: payment.amount })}
-              </td>
-              <td className="py-3 px-4">
-                <PaymentStatusBadge status={payment.status} />
-              </td>
-              <td className="py-3 px-4 text-sm text-gray-500">
-                {payment.paid_at ? formatDate(payment.paid_at) : '—'}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
     </div>
   );
 }

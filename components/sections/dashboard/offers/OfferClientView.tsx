@@ -13,6 +13,7 @@ import OfferDetails from "./OfferDetails";
 import { useSellerOffers } from "@/hooks/useSpecialized/useOffers";
 import { getTableEmptyMessage } from "@/components/table/TableEmptyMessage";
 import { OfferBase } from "@/type/pages/dashboard/offer";
+import ErrorState from "@/components/feedbacks/ErrorState";
 
 export interface Props{
   value:string
@@ -32,7 +33,17 @@ export default function OfferClientView ({value=''}){
   }), [baseQueryParams]);
 
   
-  const {offers, isLoading, pagination} = useSellerOffers(queryParams, value);
+  const {offers, isLoading, pagination, error, refresh} = useSellerOffers(queryParams, value);
+  
+  if (error) {
+    return (
+      <ErrorState
+        message="Error loading offer tables"
+        retryLabel="Reload offers"
+        onRetry={refresh}
+      />
+    );
+  }
 
   const emptyMessage = useMemo(
     () => getTableEmptyMessage(hasActiveFilters, 'offers'),

@@ -13,6 +13,7 @@ import FilterDropdown from "@/components/table/FilterDropdown";
 import ActiveFilters from "@/components/table/ActiveFilters";
 import { adminTransactionFilterConfigs } from "../common/TransactionFilter";
 import { useAdminTransactions } from "@/hooks/useSpecialized/useTransaction";
+import ErrorState from "@/components/feedbacks/ErrorState";
 
 export default function AdminTransactionClientView() {
   const detailPanel = useSidePanel<TransactionBase>();
@@ -27,7 +28,17 @@ export default function AdminTransactionClientView() {
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['users'],
   }), [baseQueryParams]);
 
-  const {transactions, isLoading, pagination} = useAdminTransactions(queryParams);
+  const {transactions, isLoading, pagination, error, refresh} = useAdminTransactions(queryParams);
+
+  if (error) {
+    return (
+      <ErrorState
+        message="Error loading transaction tables"
+        retryLabel="Reload transactions"
+        onRetry={refresh}
+      />
+    );
+  }
 
 
   const emptyMessage = useMemo(

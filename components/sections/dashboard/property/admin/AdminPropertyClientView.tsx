@@ -13,6 +13,7 @@ import ActiveFilters from "@/components/table/ActiveFilters";
 import { adminPropertyFilterConfigs } from "./PropertyFilter";
 import { useAdminProperties } from "@/hooks/useSpecialized";
 import { PropertyBase } from "@/type/pages/property";
+import ErrorState from "@/components/feedbacks/ErrorState";
 
 export default function AdminPropertyClientView (){
   const detailPanel = useSidePanel<PropertyBase>();
@@ -28,7 +29,17 @@ export default function AdminPropertyClientView (){
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['users'],
   }), [baseQueryParams]);
 
-  const {properties, isLoading, pagination} = useAdminProperties(queryParams);
+  const {properties, isLoading, pagination, error, refresh} = useAdminProperties(queryParams);
+  
+  if (error) {
+    return (
+      <ErrorState
+        message="Error loading property tables"
+        retryLabel="Reload properties"
+        onRetry={refresh}
+      />
+    );
+  }
 
   const emptyMessage = useMemo(
     () => getTableEmptyMessage(hasActiveFilters, 'properties'),
