@@ -9,6 +9,7 @@ import { DescriptionListSkeleton } from "@/components/skeleton/DescriptionListSk
 export default function MortgageDocuments({id}:{id:string}){
 
   const transactionDocs = useTransactionalDocuments(id);
+  
   const { documents, isLoading, error, refetch } = transactionDocs.useAll();
 
   if(isLoading){

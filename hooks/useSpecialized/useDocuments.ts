@@ -28,11 +28,8 @@ export function useTemplateDocuments(params?: any) {
     interfaceType: 'admin',
     cacheConfig: getEntityCacheConfig('documents', 'templates'),
   });
-  console.log('params received', params)
 
   const { data, isLoading, error } = crud.useGetAll(params);
-
-  console.log('data sent', data)
 
   return {
     templates: data?.data || [],
@@ -465,5 +462,34 @@ export function useTransactionalDocument() {
     isGenerating,
   };
 }
+
+
+export function useSellerTransactionalDocuments(propertyId: string) {
+  const crud = useCrud<document.TransactionDocumentBase>({
+    resource: 'documents/transaction',
+    interfaceType: 'buyer',
+    cacheConfig: getEntityCacheConfig('documents', 'transactions'),
+  });
+
+  const baseParams = useMemo(() => {
+    if (!propertyId) return null;
+    
+    return {
+      filters: {
+        application_id: propertyId,
+      },
+    };
+  }, [propertyId]);
+
+  const { data, isLoading, error, refetch } = crud.useGetAll(baseParams || undefined)
+
+  return {
+    documents: data?.data || [],
+    isLoading,
+    error,
+    refetch
+  };
+}
+
 
 

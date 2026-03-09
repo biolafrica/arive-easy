@@ -7,6 +7,7 @@ import UserAgreementDocumentList from "./UsersAgreementDetails";
 
 export default function AgreementClientView({id}:{id:string}){
   const transactionDocs = useTransactionalDocuments(id);
+  
   const { documents, isLoading, error, refetch } = transactionDocs.useAnvil();
 
   if(isLoading){

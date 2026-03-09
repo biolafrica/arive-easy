@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useAuthContext } from "@/providers/auth-provider";
 import { useMemo } from "react";
-import { property } from "zod";
 
 
 interface PaymentStatus {
@@ -296,3 +295,33 @@ export function useAdminApplications(params?: any) {
     ...crud,
   };
 }
+
+export function useApplicationByProperty(propertyId?: string) {
+  const crud = useCrud<ApplicationBase>({
+    resource: 'applications',
+    interfaceType: 'buyer',
+  });
+
+  const queryParams = useMemo(() => {
+    if (!propertyId) return null;
+    
+    return {
+      filters: {
+        property_id: propertyId,
+      },
+      limit: 1,
+    };
+  }, [propertyId]);
+
+  const { data, isLoading, error } = crud.useGetAll(queryParams || undefined);
+
+  const application = data?.data?.[0] || null;
+
+  return {
+    application,
+    isLoading,
+    error,
+    ...crud,
+  };
+}
+

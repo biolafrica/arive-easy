@@ -20,6 +20,7 @@ export default function UserMortgageDocument({id}:{
   id:string
 }){
   const transactionDocs = useTransactionalDocuments(id);
+  
   const { documents, isLoading, error, refetch } = transactionDocs.useStatic();
 
   if(isLoading){

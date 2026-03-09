@@ -63,6 +63,7 @@ export function SellerPropertyHead({title, address_full }:{
   title:string;
   address_full:string;
 }){
+  
   const handleDocumentClick = () => {
     console.log('taye')
   };
@@ -80,10 +81,6 @@ export function SellerPropertyHead({title, address_full }:{
           </div>
 
           <div className="flex gap-2">
-
-            <Button onClick={handleDocumentClick} leftIcon={<ArrowUpTrayIcon className="h-4 w-4" />}>
-              Upload Document
-            </Button>
 
             <Button onClick={handleDocumentClick} variant='outline' leftIcon={<TrashIcon className="h-4 w-4" />} className="text-red-600" >
               Delete Listing
