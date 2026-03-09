@@ -44,7 +44,7 @@ export default function PersonalInfoForm({initialValues, handleSubmit, handleCan
         initialValues={initialValues}
         validate={validate}
         onSubmit={handleSubmit}
-        submitLabel= "Save"
+        submitLabel= "Save & Next"
         cancelLabel= "Back"
         onCancel={handleCancel}
         fullWidthSubmit={false}

@@ -1,18 +1,21 @@
 "use client"
 
+import { useCallback, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthContext } from "@/providers/auth-provider";
+import { toast } from "sonner";
+import { getStepPath, useCreatePreApproval, usePreApprovals } from "@/hooks/useSpecialized/usePreApproval";
 import { PreApprovalCard } from "@/components/cards/dashboard/preApprovalCard";
 import ErrorState from "@/components/feedbacks/ErrorState";
-import { getStepPath, useCreatePreApproval, usePreApprovals } from "@/hooks/useSpecialized/usePreApproval";
-import { useAuthContext } from "@/providers/auth-provider";
 import { generateApplicationRefNo } from "@/utils/common/generateApplicationRef";
-import { useRouter } from "next/navigation";
-import { useCallback, useMemo, useState } from "react";
-import { toast } from "sonner";
+import { PreApprovalStatusModal } from "./PendingStatusModal";
+
 
 export default function PreApprovalDashboardDisplayLogic() {
   const { user } = useAuthContext();
   const router = useRouter();
   const [isCreating, setIsCreating] = useState(false);
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
 
   const { preApprovals, isLoading, error ,refresh} = usePreApprovals({
     filters: {
@@ -77,6 +80,10 @@ export default function PreApprovalDashboardDisplayLogic() {
     return router.push('/user-dashboard/applications')
   },[router])
 
+  const handlePreApprovalStatusClick = useCallback(() => {
+    setReviewModalOpen(true); 
+  }, []);
+
 
   const handleReapply = useCallback(() => {
     handleGetPreApproved();
@@ -120,7 +127,7 @@ export default function PreApprovalDashboardDisplayLogic() {
         return {
           status: 'under_review' as const,
           data: latestPreApproval,
-          onPrimaryAction:handleGoToApplication
+          onPrimaryAction:handlePreApprovalStatusClick
 
         };
 
@@ -187,6 +194,7 @@ export default function PreApprovalDashboardDisplayLogic() {
 
   return (
     <div>
+
       <PreApprovalCard 
         status={preApprovalDisplay.status}
         amount={preApprovalDisplay.amount}
@@ -194,6 +202,17 @@ export default function PreApprovalDashboardDisplayLogic() {
         guidance={preApprovalDisplay.guidance}
         onPrimaryAction={preApprovalDisplay.onPrimaryAction}
       />
+
+      {preApprovalDisplay.status === 'under_review' && preApprovalDisplay.data && (
+        <PreApprovalStatusModal
+          isOpen={reviewModalOpen}
+          onClose={() => setReviewModalOpen(false)}
+          createdAt={preApprovalDisplay.data.created_at}
+          updatedAt={preApprovalDisplay.data.updated_at}
+          referenceNumber={preApprovalDisplay.data.reference_number}
+        />
+      )}
+
     </div>
   );
 }

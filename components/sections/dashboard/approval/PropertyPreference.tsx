@@ -23,7 +23,7 @@ export default function PropertyPreferenceForm({initialValues, handleSubmit, han
         initialValues={initialValues}
         validate={validate}
         onSubmit={handleSubmit}
-        submitLabel= "Save"
+        submitLabel= "Save and Next"
         cancelLabel= "Back"
         onCancel={handleCancel}
         fullWidthSubmit={false}

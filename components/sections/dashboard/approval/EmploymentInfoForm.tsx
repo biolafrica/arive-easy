@@ -128,7 +128,7 @@ export default function EmploymentInfoForm({
         initialValues={dynamicInitialValues}
         validate={validate}
         onSubmit={handleFormSubmit}
-        submitLabel="Save and Continue"
+        submitLabel="Save and Next"
         cancelLabel="Back"
         onCancel={handleCancel}
         fullWidthSubmit={false}

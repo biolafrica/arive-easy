@@ -57,7 +57,7 @@ export const PRE_APPROVAL_UI_CONFIG = {
     title: 'Your pre-approval is incomplete',
     description:
       "You're yet to complete your pre-approval. Finish your application to unlock property access and lender review.",
-    primaryAction: 'Continue application',
+    primaryAction: 'Continue Pre-approval',
   },
 
   under_review: {
@@ -65,7 +65,7 @@ export const PRE_APPROVAL_UI_CONFIG = {
     title: 'Application under review',
     description:
       "Your pre-approval application is currently being reviewed. We'll notify you once a decision has been made.",
-    primaryAction: 'View status',
+    primaryAction: 'Application in review',
   },
 
   approved: {
@@ -73,15 +73,15 @@ export const PRE_APPROVAL_UI_CONFIG = {
     title: "You're pre-approved",
     description:
       "You're pre-approved up to the amount below. Click below to proceed with your full mortgage application.",
-    primaryAction: 'Create application',
+    primaryAction: 'Continue to application',
   },
 
   approved_with_conditions: {
     tone: 'info',
     title: 'Pre-approved with conditions',
     description:
-      "You're pre-approved, subject to the conditions listed below. Please address these conditions in your application.",
-    primaryAction: 'Fix conditions & apply',
+      "You're pre-approved, subject to the conditions listed below. Please Click below to proceed with your full mortgage application.",
+    primaryAction: 'Continue to application',
   },
 
   rejected_with_guidance: {
@@ -96,7 +96,7 @@ export const PRE_APPROVAL_UI_CONFIG = {
     tone: 'warning',
     title: 'Pre-approval expired',
     description:
-      'Your pre-approval has expired after 3 months. Please apply again to get an updated pre-approval.',
+      'Your pre-approval has expired after 3 months. Please apply again IF you need to apply for new mortgage.',
     primaryAction: 'Get new pre-approval',
   }
 } as const;

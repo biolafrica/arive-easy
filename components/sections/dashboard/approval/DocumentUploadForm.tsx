@@ -22,7 +22,7 @@ export default function DocumentUploadForm({initialValues, handleSubmit, handleC
         initialValues={initialValues}
         validate={validate}
         onSubmit={handleSubmit}
-        submitLabel= "Save"
+        submitLabel= "Save and Submit"
         cancelLabel= "Back"
         onCancel={handleCancel}
         fullWidthSubmit={false}

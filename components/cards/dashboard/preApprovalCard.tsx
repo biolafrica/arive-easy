@@ -22,6 +22,7 @@ export function PreApprovalCard({
   guidance,
   onPrimaryAction
 }: Props) {
+  
   const config = PRE_APPROVAL_UI_CONFIG[status];
   const handlePrimaryAction = () => {
     if (onPrimaryAction) {
