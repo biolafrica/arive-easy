@@ -2,13 +2,16 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { HomeModernIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import {Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/primitives/Button';
 import { DEFAULT_NAV } from '@/data/layout/public';
 import { HeaderProps } from '@/type/layout/public';
 import { useCurrentUsers } from '@/hooks/useSpecialized';
 import { getDashboardForRole } from '@/utils/common/dashBoardForRole';
+import lglogo from '@/public/icons/kletch-web-lg.svg'
+import smlogo from '@/public/icons/kletch-color.svg'
+import Image from 'next/image';
 
 export const Header: React.FC<HeaderProps> = ({
   navItems = DEFAULT_NAV,
@@ -36,8 +39,16 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <HomeModernIcon className="h-6 w-6 text-accent" />
-            <span className="sr-only">Kletch</span>
+            <Image
+              src={lglogo}
+              alt="Kletch"
+              className="hidden lg:block"
+            />
+            <Image
+              src={smlogo}
+              alt="Kletch"
+              className="block lg:hidden h-6 w-auto"
+            />
           </Link>
 
           <nav className="hidden md:flex items-center gap-8">

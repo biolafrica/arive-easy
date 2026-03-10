@@ -1,5 +1,6 @@
 import { EmailFooter } from "./EmailFooter";
 import { EmailHeader } from "./EmailHeader";
+import logo from '@/public/icons/kletch-email.svg'
 
 export interface EmailLayoutConfig {
   companyName?: string;
@@ -19,7 +20,7 @@ const defaultConfig: EmailLayoutConfig = {
   companyName: 'Kletch',
   companyWebsite: 'https://usekletch.com',
   supportEmail: 'support@usekletch.com',
-  companyLogo: 'https://usekletch.com/logo.png/',
+  companyLogo: logo,
 };
 
 export const EmailLayout = (

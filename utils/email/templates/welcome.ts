@@ -1,6 +1,12 @@
 import { EmailButton, StatusBadge } from "../components/EmailButton";
 import { DataTable, InfoBox, Timeline } from "../components/EmailCard";
 
+interface AdminSellerNotificationProps{
+  sellerName:string;
+  sellerEmail:string;
+  sellerId:string
+}
+
 export const userWelcomeEmail = ({
   userName,
 }:{userName:string})=>{
@@ -281,6 +287,36 @@ export const sellerWelcomeEmail =({
     )}
 
 
+
+  `
+}
+
+export const adminSellerNotificationEmail=({
+  sellerName, sellerEmail, sellerId}:AdminSellerNotificationProps
+)=>{
+  return `
+    <h2 style="color: #f59e0b; font-size: 20px; margin: 0 0 15px 0;">
+      ⚡ New Seller Alert
+    </h2>
+    
+    <p style="color: #4b5563; font-size: 16px; margin: 0 0 20px 0;">
+      <strong>${sellerName}</strong> just registered and needs verification support.
+    </p>
+
+    ${DataTable([
+      { label: 'Name', value: sellerName },
+      { label: 'Email', value: sellerEmail },
+      { label: 'ID', value: sellerId },
+      { label: 'Time', value: new Date().toLocaleString() }
+    ])}
+
+    <div style="text-align: center; margin: 20px 0;">
+      ${EmailButton(`mailto:${sellerEmail}`, 'Contact Now', 'warning')}
+    </div>
+
+    <p style="color: #ef4444; font-size: 14px; text-align: center; margin: 0;">
+      <strong>Target: Contact within 2 hours</strong>
+    </p>
 
   `
 }

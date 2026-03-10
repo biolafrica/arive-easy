@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { HomeIcon, Bars3Icon } from '@heroicons/react/24/outline';
+import { Bars3Icon } from '@heroicons/react/24/outline';
 import { DesktopNav } from './DesktopNav';
 import { MobileNav } from './MobileNav';
 import { UserMenu } from './UserMenu';
@@ -12,6 +12,9 @@ import ConfirmBanner from '@/components/feedbacks/ConfirmBanner';
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import lglogo from '@/public/icons/kletch-web-lg.svg'
+import smlogo from '@/public/icons/kletch-color.svg'
+import Image from 'next/image';
 
 export function DashboardHeader({ role }: { role: DashboardRole }) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -60,8 +63,16 @@ export function DashboardHeader({ role }: { role: DashboardRole }) {
             href={`${process.env.NEXT_PUBLIC_API_URL}/${dashboardForRole(role)}`}
             className="flex items-center gap-2 text-orange-600"
           >
-            <HomeIcon className="h-7 w-7" />
-            <span className="font-semibold text-lg">Kletch</span>
+            <Image
+              src={lglogo}
+              alt="Kletch"
+              className="hidden lg:block"
+            />
+            <Image
+              src={smlogo}
+              alt="Kletch"
+              className="block lg:hidden h-6 w-auto"
+            />
           </Link>
 
           <DesktopNav role={role} />

@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Link from 'next/link';
-import {HomeModernIcon} from '@heroicons/react/24/outline';
 import { FooterProps } from '@/type/layout/public';
 import { DEFAULT_COLUMNS } from '@/data/layout/public';
 import { newsletterFields } from '@/data/newsletter';
@@ -11,6 +10,8 @@ import Form from '@/components/form/Form';
 import { NewsletterValues } from '@/type/newsletter';
 import { Facebook, Linkedin, Twitter } from '@/data/icons';
 import { useSubscriber } from '@/hooks/useSpecialized';
+import lglogo from '@/public/icons/kletch-full-white.svg'
+import Image from 'next/image';
 
 
 export const Footer: React.FC<FooterProps> = ({
@@ -67,8 +68,10 @@ export const Footer: React.FC<FooterProps> = ({
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 grid gap-12 md:grid-cols-4">
         <div>
           <Link href="/" className="flex items-center gap-2">
-            <HomeModernIcon className="h-8 w-8 text-accent" />
-            <span className="sr-only">Kletch</span>
+            <Image
+              src={lglogo}
+              alt="Kletch"
+            />
           </Link>
         </div>
 
@@ -96,7 +99,7 @@ export const Footer: React.FC<FooterProps> = ({
       <div className="border-t border-white/10">
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-white/70">
-            © {new Date().getFullYear()} Arive Technologies
+            © {new Date().getFullYear()} Kletch Technologies Inc.
           </p>
 
           <div className="flex items-center gap-4">

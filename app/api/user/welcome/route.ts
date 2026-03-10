@@ -1,13 +1,14 @@
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
 import { requireAuth } from '@/utils/server/authMiddleware';
-import { sellerWelcomeEmail, userWelcomeEmail } from '@/utils/email/templates/welcome';
+import { adminSellerNotificationEmail, sellerWelcomeEmail, userWelcomeEmail } from '@/utils/email/templates/welcome';
 import { sendEmail } from '@/utils/email/send_email';
+import { createNotification } from '@/utils/notifications/createNotification';
+import { buildNotificationPayload } from '@/utils/notifications/notificationContent';
+import { NotificationType } from '@/type/pages/dashboard/notification';
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createClient();
     
     const user = await requireAuth();
     if (!user) {
@@ -23,13 +24,27 @@ export async function POST(request: NextRequest) {
 
     let emailHtml: string;
     let subject: string;
+    let topic: NotificationType;
 
     if (role === 'seller' || role === 'agent') {
       subject = 'Welcome to Kletch - Start Listing Properties';
       emailHtml = sellerWelcomeEmail({ sellerName: userName });
+      topic = 'account_setup';
+
+      await sendEmail({
+        to: 'biolafrica@gmail.com',
+        subject: 'New Seller Alert',
+        html: adminSellerNotificationEmail({
+          sellerEmail: email,
+          sellerId: user.id,
+          sellerName:userName
+        }),
+      });
+
     } else {
       subject = 'Welcome to Kletch';
       emailHtml = userWelcomeEmail({ userName });
+      topic = 'account_created'
     }
 
     await sendEmail({
@@ -37,6 +52,17 @@ export async function POST(request: NextRequest) {
       subject,
       html: emailHtml,
     });
+
+    await createNotification(
+      buildNotificationPayload(topic, {
+        user_id: user.id,
+        type: topic,
+        channel: 'in_app',
+        metadata: {
+          property_name : userName,
+        },
+      })
+    )
 
     return NextResponse.json({
       success: true,
