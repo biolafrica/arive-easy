@@ -70,11 +70,14 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const totalAmount = selectedPayments.reduce((sum, p) => sum + p.amount, 0);
     const totalAmountCents = Math.round(totalAmount * 100);
 
+    console.log('Total amount for selected payments:', totalAmount);
 
     const paymentNumbers = selectedPayments.map(p => `#${p.payment_number}`).join(', ');
     const description = selectedPayments.length === 1
     ? `Mortgage Payment #${selectedPayments[0].payment_number}`
     : `Mortgage Payments ${paymentNumbers}`;
+
+    console.log('Creating PaymentIntent with description:', description);
 
 
     const paymentMethodType = mortgage.payment_method_type || 'card';
@@ -106,11 +109,13 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       },
     };
 
+    console.log('Initial PaymentIntent parameters:', paymentIntentParams);
+
     if(payment_method_id){
       paymentIntentParams.payment_method = payment_method_id;
       paymentIntentParams.confirm = true;
       paymentIntentParams.off_session = false;
-      paymentIntentParams.return_url = `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/mortgages/${mortgageId}`;
+      paymentIntentParams.return_url = `https://www.usekletch.com/user-dashboard/properties/${mortgageId}/mortgages`;
 
       const paymentMethod = await stripe.paymentMethods.retrieve(payment_method_id);
 
@@ -152,6 +157,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     })
     if (!updateMortgagePayment) {console.error('Failed to update mortgage payments with processing status:')}
 
+    console.log('Created PaymentIntent:', paymentIntent);
+
 
 
     const transaction = await transactionQueryBuilder.create({
@@ -177,6 +184,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
 
     if (payment_method_id) {
+      console.log('Confirming PaymentIntent immediately with payment method:', payment_method_id);
+
       return NextResponse.json({
         payment_intent_id: paymentIntent.id,
         client_secret: paymentIntent.client_secret,
@@ -224,6 +233,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
     const { payment_intent_id, payment_ids } = body;
 
+    console.log('Confirming payment for PaymentIntent ID:', payment_intent_id, 'with payment IDs:', payment_ids);
+
     if (!payment_intent_id) {
       return NextResponse.json(
         { error: 'payment_intent_id is required' },{ status: 400 }
@@ -246,8 +257,12 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
     const paymentIntent = await stripe.paymentIntents.retrieve(payment_intent_id);
 
+    console.log('Retrieved PaymentIntent:', paymentIntent);
+
     if (paymentIntent.status === 'succeeded' || paymentIntent.status === 'processing') {
       const paymentIdsArray = Array.isArray(payment_ids) ? payment_ids : payment_ids.split(',');
+
+      console.log('Updating mortgage payments to succeeded status for payment IDs:', paymentIdsArray);
 
       const updatePayments =  await mortgagePayment.updateMany(paymentIdsArray, {
         status: 'succeeded',
@@ -264,6 +279,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       const newPaymentsMade = (mortgage.payments_made || 0) + paymentIdsArray.length;
       const totalPayments = mortgage.number_of_payments || mortgage.total_payments;
       const isCompleted = newPaymentsMade >= totalPayments;
+
+      console.log(`Updated payments to succeeded. New payments made: ${newPaymentsMade}. Mortgage completed: ${isCompleted}`);
 
       // Get next scheduled payment date
       const { data: nextPayment } = await supabaseAdmin
@@ -308,6 +325,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     if (['requires_payment_method', 'canceled', 'requires_action'].includes(paymentIntent.status)) {
       const paymentIdsArray = Array.isArray(payment_ids) ? payment_ids : payment_ids.split(',');
 
+      console.log('Payment failed or requires action. Reverting payments for payment IDs:', paymentIdsArray);
+
       // Get payment details to determine if they were overdue
       const { data: paymentsToRevert } = await supabaseAdmin
       .from('mortgage_payments')
@@ -322,6 +341,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         const dueDate = new Date(payment.due_date);
         dueDate.setHours(0, 0, 0, 0);
         const isOverdue = dueDate < today;
+
+        console.log(`Reverting payment ID: ${payment.id}. Due date: ${payment.due_date}. Is overdue: ${isOverdue}`);
 
         await mortgagePayment.update(payment.id, {
           status: isOverdue ? 'failed' : 'scheduled',

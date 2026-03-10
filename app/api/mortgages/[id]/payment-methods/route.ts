@@ -40,12 +40,16 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       customer: mortgage.stripe_customer_id,
     });
 
+    console.log('Stripe payment methods:', paymentMethods);
+
     // Also get the customer to find the default payment method
     const customer = await stripe.customers.retrieve(mortgage.stripe_customer_id);
     const defaultPaymentMethodId = 
       typeof customer !== 'string' && !customer.deleted
         ? customer.invoice_settings?.default_payment_method as string
         : null;
+
+    console.log('Stripe customer:', customer);
 
     // Transform to our format
     const formattedMethods = paymentMethods.data.map(pm => {
@@ -65,6 +69,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         display = `${pm.acss_debit.bank_name || 'Bank'} •••• ${last4}`;
       }
 
+      console.log('Formatted payment method:', { id: pm.id, type: pm.type, display, brand, last4 });
+
       return {
         id: pm.id,
         type: pm.type as 'card' | 'us_bank_account' | 'acss_debit',
@@ -81,6 +87,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       if (b.isDefault) return 1;
       return 0;
     });
+
+    console.log('Final formatted payment methods:', formattedMethods);
 
     return NextResponse.json({
       payment_methods: formattedMethods,

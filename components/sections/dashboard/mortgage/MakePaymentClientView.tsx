@@ -1,11 +1,10 @@
 import { Mortgage, MortgagePayment } from "@/type/pages/dashboard/mortgage";
 import { useEffect, useMemo, useState, useCallback } from "react";
-import { PaymentConfirmView, PaymentErrorView, PaymentSelectView, PaymentSuccessView } from "./MakePaymentUtils";
+import { NewPaymentMethodView, PaymentErrorView, PaymentMethodChoiceView, PaymentSelectView, PaymentSuccessView } from "./MakePaymentUtils";
 import { formatUSD } from "@/lib/formatter";
 import { Button } from "@/components/primitives/Button";
 import { useMakePayment } from "@/hooks/useSpecialized/useMakePayment";
 
-type Step = 'select' | 'confirm' | 'processing' | 'success' | 'error';
 
 interface PaymentGroup {
   id: string;
@@ -16,28 +15,47 @@ interface PaymentGroup {
   isOverdue: boolean;
 }
 
+
 interface MakePaymentClientViewProps {
   payments: MortgagePayment[];
   mortgage: Mortgage;
   onClose: () => void;
+  onSuccess?: () => void;
 }
+
+type Step = 'select' | 'choose_method' | 'new_method' | 'processing' | 'success' | 'error';
+export type PaymentMethodChoice = 'saved' | 'new';
 
 export default function MakePaymentClientView({ 
   payments, 
   mortgage, 
-  onClose 
+  onClose, 
+  onSuccess
 }: MakePaymentClientViewProps) {
   const [selectedPaymentIds, setSelectedPaymentIds] = useState<Set<string>>(new Set());
+
   const [step, setStep] = useState<Step>('select');
+
   const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
+
+  const [paymentMethodChoice, setPaymentMethodChoice] = useState<PaymentMethodChoice>('saved');
+  const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<string | null>(null);
+
 
   const { 
-    isCreating, 
-    error, 
-    isConfirming, 
-    createPayment, 
-    confirmPayment, 
-    clearError 
+    fetchPaymentMethods,
+    savedPaymentMethods,
+    isFetchingMethods,
+    createPayment,
+    isCreating,
+    payWithSavedMethod,
+    handlePaymentAction,
+    isProcessingAction,
+    confirmPayment,
+    isConfirming,
+    error,
+    clearError,
   } = useMakePayment();
 
   const paymentList = useMemo((): PaymentGroup[] => {
@@ -45,9 +63,7 @@ export default function MakePaymentClientView({
     today.setHours(0, 0, 0, 0);
 
     return payments
-      .filter((p): p is MortgagePayment & { status: 'failed' | 'scheduled' } => 
-        ['failed', 'scheduled'].includes(p.status)
-      )
+      .filter(p => ['failed', 'scheduled'].includes(p.status))
       .sort((a, b) => a.payment_number - b.payment_number)
       .map(p => {
         const dueDate = new Date(p.due_date);
@@ -58,20 +74,11 @@ export default function MakePaymentClientView({
           paymentNumber: p.payment_number,
           amount: p.amount,
           dueDate: p.due_date,
-          status: p.status,
+          status: p.status as 'failed' | 'scheduled',
           isOverdue: dueDate < today,
         };
       });
   }, [payments]);
-
-  const selectedPayments = useMemo(() => {
-    return paymentList.filter(p => selectedPaymentIds.has(p.id));
-  }, [paymentList, selectedPaymentIds]);
-
-  const totalAmount = useMemo(() => {
-    return selectedPayments.reduce((sum, p) => sum + p.amount, 0);
-  }, [selectedPayments]);
-
 
   useEffect(() => {
     if (paymentList.length > 0 && selectedPaymentIds.size === 0) {
@@ -82,7 +89,15 @@ export default function MakePaymentClientView({
         setSelectedPaymentIds(new Set([firstPayment.id]));
       }
     }
-  }, [paymentList]); 
+  }, [paymentList, selectedPaymentIds.size]); 
+
+  const selectedPayments = useMemo(() => {
+    return paymentList.filter(p => selectedPaymentIds.has(p.id));
+  }, [paymentList, selectedPaymentIds]);
+
+  const totalAmount = useMemo(() => {
+    return selectedPayments.reduce((sum, p) => sum + p.amount, 0);
+  }, [selectedPayments]);
 
   
   const togglePayment = useCallback((paymentId: string) => {
@@ -108,9 +123,86 @@ export default function MakePaymentClientView({
     setSelectedPaymentIds(newSet);
   }, [paymentList]);
 
-  const handleInitiatePayment = async () => {
+
+
+  const handleContinueToPayment = useCallback(async () => {
+    if (selectedPayments.length === 0) return;
     clearError();
     
+    const result = await fetchPaymentMethods(mortgage.id);
+    
+    // Auto-select the default method
+    const defaultMethod = result.payment_methods?.find(m => m.isDefault);
+    if (defaultMethod) {
+      setSelectedPaymentMethodId(defaultMethod.id);
+    } else if (result.payment_methods?.length > 0) {
+      setSelectedPaymentMethodId(result.payment_methods[0].id);
+    } else {
+      // No saved methods, go directly to add new
+      setPaymentMethodChoice('new');
+    }
+    
+    setStep('choose_method');
+  }, [selectedPayments.length, fetchPaymentMethods, mortgage.id, clearError]);
+
+  const handlePayWithSavedMethod = useCallback(async () => {
+    if (!selectedPaymentMethodId) return;
+    clearError();
+
+    try {
+      const result = await payWithSavedMethod({
+        mortgageId: mortgage.id,
+        paymentIds: Array.from(selectedPaymentIds),
+        paymentMethodId: selectedPaymentMethodId,
+      });
+
+      if (result.success && result.paymentIntentId) {
+        // Payment succeeded immediately, confirm it
+        setStep('processing');
+        await confirmPayment({
+          mortgageId: mortgage.id,
+          paymentIntentId: result.paymentIntentId,
+          paymentIds: Array.from(selectedPaymentIds),
+        });
+        setStep('success');
+        onSuccess?.();
+        return;
+      }
+
+      if (result.requiresAction && result.clientSecret && result.paymentIntentId) {
+        // Handle 3DS or other action
+        setStep('processing');
+        const actionResult = await handlePaymentAction(result.clientSecret, result.paymentIntentId);
+        
+        if (actionResult.success && actionResult.paymentIntentId) {
+          await confirmPayment({
+            mortgageId: mortgage.id,
+            paymentIntentId: actionResult.paymentIntentId,
+            paymentIds: Array.from(selectedPaymentIds),
+          });
+          setStep('success');
+          onSuccess?.();
+        } else {
+          setStep('error');
+        }
+      }
+    } catch (err) {
+      setStep('error');
+    }
+  }, [
+    selectedPaymentMethodId,
+    mortgage.id,
+    selectedPaymentIds,
+    payWithSavedMethod,
+    confirmPayment,
+    handlePaymentAction,
+    clearError,
+    onSuccess,
+  ]);
+
+  const handleInitiateNewMethod = useCallback(async () => {
+    clearError();
+
     try {
       const result = await createPayment({
         mortgageId: mortgage.id,
@@ -119,14 +211,15 @@ export default function MakePaymentClientView({
 
       if (result?.client_secret) {
         setClientSecret(result.client_secret);
-        setStep('confirm');
+        setPaymentIntentId(result.payment_intent_id);
+        setStep('new_method');
       }
     } catch (err) {
-      // Error is handled by the hook
+      // Error handled by hook
     }
-  };
+  }, [createPayment, mortgage.id, selectedPaymentIds, clearError]);
 
-  const handlePaymentSuccess = async (stripePaymentIntentId: string) => {
+  const handleNewMethodSuccess = useCallback(async (stripePaymentIntentId: string) => {
     setStep('processing');
 
     try {
@@ -136,19 +229,23 @@ export default function MakePaymentClientView({
         paymentIds: Array.from(selectedPaymentIds),
       });
       setStep('success');
+      onSuccess?.();
     } catch (err) {
       setStep('error');
     }
-  };
+  }, [confirmPayment, mortgage.id, selectedPaymentIds, onSuccess]);
 
-  const handleRetry = () => {
+  const handleRetry = useCallback(() => {
     clearError();
-    setStep('select');
-  };
+    setStep('choose_method');
+  }, [clearError]);
+
+  const isLoading = isCreating || isConfirming || isProcessingAction;
 
 
   return (
     <div className="flex flex-col h-full">
+      
       <div className="flex-1 overflow-y-auto">
         {step === 'select' && (
           <PaymentSelectView
@@ -156,17 +253,31 @@ export default function MakePaymentClientView({
             selectedPaymentIds={selectedPaymentIds}
             togglePayment={togglePayment}
             selectAllUpTo={selectAllUpTo}
-            paymentMethodDisplay={mortgage.payment_method_display}
           />
         )}
 
-        {step === 'confirm' && clientSecret && (
-          <PaymentConfirmView
+        {step === 'choose_method' && (
+          <PaymentMethodChoiceView
+            savedMethods={savedPaymentMethods}
+            selectedMethodId={selectedPaymentMethodId}
+            onSelectMethod={setSelectedPaymentMethodId}
+            paymentMethodChoice={paymentMethodChoice}
+            onChoiceChange={setPaymentMethodChoice}
+            isLoading={isFetchingMethods}
+            onBack={() => setStep('select')}
+            totalAmount={totalAmount}
+            selectedPayments={selectedPayments}
+          />
+        )}
+
+        {step === 'new_method' && clientSecret && (
+          <NewPaymentMethodView
             clientSecret={clientSecret}
             totalAmount={totalAmount}
             selectedPayments={selectedPayments}
-            onSuccess={handlePaymentSuccess}
-            onBack={() => setStep('select')}
+            onSuccess={handleNewMethodSuccess}
+            onBack={() => setStep('choose_method')}
+            mortgage={mortgage}
           />
         )}
 
@@ -195,14 +306,16 @@ export default function MakePaymentClientView({
       </div>
 
       {step === 'select' && (
-        <div className="border-t border-gray-200 p-6 bg-white">
-          <div className="text-center mb-4">
-            <p className="text-sm text-gray-500">
-              {selectedPayments.length} payment{selectedPayments.length !== 1 ? 's' : ''} selected
-            </p>
-            <p className="text-2xl font-bold text-gray-900">
-              {formatUSD({ amount: totalAmount })}
-            </p>
+        <div className="border-t border-gray-200 p-6 bg-gray-50">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="text-sm text-gray-500">
+                {selectedPayments.length} payment{selectedPayments.length !== 1 ? 's' : ''} selected
+              </p>
+              <p className="text-2xl font-bold text-gray-900">
+                {formatUSD({ amount: totalAmount })}
+              </p>
+            </div>
           </div>
 
           {error && (
@@ -212,15 +325,70 @@ export default function MakePaymentClientView({
           )}
 
           <Button
-            onClick={handleInitiatePayment}
-            disabled={selectedPayments.length === 0 || isCreating}
+            onClick={handleContinueToPayment}
+            disabled={selectedPayments.length === 0 || isFetchingMethods}
             className="w-full"
             size="lg"
           >
-            {isCreating ? 'Processing...' : `Pay ${formatUSD({ amount: totalAmount })}`}
+            {isFetchingMethods ? 'Loading...' : 'Continue to Payment'}
           </Button>
         </div>
       )}
+
+      {/* Footer - Step 2: Choose Method */}
+      {step === 'choose_method' && (
+        <div className="border-t border-gray-200 p-6 bg-gray-50">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="text-sm text-gray-500">Total</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {formatUSD({ amount: totalAmount })}
+              </p>
+            </div>
+          </div>
+
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4 text-red-700 text-sm">
+              {error}
+            </div>
+          )}
+
+          {paymentMethodChoice === 'saved' ? (
+            <Button
+              onClick={handlePayWithSavedMethod}
+              disabled={!selectedPaymentMethodId || isLoading}
+              className="w-full"
+              size="lg"
+            >
+              {isLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
+                  Processing...
+                </span>
+              ) : (
+                `Pay ${formatUSD({ amount: totalAmount })}`
+              )}
+            </Button>
+          ) : (
+            <Button
+              onClick={handleInitiateNewMethod}
+              disabled={isLoading}
+              className="w-full"
+              size="lg"
+            >
+              {isLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
+                  Preparing...
+                </span>
+              ) : (
+                'Continue'
+              )}
+            </Button>
+          )}
+        </div>
+      )}
+
     </div>
   );
 }

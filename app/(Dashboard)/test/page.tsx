@@ -2,8 +2,6 @@
 
 import ErrorState from "@/components/feedbacks/ErrorState"
 
-
-
 export default function Test(){
   return(
     <div className="max-w-7xl mx-auto p-10">
