@@ -5,10 +5,12 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import { Button } from '@/components/primitives/Button';
 import { getDashboardForRole } from '@/utils/common/dashBoardForRole';
+import { useWelcomeEmail } from '@/hooks/useSpecialized/useUser';
 
 export default function VerifyEmailPage() {
   const router = useRouter();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
+  const { sendWelcomeEmail } = useWelcomeEmail();
 
   useEffect(() => {
     const handleVerification = async () => {
@@ -44,11 +46,21 @@ export default function VerifyEmailPage() {
 
             const user = data.session.user;
             const role = user.user_metadata?.role || user.app_metadata?.role || 'user';
+
+            sendWelcomeEmail({
+              userId: user.id,
+              email: user.email!,
+              userName: user.user_metadata?.full_name || user.email!.split('@')[0],
+              role: role as 'user' | 'seller' | 'admin' | 'agent',
+            });
             
             setStatus('success');
             
-            const dashboardUrl = getDashboardForRole(role);
-            router.replace(dashboardUrl);
+            setTimeout(()=>{
+              const dashboardUrl = getDashboardForRole(role);
+              router.replace(dashboardUrl);
+            }, 1500)
+           
             return;
           }
         }

@@ -21,6 +21,16 @@ export const NOTIFICATION_CONTENT: Record<NotificationType, ContentBuilder> = {
     message: `Unfortunately your pre-approval${m?.reference_number ? ` (${m.reference_number})` : ''} was not approved at this time. Please contact support for next steps.`,
   }),
 
+  account_setup: (m) => ({
+    title: `Welcome ${m?.property_name}`,
+    message: 'Congratulations on taking the first step toward transforming your development business',
+  }),
+
+  account_created: (m) => ({
+    title: 'Welcome to Kletch ',
+    message: `Your dream of owning property back home is now within reach ${m?.property_name}.`,
+  }),
+
   processing_fee_success: (m) => ({
     title: 'Processing fee paid',
     message: `Your processing fee${m?.amount ? ` of ${m.amount}` : ''} was received successfully.`,

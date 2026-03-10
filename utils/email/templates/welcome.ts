@@ -136,7 +136,7 @@ export const userWelcomeEmail = ({
 
 };
 
-export const sellerWelcomeEamil =({
+export const sellerWelcomeEmail =({
   sellerName
 }:{sellerName:string})=>{
   return `
@@ -245,7 +245,7 @@ export const sellerWelcomeEamil =({
 
     <div style="background-color: #f0f9ff; border-left: 4px solid #3b82f6; padding: 20px; margin: 30px 0; border-radius: 4px;">
       <h4 style="color: #1e40af; margin: 0 0 10px 0; font-size: 16px; font-weight: 600;">
-        🤝 Personal Guidance Every Step of the Way
+        Personal Guidance Every Step of the Way
       </h4>
       <p style="color: #1e40af; margin: 0 0 15px 0; font-size: 14px; line-height: 1.6;">
         <strong>Tayo</strong> is your dedicated customer success agent. They will:

@@ -3,6 +3,7 @@ export type NotificationType =
   // Buyer
   | 'pre_approval_submitted'
   | 'pre_approval_accepted'
+  | 'account_created'
   | 'pre_approval_rejected'
   | 'processing_fee_success'
   | 'processing_fee_failed'
@@ -24,6 +25,7 @@ export type NotificationType =
   // Seller
   | 'offer_received'
   | 'down_payment_received'
+  | 'account_setup'
   | 'escrow_released'
   | 'property_acquired';
 
