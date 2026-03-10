@@ -84,10 +84,12 @@ export function MortgageCard({ mortgage, onMakePayment }: MortgageCardProps) {
     last_payment_date,
     status,
     properties,
+    number_of_payments,
+    down_payment_made
   } = mortgage;
 
   const paidAmount = payments_made * monthly_payment;
-  const totalLoanAmount = approved_loan_amount;
+  const totalLoanAmount = approved_loan_amount - down_payment_made;
 
  
 
@@ -128,9 +130,9 @@ export function MortgageCard({ mortgage, onMakePayment }: MortgageCardProps) {
       <div className="mt-6 pt-4 border-t border-gray-100">
         <LoanProgressBar 
           paid={paidAmount}
-          total={totalLoanAmount}
+          total={total_payments}
           paymentsMade={payments_made}
-          totalPayments={total_payments}
+          totalPayments={number_of_payments}
         />
       </div>
 

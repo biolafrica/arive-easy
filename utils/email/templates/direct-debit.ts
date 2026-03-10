@@ -92,7 +92,7 @@ export function getDirectDebitConfirmationEmailTemplate(params: DirectDebitConfi
     )}
 
     <div style="text-align: center; margin: 30px 0;">
-      ${EmailButton(`${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard`, 'View Your Dashboard')}
+      ${EmailButton('https://www.usekletch.com/user-dashboard', 'View Your Dashboard')}
     </div>
   `;
 }
@@ -110,8 +110,6 @@ export function getPaymentSuccessEmailTemplate(params: PaymentSuccessParams): st
     monthlyPayment
   } = params;
 
-  const amountPaid = monthlyPayment * paymentNumber;
-  const remainingPayments = totalPayments - amountPaid;
   const progressPercent = Math.round((paymentNumber / numberOfPayments) * 100);
 
   return `
@@ -141,7 +139,7 @@ export function getPaymentSuccessEmailTemplate(params: PaymentSuccessParams): st
         <div style="background-color: #10b981; height: 100%; width: ${progressPercent}%; border-radius: 9999px;"></div>
       </div>
       <p style="color: #6b7280; font-size: 12px; margin: 8px 0 0;">
-        ${paymentNumber} payments remaining
+        ${numberOfPayments - paymentNumber} payments remaining
       </p>
     </div>
 
@@ -153,7 +151,7 @@ export function getPaymentSuccessEmailTemplate(params: PaymentSuccessParams): st
     ], 'Payment Details')}
 
     <div style="text-align: center; margin: 30px 0;">
-      ${EmailButton(`${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/payments`, 'View Payment History', 'success')}
+      ${EmailButton('https://usekletch.com/user-dashboard/payments', 'View Payment History', 'success')}
     </div>
 
   `;
@@ -264,7 +262,7 @@ export function getPaymentReminderEmailTemplate(params: PaymentReminderParams): 
     )}
 
     <div style="text-align: center; margin: 30px 0;">
-      ${EmailButton(`${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard`, 'View Dashboard')}
+      ${EmailButton('https://www.usekletch.com/user-dashboard', 'View Dashboard')}
     </div>
 
   `;

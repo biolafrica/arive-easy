@@ -35,7 +35,7 @@ export const offerNotificationBody = ({
     ], 'Offer Details')}
 
     <div style="text-align: center; margin: 30px 0;">
-      ${EmailButton(`${process.env.NEXT_PUBLIC_BASE_URL}/seller-dashboard/offers`, 'Review Offer', 'success')}
+      ${EmailButton('https://www.usekletch.com/seller-dashboard/offers', 'Review Offer', 'success')}
     </div>
 
     ${InfoBox(

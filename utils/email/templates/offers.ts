@@ -42,7 +42,7 @@ export const sendOfferAcceptedEmail = ({userName, propertyName, applicationNumbe
     ])}
 
     <div style="text-align: center; margin: 30px 0;">
-      ${EmailButton(`${process.env.NEXT_PUBLIC_BASE_URL}/user-dashboard/applications/`, 'View Application Status', 'success')}
+      ${EmailButton('https://www.usekletch.com/user-dashboard/applications/', 'View Application Status', 'success')}
     </div>
   `;
 };
@@ -95,8 +95,8 @@ export const sendOfferDeclinedEmail = ({
     ])}
 
     <div style="text-align: center; margin: 30px 0;">
-      ${EmailButton(`${process.env.NEXT_PUBLIC_BASE_URL}/user-dashboard/properties`, 'Browse Properties', 'success')}
-      ${EmailButton(`${process.env.NEXT_PUBLIC_BASE_URL}/support`, 'Get Support')}
+      ${EmailButton('https://www.usekletch.com/user-dashboard/properties', 'Browse Properties', 'success')}
+      ${EmailButton('https://www.usekletch.com/support', 'Get Support')}
     </div>
 
   `;

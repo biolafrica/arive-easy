@@ -74,7 +74,7 @@ export default function VerificationCallbackClientView({ applicationId }: Props)
   }, [applicationId]);
 
   const handleReturn = () => {
-    router.push(`/user-dashboard/applications/${applicationId}`);
+    router.push(`/user-dashboard/applications/`);
   };
 
   const getIcon = () => {

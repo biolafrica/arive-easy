@@ -202,7 +202,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       });
     }
 
-
     return NextResponse.json({
       client_secret: paymentIntent.client_secret,
       payment_intent_id: paymentIntent.id,

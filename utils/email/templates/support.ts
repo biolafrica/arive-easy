@@ -1,3 +1,4 @@
+
 import { EmailButton } from "../components/EmailButton";
 import { DataTable } from "../components/EmailCard";
 
@@ -228,8 +229,8 @@ export const EmailSupportAcknowledgement = (data: AcknowledgementData) => {
                     </h3>
                     
                     <div style="text-align: center; margin: 30px 0;">
-                      ${EmailButton(`${process.env.NEXT_PUBLIC_BASE_URL}/faq`, 'Contact Info', 'primary')}
-                      ${EmailButton(`${process.env.NEXT_PUBLIC_BASE_URL}/support`, 'Contact Info', 'secondary')}
+                      ${EmailButton('https://www.usekletch.com/faq', 'Contact Info', 'primary')}
+                      ${EmailButton('https://www.usekletch.com/support', 'Contact Info', 'secondary')}
                     </div>
                   </div>
                   

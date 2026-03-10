@@ -27,11 +27,11 @@ export const preApprovalReceivedBody = ({userName, referenceNumber}: {
     ${Timeline([
       {title: 'Step 1: Application Review', description: 'Our team reviews your application (24-48 hours)', status: 'current'},
       {title: 'Step 2: Pre-approval Decision', description: "You'll receive your pre-approval decision via email", status: 'pending'},
-      {title: 'Step 3: Identity and Income Verification', description: 'Verify both you immigration and home identity', status: 'pending'}
+      {title: 'Step 3: Identity and Income Verification', description: 'Verify both your immigration and home identity', status: 'pending'}
     ])}
 
     <div style="text-align: center; margin: 30px 0;">
-      ${EmailButton(`${process.env.NEXT_PUBLIC_BASE_URL}/user-dashboard/applications/`, 'View Application Status')}
+      ${EmailButton('https://www.usekletch.com/user-dashboard/applications/', 'View Application Status')}
     </div>
 
   `;
@@ -72,8 +72,8 @@ export const preApprovalAcceptedBody = ({userName, referenceNumber}: {
     ])}
 
     <div style="text-align: center; margin: 30px 0;">
-      ${EmailButton(`${process.env.NEXT_PUBLIC_BASE_URL}/user-dashboard/properties`, 'Browse Properties', 'success')}
-      ${EmailButton(`${process.env.NEXT_PUBLIC_BASE_URL}/user-dashboard`, 'Go to Dashboard')}
+      ${EmailButton('https://www.usekletch.com/user-dashboard/properties', 'Browse Properties', 'success')}
+      ${EmailButton('https://www.usekletch.com/user-dashboard', 'Go to Dashboard')}
     </div>
 
     ${InfoBox(
@@ -136,7 +136,7 @@ export const preApprovalRejectedBody = ({
     ])}
 
     <div style="text-align: center; margin: 30px 0;">
-      ${EmailButton(`${process.env.NEXT_PUBLIC_BASE_URL}/support`, 'Contact Support')}
+      ${EmailButton('https://www.usekletch.com/support', 'Contact Support')}
     </div>
 
   `;

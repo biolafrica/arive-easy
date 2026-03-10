@@ -47,7 +47,7 @@ export const identityVerificationSuccessBody = ({
     ])}
 
     <div style="text-align: center; margin: 30px 0;">
-      ${EmailButton(`${process.env.NEXT_PUBLIC_BASE_URL}/user-dashboard/applications`, 'View Application Status')}
+      ${EmailButton('https://www.usekletch.com/user-dashboard/applications', 'View Application Status')}
     </div>
 
     ${InfoBox(
@@ -114,10 +114,10 @@ export const identityVerificationDeclineBody = ({
 
     <div style="text-align: center; margin: 30px 0;">
       ${canResubmit 
-        ? EmailButton(`${process.env.NEXT_PUBLIC_BASE_URL}/user-dashboard/application`, 'Update Documents', 'success')
+        ? EmailButton('https://www.usekletch.com/user-dashboard/application', 'Update Documents', 'success')
         : ''
       }
-      ${EmailButton(`${process.env.NEXT_PUBLIC_BASE_URL}/support`, 'Contact Support')}
+      ${EmailButton('https://www.usekletch.com/support', 'Contact Support')}
     </div>
 
     ${InfoBox(
