@@ -24,15 +24,14 @@ interface PropertyFilters {
 }
 
 export default function SellerDashboardListingsClientView() {
-
-  const [filters, setFilters] = useState<PropertyFilters>({ 
-    status: ''
-  });
-
   const [searchTerm, setSearchTerm] = useState('');
   
   const debouncedSearch = useDebounce(searchTerm, 500);
   const detailPanel = useSidePanel<Property>();
+
+  const [filters, setFilters] = useState<PropertyFilters>({ 
+    status: ''
+  });
 
   const queryParams = useMemo(() => ({
     filters: filters.status ? { status: filters.status} : {},
@@ -113,11 +112,9 @@ export default function SellerDashboardListingsClientView() {
 
       {isLoading && <AllPropertyListingGridSkeleton/>}
 
-
-      {!isLoading && !hasProperties && (
+      {!isLoading &&!hasProperties && (
         <PropertyEmptyState hasFilters={hasActiveFilters} onClearFilters={handleClearFilters} />
       )}
-
 
       {hasProperties && (
         <>

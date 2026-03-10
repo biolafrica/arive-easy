@@ -22,12 +22,11 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const { id: mortgageId } = await params;
     const body = await request.json();
 
-    const { payment_ids } = body;
+    const { payment_ids, payment_method_id } = body;
 
     if (!payment_ids || !Array.isArray(payment_ids) || payment_ids.length === 0) {
       return NextResponse.json(
-        { error: 'At least one payment must be selected' },
-        { status: 400 }
+        { error: 'At least one payment must be selected' }, { status: 400 }
       );
     }
 
@@ -48,7 +47,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     if (!['active', 'payment_failed'].includes(mortgage.status)) {
       return NextResponse.json(
-        { error: `Cannot make payment on mortgage with status: ${mortgage.status}` },{ status: 400 }
+        { error: 'Mortgage is not in a valid state for manual payment' },{ status: 400 }
       );
     }
 
@@ -69,7 +68,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     }
 
     const totalAmount = selectedPayments.reduce((sum, p) => sum + p.amount, 0);
-    const amountInCents = Math.round(totalAmount * 100);
+    const totalAmountCents = Math.round(totalAmount * 100);
+
 
     const paymentNumbers = selectedPayments.map(p => `#${p.payment_number}`).join(', ');
     const description = selectedPayments.length === 1
@@ -78,21 +78,19 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
 
     const paymentMethodType = mortgage.payment_method_type || 'card';
-    
     const paymentMethodTypes: string[] = [];
     
     if (paymentMethodType === 'us_bank_account' || paymentMethodType === 'acss_debit') {
       paymentMethodTypes.push('us_bank_account');
       paymentMethodTypes.push('acss_debit');
     }
-
     paymentMethodTypes.push('card');
     paymentMethodTypes.push('link');
 
     console.log('Payment method types for PaymentIntent:', paymentMethodTypes);
 
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: amountInCents,
+    const paymentIntentParams:Stripe.PaymentIntentCreateParams = {
+      amount: totalAmountCents,
       currency: 'usd',
       customer: mortgage.stripe_customer_id,
       payment_method: mortgage.stripe_payment_method_id,
@@ -104,43 +102,64 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         payment_ids: payment_ids.join(','),
         payment_count: selectedPayments.length.toString(),
         payment_numbers: paymentNumbers,
+        payment_type: 'manual_mortgage_payment',
       },
-      ...(paymentMethodType === 'us_bank_account' && {
-        payment_method_options: {
+    };
+
+    if(payment_method_id){
+      paymentIntentParams.payment_method = payment_method_id;
+      paymentIntentParams.confirm = true;
+      paymentIntentParams.off_session = false;
+      paymentIntentParams.return_url = `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/mortgages/${mortgageId}`;
+
+      const paymentMethod = await stripe.paymentMethods.retrieve(payment_method_id);
+
+      if (paymentMethod.type === 'us_bank_account') {
+        paymentIntentParams.payment_method_options = {
           us_bank_account: {
             financial_connections: {
               permissions: ['payment_method'],
             },
           },
-        },
-        mandate_data: {
+        };
+        paymentIntentParams.mandate_data = {
           customer_acceptance: {
             type: 'online',
             online: {
-              ip_address: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '127.0.0.1',
-              user_agent: request.headers.get('user-agent') || 'Unknown',
+              ip_address: request.headers.get('x-forwarded-for') || '127.0.0.1',
+              user_agent: request.headers.get('user-agent') || 'unknown',
             },
           },
-        },
-      }),
-      ...(paymentMethodType === 'acss_debit' && {
-        payment_method_options: {
+        };
+      } else if (paymentMethod.type === 'acss_debit') {
+        paymentIntentParams.payment_method_options = {
           acss_debit: {
             mandate_options: {
               payment_schedule: 'sporadic',
               transaction_type: 'personal',
             },
           },
-        },
-      }),
-    });
+        };
+      }
+
+    }
+
+    const paymentIntent = await stripe.paymentIntents.create(paymentIntentParams);
+    const updateMortgagePayment = await mortgagePayment.updateMany(payment_ids, {
+      status: 'processing',
+      stripe_payment_intent_id: paymentIntent.id,
+      updated_at: new Date().toISOString(),
+    })
+    if (!updateMortgagePayment) {console.error('Failed to update mortgage payments with processing status:')}
+
+
 
     const transaction = await transactionQueryBuilder.create({
       user_id: user.id,
       application_id: mortgage.application_id,
       mortgage_id: mortgageId,
       stripe_payment_intent_id: paymentIntent.id,
-      amount: totalAmount * 100,
+      amount: totalAmount,
       currency: 'usd',
       status: 'pending',
       type: 'mortgage_payment',
@@ -154,15 +173,26 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         expires_at:""
       },
     })
-
-
     if (!transaction) {console.error('Failed to create transaction:')}
 
-    await mortgagePayment.updateMany(payment_ids, {
-      status: 'processing',
-      stripe_payment_intent_id: paymentIntent.id,
-      updated_at: new Date().toISOString(),
-    })
+
+    if (payment_method_id) {
+      return NextResponse.json({
+        payment_intent_id: paymentIntent.id,
+        client_secret: paymentIntent.client_secret,
+        status: paymentIntent.status,
+        requires_action: paymentIntent.status === 'requires_action' || paymentIntent.status === 'requires_confirmation',
+        transaction_id: transaction?.id,
+        amount: totalAmount,
+        payments: selectedPayments.map(p => ({
+          id: p.id,
+          payment_number: p.payment_number,
+          amount: p.amount,
+          due_date: p.due_date,
+        })),
+      });
+    }
+
 
     return NextResponse.json({
       client_secret: paymentIntent.client_secret,
@@ -178,14 +208,13 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     });
 
   } catch (error) {
-    console.error('Make payment error:', error);
+    console.error('Create manual payment error:', error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to create payment' },
       { status: 500 }
     );
   }
 }
-
 
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
@@ -200,7 +229,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         { error: 'payment_intent_id is required' },{ status: 400 }
       );
     }
-
 
     const mortgageQueryBuilder = new SupabaseQueryBuilder<Mortgage>("mortgages");
     const mortgagePayment = new SupabaseQueryBuilder<MortgagePayment>("mortgage_payments");
@@ -218,95 +246,109 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
     const paymentIntent = await stripe.paymentIntents.retrieve(payment_intent_id);
 
-    if (paymentIntent.status !== 'succeeded') {
+    if (paymentIntent.status === 'succeeded' || paymentIntent.status === 'processing') {
+      const paymentIdsArray = Array.isArray(payment_ids) ? payment_ids : payment_ids.split(',');
 
-      if (['canceled', 'payment_failed'].includes(paymentIntent.status)) {
-        const originalPaymentIds = paymentIntent.metadata.payment_ids?.split(',') || payment_ids || [];
-        
-        console.log('Payment failed or canceled. Reverting payment statuses for IDs:', originalPaymentIds);
+      const updatePayments =  await mortgagePayment.updateMany(paymentIdsArray, {
+        status: 'succeeded',
+        paid_at: new Date().toISOString(),
+        stripe_payment_intent_id: payment_intent_id,
+        updated_at: new Date().toISOString(),
+      })
 
-        const { data: payments } = await supabaseAdmin
-        .from('mortgage_payments')
-        .select('id, due_date')
-        .in('id', originalPaymentIds);
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        for (const payment of payments || []) {
-          const dueDate = new Date(payment.due_date);
-          dueDate.setHours(0, 0, 0, 0);
-          const isOverdue = dueDate < today;
-           
-          await mortgagePayment.update(payment.id, {
-            status: isOverdue ? 'failed' : 'scheduled',
-            updated_at: new Date().toISOString(),
-          })
-
-        }
-
-        console.log('Payment statuses reverted successfully for PaymentIntent ID:', payment_intent_id);
+      if (!updatePayments) {
+        console.error('Failed to update mortgage payments to succeeded status for PaymentIntent ID:', payment_intent_id)
+        throw new Error('Failed to update payment records')
       }
 
-      return NextResponse.json(
-        { error: `Payment not successful. Status: ${paymentIntent.status}` },{ status: 400 }
-      );
+      const newPaymentsMade = (mortgage.payments_made || 0) + paymentIdsArray.length;
+      const totalPayments = mortgage.number_of_payments || mortgage.total_payments;
+      const isCompleted = newPaymentsMade >= totalPayments;
+
+      // Get next scheduled payment date
+      const { data: nextPayment } = await supabaseAdmin
+      .from('mortgage_payments')
+      .select('due_date')
+      .eq('mortgage_id', mortgageId)
+      .eq('status', 'scheduled')
+      .order('payment_number', { ascending: true })
+      .limit(1)
+      .single();
+
+      await mortgageQueryBuilder.update(mortgageId, {
+        payments_made: newPaymentsMade,
+        status: isCompleted ? 'completed' : 'active',
+        next_payment_date: nextPayment?.due_date || null,
+        completed_at: isCompleted ? new Date().toISOString() : undefined,
+        updated_at: new Date().toISOString(),
+      });
+
+      const { error: transactionError } = await supabaseAdmin
+      .from('transactions')
+      .update({
+        status: 'completed',
+        updated_at: new Date().toISOString(),
+      })
+      .eq('stripe_payment_intent_id', payment_intent_id);
+
+      if (transactionError) {
+        console.error('Failed to update transaction:', transactionError);
+      }
+
+      return NextResponse.json({
+        success: true,
+        payments_completed: paymentIdsArray.length,
+        new_total_paid: newPaymentsMade,
+        is_mortgage_completed: isCompleted,
+        next_payment_date: nextPayment?.due_date || null,
+      });
+
     }
 
-    const paidPaymentIds = paymentIntent.metadata.payment_ids?.split(',') || payment_ids || [];
-    const paymentCount = parseInt(paymentIntent.metadata.payment_count || '1');
+    if (['requires_payment_method', 'canceled', 'requires_action'].includes(paymentIntent.status)) {
+      const paymentIdsArray = Array.isArray(payment_ids) ? payment_ids : payment_ids.split(',');
 
-    console.log('Payment succeeded. Updating records for payment IDs:', paidPaymentIds);
+      // Get payment details to determine if they were overdue
+      const { data: paymentsToRevert } = await supabaseAdmin
+      .from('mortgage_payments')
+      .select('id, due_date')
+      .in('id', paymentIdsArray);
 
-    await mortgagePayment.updateMany(paidPaymentIds, {
-      status: 'succeeded',
-      paid_at: new Date().toISOString(),
-      stripe_payment_intent_id: payment_intent_id,
-      updated_at: new Date().toISOString(),
-    })
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
-    await supabaseAdmin
-    .from('transactions')
-    .update({
-      status: 'succeeded',
-      metadata: {
-        completed_at: new Date().toISOString(),
-      },
-      updated_at: new Date().toISOString(),
-    })
-    .eq('stripe_payment_intent_id', payment_intent_id);
+      // Revert each payment
+      for (const payment of paymentsToRevert || []) {
+        const dueDate = new Date(payment.due_date);
+        dueDate.setHours(0, 0, 0, 0);
+        const isOverdue = dueDate < today;
 
-    const newPaymentsMade = (mortgage.payments_made || 0) + paymentCount;
-    const isCompleted = newPaymentsMade >= mortgage.total_payments;
+        await mortgagePayment.update(payment.id, {
+          status: isOverdue ? 'failed' : 'scheduled',
+          failure_reason: paymentIntent.last_payment_error?.message || 'Payment was not completed',
+          updated_at: new Date().toISOString(),
+        })
+      }
 
-    console.log('Updating mortgage record. New payments made:', newPaymentsMade, 'Is mortgage completed?', isCompleted);
+      await supabaseAdmin
+      .from('transactions')
+      .update({
+        status: 'failed',
+        updated_at: new Date().toISOString(),
+      })
+      .eq('stripe_payment_intent_id', payment_intent_id);
 
-    const { data: nextScheduled } = await supabaseAdmin
-    .from('mortgage_payments')
-    .select('due_date')
-    .eq('mortgage_id', mortgageId)
-    .eq('status', 'scheduled')
-    .order('payment_number', { ascending: true })
-    .limit(1)
-    .single();
+      return NextResponse.json({
+        success: false,
+        error: paymentIntent.last_payment_error?.message || 'Payment was not completed',
+        status: paymentIntent.status,
+      });
+    }
 
-    console.log('Next scheduled payment after update:', nextScheduled);
-
-    await mortgageQueryBuilder.update(mortgageId, {
-      payments_made: newPaymentsMade,
-      last_payment_date_actual: new Date().toISOString(),
-      next_payment_date: nextScheduled?.due_date || null,
-      status: isCompleted ? 'completed' : 'active',
-      completed_at: isCompleted ? new Date().toISOString() : undefined,
-      updated_at: new Date().toISOString(),
-    });
-
-    return NextResponse.json({
-      success: true,
-      payments_completed: paymentCount,
-      new_total_paid: newPaymentsMade,
-      is_mortgage_completed: isCompleted,
-    });
+    return NextResponse.json(
+      { error: `Unexpected payment status: ${paymentIntent.status}` },
+      { status: 400 }
+    );
 
   } catch (error) {
     console.error('Payment confirmation error:', error);

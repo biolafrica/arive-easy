@@ -525,13 +525,20 @@ export function createCRUDHandlers<T>({
           // Log action
           await logAction('delete', context, { success: true, id });
 
-          return response.messageResponse('Deleted successfully');
+          const data = { 
+            deleted_id: id, 
+            deleted_at: new Date().toISOString(), 
+            message: 'Property deleted successfully',
+          };
+
+          return response.successResponse(data);
         }
 
         return NextResponse.json(
           { error: 'Invalid request' },
           { status: 400 }
         );
+
       } catch (error) {
         await logAction('delete', context, { success: false, error });
         return response.handleError(error);
