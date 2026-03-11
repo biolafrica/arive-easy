@@ -1,6 +1,7 @@
 import { DescriptionList } from "@/components/common/DescriptionList";
 import { formatUSD, toNumber } from "@/lib/formatter";
 import { DocumentInfoTypes, EmploymentInfoType, PersonalInfoType, PropertyPreferenceType } from "@/type/pages/dashboard/approval";
+import { formatPreApprovalDocuments } from "@/utils/common/documents";
 
 interface Props {
   data: PersonalInfoType;
@@ -147,15 +148,10 @@ export function PropertyPreferenceSection({ data }: PProps) {
 export function DocumentsInformationSection({ data }: DProps) {
   if (!data) return null;
 
-  const files = [
-    data.pay_stubs && { name: 'Pay Stubs', url: data.pay_stubs },
-    data.tax_returns && { name: 'Tax Returns', url: data.tax_returns },
-    data.bank_statements && { name: 'Bank Statements', url: data.bank_statements },
-    data.employment_verification && {
-      name: 'Employment Verification',
-      url: data.employment_verification,
-    },
-  ].filter(Boolean) as { name: string; url: string }[];
+  const files = formatPreApprovalDocuments(data);
+
+  if (files.length === 0) return null;
+
 
   return (
     <DescriptionList

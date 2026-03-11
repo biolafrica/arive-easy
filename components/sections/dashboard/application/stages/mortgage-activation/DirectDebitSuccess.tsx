@@ -148,7 +148,7 @@ export function DirectDebitSuccess({
             <div className="text-center p-4 bg-gray-50 rounded-lg">
               <p className="text-sm text-gray-500">Total Payments</p>
               <p className="text-lg font-semibold text-gray-900">
-                {loanDetails.totalPayments} months
+                {formatUSD({amount:loanDetails.totalPayments})} 
               </p>
             </div>
           </div>
@@ -215,8 +215,8 @@ export function DirectDebitSuccess({
 
       <p className="text-center text-sm text-gray-500">
         Need to make changes? Contact our support team at{' '}
-        <a href="mailto:support@ariveasy.com" className="text-blue-600 hover:underline">
-          support@ariveasy.com
+        <a href="mailto:support@usekletch.com" className="text-blue-600 hover:underline">
+          support@usekletch.com
         </a>
       </p>
     </div>

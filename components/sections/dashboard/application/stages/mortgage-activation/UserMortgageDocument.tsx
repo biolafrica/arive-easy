@@ -2,19 +2,8 @@ import { DescriptionList } from "@/components/common/DescriptionList";
 import ErrorState from "@/components/feedbacks/ErrorState";
 import { DescriptionListSkeleton } from "@/components/skeleton/DescriptionListSkeleton";
 import { useTransactionalDocuments } from "@/hooks/useSpecialized/useDocuments";
-import { TransactionDocumentBase } from "@/type/pages/dashboard/documents";
-import { humanizeSnakeCase } from "@/utils/common/humanizeSnakeCase";
+import { formatDocumentFiles } from "@/utils/common/documents";
 
-export const files =(documents:TransactionDocumentBase[])=>{
-  const files = (documents).map((item: TransactionDocumentBase)=>(
-    item.document_type && { 
-      name: humanizeSnakeCase(item.document_type), 
-      url: item.generated_document_url
-    }
-  )).filter(Boolean) as { name: string; url: string }[];
-
-  return files
-}
 
 export default function UserMortgageDocument({id}:{
   id:string
@@ -37,6 +26,8 @@ export default function UserMortgageDocument({id}:{
     );
   }
 
+  const documentFiles = formatDocumentFiles(documents);
+
   return(
     <div>
       {!isLoading && documents.length > 0 && (
@@ -48,7 +39,7 @@ export default function UserMortgageDocument({id}:{
               label: 'Attachments',
               value: {
                 type: 'attachments',
-                files: files(documents)
+                files: documentFiles
               },
             },
           ]}

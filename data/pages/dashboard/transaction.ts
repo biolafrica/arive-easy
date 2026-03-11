@@ -4,6 +4,8 @@ import { TransactionBase } from '@/type/pages/dashboard/transactions';
 import { humanizeSnakeCase } from '@/utils/common/humanizeSnakeCase';
 import * as icon from '@heroicons/react/24/outline';
 
+export type PaymentType = keyof typeof PAYMENT_TYPES;
+export type CancelledPaymentType = keyof typeof CANCELLED_PAYMENT_TYPES;
 
 export const columns: TableColumn<TransactionBase>[] = [
   { key: 'id', header: 'Transaction ID', sortable: false},
@@ -148,8 +150,6 @@ export const PAYMENT_TYPES = {
   }
 } as const;
 
-export type PaymentType = keyof typeof PAYMENT_TYPES;
-
 export const CANCELLED_PAYMENT_TYPES = {
   'processing_fee': {
     icon: icon.CreditCardIcon,
@@ -209,4 +209,4 @@ export const CANCELLED_PAYMENT_TYPES = {
   }
 } as const;
 
-export type CancelledPaymentType = keyof typeof CANCELLED_PAYMENT_TYPES;
+

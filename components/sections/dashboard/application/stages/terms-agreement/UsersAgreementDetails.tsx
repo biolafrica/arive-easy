@@ -1,8 +1,8 @@
 import { DescriptionList } from "@/components/common/DescriptionList"
 import { TransactionDocumentBase } from "@/type/pages/dashboard/documents"
 import { humanizeSnakeCase } from "@/utils/common/humanizeSnakeCase"
-import { files } from "../mortgage-activation/UserMortgageDocument";
 import { StatusBanner } from "@/components/common/Statusbanner";
+import { formatDocumentFiles } from "@/utils/common/documents";
 
 export default function UserAgreementDocumentList({documents}:{
   documents: TransactionDocumentBase[]
@@ -51,6 +51,9 @@ export default function UserAgreementDocumentList({documents}:{
 
   const banner = latestDoc ? statusBanner() : null
 
+  const documentFiles = formatDocumentFiles(documents);
+  
+
   return(
     <div>
 
@@ -64,7 +67,7 @@ export default function UserAgreementDocumentList({documents}:{
             label: 'Attachments',
             value: {
               type: 'attachments',
-              files: files(documents)
+              files: documentFiles
             },
           },
         ]}
@@ -73,3 +76,5 @@ export default function UserAgreementDocumentList({documents}:{
     </div>
   )
 }
+
+

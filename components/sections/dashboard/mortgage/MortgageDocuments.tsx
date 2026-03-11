@@ -3,8 +3,8 @@ import { useTransactionalDocuments } from "@/hooks/useSpecialized/useDocuments";
 import { DocumentIcon } from "@heroicons/react/24/outline";
 import { StageDescriptionEmpty } from "../application/common/StageDescriptionEmpty";
 import { DescriptionList } from "@/components/common/DescriptionList";
-import { files } from "../application/stages/mortgage-activation/UserMortgageDocument";
 import { DescriptionListSkeleton } from "@/components/skeleton/DescriptionListSkeleton";
+import { formatDocumentFiles } from "@/utils/common/documents";
 
 export default function MortgageDocuments({id}:{id:string}){
 
@@ -25,6 +25,8 @@ export default function MortgageDocuments({id}:{id:string}){
       />
     );
   }
+
+  const documentFiles = formatDocumentFiles(documents);
 
   return(
     <div>
@@ -47,7 +49,7 @@ export default function MortgageDocuments({id}:{id:string}){
               label: 'Attachments',
               value: {
                 type: 'attachments',
-                files: files(documents)
+                files: documentFiles
               },
             },
           ]}
