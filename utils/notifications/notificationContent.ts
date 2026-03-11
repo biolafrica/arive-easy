@@ -90,6 +90,15 @@ export const NOTIFICATION_CONTENT: Record<NotificationType, ContentBuilder> = {
     title: 'Legal fee payment failed',
     message: `Your legal fee payment${m?.amount ? ` of ${m.amount}` : ''} failed. Please try again.`,
   }),
+  terms_stage_completed: (m) => ({
+    title: 'Terms Stage Completed!',
+    message: `You have coompleted terms and agreement stage for ${m?.application_number}`,
+  }),
+
+  payment_stage_completed: (m) => ({
+    title: 'Payment Stage Completed',
+    message: `Your have coompleted payment stage for ${m?.application_number}`,
+  }),
 
   document_signed: () => ({
     title: 'Documents signed',

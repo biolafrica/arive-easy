@@ -22,6 +22,8 @@ export type NotificationType =
   | 'payment_reminder'
   | 'subscription_payment_success'
   | 'subscription_payment_failed'
+  | 'terms_stage_completed'
+  | 'payment_stage_completed'
   // Seller
   | 'offer_received'
   | 'down_payment_received'
@@ -38,7 +40,7 @@ export interface NotificationMetadata {
   property_name?: string;
   application_number?: string;
   reference_number?: string;
-  cta_url?: string;          // deep link for the notification
+  cta_url?: string;    
   due_date?: string;
   [key: string]: unknown;
 }

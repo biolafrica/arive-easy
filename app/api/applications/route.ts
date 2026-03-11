@@ -1,15 +1,12 @@
 import { ApplicationBase } from "@/type/pages/dashboard/application";
 import { OfferBase } from "@/type/pages/dashboard/offer";
-import { PropertyBase, PropertyStatus } from "@/type/pages/property";
+import { PropertyBase,} from "@/type/pages/property";
 import { UserBase } from "@/type/user";
-import { offerNotificationBody } from "@/utils/email/templates/application";
-import { sendEmail } from "@/utils/email/send_email";
-import { createNotification } from "@/utils/notifications/createNotification";
-import { buildNotificationPayload } from "@/utils/notifications/notificationContent";
 import { requireAuth } from "@/utils/server/authMiddleware";
 import { createCRUDHandlers } from "@/utils/server/crudFactory";
 import { SupabaseQueryBuilder } from "@/utils/supabase/queryBuilder";
 import { NextRequest } from "next/server";
+import { executeStageHandlers } from "@/utils/server/applicationStageHandlers";
 
 const applicationHandlers = createCRUDHandlers<ApplicationBase>({
   table: 'applications',
@@ -40,121 +37,21 @@ const applicationHandlers = createCRUDHandlers<ApplicationBase>({
   },
   hooks: {
     afterUpdate: async (updated, previous, context) => {
+      try {
+        const stageContext = {
+          propertyQB: new SupabaseQueryBuilder<PropertyBase>('properties'),
+          offerQB: new SupabaseQueryBuilder<OfferBase>('offers'),
+          userQB: new SupabaseQueryBuilder<UserBase>('users'),
+        };
 
-      const propertyQueryBuilder = new SupabaseQueryBuilder<PropertyBase>("properties");
-      const offerQueryBuilder = new SupabaseQueryBuilder<OfferBase>("offers");
-      const userQueryBuilder = new SupabaseQueryBuilder<UserBase>('users');
-
-      const currentStageData = updated.stages_completed?.property_selection?.data;
-      const mortgageActivationData = updated.stages_completed?.mortgage_activation;
-
-      if ( currentStageData?.status === 'sent' && updated.property_id) {
-        try {
-
-          const property = await propertyQueryBuilder.findById(updated.property_id)
-          if (!property) {
-            console.error('Failed to fetch property for offer creation:');
-            return;
-          }
-
-          const existingOffer = await offerQueryBuilder.findOneByCondition({
-            application_id:updated.id,
-            property_id:updated.property_id
-          })
-
-          if (existingOffer) {
-            await offerQueryBuilder.update(existingOffer.id,{
-              status: 'pending',
-              rejection_note: "",
-              updated_at: new Date().toISOString()
-            })
-
-          } else {
-            const offerData: Partial<OfferBase> = {
-              user_id: updated.user_id,
-              application_id: updated.id,
-              property_id: updated.property_id,
-              property_name: currentStageData.property_name || property.title,
-              amount: String(updated.property_price || property.price),
-              status: 'pending',
-              type: currentStageData.type || 'mortgage',
-              developer_id: property.developer_id || '',
-              created_at: new Date().toISOString(),
-            };
-
-            const offer = await offerQueryBuilder.create(offerData)
-            if (!offer) {
-              console.error('Failed to create offer');
-            }
-
-            await updateProperty(updated.property_id, 'offers')
-
-          }
-
-          const user = await userQueryBuilder.findById(property.developer_id || '')
-          
-          if (user?.email) {
-
-            try {
-              await sendEmail({
-                to:  `${user.email}`,
-                subject: `Offer for ${property.title}`,
-                html: offerNotificationBody({
-                  sellerName: user.name,
-                  propertyId: property.id,
-                  propertyName:property.title,
-                  offerAmount:property.price,
-                }),
-              });
-            } catch (error) {
-              console.error('Failed to send seller offer notificatio:', error);
-            }
-
-            await createNotification(
-              buildNotificationPayload('offer_received', {
-                user_id:user.id,
-                application_id: updated.id,
-                property_id:updated.property_id,
-                type:'offer_received',
-                channel: 'in_app',
-                metadata: {
-                  reference_number: updated.application_number,
-                  application_number: updated.id,
-                  cta_url: `/seller-dashboard/offers`,
-                   property_name:updated.property_name 
-                },
-              })
-            );
-
-          }
-          
-        } catch (error) {
-          console.error('Error in afterUpdate hook:', error);
-        }
+        await executeStageHandlers(updated, stageContext);
+      } catch (error) {
+        console.error('Error in afterUpdate hook:', error);
       }
-
-      if(mortgageActivationData?.completed === true && mortgageActivationData.status === 'completed'){
-        await updateProperty(updated.property_id, 'sold')
-      }
+ 
     }
   }
 });
 
-async function updateProperty(id: string, status: PropertyStatus) {
-
-  const propertyQueryBuilder = new SupabaseQueryBuilder<PropertyBase>("properties");
-
-  const property = await propertyQueryBuilder.findById(id)
-  if (!property) {
-    console.error('Failed to fetch property for offer creation:');
-    return;
-  }
-
-  await propertyQueryBuilder.update(property.id,{
-    status
-  })
-
-
-}
 
 export const { GET, PUT, POST, PATCH } = applicationHandlers;

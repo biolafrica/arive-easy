@@ -164,9 +164,9 @@ export async function POST(request: NextRequest) {
       stages_completed: {
         ...application.stages_completed,
         mortgage_activation: {
-          completed: true,
-          completed_at: new Date().toISOString(),
-          status: 'completed',
+          completed: false,
+          completed_at: '',
+          status: 'current',
           data: {
             direct_debit_status: directDebitStatus,
             current_step: 'success',
