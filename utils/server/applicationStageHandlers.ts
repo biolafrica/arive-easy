@@ -8,7 +8,8 @@ import { createNotification } from '../notifications/createNotification';
 import { buildNotificationPayload } from '../notifications/notificationContent';
 import { NotificationMetadata, NotificationType } from '@/type/pages/dashboard/notification';
 import { offerNotificationBody } from '../email/templates/application';
-import { mortgageActivationEmail, paymentCompletionEmail, propertyAcquiredEmail, termsCompletionEmail } from '../email/templates/milestones';
+import { AdminEscrowNotification, mortgageActivationEmail, paymentCompletionEmail, propertyAcquiredEmail, termsCompletionEmail } from '../email/templates/milestones';
+import { TransactionBase } from '@/type/pages/dashboard/transactions';
 
 interface StageHandler {
   shouldExecute(application: ApplicationBase): boolean;
@@ -159,9 +160,12 @@ class MortgageActivationHandler implements StageHandler {
   async execute(app: ApplicationBase, context: StageHandlerContext): Promise<void> {
     const { propertyQB, userQB } = context;
 
-    const [user, seller] = await Promise.all([
+    const transactionQB = new SupabaseQueryBuilder<TransactionBase>('transactions');
+
+    const [user, seller,escrowTransaction] = await Promise.all([
       userQB.findById(app.user_id),
-      app.developer_id ? userQB.findById(app.developer_id) : null
+      app.developer_id ? userQB.findById(app.developer_id) : null,
+      this.getEscrowTransaction(app.id, transactionQB)
     ]);
 
     if (!user) {
@@ -172,10 +176,20 @@ class MortgageActivationHandler implements StageHandler {
       await propertyQB.update(app.property_id, { status: 'sold' });
     }
 
+    if (escrowTransaction) {
+      await this.releaseEscrowFunds(escrowTransaction, transactionQB);
+    } else {
+      console.warn(`No escrow transaction found for application ${app.id}`);
+    }
+
     await this.notifyBuyer(user, app);
 
     if (seller) {
       await this.notifySeller(seller, user, app);
+    }
+
+    if (escrowTransaction && seller) {
+      await this.notifyAdminForFundRelease(app, escrowTransaction, seller, user);
     }
   }
 
@@ -232,7 +246,73 @@ class MortgageActivationHandler implements StageHandler {
       }
     });
   }
+
+  private async getEscrowTransaction(
+    applicationId: string,
+    transactionQB: SupabaseQueryBuilder<TransactionBase>
+  ): Promise<TransactionBase | null> {
+    return await transactionQB.findOneByCondition({
+      application_id: applicationId,
+      type: 'escrow_down_payment',
+      status: 'succeeded'
+    });
+  }
+
+  private async releaseEscrowFunds(
+    transaction: TransactionBase,
+    transactionQB: SupabaseQueryBuilder<TransactionBase>
+  ): Promise<void> {
+    try {
+      await transactionQB.update(transaction.id, {
+        status: 'released',
+        state: 'released',
+        metadata: {
+          ...transaction.metadata,
+          escrow_status: 'released',
+          session_url:transaction.metadata?.session_url || null,
+          expires_at: transaction.metadata?.expires_at || '',
+          initiated_at:new Date().toISOString()
+        }
+      });
+
+      console.log(`Escrow funds released for transaction ${transaction.id}`);
+    } catch (error) {
+      console.error('Failed to release escrow funds:', error);
+      throw error;
+    }
+  }
+
+  private async notifyAdminForFundRelease(
+    app: ApplicationBase,
+    escrowTransaction: TransactionBase,
+    seller: UserBase,
+    buyer: UserBase
+  ): Promise<void> {
+    const escrowAmount = (escrowTransaction.amount / 100).toFixed(2);
+
+    try {
+      await sendEmail({
+        to: 'muhammedolaleye@gmail.com',
+        subject: `Action Required: Release Escrow Funds - Application ${app.application_number}`,
+        html: AdminEscrowNotification({
+          applicationNumber: app.application_number,
+          propertyName: app.property_name,
+          amount: escrowAmount,
+          sellerName: seller.name,
+          sellerEmail: seller.email,
+          sellerID: seller.id,
+          buyerName: buyer.name,
+          transactionID: escrowTransaction.id,
+        }),
+      });
+
+      console.log(`Admin notification sent for escrow release: ${escrowTransaction.id}`);
+    } catch (error) {
+      console.error('Failed to notify admin for fund release:', error);
+    }
+  }
 }
+
 
 class PaymentSetupHandler implements StageHandler {
   shouldExecute(app: ApplicationBase): boolean {

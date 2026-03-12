@@ -90,7 +90,7 @@ export default function SellerTransactionClientView (){
           />
         }
         statusConfig={SellerTransactionstatusConfig}
-        getStatus={(row) => row.status}
+        getStatus={(row) => row.status} 
         onMore={detailPanel.openEdit}
         onPageChange={handlePageChange}
         onItemsPerPageChange={handleItemsPerPageChange}

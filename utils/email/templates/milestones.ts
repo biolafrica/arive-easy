@@ -38,6 +38,17 @@ interface PropertyAcquiredParams {
   applicationNumber: string;
 }
 
+interface AdminEscrowProps {
+  amount:string;
+  propertyName:string;
+  applicationNumber:string;
+  transactionID:string;
+  sellerName:string;
+  sellerID:string;
+  sellerEmail:string
+  buyerName:string;
+}
+
 export const termsCompletionEmail=({
   userName,
   applicationNumber,
@@ -515,3 +526,65 @@ export const propertyAcquiredEmail=({
     )}
   `;
 };
+
+export const AdminEscrowNotification=({
+  amount,
+  propertyName,
+  transactionID,
+  buyerName,
+  sellerEmail,
+  sellerName,
+  sellerID,
+  applicationNumber
+}:AdminEscrowProps)=>{
+  return`
+    ${StatusBadge('info', 'Escrow Release Required', 'Mortgage Activation Completed')}
+
+
+    <h2 style="color: #10b981; font-size: 28px; margin: 0 0 10px 0; text-align: center;">
+      Action Required:</strong> Please manually release escrow funds to the seller's account
+    </h2>
+    
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 25px 0;">
+      Dear Admin,
+    </p>
+    
+    <p style="color: #4b5563; font-size: 18px; line-height: 1.7; margin: 0 0 30px 0; font-weight: 500;">
+      A mortgage has been successfully activated, and the escrow funds are now ready to be released to the seller. Please process this payment manually as per the standard procedure.
+    </p>
+
+    ${AmountDisplay(amount, 'Escrowed Amount')}
+
+    ${DataTable([
+      { label: 'Property Name', value: propertyName },
+      { label: 'Application Number', value: applicationNumber },
+      { label: 'Transactiion ID', value: transactionID, highlight: true },
+      { label: 'Seller Name', value: sellerName },
+      { label: 'Seller ID', value: sellerID},
+      { label: 'Seller Email', value: sellerEmail },
+      { label: 'Buyer Name', value: buyerName }
+    ], 'Transaction Details')}
+  `
+}
+
+export const AdminCOSFailureNotification=({applicationNumber}:{
+  applicationNumber:string
+})=>{
+  return`
+    ${StatusBadge('error', 'Contract of Sales Resend', 'Error generating contract of sales document')}
+
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 25px 0;">
+      Dear Admin,
+    </p>
+
+    <p style="color: #4b5563; font-size: 18px; line-height: 1.7; margin: 0 0 30px 0; font-weight: 500;">
+      Action Required:</strong> Please manually generate contract of sales document for the application id stated below
+    </p>
+
+    ${DataTable([
+      { label: 'Contract Type', value:'Contract of Sales' },
+      { label: 'Application Number', value: applicationNumber, highlight:true },
+    ], 'Contract Details')}
+
+  `
+}

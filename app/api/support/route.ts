@@ -12,7 +12,7 @@ const supportRequestSchema = z.object({
 });
 
 const SUPPORT_CONFIG = {
-  primaryEmail: process.env.SUPPORT_EMAIL || 'biolafrica@gmail.com',
+  primaryEmail: process.env.SUPPORT_EMAIL || 'muhammedolaleye@gmail.com',
   fallbackEmail: process.env.SUPPORT_FALLBACK_EMAIL || 'support@usekletch.com',
   replyTo: 'no-reply@usekletch.com',
   companyName: 'Kletch',

@@ -11,6 +11,7 @@ import { SupabaseQueryBuilder } from "@/utils/supabase/queryBuilder";
 import { NextRequest } from "next/server";
 import { PartnerDocumentBase } from "@/type/pages/dashboard/documents";
 import { documentGenerator } from "@/utils/server/documentGenerator";
+import { AdminCOSFailureNotification } from "@/utils/email/templates/milestones";
 
 const offersHandlers = createCRUDHandlers<OfferBase>({
   table: 'offers',
@@ -107,8 +108,17 @@ const offersHandlers = createCRUDHandlers<OfferBase>({
           });
 
           if (!docResult.success) {
-            // notify admin
-            console.error('Failed to auto-generate contract of sales:', docResult.error);
+            try {
+              await sendEmail({
+                to: 'muhammedolaleye@gmail.com',
+                subject: `Action Required: Generate COS - Application ${application.application_number}`,
+                html:  AdminCOSFailureNotification({
+                  applicationNumber: application.application_number,
+                }),
+              })
+            } catch (error) {
+              console.error('Failed to manually generate contract of sales:', docResult.error);
+            }
           }
 
           if (user?.email) {

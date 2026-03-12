@@ -19,6 +19,7 @@ export const statusConfig: StatusConfig[] = [
   { value: 'pending', label: 'Pending', variant: 'yellow' },
   { value: 'failed', label: 'Failed', variant: 'red' },
   { value: 'cancelled', label: 'Cancelled', variant: 'blue' },
+  { value: 'released', label: 'Success', variant: 'green' },
 ];
 
 export const SellerTransactionscolumns: TableColumn<TransactionBase>[] = [
@@ -30,9 +31,9 @@ export const SellerTransactionscolumns: TableColumn<TransactionBase>[] = [
 ];
 
 export const SellerTransactionstatusConfig: StatusConfig[] = [
-  { value: 'succeeded', label: 'Credited', variant: 'green' },
+  { value: 'succeeded', label: 'holding', variant: 'blue' },
   { value: 'pending', label: 'Pending', variant: 'yellow' },
-  { value: 'release', label: 'Released', variant: 'blue' },
+  { value: 'released', label: 'Credited', variant: 'blue' },
 ];
 
 export const sellerTransactionStat=(

@@ -37,7 +37,8 @@ export async function GET(request: NextRequest) {
       
       transactionsQB.sumWithConditions('amount', {
         developer_id: developerId,
-        status: 'succeeded'
+        status: 'released',
+        state: 'released'
       }),
       
       transactionsQB.sumWithConditions('amount', {
