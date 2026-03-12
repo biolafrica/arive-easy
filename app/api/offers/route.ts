@@ -107,6 +107,7 @@ const offersHandlers = createCRUDHandlers<OfferBase>({
           });
 
           if (!docResult.success) {
+            // notify admin
             console.error('Failed to auto-generate contract of sales:', docResult.error);
           }
 

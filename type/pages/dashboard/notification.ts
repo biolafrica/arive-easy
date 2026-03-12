@@ -18,6 +18,7 @@ export type NotificationType =
   | 'legal_fee_success'
   | 'legal_fee_failed'
   | 'document_signed'
+  | 'document_submitted'
   | 'mortgage_activated'
   | 'payment_reminder'
   | 'subscription_payment_success'

@@ -1,5 +1,11 @@
 import { ApplicationBase } from "@/type/pages/dashboard/application";
 import { TransactionDocumentBase } from "@/type/pages/dashboard/documents";
+import { UserBase } from "@/type/user";
+import { sendEmail } from "@/utils/email/send_email";
+import { documentUploadNotificationEmail } from "@/utils/email/templates/document";
+import { sendOfferAcceptedEmail } from "@/utils/email/templates/offers";
+import { createNotification } from "@/utils/notifications/createNotification";
+import { buildNotificationPayload } from "@/utils/notifications/notificationContent";
 import { requireAuth } from "@/utils/server/authMiddleware";
 import { createCRUDHandlers } from "@/utils/server/crudFactory";
 import { SupabaseQueryBuilder } from "@/utils/supabase/queryBuilder";
@@ -33,32 +39,80 @@ const transactionTemplateHandlers = createCRUDHandlers<TransactionDocumentBase>(
   },
   hooks:{
     beforeCreate:async(body, context)=>{
-      const transactionDocumentQueryBuilder = new SupabaseQueryBuilder<TransactionDocumentBase>('document_transactions'); 
-      const applicationQueryBuilder = new SupabaseQueryBuilder<ApplicationBase>('applications');
-   
-      const previousTransactionTemplate = await transactionDocumentQueryBuilder.findOneByCondition({
-        application_id: body.application_id,
-        document_type:body.document_type
-      });
+      const transactionDocumentQB = new SupabaseQueryBuilder<TransactionDocumentBase>('document_transactions'); 
+      const applicationQB = new SupabaseQueryBuilder<ApplicationBase>('applications');
+      const userQB = new SupabaseQueryBuilder<UserBase>('users')
 
-      if(previousTransactionTemplate){
-        throw new Error( `you already created ${body.document_type} for this application`)
+      try {
+
+        const previousTransactionTemplate = await transactionDocumentQB.findOneByCondition({
+          application_id: body.application_id,
+          document_type:body.document_type
+        });
+
+        if(previousTransactionTemplate){
+          throw new Error( `you already created ${body.document_type} for this application`)
+        }
+
+        const application = await applicationQB.findById(body.application_id)
+        if(!application){
+          throw new Error('application not found')
+        }
+
+        const now = new Date().toISOString();
+
+        body.created_at = now;
+        body.updated_at = now;
+        body.status = 'completed'
+        body.buyer_id = application.user_id
+        body.seller_id =application.developer_id
+        body.property_id = application.property_id
+        body.esign_provider = 'static'
+
+        const user = await userQB.findById(application.user_id)
+       
+        if(user?.email){
+          try {
+            await sendEmail({
+              to:  `${user.email}`,
+              subject: 'Property Documents Available - Kletch',
+              html: documentUploadNotificationEmail({
+                userName: user.name,
+                applicationNumber: application.application_number,
+                propertyName:application.property_name,
+                uploadedDocuments:{
+                  name:`${application.property_name} '' ${body.document_type}`,
+                  type:body.document_type,
+                  uploadDate:now,
+                }
+              }),
+            });
+
+            await createNotification(
+              buildNotificationPayload('document_submitted', {
+                user_id:user.id,
+                application_id: application.id,
+                property_id:application.property_id,
+                type:'document_submitted',
+                channel: 'in_app',
+                metadata: {
+                  currency:body.document_type,
+                  cta_url: `https://www.usekletch.com/user-dashboard/applications`,
+                  property_name:application.property_name 
+                },
+              })
+            );
+
+          } catch (error) {
+            console.error('Failed to send notification email:', error);
+          }
+        }
+      
+
+      } catch (error) {
+        console.error('transactional Document create hook:', error);
+        
       }
-
-      const application = await applicationQueryBuilder.findById(body.application_id)
-      if(!application){
-        throw new Error('application not found')
-      }
-
-      const now = new Date().toISOString();
-
-      body.created_at = now;
-      body.updated_at = now;
-      body.status = 'completed'
-      body.buyer_id = application.user_id
-      body.seller_id =application.developer_id
-      body.property_id = application.property_id
-      body.esign_provider = 'static'
          
     }
     

@@ -105,6 +105,11 @@ export const NOTIFICATION_CONTENT: Record<NotificationType, ContentBuilder> = {
     message: 'All documents have been signed. Your mortgage is being processed for final activation.',
   }),
 
+  document_submitted: (m) => ({
+    title: `${m?.property_name} uploaded`,
+    message: `${m?.property_name} ${m?.currency} document have been added to you application`,
+  }),
+
   mortgage_activated: (m) => ({
     title: 'Mortgage activated',
     message: `Your mortgage${m?.property_name ? ` for ${m.property_name}` : ''} is now active. Your first payment is due${m?.due_date ? ` on ${m.due_date}` : ' next month'}.`,
