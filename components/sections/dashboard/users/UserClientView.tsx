@@ -3,7 +3,7 @@
 import { getTableEmptyMessage } from "@/components/table/TableEmptyMessage";
 import SidePanel from "@/components/ui/SidePanel";
 import { useSidePanel } from "@/hooks/useSidePanel";
-import { useAdminUsers } from "@/hooks/useSpecialized";
+import { useAdminUsers } from "@/hooks/useSpecialized/useUser";
 import { useTableFilters } from "@/hooks/useTableQuery";
 import { UserBase } from "@/type/user";
 import { useMemo } from "react";
@@ -30,7 +30,7 @@ export default function UserClientView(){
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: [],
   }), [baseQueryParams]);
 
-  const { users, pagination, isLoading, error, refresh } = useAdminUsers(queryParams);
+  const { items:users, pagination, isLoading, error, refresh } = useAdminUsers(queryParams);
 
   if (error) {
     return (

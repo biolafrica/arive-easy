@@ -29,7 +29,7 @@ export default function UserApplicationClientView() {
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['properties', 'pre_approvals'],
   }), [baseQueryParams]);
 
-  const { applications, pagination, isLoading, error, refresh } = useApplications(queryParams);
+  const { items:applications, pagination, isLoading, error, refresh } = useApplications(queryParams);
 
   if (error) {
     return (

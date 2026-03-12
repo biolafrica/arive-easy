@@ -2,7 +2,7 @@
 
 import Form from "@/components/form/Form";
 import { initialValues, sigupFields } from "@/data/auth/signUp";
-import { useUserRegistration } from "@/hooks/useSpecialized";
+import { useUserRegistration } from "@/hooks/useSpecialized/useUser";
 import { SignUpForm } from "@/type/auth/signUp";
 import { useRouter } from "next/navigation";
 

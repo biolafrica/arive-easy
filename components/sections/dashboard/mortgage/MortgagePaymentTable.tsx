@@ -28,7 +28,7 @@ export default function MortgagePaymentTable({id}: {id: string}) {
     mortgage_id:id,
   }
 
-  const {mortgagePayments, isLoading, pagination, error, refresh} = useMortgagePayments(queryParams);
+  const {items:mortgagePayments, isLoading, pagination, error, refresh} = useMortgagePayments(queryParams);
 
   if (error) {
     return (

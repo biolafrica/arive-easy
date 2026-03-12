@@ -10,6 +10,7 @@ import { useCrud } from "../useCrud";
 import { getEntityCacheConfig } from "@/lib/cache-config";
 import { generateApplicationRefNo } from "@/utils/common/generateApplicationRef";
 import { toSlug } from "@/utils/common/toSlug";
+import { createEntityHooks } from "./useFactory";
 
 export interface TransactionalDocumentResponse {
   success: boolean;
@@ -22,21 +23,315 @@ export interface TransactionalDocumentResponse {
   message: string;
 }
 
-export function useTemplateDocuments(params?: any) {
+const templateDocumentHooks = createEntityHooks<
+  document.TemplateBase, 
+  'documents', 
+  'templates', 
+  'detail'
+>({
+  resource: 'documents/template',
+  cacheKey: 'documents',
+  listSubKey: 'templates',
+  detailSubKey: 'detail',
+  createInterface: 'admin'
+});
+
+export const useTemplateDocuments = templateDocumentHooks.useAdminList;
+
+export function useTemplateDocument(documentType?: string) {
   const crud = useCrud<document.TemplateBase>({
     resource: 'documents/template',
     interfaceType: 'admin',
     cacheConfig: getEntityCacheConfig('documents', 'templates'),
   });
 
-  const { data, isLoading, error } = crud.useGetAll(params);
+  const queryParams = useMemo(() => ({
+    filters: {
+      ...(documentType && { type: documentType }),
+      status: 'active',
+    },
+    limit: 1, 
+  }), [documentType]);
+
+  const { data, isLoading, error } = crud.useGetAll(queryParams);
 
   return {
-    templates: data?.data || [],
+    template: data?.data[0] || null,
     pagination: data?.pagination,
     isLoading,
     error,
     ...crud,
+  };
+}
+
+export function useUploadTemplateDocuments() {
+  const { user } = useAuthContext();
+  const [isUploading, setIsUploading] = useState(false);
+  const {create, isCreating} = templateDocumentHooks.useCreate();
+
+  const uploadDocument = async ( formData:document.TemplateForm) => {
+
+    if (!user?.id) {
+      toast.error('Please login to upload documents');
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      let template_file_url:string|null = '';
+
+      if (formData.template_file_url) {
+        template_file_url = await apiClient.uploadToSupabase(
+          formData.template_file_url, 
+          'documents', 
+          'templates'
+        );
+      }
+
+      const template_number = generateApplicationRefNo('TEMP');
+      const slug = toSlug(formData.name);
+
+      const requires_signature = formData.requires_signature.reduce((acc, sig) => {
+        acc[sig] = true;
+        return acc;
+      }, {} as Record<string, boolean>);
+
+      const templateData: document.TemplateData = {
+        name: formData.name,
+        slug,
+        description: formData.description || '',
+        type: formData.type,
+        category: formData.category,
+        version: formData.version,
+        requires_signature,
+        template_file_url,
+        template_fields: formData.template_fields,
+        template_number,
+        status: 'active',
+        created_by: user.id,
+        anvil_template_id: formData.anvil_template_id
+      };
+
+      const result = await create(templateData);
+      toast.success('template document created successfully');
+      return result;
+
+    } catch (error) {
+      console.error('Template upload error:', error);
+      toast.error('Failed to upload template document');
+      throw error;
+
+    } finally {
+      setIsUploading(false);
+  
+    }
+  };
+
+  return {
+    uploadDocument,
+    isUploading: isUploading || isCreating,
+  };
+}
+
+const partnerDocumentHooks = createEntityHooks<
+  document.PartnerDocumentBase, 
+  'documents', 
+  'partners', 
+  'detail'
+>({
+  resource: 'documents/partner',
+  cacheKey: 'documents',
+  listSubKey: 'partners',
+  detailSubKey: 'detail',
+  developerField: 'partner_id',
+  createInterface: 'admin'
+});
+
+export const usePartnerDocuments = partnerDocumentHooks.useAdminList;
+
+export const useSellerPartnerDocuments = partnerDocumentHooks.useSellerList;
+
+export function useUploadPartnerDocuments() {
+  const { user } = useAuthContext();
+  const [isUploading, setIsUploading] = useState(false);
+  const {create, isCreating} = partnerDocumentHooks.useCreate();
+
+  const uploadDocument = async ( formData:document.FinalPartnerDocument) => {
+
+    if (!user?.id) {
+      toast.error('Please login to upload documents');
+      return;
+    }
+
+    const partner_type = user.user_metadata.role === "admin" ? 'bank' : 'seller'
+
+    setIsUploading(true);
+
+    if(formData.document_type !== "contract_of_sales"){
+      return toast.error('Only seller can create this document type');
+    }
+
+    try {
+      const result = await create({
+        ...formData,
+        partner_id: user.id,
+        partner_type
+      });
+      toast.success('Partner document created successfully')
+      return result;
+    } catch (error) {
+      console.error('Partner Document upload error:', error);
+      toast.error('Failed to upload partner document');
+      throw error;
+
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  return {
+    uploadDocument,
+    isUploading: isUploading || isCreating,
+  };
+}
+
+const transactionalDocumentHooks = createEntityHooks<
+  document.TransactionDocumentBase, 
+  'documents', 
+  'transactions', 
+  'detail'
+>({
+  resource: 'documents/transaction',
+  cacheKey: 'documents',
+  listSubKey: 'transactions',
+  detailSubKey: 'detail',
+  createInterface: "admin"
+});
+
+
+export function useUploadStaticDocuments() {
+  const { user } = useAuthContext();
+  const [isUploading, setIsUploading] = useState(false);
+  const {create, isCreating} = transactionalDocumentHooks.useCreate();
+
+  const uploadDocument = async ( formData:document.StaticTransactionDocumentForm) => {
+    if (!user?.id) {
+      toast.error('Please login to upload documents');
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+
+      let generated_document_url:string|null = '';
+
+      if (formData.generated_document_url) {
+        generated_document_url = await apiClient.uploadToSupabase(
+          formData.generated_document_url, 
+          'documents', 
+          'transactions'
+        );
+      }
+
+      const transactionDocumentData:document.StaticTransactionData ={
+        transaction_document_number : formData.transaction_document_number,
+        generated_document_url,
+        application_id: formData.application_id,
+        document_type:formData.document_type
+      }
+
+      const result = await create(transactionDocumentData)
+      toast.success('Template created successfully!');
+
+      return result
+      
+    } catch (error) {
+      console.error('Template upload error:', error);
+      toast.error('Failed to upload template document');
+      throw error;
+      
+    }finally{
+      setIsUploading(false);
+
+    }
+
+  }
+
+  return {
+    uploadDocument,
+    isUploading: isUploading || isCreating,
+  };
+
+}
+
+export function useTransactionalDocument() {
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const generateContractDocument = async (params: {
+    applicationId: string;
+    documentType: string;
+  }): Promise<TransactionalDocumentResponse | null> => {
+    setIsGenerating(true);
+    
+    try {
+      const response = await fetch('/api/documents/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(params),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to generate document');
+      }
+
+      const result: TransactionalDocumentResponse = await response.json();
+      toast.success('Document generated and sent for signature successfully!');
+      return result;
+
+    } catch (error) {
+      console.error('Error generating document:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to generate document');
+      return null;
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  return {
+    generateContractDocument,
+    isGenerating,
+  };
+}
+
+export function useSellerTransactionalDocuments(propertyId: string) {
+  const crud = useCrud<document.TransactionDocumentBase>({
+    resource: 'documents/transaction',
+    interfaceType: 'buyer',
+    cacheConfig: getEntityCacheConfig('documents', 'transactions'),
+  });
+
+  const baseParams = useMemo(() => {
+    if (!propertyId) return null;
+    
+    return {
+      filters: {
+        property_id: propertyId,
+      },
+    };
+  }, [propertyId]);
+
+  const { data, isLoading, error, refetch } = crud.useGetAll(baseParams || undefined)
+
+  return {
+    documents: data?.data || [],
+    isLoading,
+    error,
+    refetch
   };
 }
 
@@ -120,376 +415,7 @@ export function useTransactionalDocuments(applicationId?: string) {
   };
 }
 
-export function usePartnerDocuments(params?: any) {
-  const crud = useCrud<document.PartnerDocumentBase>({
-    resource: 'documents/partner',
-    interfaceType: 'admin',
-    cacheConfig: getEntityCacheConfig('documents', 'partners'),
-  });
 
-  const { data, isLoading, error } = crud.useGetAll(params);
-
-  return {
-    partners: data?.data || [],
-    pagination: data?.pagination,
-    isLoading,
-    error,
-    ...crud,
-  };
-}
-
-export function useSellerPartnerDocuments(params?: any) {
-  const { user, loading: isUserLoading } = useAuthContext();
-
-  const crud = useCrud<document.PartnerDocumentBase>({
-    resource: 'documents/partner',
-    interfaceType: 'buyer',
-    cacheConfig: getEntityCacheConfig('documents', 'partners'),
-  });
-
-  const queryParams = useMemo(() => {
-    if (!user?.id) return null; 
-    
-    return {
-      ...params,
-      filters: {
-        ...params?.filters,
-        partner_id: user.id,
-      }
-    };
-  }, [params, user?.id]);
-
-
-  const { data, isLoading, error } = crud.useGetAll(
-    queryParams || undefined, 
-    !isUserLoading && !!user?.id 
-  );
-
-  return {
-    sellers: data?.data || [],
-    pagination: data?.pagination,
-    isLoading: isLoading || isUserLoading,
-    error,
-    ...crud,
-  };
-}
-
-export function useUploadTemplateDocuments() {
-  const { user } = useAuthContext();
-  const [isUploading, setIsUploading] = useState(false);
-  
-  const { create, isCreating } = useCrud<document.TemplateBase>({
-    resource: 'documents/template',
-    interfaceType: 'admin',
-    showNotifications: true,
-    optimisticUpdate: false,
-    onSuccess: {
-      create: (data) => {
-        toast.success(`${data.type} created successfully`);
-      },
-    },
-    onError: {
-      create: (error) => {
-        toast.error(error?.error?.message || 'Failed to create template document');
-      },
-    },
-  });
-
-  const uploadDocument = async ( formData:document.TemplateForm) => {
-
-    if (!user?.id) {
-      toast.error('Please login to upload documents');
-      return;
-    }
-
-    setIsUploading(true);
-
-    try {
-      let template_file_url:string|null = '';
-
-      if (formData.template_file_url) {
-        template_file_url = await apiClient.uploadToSupabase(
-          formData.template_file_url, 
-          'documents', 
-          'templates'
-        );
-      }
-
-      const template_number = generateApplicationRefNo('TEMP');
-      const slug = toSlug(formData.name);
-
-      const requires_signature = formData.requires_signature.reduce((acc, sig) => {
-        acc[sig] = true;
-        return acc;
-      }, {} as Record<string, boolean>);
-
-      const templateData: document.TemplateData = {
-        name: formData.name,
-        slug,
-        description: formData.description || '',
-        type: formData.type,
-        category: formData.category,
-        version: formData.version,
-        requires_signature,
-        template_file_url,
-        template_fields: formData.template_fields,
-        template_number,
-        status: 'active',
-        created_by: user.id,
-        anvil_template_id: formData.anvil_template_id
-      };
-
-      const result = await create(templateData);
-      return result;
-
-    } catch (error) {
-      console.error('Template upload error:', error);
-      toast.error('Failed to upload template document');
-      throw error;
-
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-
-  return {
-    uploadDocument,
-    isUploading: isUploading || isCreating,
-  };
-}
-
-export function useUploadStaticDocuments() {
-  const { user } = useAuthContext();
-  const [isUploading, setIsUploading] = useState(false);
-
-  const { create, isCreating } = useCrud<document.TransactionDocumentBase>({
-    resource: 'documents/transaction',
-    interfaceType: 'admin',
-    showNotifications: true,
-    optimisticUpdate: false,
-    onSuccess: {
-      create: (data) => {
-        toast.success(`${data.document_type} created successfully`);
-      },
-    },
-    onError: {
-      create: (error) => {
-        console.log(error)
-        toast.error(error?.error?.message || `Failed to create document`);
-      },
-    },
-  });
-
-  const uploadDocument = async ( formData:document.StaticTransactionDocumentForm) => {
-    if (!user?.id) {
-      toast.error('Please login to upload documents');
-      return;
-    }
-
-    setIsUploading(true);
-
-    try {
-
-      let generated_document_url:string|null = '';
-
-      if (formData.generated_document_url) {
-        generated_document_url = await apiClient.uploadToSupabase(
-          formData.generated_document_url, 
-          'documents', 
-          'transactions'
-        );
-      }
-
-      const transactionDocumentData:document.StaticTransactionData ={
-        transaction_document_number : formData.transaction_document_number,
-        generated_document_url,
-        application_id: formData.application_id,
-        document_type:formData.document_type
-      }
-
-      const result = await create(transactionDocumentData)
-      return result
-      
-    } catch (error) {
-      console.error('Template upload error:', error);
-      toast.error('Failed to upload template document');
-      throw error;
-      
-    }finally{
-      setIsUploading(false);
-
-    }
-
-  }
-
-  return {
-    uploadDocument,
-    isUploading: isUploading || isCreating,
-  };
-
-}
-
-export function useUploadPartnerDocuments() {
-  const { user } = useAuthContext();
-  const [isUploading, setIsUploading] = useState(false);
-  
-  const { create, isCreating } = useCrud<document.PartnerDocumentBase>({
-    resource: 'documents/partner',
-    interfaceType: 'admin',
-    showNotifications: true,
-    optimisticUpdate: false,
-    onSuccess: {
-      create: (data) => {
-        toast.success('Partner document created successfully');
-      },
-    },
-    onError: {
-      create: (error) => {
-        toast.error(error?.error?.message || 'Failed to create partner document');
-      },
-    },
-  });
-
-  const uploadDocument = async ( formData:document.FinalPartnerDocument) => {
-
-    if (!user?.id) {
-      toast.error('Please login to upload documents');
-      return;
-    }
-
-    const partner_type = user.user_metadata.role === "admin" ? 'bank' : 'seller'
-
-    setIsUploading(true);
-
-    if(formData.document_type !== "contract_of_sales"){
-      return toast.error('Only seller can create this document type');
-    }
-
-    try {
-      const result = await create({
-        ...formData,
-        partner_id: user.id,
-        partner_type
-      });
-      return result;
-
-    } catch (error) {
-      console.error('Partner Document upload error:', error);
-      toast.error('Failed to upload partner document');
-      throw error;
-
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  return {
-    uploadDocument,
-    isUploading: isUploading || isCreating,
-  };
-}
-
-export function useTemplateDocument(documentType?: string) {
-  const crud = useCrud<document.TemplateBase>({
-    resource: 'documents/template',
-    interfaceType: 'admin',
-    cacheConfig: getEntityCacheConfig('documents', 'templates'),
-  });
-
-  const queryParams = useMemo(() => ({
-    filters: {
-      ...(documentType && { type: documentType }),
-      status: 'active',
-    },
-    limit: 1, 
-  }), [documentType]);
-
-  const { data, isLoading, error } = crud.useGetAll(queryParams);
-
-
-  console.log('data sent', data)
-
-  return {
-    template: data?.data[0] || null,
-    pagination: data?.pagination,
-    isLoading,
-    error,
-    ...crud,
-  };
-}
-
-export function useTransactionalDocument() {
-  const [isGenerating, setIsGenerating] = useState(false);
-
-  const generateContractDocument = async (params: {
-    applicationId: string;
-    documentType: string;
-  }): Promise<TransactionalDocumentResponse | null> => {
-    setIsGenerating(true);
-    
-    try {
-      const response = await fetch('/api/documents/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(params),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to generate document');
-      }
-
-      const result: TransactionalDocumentResponse = await response.json();
-      
-      toast.success('Document generated and sent for signature successfully!');
-      
-      return result;
-
-    } catch (error) {
-      console.error('Error generating document:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to generate document');
-      return null;
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  return {
-    generateContractDocument,
-    isGenerating,
-  };
-}
-
-
-export function useSellerTransactionalDocuments(propertyId: string) {
-  const crud = useCrud<document.TransactionDocumentBase>({
-    resource: 'documents/transaction',
-    interfaceType: 'buyer',
-    cacheConfig: getEntityCacheConfig('documents', 'transactions'),
-  });
-
-  const baseParams = useMemo(() => {
-    if (!propertyId) return null;
-    
-    return {
-      filters: {
-        application_id: propertyId,
-      },
-    };
-  }, [propertyId]);
-
-  const { data, isLoading, error, refetch } = crud.useGetAll(baseParams || undefined)
-
-  return {
-    documents: data?.data || [],
-    isLoading,
-    error,
-    refetch
-  };
-}
 
 
 

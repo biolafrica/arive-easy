@@ -10,7 +10,7 @@ interface MakePaymentDetailsProps {
 
 export default function MakePaymentDetails({mortgage, close}: MakePaymentDetailsProps){
 
-  const {mortgagePayments, isLoading, error, refresh} = useMortgagePayments({
+  const {items:mortgagePayments, isLoading, error, refresh} = useMortgagePayments({
     filters: {
       mortgage_id: mortgage.id,
     },

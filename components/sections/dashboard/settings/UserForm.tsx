@@ -2,7 +2,8 @@
 
 import Form from "@/components/form/Form";
 import { buyerUserFields } from "@/data/pages/dashboard/users";
-import { useCurrentUsers, useUpdateProfile } from "@/hooks/useSpecialized";
+import { useCurrentUsers, useUpdateProfile } from "@/hooks/useSpecialized/useUser";
+
 import { UserAvatarForm, UserProfileUserForm } from "@/type/user"
 
 export default function UserForm (){

@@ -17,7 +17,7 @@ export default function PreApprovalDashboardDisplayLogic() {
   const [isCreating, setIsCreating] = useState(false);
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
 
-  const { preApprovals, isLoading, error ,refresh} = usePreApprovals({
+  const { items:preApprovals, isLoading, error ,refresh} = usePreApprovals({
     filters: {
       user_id: user?.id,
     }

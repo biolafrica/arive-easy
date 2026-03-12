@@ -22,7 +22,7 @@ export default function MortgageClientView({ id }: { id: string }) {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   const detailPanel = useSidePanel<any>();
 
-  const {mortgage, isLoading, error, refresh} = useMortgage(id, {
+  const {item:mortgage, isLoading, error, refresh} = useMortgage(id, {
     include: ['properties'],
   })
 

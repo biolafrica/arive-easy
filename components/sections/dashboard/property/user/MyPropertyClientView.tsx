@@ -8,7 +8,7 @@ import { MortgageCard } from "@/components/cards/dashboard/Mortgage";
 export default function MyPropertyClientView() {
   const { user } = useAuthContext();
   
-  const { mortgages, isLoading, error, refresh } = useMortgages({
+  const { items:mortgages, isLoading, error, refresh } = useMortgages({
     filters: {
       user_id: user?.id, 
     }
@@ -33,7 +33,9 @@ export default function MyPropertyClientView() {
   return (
     <div>
       {isLoading && <AllPropertyGridSkeleton />}
+
       {!isLoading && mortgages.length === 0 && (<NoActiveMortgageState />)}
+      
       {mortgages && mortgages.length > 0 && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {mortgages.map((item) => (

@@ -31,7 +31,7 @@ export default function SellerDocumentClientView() {
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: [],
   }), [baseQueryParams]);
 
-  const{ partners, isLoading, pagination, error, refresh} = usePartnerDocuments(queryParams);
+  const{ items:partners, isLoading, pagination, error, refresh} = usePartnerDocuments(queryParams);
 
   if (error) {
     return (

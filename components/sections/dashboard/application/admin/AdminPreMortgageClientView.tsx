@@ -20,7 +20,7 @@ export default function AdminPreMortgageClientView ({detailPanel}:any){
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['properties'],
   }), [baseQueryParams]);
 
-  const {applications, isLoading, pagination, error, refresh}= useAdminApplications(queryParams);
+  const {items:applications, isLoading, pagination, error, refresh}= useAdminApplications(queryParams);
 
   if (error) {
     return (

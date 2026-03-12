@@ -1,15 +1,11 @@
 import { UseQueryOptions, UseMutationOptions } from '@tanstack/react-query';
 
-// Interface types
 export type InterfaceType = 'client' | 'admin' | 'buyer';
 
-// Cache time constants (in milliseconds)
 const MINUTE = 60 * 1000;
 const HOUR = 60 * MINUTE;
 
-// Cache configuration presets for different interfaces
 export const CACHE_CONFIGS = {
-  // Client interface - Aggressive caching for public content
   client: {
     queries: {
       staleTime: 5 * MINUTE,     // Data considered fresh for 5 minutes
@@ -25,7 +21,6 @@ export const CACHE_CONFIGS = {
     },
   },
 
-  // Admin dashboard - Minimal caching, real-time data
   admin: {
     queries: {
       staleTime: 0,               // Always stale, refetch on every access
@@ -41,7 +36,6 @@ export const CACHE_CONFIGS = {
     },
   },
 
-  // Buyer dashboard - Balanced caching
   buyer: {
     queries: {
       staleTime: 1 * MINUTE,      // Data considered fresh for 1 minute
@@ -58,7 +52,6 @@ export const CACHE_CONFIGS = {
   },
 } as const;
 
-// Specific cache configurations for different data types
 export const DATA_TYPE_CONFIGS = {
   // Static or rarely changing data
   static: {
@@ -135,9 +128,8 @@ export function getMutationConfig(
   return CACHE_CONFIGS[interfaceType].mutations;
 }
 
-// Specific configurations for common entities
 export const ENTITY_CACHE_CONFIGS = {
-  // Property listings (client interface)
+
   properties: {
     list: {
       staleTime: 5 * MINUTE,
@@ -168,7 +160,6 @@ export const ENTITY_CACHE_CONFIGS = {
     },
   },
 
-  // Articles/Blog posts
   articles: {
     list: {
       staleTime: 10 * MINUTE,
@@ -180,7 +171,6 @@ export const ENTITY_CACHE_CONFIGS = {
     },
   },
 
-  // User documents (buyer dashboard)
   documents: {
     list: {
       staleTime: 0,
@@ -204,7 +194,6 @@ export const ENTITY_CACHE_CONFIGS = {
     },
   },
 
-  // Payment history
   transactions: {
     list: {
       staleTime: 5 * MINUTE,
@@ -231,7 +220,6 @@ export const ENTITY_CACHE_CONFIGS = {
     },
   },
 
-  // Offer history
   offers: {
     list: {
       staleTime: 5 * MINUTE,
@@ -244,7 +232,6 @@ export const ENTITY_CACHE_CONFIGS = {
    
   },
 
-  // User profile
   profile: {
     own: {
       staleTime: 5 * MINUTE,
@@ -256,21 +243,30 @@ export const ENTITY_CACHE_CONFIGS = {
     },
   },
 
-  // Notifications
+  users: {
+    list: {
+      staleTime: 0, 
+      cacheTime: 5 * MINUTE,
+    },
+    detail: {
+      staleTime: 2 * MINUTE,
+      cacheTime: 10 * MINUTE,
+    },
+  },
+
   notifications: {
     list: {
-      staleTime: 0,              // Always check for new
+      staleTime: 0,              
       cacheTime: 5 * MINUTE,
-      refetchInterval: 60000,    // Poll every minute
+      refetchInterval: 60000,    
     },
     count: {
       staleTime: 0,
       cacheTime: 1 * MINUTE,
-      refetchInterval: 30000,    // Poll every 30 seconds
+      refetchInterval: 30000,  
     },
   },
 
-  // Analytics/Statistics
   analytics: {
     dashboard: {
       staleTime: 5 * MINUTE,
@@ -284,7 +280,7 @@ export const ENTITY_CACHE_CONFIGS = {
 
   preApprovals: {
     list: {
-      staleTime: 30 * 1000,         // 30 seconds (frequently updated)
+      staleTime: 30 * 1000,       
       cacheTime: 5 * MINUTE,
     },
     detail: {
@@ -296,15 +292,26 @@ export const ENTITY_CACHE_CONFIGS = {
       cacheTime: 10 * MINUTE,
     },
     eligibility: {
-      staleTime: 5 * MINUTE,        // Can cache longer
+      staleTime: 5 * MINUTE,        
       cacheTime: 15 * MINUTE,
+    },
+  },
+
+  applications: {
+    list: {
+      staleTime: 30 * 1000, 
+      cacheTime: 5 * MINUTE,
+    },
+    detail: {
+      staleTime: 1 * MINUTE,
+      cacheTime: 5 * MINUTE,
     },
   },
   
 } as const;
 
 // Export type for entity cache configs
-export type EntityCacheConfig = typeof ENTITY_CACHE_CONFIGS;
+export type EntityCacheConfig = typeof ENTITY_CACHE_CONFIGS; 
 
 // Helper to get entity-specific cache config
 export function getEntityCacheConfig<

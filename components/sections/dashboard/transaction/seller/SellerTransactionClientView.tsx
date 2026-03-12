@@ -31,7 +31,7 @@ export default function SellerTransactionClientView (){
   }), [baseQueryParams]);
 
  
-  const { transactions, pagination, isLoading, error, refresh } =  useSellerTransactions(queryParams);
+  const { items:transactions, pagination, isLoading, error, refresh } =  useSellerTransactions(queryParams);
 
   if (error) {
     return (

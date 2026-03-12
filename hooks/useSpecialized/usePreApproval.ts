@@ -1,7 +1,5 @@
 
 
-import { useCrud } from '../useCrud';
-import { getEntityCacheConfig } from '@/lib/cache-config';
 import {useState } from '../useInfiniteList';
 import apiClient from '@/lib/api-client'; 
 import { useAuthContext } from '@/providers/auth-provider';
@@ -9,55 +7,50 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import * as stage from '@/type/pages/dashboard/approval';
 import { useEffect, } from 'react';
+import { createEntityHooks } from './useFactory';
 
+const preApprovalHooks = createEntityHooks<
+  stage.PreApprovalBase,
+  'preApprovals',
+  'list',
+  'detail'
+>({
+  resource: 'pre-approvals',
+  cacheKey: 'preApprovals',
+  listSubKey: 'list',
+  detailSubKey: 'detail',
+  buyerInterface: 'buyer',
+  ownerField: 'user_id',
+  createInterface: 'buyer',
+});
 
-export function usePreApprovals(params?: any) {
-  const crud = useCrud<stage.PreApprovalBase>({
-    resource: 'pre-approvals',
-    interfaceType: 'buyer',
-    cacheConfig: getEntityCacheConfig('preApprovals', 'list'),
-  });
-  
-  const { data, isLoading, error} = crud.useGetAll(params);
-  
-  return {
-    preApprovals: data?.data || [],
-    pagination: data?.pagination,
-    isLoading,
-    error,
-    ...crud,
-  };
-}
+export const usePreApprovals  = preApprovalHooks.useList;
+export const useAdminPrepApprovals = preApprovalHooks.useAdminList;
 
 export function useCreatePreApproval() {
   const router = useRouter();
   const { user } = useAuthContext();
-  
-  const { create, isCreating } = useCrud<stage.PreApprovalBase>({
-    resource: 'pre-approvals',
-    interfaceType: 'buyer',
-    showNotifications: false,
-    optimisticUpdate: false,
-    onSuccess: {
-      create: (data: stage.PreApprovalBase) => {
-        router.push(`/user-dashboard/applications/${data.id}/pre-approvals`);
-      },
-    },
-    onError: {
-      create: (error) => {
-        const message = error?.error?.message || 'Failed to submit pre-approval';
-        toast.error(message);
-      },
-    },
-  });
+  const { create, isCreating } = preApprovalHooks.useCreate()
   
   const submitPreApproval = async (data: Partial<stage.PreApprovalBase>) => {
     if (!user?.id) {
       toast.error('Please login to submit a pre-approval');
       return;
     }
-    
-    return create({ ...data, user_id: user.id });
+
+    try {
+      const result = await create({ ...data, user_id: user.id });
+      if (result?.id) {
+        router.push(`/user-dashboard/applications/${result.id}/pre-approvals`);
+      }
+      return result;
+    } catch (error) {
+      const message = error instanceof Error
+        ? error.message
+        : 'Failed to submit pre-approval';
+      toast.error(message);
+      throw error;
+    }
   };
   
   return {
@@ -69,31 +62,7 @@ export function useCreatePreApproval() {
 export function useUpdatePreApproval() {
   const router = useRouter();
   const { user } = useAuthContext();
-  
-  const { update, isUpdating } = useCrud<stage.PreApprovalBase>({
-    resource: 'pre-approvals',
-    interfaceType: 'buyer',
-    showNotifications: true,
-    optimisticUpdate: false,
-    onSuccess: {
-      update: (data: stage.PreApprovalBase) => {
-        toast.success('Pre-approval updated successfully!');
-      },
-    },
-    onError: {
-      update: (error) => {
-        const message = error?.error?.message || 'Failed to update pre-approval';
-        
-        if (message.includes('cannot update')) {
-          toast.error('This pre-approval can no longer be edited');
-        } else if (message.includes('missing required')) {
-          toast.error('Please fill in all required fields');
-        } else {
-          toast.error(message);
-        }
-      },
-    },
-  });
+  const { update, isUpdating } = preApprovalHooks.useUpdate()
   
   const updatePreApproval = async (
     id: string, 
@@ -109,26 +78,44 @@ export function useUpdatePreApproval() {
       return;
     }
 
-    const { 
-      guidance_notes,
-      ...allowedData 
-    } = data as any;
+    const { guidance_notes, ...allowedData } = data as any;
     
-    const result = await update(id, allowedData);
+    try {
+      const result = await update(id, allowedData);
 
+      if (options?.successMessage) {
+        toast.success(options.successMessage);
+      }
 
-    if (options?.redirectOnSuccess && result) {
-      const stages = result.current_step === 1 ?'employment-info':result.current_step === 2 ?'property-info':result.current_step === 3?'document-info':'success';
-      const path = options.redirectPath || `/user-dashboard/applications/${id}/pre-approval/${stages}`;
-      router.push(path);
+      if (options?.redirectOnSuccess && result) {
+        const stages =
+        result.current_step === 1 ? 'employment-info' :
+        result.current_step === 2 ? 'property-info' :
+        result.current_step === 3 ? 'document-info' :
+        'success';
+
+        const path = options.redirectPath ??
+        `/user-dashboard/applications/${id}/pre-approval/${stages}`;
+
+        router.push(path);
+      }
+
+      return result;
+
+    } catch (error) {
+      const message = error instanceof Error
+        ? error.message : 'Failed to update pre-approval';
+      if (message.includes('cannot update')) {
+        toast.error('This pre-approval can no longer be edited');
+      } else if (message.includes('missing required')) {
+        toast.error('Please fill in all required fields');
+      } else {
+        toast.error(message);
+      }
+
+      throw error;
     }
 
-    
-    if (options?.successMessage) {
-      toast.success(options.successMessage);
-    }
-    
-    return result;
   };
   
   return {
@@ -138,30 +125,10 @@ export function useUpdatePreApproval() {
 }
 
 export function useAdminUpdatePreApproval() {
-
-  const { update, isUpdating } = useCrud<stage.PreApprovalBase>({
-    resource: 'pre-approvals',
+  const { update, isUpdating } = preApprovalHooks.useUpdate({
     interfaceType: 'admin',
-    showNotifications: true,
-    optimisticUpdate: false,
-    onSuccess: {
-      update: (data: stage.PreApprovalBase) => {
-        const statusMessage = data.status === 'approved' 
-          ? 'Pre-approval approved successfully!' 
-          : data.status === 'rejected'
-          ? 'Pre-approval rejected'
-          : 'Pre-approval updated successfully!';
-        
-        toast.success(statusMessage);
-      },
-    },
-    onError: {
-      update: (error) => {
-        toast.error(error?.error?.message || 'Failed to update pre-approval');
-      },
-    },
   });
-  
+
   const adminUpdatePreApproval = async (
     id: string,
     data: Partial<stage.PreApprovalBase> & {
@@ -169,25 +136,40 @@ export function useAdminUpdatePreApproval() {
       rejection_reasons?: string[];
       guidance_notes?: string;
       status?: string;
-      max_loan_amount?:number;
-      current_step?:number;
-      completed_steps:number;
-      is_complete:boolean;
-
+      max_loan_amount?: number;
+      current_step?: number;
+      completed_steps: number;
+      is_complete: boolean;
     }
-
   ) => {
-    return update(id, {
-      ...data,
-      reviewed_at: new Date().toISOString(),
-    });
+    try {
+      const result = await update(id, {
+        ...data,
+        reviewed_at: new Date().toISOString(),
+      });
+
+      const statusMessage =
+        data.status === 'approved' ? 'Pre-approval approved successfully!' :
+        data.status === 'rejected' ? 'Pre-approval rejected' :
+        'Pre-approval updated successfully!';
+
+      toast.success(statusMessage);
+      return result;
+
+    } catch (error) {
+      toast.error( 
+        error instanceof Error ? error.message : 'Failed to update pre-approval'
+      );
+      throw error;
+    }
   };
-  
+
   return {
     adminUpdatePreApproval,
     isUpdating,
   };
 }
+
 
 export function usePreApprovalStages(preApprovalId: string) {
   const { updatePreApproval, isUpdating } = useUpdatePreApproval();
@@ -279,7 +261,7 @@ export function usePreApprovalState(preApprovalId: string) {
   const [preApproval, setPreApproval] = useState<stage.PreApprovalBase | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   
-  const { preApprovals, isLoading: fetchingPreApprovals, error, refresh } = usePreApprovals({
+  const { items:preApprovals, isLoading: fetchingPreApprovals, error, refresh } = usePreApprovals({
     filters: {
       id: preApprovalId
     }
@@ -407,25 +389,6 @@ export async function processDocumentFiles(
   };
 }
 
-export function useAdminPrepApprovals(params?: any) {
-  const crud = useCrud<stage.PreApprovalBase>({
-    resource: 'pre-approvals',
-    interfaceType: 'admin',
-    optimisticUpdate: true,
-    invalidateOnMutation: true,
-  });
- 
-  const { data, isLoading, error } = crud.useGetAll(params);
-  
-  return {
-    pre_approvals: data?.data || [],
-    pagination: data?.pagination,
-    isLoading: isLoading,
-    error,
-    ...crud,
-  };
-}
-
 export function useAdminPreApprovalStatus(preApprovalId: string) {
   const { updatePreApproval, isUpdating } = useUpdatePreApproval();
 
@@ -442,5 +405,3 @@ export function useAdminPreApprovalStatus(preApprovalId: string) {
     isUpdating,
   };
 }
-
-

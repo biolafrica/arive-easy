@@ -21,7 +21,7 @@ export default function AdminPreApprovalClientView ({detailPanel}:any){
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['users'],
   }), [baseQueryParams]);
 
-  const{ pre_approvals, pagination, isLoading, error, refresh} = useAdminPrepApprovals(queryParams)
+  const{ items:pre_approvals, pagination, isLoading, error, refresh} = useAdminPrepApprovals(queryParams)
 
   if (error) {
     return (

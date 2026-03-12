@@ -5,7 +5,22 @@ import { OfferBase } from "@/type/pages/dashboard/offer";
 import { toast } from "sonner";
 import { getEntityCacheConfig } from "@/lib/cache-config";
 import { useMemo } from "react";
+import { createEntityHooks } from "./useFactory";
 
+const offerHooks = createEntityHooks< 
+  OfferBase,
+  'offers',
+  'list',
+  'summary' 
+>({
+  resource: 'offers',
+  cacheKey: 'offers',
+  listSubKey: 'list',
+  detailSubKey: 'summary',
+  createInterface: 'buyer'
+});
+
+export const useAdminOffers = offerHooks.useAdminList
 
 export function useSellerOffers(params?: any, propertyId?: string) {
   const { user, loading: isUserLoading } = useAuthContext();
@@ -51,102 +66,45 @@ export function useSellerOffers(params?: any, propertyId?: string) {
   };
 }
 
-export function useSellerOfferActions() {
-  const { user } = useAuthContext();
-  
-  const { update, isUpdating } = useCrud<OfferBase>({
-    resource: 'offers',
-    interfaceType: 'buyer',
-    showNotifications: true,
-    optimisticUpdate: false, 
-    onSuccess: {
-      update: (data: OfferBase) => {
-        const action = data.status === 'accepted' ? 'accepted' : 'rejected';
-        toast.success(`Offer ${action} successfully`);
-      },
-    },
-    onError: {
-      update: (error) => {
-        toast.error(error?.error?.message || 'Failed to update offer');
-      },
-    },
-  });
-
-  const acceptOffer = async (offerId: string, notes?: string) => {
-    if (!user?.id) {
-      toast.error('Please login to accept offers');
-      return;
-    }
-
-    return update(offerId, {
-      status: 'accepted',
-      updated_at: new Date().toISOString(),
-    });
-  };
-
-  const rejectOffer = async (offerId: string, reason?: string) => {
-    if (!user?.id) {
-      toast.error('Please login to reject offers');
-      return;
-    }
-
-    return update(offerId, {
-      status: 'declined',
-      rejection_note:reason,
-      updated_at: new Date().toISOString(),
-      
-    });
-  };
-
-  return {
-    acceptOffer,
-    rejectOffer,
-    isUpdating,
-  };
-}
-
 export function useCreateOffer() {
   const router = useRouter();
   const { user } = useAuthContext();
-  
-  const { create, isCreating } = useCrud<OfferBase>({
-    resource: 'offers',
-    interfaceType: 'buyer',
-    showNotifications: true,
-    optimisticUpdate: false,
-    onSuccess: {
-      create: (data: OfferBase) => {
-        toast.success('Offer submitted successfully!');
-        router.push(`/dashboard/offers/${data.id}`);
-      },
-    },
-    onError: {
-      create: (error) => {
-        const message = error?.error?.message || 'Failed to submit offer';
-        
-        if (message.includes('already submitted')) {
-          toast.error('You have already submitted an offer for this property');
-        } else if (message.includes('not available')) {
-          toast.error('This property is no longer available for offers');
-        } else {
-          toast.error(message);
-        }
-      },
-    },
-  });
+  const { create, isCreating } = offerHooks.useCreate();
   
   const submitOffer = async (data: Partial<OfferBase>) => {
     if (!user?.id) {
       toast.error('Please login to submit an offer');
       return;
     }
-    
-    return create({
-      ...data,
-      user_id: user.id,
-      status: 'pending',
-      created_at: new Date().toISOString(),
-    });
+
+    try {
+      const result = await  create({
+        ...data,
+        user_id: user.id,
+        status: 'pending',
+        created_at: new Date().toISOString(),
+      });
+
+      toast.success('Offer submitted successfully!');
+
+      if (result?.id) {
+        router.push(`/dashboard/offers/${result.id}`);
+      }
+      return result
+
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to submit offer.";
+        
+      if (message.includes('already submitted')) {
+        toast.error('You have already submitted an offer for this property');
+      } else if (message.includes('not available')) {
+        toast.error('This property is no longer available for offers');
+      } else {
+        toast.error(message);
+      }
+      throw error;
+    }
+ 
   };
   
   return {
@@ -155,22 +113,53 @@ export function useCreateOffer() {
   };
 }
 
-export function useAdminOffers(params?: any) {
-  const crud = useCrud<OfferBase>({
-    resource: 'offers',
-    interfaceType: 'buyer', 
-    optimisticUpdate: true,
-    invalidateOnMutation: true,
-    cacheConfig: getEntityCacheConfig('offers', 'list'),
-  });
+export function useSellerOfferActions() {
+  const { user } = useAuthContext();
+  const { update, isUpdating }  = offerHooks.useUpdate()
 
-  const { data, isLoading, error } = crud.useGetAll(params);
+  const acceptOffer = async (offerId: string, notes?: string) => {
+    if (!user?.id) {
+      toast.error('Please login to accept offers');
+      return;
+    }
+
+    try {
+      const result = await update(offerId, {
+        status: 'accepted',
+        updated_at: new Date().toISOString(),
+      });
+      toast.success('Offer accepted successfully');
+      return result;
+    } catch (error) {
+      toast.error('Failed to accept offer');
+      throw error;
+    }
+  };
+
+  const rejectOffer = async (offerId: string, reason?: string) => {
+    if (!user?.id) {
+      toast.error('Please login to reject offers');
+      return;
+    }
+
+    try {
+      const result = await update(offerId, {
+        status: 'declined',
+        rejection_note:reason,
+        updated_at: new Date().toISOString(),
+        
+      });
+      toast.success('Offer rejected successfully');
+      return result;
+    } catch (error) {
+      toast.error('Failed to reject offer');
+      throw error;
+    }
+  };
 
   return {
-    offers: data?.data || [],
-    pagination: data?.pagination,
-    isLoading,
-    error,
-    ...crud,
+    acceptOffer,
+    rejectOffer,
+    isUpdating,
   };
 }

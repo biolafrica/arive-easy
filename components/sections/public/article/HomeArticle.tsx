@@ -4,17 +4,17 @@ import { ArticleCard } from '@/components/cards/public/article';
 import { SectionHeading } from '@/components/common/SectionHeading';
 import { Button } from '@/components/primitives/Button';
 import { FeaturedBlogGridSkeleton } from '@/components/skeleton/BlogCardSkeleton';
-import { useArticles } from '@/hooks/useSpecialized';
 import { ArticleEmptyState } from './ArticleEmptyState';
 import { useRouter } from 'next/navigation';
 import ErrorState from '@/components/feedbacks/ErrorState';
+import { useArticles } from '@/hooks/useSpecialized/useArticles';
 
 
 
 export const ArticleSection = () => {
   const router = useRouter()
 
-  const {articles, isLoading, error , refresh} = useArticles({
+  const {items:articles, isLoading, error , refresh} = useArticles({
     include: ['users'],
     sortBy: 'created_at',
     sortOrder: 'desc',

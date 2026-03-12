@@ -29,7 +29,7 @@ export default function UserTransactionClientView() {
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['applications'],
   }), [baseQueryParams]);
 
-  const { transactions, pagination, isLoading, error, refresh } = useTransactions(queryParams);
+  const { items:transactions, pagination, isLoading, error, refresh } = useTransactions(queryParams);
   
   if (error) {
     return (

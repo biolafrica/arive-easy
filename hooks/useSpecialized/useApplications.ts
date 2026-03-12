@@ -3,8 +3,8 @@ import { useCrud } from "../useCrud";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useAuthContext } from "@/providers/auth-provider";
 import { useMemo } from "react";
+import { createEntityHooks } from "./useFactory";
 
 
 interface PaymentStatus {
@@ -15,65 +15,28 @@ interface PaymentStatus {
   payment_date?: string;
 }
 
-export function useApplications(params?: any) {
-  const { user, loading: isUserLoading } = useAuthContext();
+const applicationHooks = createEntityHooks<
+  ApplicationBase,
+  'applications', 
+  'list',
+  'detail'
+>({
+  resource: 'applications',
+  cacheKey: 'applications',
+  listSubKey: 'list',
+  detailSubKey: 'detail',
+  buyerInterface: 'buyer',
+  ownerField: 'user_id',
+  createInterface: 'buyer',
+});
 
-  const crud = useCrud<ApplicationBase>({
-    resource: 'applications',
-    interfaceType: 'buyer',
-    optimisticUpdate: true,
-    invalidateOnMutation: true,
-  });
-
-  const queryParams = useMemo(() => {
-    if (!user?.id) return null; 
-    
-    return {
-      ...params,
-      filters: {
-        ...params?.filters,
-        user_id: user.id,
-      },
-    };
-  }, [params, user?.id]);
-
-
-  const { data, isLoading, error } = crud.useGetAll(
-    queryParams || undefined, 
-    !isUserLoading && !!user?.id 
-  );
-
-  return {
-    applications: data?.data || [],
-    pagination: data?.pagination,
-    isLoading: isLoading || isUserLoading,
-    error,
-    ...crud,
-  };
-  
-}
+export const useApplications = applicationHooks.useOwnerList;
+export const useAdminApplications = applicationHooks.useAdminList;
 
 export function useUpdateApplication() {
   const router = useRouter();
-  
-  const { update, isUpdating } = useCrud<ApplicationBase>({
-    resource: 'applications',
-    interfaceType: 'buyer',
-    showNotifications: true,
-    optimisticUpdate: false,
-    onSuccess: {
-      update: (data: ApplicationBase) => {
-        toast.success('Application updated successfully!');
-      },
-    },
-    onError: {
-      update: (error) => {
-        const message = error?.error?.message || 'Failed to update application';
-        toast.error(message);
-      },
-    },
-  });
-  
+  const { update, isUpdating } = applicationHooks.useUpdate();
+
   const updateApplication = async (
     id: string,
     data: Partial<ApplicationBase>,
@@ -83,20 +46,28 @@ export function useUpdateApplication() {
       successMessage?: string;
     }
   ) => {
-    console.log('Sending update:', { id, data })
-    const result = await update(id, data);
-    console.log('Update result:', result);
-    
-    if (options?.redirectOnSuccess && result) {
-      const path = options.redirectPath || `/user-dashboard/applications`;
-      router.push(path);
+    try {
+      const result = await update(id, data);
+
+      if (!result) return result;
+
+      if (options?.successMessage) {
+        toast.success(options.successMessage);
+      }
+
+      if (options?.redirectOnSuccess) {
+        router.push(options.redirectPath ?? '/user-dashboard/applications');
+      }
+
+      return result;
+
+    } catch (error) {
+      const message = error instanceof Error
+        ? error.message
+        : 'Failed to update application';
+      toast.error(message);
+      throw error;
     }
-    
-    if (options?.successMessage) {
-      toast.success(options.successMessage);
-    }
-    
-    return result;
   };
   
   return {
@@ -275,25 +246,6 @@ export function usePaymentStatus(sessionId: string | null) {
     staleTime: 1000,
     retry: 3,
   });
-}
-
-export function useAdminApplications(params?: any) {
-  const crud = useCrud<ApplicationBase>({
-    resource: 'applications',
-    interfaceType: 'admin',
-    optimisticUpdate: true,
-    invalidateOnMutation: true,
-  });
-
-  const { data, isLoading, error } = crud.useGetAll(params);
-
-  return {
-    applications: data?.data || [],
-    pagination: data?.pagination,
-    isLoading: isLoading,
-    error,
-    ...crud,
-  };
 }
 
 export function useApplicationByProperty(propertyId?: string) {

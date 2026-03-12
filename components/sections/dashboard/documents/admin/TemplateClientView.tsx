@@ -28,7 +28,7 @@ export default function TemplateClientView() {
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: [],
   }), [baseQueryParams]);
 
-  const{templates, isLoading, pagination, error, refresh} = useTemplateDocuments(queryParams);
+  const{items:templates, isLoading, pagination, error, refresh} = useTemplateDocuments(queryParams);
 
   if (error) {
     return (

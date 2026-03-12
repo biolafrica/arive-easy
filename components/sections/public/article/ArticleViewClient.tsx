@@ -1,15 +1,15 @@
 'use client'
 
-import { useArticle, useRelatedArticles } from "@/hooks/useSpecialized";
 import ArticleView from "./ArticleView";
 import { transformArticle } from "@/utils/articleTransform";
 import { SectionHeading } from "@/components/common/SectionHeading";
 import { ArticleCard } from "@/components/cards/public/article";
 import { ArticlePageSkeleton } from "@/components/skeleton/BlogCardSkeleton";
 import ErrorState from "@/components/feedbacks/ErrorState";
+import { useArticle, useRelatedArticles } from "@/hooks/useSpecialized/useArticles";
 
 export default function ArticleViewClient({id}:any){
-  const {article, isLoading, error,} = useArticle(id);
+  const {item:article, isLoading, error,} = useArticle(id);
 
   const { data: relatedArticles, refetch } = useRelatedArticles(article)
 

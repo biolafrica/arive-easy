@@ -3,7 +3,12 @@
 import { BellIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { formatDistanceToNow } from 'date-fns';
 import { NotificationBase } from '@/type/pages/dashboard/notification';
-import { useMarkAllNotificationsAsRead, useMarkNotificationAsRead, useNotifications, useUnreadNotificationCount } from '@/hooks/useSpecialized/useNotifications';
+import { 
+  useMarkAllNotificationsAsRead, 
+  useMarkNotificationAsRead, 
+  useNotifications, 
+  useUnreadNotificationCount 
+} from '@/hooks/useSpecialized/useNotifications';
 
 interface NotificationItemProps{
   notification: NotificationBase;
@@ -44,7 +49,7 @@ function NotificationItem({ notification, onRead}:NotificationItemProps) {
 }
 
 export function NotificationPopup({ open }: { open: boolean }) {
-  const { notifications, isLoading } = useNotifications({ limit: 20 });
+  const { items:notifications, isLoading } = useNotifications({ limit: 20 });
   const { data: unreadCount = 0 } = useUnreadNotificationCount();
   const { mutate: markRead } = useMarkNotificationAsRead();
   const { mutate: markAllRead, isPending } = useMarkAllNotificationsAsRead();

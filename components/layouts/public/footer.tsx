@@ -9,7 +9,7 @@ import { validateNewsletter } from '@/utils/validate';
 import Form from '@/components/form/Form';
 import { NewsletterValues } from '@/type/newsletter';
 import { Facebook, Linkedin, Twitter } from '@/data/icons';
-import { useSubscriber } from '@/hooks/useSpecialized';
+import { useSubscriber } from '@/hooks/useSpecialized/useUser';
 import lglogo from '@/public/icons/kletch-full-white.svg'
 import Image from 'next/image';
 

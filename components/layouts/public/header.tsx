@@ -7,11 +7,11 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/primitives/Button';
 import { DEFAULT_NAV } from '@/data/layout/public';
 import { HeaderProps } from '@/type/layout/public';
-import { useCurrentUsers } from '@/hooks/useSpecialized';
 import { getDashboardForRole } from '@/utils/common/dashBoardForRole';
 import lglogo from '@/public/icons/kletch-web-lg.svg'
 import smlogo from '@/public/icons/kletch-color.svg'
 import Image from 'next/image';
+import { useCurrentUsers } from '@/hooks/useSpecialized/useUser';
 
 export const Header: React.FC<HeaderProps> = ({
   navItems = DEFAULT_NAV,

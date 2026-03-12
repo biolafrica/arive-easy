@@ -1,98 +1,17 @@
 import { TransactionBase } from "@/type/pages/dashboard/transactions";
-import { useCrud } from "../useCrud";
-import { useAuthContext } from "@/providers/auth-provider";
-import { useMemo } from "react";
+import { createEntityHooks } from "./useFactory";
 
-export function useTransactions(params?: any) {
-  const { user, loading: isUserLoading } = useAuthContext();
-  
-  const crud = useCrud<TransactionBase>({
-    resource: 'transactions',
-    interfaceType: 'buyer',
-    optimisticUpdate: true,
-    invalidateOnMutation: true,
-  });
+const transactionHooks = createEntityHooks<
+  TransactionBase,'transactions','list','summary'
+>({
+  resource: 'transactions',
+  cacheKey: 'transactions',
+  listSubKey: 'list',
+  detailSubKey: 'summary',
+  ownerField: 'user_id',
+  developerField: 'developer_id',
+});
 
-  const queryParams = useMemo(() => {
-    if (!user?.id) return null; 
-    
-    return {
-      ...params,
-      filters: {
-        ...params?.filters,
-        user_id: user.id,
-      },
-    };
-  }, [params, user?.id]);
-
-
-  const { data, isLoading, error } = crud.useGetAll(
-    queryParams || undefined, 
-    !isUserLoading && !!user?.id 
-  );
-
-  return {
-    transactions: data?.data || [],
-    pagination: data?.pagination,
-    isLoading: isLoading || isUserLoading,
-    error,
-    ...crud,
-  };
-}
-
-export function useSellerTransactions(params?: any) {
-  const { user, loading: isUserLoading } = useAuthContext();
-  
-  const crud = useCrud<TransactionBase>({
-    resource: 'transactions',
-    interfaceType: 'buyer',
-    optimisticUpdate: true,
-    invalidateOnMutation: true,
-  });
-
-  const queryParams = useMemo(() => {
-    if (!user?.id) return null; 
-    
-    return {
-      ...params,
-      filters: {
-        ...params?.filters,
-        developer_id: user.id,
-      },
-    };
-  }, [params, user?.id]);
-
-
-  const { data, isLoading, error } = crud.useGetAll(
-    queryParams || undefined, 
-    !isUserLoading && !!user?.id 
-  );
-
-  return {
-    transactions: data?.data || [],
-    pagination: data?.pagination,
-    isLoading: isLoading || isUserLoading,
-    error,
-    ...crud,
-  };
-}
-
-export function useAdminTransactions(params?: any) {
-  const crud = useCrud<TransactionBase>({
-    resource: 'transactions',
-    interfaceType: 'admin',
-    optimisticUpdate: true,
-    invalidateOnMutation: true,
-  });
-
-  const { data, isLoading, error } = crud.useGetAll(params);
-
-  return {
-    transactions: data?.data || [],
-    pagination: data?.pagination,
-    isLoading: isLoading,
-    error,
-    ...crud,
-  };
-}
-
+export const useTransactions  = transactionHooks.useOwnerList;
+export const useSellerTransactions = transactionHooks.useSellerList;
+export const useAdminTransactions  = transactionHooks.useAdminList;

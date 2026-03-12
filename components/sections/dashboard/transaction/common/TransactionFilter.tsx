@@ -27,6 +27,7 @@ const typeOptions:FilterConfig = {
     { value: 'valuation_fee', label: 'Valuation' },
     { value: 'legal_fee', label: 'Legal' },
     { value: 'service_fee', label: 'Service' },
+    { value: 'mortgage_payment', label: 'Mortgage' },
   ],
 }
   

@@ -8,7 +8,7 @@ export default function MortgagePaymentSummaryTable({id, setActiveTab}: {
   setActiveTab: () => void
 }) {
 
-  const {mortgagePayments, isLoading, error, refresh} = useMortgagePayments({
+  const {items:mortgagePayments, isLoading, error, refresh} = useMortgagePayments({
     filters: {
       mortgage_id:id,
     }

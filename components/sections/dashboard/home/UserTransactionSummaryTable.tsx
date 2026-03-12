@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 export default function UserTransactionSummaryTable() {
   const router = useRouter();
 
-  const { transactions,isLoading, error,refresh } = useTransactions({
+  const { items:transactions,isLoading, error,refresh } = useTransactions({
     include: ['applications'],
     limit: 5,
   });

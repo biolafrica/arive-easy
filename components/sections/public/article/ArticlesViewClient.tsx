@@ -3,12 +3,12 @@
 import { ArticleCard } from "@/components/cards/public/article";
 import { Button } from "@/components/primitives/Button";
 import { AllBlogGridSkeleton } from "@/components/skeleton/BlogCardSkeleton";
-import { useInfiniteArticles } from "@/hooks/useSpecialized";
 import { ArticleEmptyState } from "./ArticleEmptyState";
 import { useArticleFilter } from "@/hooks/useArticleFilter";
 import { useEffect } from "react";
 import { ArticleCategoryFilter } from "./ArticleCategoryFilter";
 import ErrorState from "@/components/feedbacks/ErrorState";
+import { useInfiniteArticles } from "@/hooks/useSpecialized/useArticles";
 
 export default function ArticleViewClient(){
 

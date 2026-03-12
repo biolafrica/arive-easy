@@ -11,7 +11,7 @@ import { PropertyGrid } from "@/components/common/PropertyGrid";
 
 export default function AllProperties(){
   const [appliedFilters, setAppliedFilters] = useState<ProcessedFilters>({
-    status: 'active'
+    status: '',
   });
 
   const {items: properties, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage, error, refresh } = useInfiniteProperties({

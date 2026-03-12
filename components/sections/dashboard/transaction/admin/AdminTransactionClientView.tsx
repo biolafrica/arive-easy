@@ -28,7 +28,7 @@ export default function AdminTransactionClientView() {
   const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['users'],
   }), [baseQueryParams]);
 
-  const {transactions, isLoading, pagination, error, refresh} = useAdminTransactions(queryParams);
+  const {items:transactions, isLoading, pagination, error, refresh} = useAdminTransactions(queryParams);
 
   if (error) {
     return (

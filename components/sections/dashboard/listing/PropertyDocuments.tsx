@@ -2,11 +2,11 @@ import { DescriptionList } from "@/components/common/DescriptionList";
 import ErrorState from "@/components/feedbacks/ErrorState";
 import { DescriptionListSkeleton } from "@/components/skeleton/DescriptionListSkeleton";
 import { useSellerTransactionalDocuments } from "@/hooks/useSpecialized/useDocuments"
-import { TransactionDocumentBase } from "@/type/pages/dashboard/documents";
 import { formatDocumentFiles, getEmptyDocumentsMessage } from "@/utils/common/documents";
 
 
 export default function PropertyDocuments({id}:{id:string}){
+
   const {documents, isLoading, error, refetch} = useSellerTransactionalDocuments(id)
 
   if (error) {

@@ -310,9 +310,9 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
     mortgage_payment_id: paymentId, // Can be null if payment record wasn't found
     stripe_payment_intent_id: paymentIntentId,
     stripe_invoice_id: invoice.id,
-    amount: invoice.amount_paid / 100,
+    amount: invoice.amount_paid,
     currency: invoice.currency,
-    status: 'completed',
+    status: 'succeeded',
     type: 'mortgage_payment',
     description: `Mortgage payment ${newPaymentsMade} of ${mortgage.number_of_payments || mortgage.total_payments}`,
     metadata: { 
@@ -900,7 +900,7 @@ async function handleManualMortgagePaymentSucceeded(paymentIntent: Stripe.Paymen
   await supabaseAdmin
     .from('transactions')
     .update({
-      status: 'completed',
+      status: 'succeeded',
       metadata: {
         completed_at: new Date().toISOString(),
         completed_via: 'webhook',
