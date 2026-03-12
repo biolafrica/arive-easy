@@ -1,6 +1,5 @@
 "use client"
 
-import ErrorState from "@/components/feedbacks/ErrorState"
 import Loading from "@/components/feedbacks/Loading"
 
 export default function Test(){

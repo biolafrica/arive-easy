@@ -1,6 +1,5 @@
 'use client'
 
-import Link from "next/link";
 import { Button } from "../primitives/Button";
 import { useRouter } from "next/navigation";
 
@@ -108,33 +107,18 @@ export default function NotFound() {
 
         </div>
 
-        {/* Footer note */}
         <p
           className="mt-10 text-xs text-muted-foreground tracking-wide"
           style={{ animation: "fadeUp 0.55s 0.48s ease both", opacity: 0 }}
         >
           If you believe this is a mistake,{" "}
-          <Link
-            href="/contact"
-            className="underline underline-offset-2 decoration-border hover:text-text hover:decoration-accent transition-colors"
-          >
+          <Button onClick={()=>router.push('/support')} variant="text" size='xs'>
             let us know
-          </Link>
+          </Button>
           .
         </p>
       </div>
 
-      {/* Keyframes */}
-      <style>{`
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(18px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50%       { opacity: 0.3; }
-        }
-      `}</style>
     </main>
   );
 }

@@ -92,6 +92,7 @@ export function resolveAnvilFieldValue(
         buyerPhoneValue:         buyer.phone_number,
         buyerNationalityValue:   buyer.residence_country,
         buyerIdentificationValue: buyer.visa_status,
+        buyerResidenceValue:buyer.residence_country
       };
       rawValue = buyerKeyMap[field_key];
       break;
@@ -104,7 +105,11 @@ export function resolveAnvilFieldValue(
         propertyType:            prop.property_type,
         propertyTitleNumber:     prop.property_number,
         propertySurveyPlanNumber: prop.bedrooms,
-        propertySize:prop.area_sqm
+        propertyBedroom: prop.bedrooms,
+        propertyBathroom: prop.bathrooms,
+        propertyPrice: prop.price,
+        propertySize:prop.area_sqm,
+        propertyDescription:prop.description
       };
       rawValue = propertyKeyMap[field_key];
       break;
@@ -115,9 +120,15 @@ export function resolveAnvilFieldValue(
       const appKeyMap: Record<string, any> = {
         totalPurchasePrice:  app.property_price,
         initialDepositLabel: app.down_payment_amount,
+        initialDeposit: app.down_payment_amount,
         balanceAmount:       app.property_price - app.down_payment_amount,
         paymentSchedule:     app.first_payment_date,
         completionDate:      app.last_payment_date,
+        applicationNumber: app.application_number,
+        monthlyPayment:app.monthly_payment,
+        loanTermMonth:app.loan_term_months,
+        interestRate:app.interest_rate,
+        loanAmount:app.approved_loan_amount
       };
       rawValue = appKeyMap[field_key];
       break;

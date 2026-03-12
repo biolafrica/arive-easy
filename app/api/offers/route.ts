@@ -9,7 +9,8 @@ import { requireAuth } from "@/utils/server/authMiddleware";
 import { createCRUDHandlers } from "@/utils/server/crudFactory";
 import { SupabaseQueryBuilder } from "@/utils/supabase/queryBuilder";
 import { NextRequest } from "next/server";
-import { property } from "zod";
+import { PartnerDocumentBase } from "@/type/pages/dashboard/documents";
+import { documentGenerator } from "@/utils/server/documentGenerator";
 
 const offersHandlers = createCRUDHandlers<OfferBase>({
   table: 'offers',
@@ -38,11 +39,29 @@ const offersHandlers = createCRUDHandlers<OfferBase>({
     }
   },
   hooks: {
+    beforeUpdate: async (id, body, context)=>{
+      if (body.status === 'accepted') {
+        const PartnerDocumentQB = new SupabaseQueryBuilder<PartnerDocumentBase>('partner_documents');
+
+        const ExistingSalesofContract = PartnerDocumentQB.findOneByCondition({
+          document_type: "contract_of_sales",
+          status: 'active',
+          partner_id: context.auth?.userId
+        });
+
+        if(!ExistingSalesofContract){
+          throw new Error ( "Kindly setup your contract of Sales Document to accept offer")
+        }
+
+      }
+    },
+
     afterUpdate: async (updated, previous, context) => {
       const applicationQueryBuilder = new SupabaseQueryBuilder<ApplicationBase>("applications");
       const userQueryBuilder = new SupabaseQueryBuilder<UserBase>("users");
 
       try {
+
         const application = await applicationQueryBuilder.findById(updated.application_id)
         if (!application) {
           console.error('Failed to fetch application');
@@ -82,8 +101,16 @@ const offersHandlers = createCRUDHandlers<OfferBase>({
             console.error('Failed to update application on offer accept');
           }
 
-          if (user?.email) {
+          const docResult = await documentGenerator.generateDocument({
+            applicationId: updated.application_id,
+            documentType: 'contract_of_sales',
+          });
 
+          if (!docResult.success) {
+            console.error('Failed to auto-generate contract of sales:', docResult.error);
+          }
+
+          if (user?.email) {
             try {
               await sendEmail({
                 to:  `${user.email}`,
@@ -115,6 +142,7 @@ const offersHandlers = createCRUDHandlers<OfferBase>({
               })
             );
           }
+         
 
         } else if (updated.status === 'declined') {
           const updatedApplication = await applicationQueryBuilder.update(updated.application_id,{
@@ -142,7 +170,6 @@ const offersHandlers = createCRUDHandlers<OfferBase>({
           }
 
           if (user?.email) {
-
             try {
               await sendEmail({
                 to:  `${user.email}`,

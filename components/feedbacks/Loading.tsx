@@ -12,7 +12,7 @@ export default function Loading() {
           <div className="absolute inset-0 bg-card rounded-full shadow-lg border border-border flex items-center justify-center">
             <img
               src="/icons/kletch-color.svg"
-              alt=""
+              alt="kletch icon"
               aria-hidden="true"
               className="w-10 h-10"
             />
@@ -22,8 +22,8 @@ export default function Loading() {
             className="absolute inset-0 rounded-full animate-spin"
             style={{
               border: "3px solid transparent",
-              borderTopColor: "var(--color-accent, #6366f1)",
-              borderRightColor: "var(--color-accent, #6366f1)",
+              borderTopColor: "var(--color-accent, #2563EB)",
+              borderRightColor: "var(--color-accent, #2563EB)",
             }}
           />
         </div>
@@ -36,7 +36,7 @@ export default function Loading() {
           aria-label="Loading progress"
         >
           <div
-            className="h-full rounded-full bg-accent origin-left"
+            className="h-full rounded-full bg-[#2563EB] origin-left"
             style={{
               animation: "loadingBar 1.6s ease-in-out infinite",
             }}
@@ -48,13 +48,6 @@ export default function Loading() {
         </p>
       </div>
 
-      <style>{`
-        @keyframes loadingBar {
-          0%   { transform: translateX(-100%) scaleX(0.3); }
-          50%  { transform: translateX(60%)  scaleX(0.7); }
-          100% { transform: translateX(200%) scaleX(0.3); }
-        }
-      `}</style>
     </div>
   );
 }
