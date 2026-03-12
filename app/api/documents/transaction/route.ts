@@ -3,7 +3,6 @@ import { TransactionDocumentBase } from "@/type/pages/dashboard/documents";
 import { UserBase } from "@/type/user";
 import { sendEmail } from "@/utils/email/send_email";
 import { documentUploadNotificationEmail } from "@/utils/email/templates/document";
-import { sendOfferAcceptedEmail } from "@/utils/email/templates/offers";
 import { createNotification } from "@/utils/notifications/createNotification";
 import { buildNotificationPayload } from "@/utils/notifications/notificationContent";
 import { requireAuth } from "@/utils/server/authMiddleware";

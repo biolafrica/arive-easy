@@ -31,11 +31,12 @@ export function DownPaymentSection({
     setIsProcessing(true);
     
     try {
-      const response = await fetch('/api/payments/create-escrow-session', {
+      const response = await fetch('/api/payments/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           application_id: application.id,
+          payment_type: 'escrow_down_payment',
           amount: values.down_payment,
           type: 'down_payment',
           seller_id: application.developer_id,

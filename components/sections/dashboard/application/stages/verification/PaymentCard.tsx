@@ -18,10 +18,13 @@ export function PaymentCard({ hasPaid, applicationId }: PaymentCardProps) {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/stripe/create-checkout-session', {
+      const response = await fetch('/api/payments/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ application_id: applicationId }),
+        body: JSON.stringify({ 
+          application_id: applicationId,
+          payment_type: 'processing_fee' 
+        }),
       });
 
       if (!response.ok) {

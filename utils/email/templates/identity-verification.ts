@@ -65,14 +65,12 @@ export const identityVerificationDeclineBody = ({
   declineReasons,
   canResubmit,
   resubmitAfterDays,
-  supportDocuments,
 }: {
   userName: string;
   referenceNumber: string;
   declineReasons: string;
   canResubmit: boolean;
   resubmitAfterDays?: number;
-  supportDocuments?: string[];
 }) => {
   return `
     <h2 style="color: #1f2937; font-size: 24px; margin: 0 0 10px 0;">

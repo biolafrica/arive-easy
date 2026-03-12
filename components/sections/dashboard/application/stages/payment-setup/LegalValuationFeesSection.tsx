@@ -22,7 +22,7 @@ export function LegalValuationFeesSection({
 
   const handleFeePayment = async (type: 'legal' | 'valuation') => {
     const amount = type === 'legal' ? application.legal_fee : application.valuation_fee;
-    const api = type === "legal" ?  '/api/payments/create-legal-fee-session' :'/api/payments/create-valuation-fee-session'
+    const  payment_type = type === "legal" ?  'legal_fee' : 'valuation_fee'
     
     
     if (amount <= 0) {
@@ -31,13 +31,13 @@ export function LegalValuationFeesSection({
     }
 
     try {
-      const response = await fetch(api, {
+      const response = await fetch('/api/payments/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           application_id: application.id,
           amount: amount,
-          description: `${type.charAt(0).toUpperCase() + type.slice(1)} fee for property purchase`
+          payment_type
         }),
       });
 

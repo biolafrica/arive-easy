@@ -225,7 +225,7 @@ export function usePaymentStatus(sessionId: string | null) {
     queryFn: async () => {
       if (!sessionId) throw new Error('No session ID provided');
       
-      const response = await fetch(`/api/stripe/verify-payment?session_id=${sessionId}`);
+      const response = await fetch(`/api/payments/verify-payment?session_id=${sessionId}`);
       
       if (!response.ok) {
         throw new Error('Failed to verify payment status');
