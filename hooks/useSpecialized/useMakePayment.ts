@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { loadStripe } from '@stripe/stripe-js';
+import { captureError } from '@/utils/auth/captureError';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -91,6 +92,7 @@ export function useMakePayment() {
       
       return data;
     } catch (err) {
+      captureError(error, { component: 'user-fetch-paymentMethod', action: 'load-data' });
       const message = err instanceof Error ? err.message : 'Failed to fetch payment methods';
       setError(message);
       console.error('Fetch payment methods error:', err);
@@ -124,6 +126,7 @@ export function useMakePayment() {
 
       return await response.json();
     } catch (err) {
+      captureError(error, { component: 'user-create-payment', action: 'create-data' });
       const message = err instanceof Error ? err.message : 'Failed to create payment';
       setError(message);
       toast.error(message);
@@ -182,6 +185,8 @@ export function useMakePayment() {
       };
 
     } catch (err) {
+      captureError(error, { component: 'user-pay-withSavedMethod', action: 'create-data' });
+
       const message = err instanceof Error ? err.message : 'Failed to process payment';
       setError(message);
       throw err;
@@ -225,6 +230,7 @@ export function useMakePayment() {
       return { success: false, error: 'Payment was not completed' };
 
     } catch (err) {
+      captureError(error, { component: 'handle-paymentAction-stripe', action: 'create-data' });
       const message = err instanceof Error ? err.message : 'Payment action failed';
       setError(message);
       return { success: false, error: message };
@@ -271,6 +277,7 @@ export function useMakePayment() {
 
       return result;
     } catch (err) {
+      captureError(error, { component: 'payment-confimation-stripe', action: 'load-data' });
       const message = err instanceof Error ? err.message : 'Failed to confirm payment';
       setError(message);
       toast.error(message);

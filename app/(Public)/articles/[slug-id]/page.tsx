@@ -1,6 +1,6 @@
 import { createMetadata } from "@/components/common/metaData";
 import ArticleViewClient from "@/components/sections/public/article/ArticleViewClient";
-import { extractUuidFromSlug } from "@/utils/extractUUID";
+import { extractUuidFromSlug } from "@/utils/common/extractUUID";
 
 export const metadata = createMetadata({
   title: "Article Detail",

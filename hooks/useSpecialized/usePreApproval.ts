@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import * as stage from '@/type/pages/dashboard/approval';
 import { useEffect, } from 'react';
 import { createEntityHooks } from './useFactory';
+import { captureError } from '@/utils/auth/captureError';
 
 const preApprovalHooks = createEntityHooks<
   stage.PreApprovalBase,
@@ -45,6 +46,7 @@ export function useCreatePreApproval() {
       }
       return result;
     } catch (error) {
+      captureError(error, { component: 'buyer-submit-preApproval', action: 'create-data' });
       const message = error instanceof Error
         ? error.message
         : 'Failed to submit pre-approval';
@@ -103,6 +105,7 @@ export function useUpdatePreApproval() {
       return result;
 
     } catch (error) {
+      captureError(error, { component: 'user-update-preApproval', action: 'update-data' });
       const message = error instanceof Error
         ? error.message : 'Failed to update pre-approval';
       if (message.includes('cannot update')) {
@@ -157,6 +160,7 @@ export function useAdminUpdatePreApproval() {
       return result;
 
     } catch (error) {
+      captureError(error, { component: 'admin-update-preApproval', action: 'update-data' });
       toast.error( 
         error instanceof Error ? error.message : 'Failed to update pre-approval'
       );
@@ -235,11 +239,14 @@ export function usePreApprovalStages(preApprovalId: string) {
       });
 
     } catch (error) {
+      captureError(error, { component: 'submit-preApproval-documents', action: 'update-data' });
       console.error('Document upload error:', error);
       toast.error('Failed to upload documents');
       throw error;
 
     } finally {
+     
+
       setIsUploading(false);
     }
   

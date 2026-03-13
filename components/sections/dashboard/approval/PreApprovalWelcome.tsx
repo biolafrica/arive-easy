@@ -3,7 +3,7 @@
 import ErrorState from '@/components/feedbacks/ErrorState';
 import { Button } from '@/components/primitives/Button';
 import { usePreApprovalState, useUpdatePreApproval } from '@/hooks/useSpecialized/usePreApproval';
-import { Skeleton } from '@/utils/skeleton';
+import { Skeleton } from '@/utils/common/skeleton';
 import * as icon from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';

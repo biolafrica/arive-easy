@@ -6,7 +6,7 @@ import { Card, Row } from './Card';
 import { Field } from './Field';
 import { MortgageInputs, MortgageOutputs } from '@/type/pages/calculator';
 import { formatCurrency, parseCurrencyInput } from '@/lib/formatter';
-import { calculateMortgage } from '@/utils/mortgageCalculation';
+import { calculateMortgage } from '@/utils/public/mortgageCalculation';
 
 
 

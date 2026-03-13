@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePreApprovalStages, usePreApprovalState } from "@/hooks/useSpecialized/usePreApproval";
 import { EmploymentInfoType} from "@/type/pages/dashboard/approval";
-import { Skeleton } from "@/utils/skeleton";
+import { Skeleton } from "@/utils/common/skeleton";
 import EmploymentInfoForm from "./EmploymentInfoForm";
 import ErrorState from "@/components/feedbacks/ErrorState";
 

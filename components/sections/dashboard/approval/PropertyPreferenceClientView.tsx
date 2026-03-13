@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePreApprovalStages, usePreApprovalState } from "@/hooks/useSpecialized/usePreApproval";
 import { PropertyPreferenceType } from "@/type/pages/dashboard/approval";
-import { Skeleton } from "@/utils/skeleton";
+import { Skeleton } from "@/utils/common/skeleton";
 import PropertyPreferenceForm from "./PropertyPreference";
 import ErrorState from "@/components/feedbacks/ErrorState";
 

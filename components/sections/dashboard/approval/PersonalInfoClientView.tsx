@@ -6,7 +6,7 @@ import { useAuthContext } from "@/providers/auth-provider";
 import { usePreApprovalStages, usePreApprovalState } from "@/hooks/useSpecialized/usePreApproval";
 import { PersonalInfoFormValues, PersonalInfoType } from "@/type/pages/dashboard/approval";
 import PersonalInfoForm from "./PersonalInfoForm";
-import { Skeleton } from "@/utils/skeleton";
+import { Skeleton } from "@/utils/common/skeleton";
 import ErrorState from "@/components/feedbacks/ErrorState";
 
 

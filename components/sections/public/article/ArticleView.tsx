@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/primitives/Button';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-import { insertImagesIntoSections, parseContent, renderSection } from '@/utils/articleModification';
+import { insertImagesIntoSections, parseContent, renderSection } from '@/utils/public/articleModification';
 import { ArticleTransformData } from '@/type/pages/article';
 import { formatDate } from '@/lib/formatter';
 import SharePost from '@/components/common/Share';

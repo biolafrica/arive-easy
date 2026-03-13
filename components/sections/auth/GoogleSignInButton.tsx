@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/primitives/Button';
 import { toast } from 'sonner';
 import { GoogleIcon } from '@/public/icons/google-icon';
-import { signInWithGoogle } from '@/utils/google-auth';
+import { signInWithGoogle } from '@/utils/auth/google-auth';
 import * as Sentry from '@sentry/nextjs';
 
 

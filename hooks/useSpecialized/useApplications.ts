@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useMemo } from "react";
 import { createEntityHooks } from "./useFactory";
+import { captureError } from "@/utils/auth/captureError";
 
 
 interface PaymentStatus {
@@ -62,6 +63,8 @@ export function useUpdateApplication() {
       return result;
 
     } catch (error) {
+      captureError(error, { component: 'user-update-application', action: 'update-data' });
+      
       const message = error instanceof Error
         ? error.message
         : 'Failed to update application';

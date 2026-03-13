@@ -1,4 +1,4 @@
-import { Skeleton } from "@/utils/skeleton";
+import { Skeleton } from "@/utils/common/skeleton";
 
 interface BlogGridSkeletonProps {
   count?: number;

@@ -1,6 +1,6 @@
 import { CreateSessionRequest, VerificationBase, VerificationType } from '@/type/common/didit';
 import { ApplicationBase } from '@/type/pages/dashboard/application';
-import { createVerificationSession } from '@/utils/didit';
+import { createVerificationSession } from '@/utils/server/didit';
 import { requireAuth } from '@/utils/server/authMiddleware';
 import { SupabaseQueryBuilder } from '@/utils/supabase/queryBuilder';
 import { NextRequest, NextResponse } from 'next/server';

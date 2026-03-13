@@ -5,7 +5,7 @@ import SellerPropertyViewTop from "./SellerPropertyViewTop";
 import SellerPropertyViewBottom from "./SellerPropertyViewBottom";
 import ErrorState from "@/components/feedbacks/ErrorState";
 import { DescriptionListSkeleton } from "@/components/skeleton/DescriptionListSkeleton";
-import { HeaderSkeleton } from "@/utils/skeleton";
+import { HeaderSkeleton } from "@/utils/common/skeleton";
 import SellerPropertyHead from "./ListingClientViewHeader";
 
 

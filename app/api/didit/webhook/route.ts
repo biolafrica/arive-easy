@@ -1,7 +1,7 @@
 import { DiditWebhookPayload, VerificationBase } from '@/type/common/didit';
 import { ApplicationBase } from '@/type/pages/dashboard/application';
 import { UserBase } from '@/type/user';
-import { calculateOverallStatus, mapDiditStatus, parseVendorData, verifyStructuredSignature, verifyWebhookSignature } from '@/utils/didit';
+import { calculateOverallStatus, mapDiditStatus, parseVendorData, verifyStructuredSignature, verifyWebhookSignature } from '@/utils/server/didit';
 import { identityVerificationDeclineBody, identityVerificationSuccessBody } from '@/utils/email/templates/identity-verification';
 import { sendEmail } from '@/utils/email/send_email';
 import { createNotification } from '@/utils/notifications/createNotification';

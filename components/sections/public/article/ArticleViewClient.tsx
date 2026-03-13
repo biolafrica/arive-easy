@@ -1,7 +1,7 @@
 'use client'
 
 import ArticleView from "./ArticleView";
-import { transformArticle } from "@/utils/articleTransform";
+import { transformArticle } from "@/utils/public/articleTransform";
 import { SectionHeading } from "@/components/common/SectionHeading";
 import { ArticleCard } from "@/components/cards/public/article";
 import { ArticlePageSkeleton } from "@/components/skeleton/BlogCardSkeleton";

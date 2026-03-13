@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { FooterProps } from '@/type/layout/public';
 import { DEFAULT_COLUMNS } from '@/data/layout/public';
 import { newsletterFields } from '@/data/newsletter';
-import { validateNewsletter } from '@/utils/validate';
+import { validateNewsletter } from '@/utils/common/validate';
 import Form from '@/components/form/Form';
 import { NewsletterValues } from '@/type/newsletter';
 import { Facebook, Linkedin, Twitter } from '@/data/icons';

@@ -3,7 +3,7 @@
 import ErrorState from '@/components/feedbacks/ErrorState';
 import { Button } from '@/components/primitives/Button';
 import { getStepPath, usePreApprovalState } from '@/hooks/useSpecialized/usePreApproval';
-import { Skeleton } from '@/utils/skeleton';
+import { Skeleton } from '@/utils/common/skeleton';
 import { CheckBadgeIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
