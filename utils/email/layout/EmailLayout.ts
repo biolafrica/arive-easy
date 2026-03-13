@@ -20,7 +20,7 @@ const defaultConfig: EmailLayoutConfig = {
   companyName: 'Kletch',
   companyWebsite: 'https://usekletch.com',
   supportEmail: 'support@usekletch.com',
-  companyLogo: logo,
+  companyLogo: 'https://rhxbrjeeblfkokellqbb.supabase.co/storage/v1/object/public/media/Kletch%20White.png',
 };
 
 export const EmailLayout = (

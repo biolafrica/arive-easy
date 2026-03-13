@@ -3,13 +3,13 @@ import { OfferBase } from '@/type/pages/dashboard/offer';
 import { PropertyBase } from '@/type/pages/property';
 import { UserBase } from '@/type/user';
 import { SupabaseQueryBuilder } from '@/utils/supabase/queryBuilder';
-import { sendEmail } from './sendEmail';
 import { createNotification } from '../notifications/createNotification';
 import { buildNotificationPayload } from '../notifications/notificationContent';
 import { NotificationMetadata, NotificationType } from '@/type/pages/dashboard/notification';
 import { offerNotificationBody } from '../email/templates/application';
 import { AdminEscrowNotification, mortgageActivationEmail, paymentCompletionEmail, propertyAcquiredEmail, termsCompletionEmail } from '../email/templates/milestones';
 import { TransactionBase } from '@/type/pages/dashboard/transactions';
+import { sendEmail } from '../email/send_email';
 
 interface StageHandler {
   shouldExecute(application: ApplicationBase): boolean;
@@ -114,7 +114,8 @@ class PropertySelectionHandler implements StageHandler {
     const propertyQB = new SupabaseQueryBuilder<PropertyBase>('properties');
     const property = await propertyQB.findById(propertyId);
     await propertyQB.update(propertyId, {
-      offers: (property.offers || 0) + 1
+      offers: (property.offers || 0) + 1,
+      status: 'offers'
     });
   }
 

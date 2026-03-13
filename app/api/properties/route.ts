@@ -47,6 +47,7 @@ const propertyHandlers = createCRUDHandlers<PropertyBase>({
   hooks:{
     beforeCreate:async(body, context)=>{
       body.developer_id = context.auth?.userId!
+      
     },
   }
 

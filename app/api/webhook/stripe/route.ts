@@ -849,7 +849,7 @@ function getPaymentIntentId(invoice: Stripe.Invoice): string | undefined {
 
 async function updatePropertyStatus(applicationId: string): Promise<void> {
   const propertyQueryBuilder = new SupabaseQueryBuilder<PropertyBase>("properties");
-  const applicationQueryBuilder = new SupabaseQueryBuilder<ApplicationBase>("application");
+  const applicationQueryBuilder = new SupabaseQueryBuilder<ApplicationBase>("applications");
 
   const application = await applicationQueryBuilder.findById(applicationId);
   if (!application || !application.property_id) return;
