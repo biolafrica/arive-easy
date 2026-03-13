@@ -1,5 +1,7 @@
 import { createClient } from '@/utils/supabase/client';
 import { toast } from 'sonner';
+import * as Sentry from '@sentry/nextjs';
+
 
 export interface GoogleAuthOptions {
   redirectTo?: string;
@@ -34,6 +36,12 @@ export async function signInWithGoogle(options?: GoogleAuthOptions) {
 
     return { success: true, data };
   } catch (error) {
+    Sentry.withScope((scope) => {
+      scope.setTag('auth.provider', 'google');
+      scope.setTag('auth.action', 'sign-in');
+      Sentry.captureException(error);
+    });
+
     console.error('Google sign-in error:', error);
     toast.error(error instanceof Error ? error.message : 'Failed to sign in with Google');
     return { success: false, error };
@@ -52,6 +60,13 @@ export async function getGoogleUserProfile() {
       throw new Error('No user found');
     }
 
+    Sentry.setUser({
+      id: user.id,
+      email: user.email,
+      username: user.user_metadata?.full_name || user.user_metadata?.name,
+    });
+ 
+
     const googleProfile = {
       email: user.email,
       name: user.user_metadata?.full_name || user.user_metadata?.name,
@@ -63,6 +78,12 @@ export async function getGoogleUserProfile() {
     return googleProfile;
     
   } catch (error) {
+    Sentry.withScope((scope) => {
+      scope.setTag('auth.provider', 'google');
+      scope.setTag('auth.action', 'get-profile');
+      Sentry.captureException(error);
+    });
+
     console.error('Error getting Google profile:', error);
     return null;
   }
@@ -88,6 +109,11 @@ export async function linkGoogleAccount() {
     return { success: true, data };
     
   } catch (error) {
+    Sentry.withScope((scope) => {
+      scope.setTag('auth.provider', 'google');
+      scope.setTag('auth.action', 'link-account');
+      Sentry.captureException(error);
+    });
     console.error('Error linking Google account:', error);
     toast.error(error instanceof Error ? error.message : 'Failed to link Google account');
     return { success: false, error };
@@ -118,6 +144,11 @@ export async function unlinkGoogleAccount() {
     return { success: true, data };
     
   } catch (error) {
+    Sentry.withScope((scope) => {
+      scope.setTag('auth.provider', 'google');
+      scope.setTag('auth.action', 'unlink-account');
+      Sentry.captureException(error);
+    });
     console.error('Error unlinking Google account:', error);
     toast.error(error instanceof Error ? error.message : 'Failed to unlink Google account');
     return { success: false, error };

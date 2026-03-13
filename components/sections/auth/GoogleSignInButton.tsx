@@ -5,6 +5,8 @@ import { Button } from '@/components/primitives/Button';
 import { toast } from 'sonner';
 import { GoogleIcon } from '@/public/icons/google-icon';
 import { signInWithGoogle } from '@/utils/google-auth';
+import * as Sentry from '@sentry/nextjs';
+
 
 interface GoogleSignInButtonProps {
   variant?: 'signin' | 'signup';
@@ -47,12 +49,19 @@ export function GoogleSignInButton({
     } catch (error) {
       console.error('Google sign-in error:', error);
       
-      if (onError) {
-        onError(error);
-      } else {
+      if (!onError) {
+        Sentry.withScope((scope) => {
+          scope.setTag('auth.provider', 'google');
+          scope.setTag('auth.action', variant === 'signup' ? 'sign-up-button' : 'sign-in-button');
+          scope.setLevel('error');
+          Sentry.captureException(error);
+        });
+
         toast.error(
           variant === 'signup' ? 'Failed to sign up with Google. Please try again.' : 'Failed to sign in with Google. Please try again.'
         );
+      } else {
+        onError(error);
       }
     } finally {
       setTimeout(() => setIsLoading(false), 5000);

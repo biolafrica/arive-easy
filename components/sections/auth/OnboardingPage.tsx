@@ -6,6 +6,7 @@ import { createClient } from '@/utils/supabase/client';
 import { toast } from 'sonner';
 import { Button } from '@/components/primitives/Button';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
+import * as Sentry from '@sentry/nextjs';
 
 interface UserProfile {
   id: string;
@@ -18,15 +19,14 @@ interface RoleOptionCardProps {
   value: string;
   selected: boolean;
   onSelect: (value: string) => void;
-  icon: React.ReactNode;
   title: string;
   description: string;
   activeClassName?: string;
 }
 
 const ROLE_OPTIONS = [
-  { value: 'user', title: 'Homebuyer', description: 'Looking to buy property', icon: '🏠', activeClassName: 'border-border bg-background text-heading'},
-  { value: 'seller', title: 'Seller', description: 'Listing properties', icon: '🏢', activeClassName: 'border-accent bg-accent/5 text-accent'},
+  { value: 'user', title: 'Homebuyer', description: 'Looking to buy property', activeClassName: 'border-border bg-background text-heading'},
+  { value: 'seller', title: 'Seller', description: 'Listing properties', activeClassName: 'border-accent bg-accent/5 text-accent'},
 ] as const;
 
 
@@ -55,6 +55,12 @@ export default function OnboardingComponent() {
         return;
       }
 
+      Sentry.setUser({
+        id: user.id,
+        email: user.email,
+        username: user.user_metadata?.full_name || user.user_metadata?.name,
+      });
+
       const { data: existingProfile, error: profileError } = await supabase
       .from('users')
       .select('*')
@@ -79,8 +85,16 @@ export default function OnboardingComponent() {
       }
 
     } catch (error) {
+
+      Sentry.withScope((scope) => {
+        scope.setTag('component', 'onboarding');
+        scope.setTag('action', 'load-profile');
+        Sentry.captureException(error);
+      });
+
       console.error('Error loading profile:', error);
       toast.error('Failed to load profile', {description: error instanceof Error ? error.message : ''});
+
     } finally {
       setIsLoading(false);
     }
@@ -113,8 +127,24 @@ export default function OnboardingComponent() {
 
       const { error: refreshError } = await supabase.auth.refreshSession();
       if (refreshError) {
+
+        Sentry.withScope((scope) => {
+          scope.setTag('component', 'onboarding');
+          scope.setTag('action', 'refresh-session');
+          scope.setLevel('warning');
+          Sentry.captureException(refreshError);
+        });
+
         console.error('Failed to refresh session:', refreshError);
       }
+
+      Sentry.setUser({
+        id: profile.id,
+        email: profile.email,
+        username: profile.name,
+      });
+
+      Sentry.setTag('user.role', selectedRole);
 
       toast.success('Profile completed successfully!', {description: 'Redirecting to your dashboard...'});
       
@@ -128,6 +158,14 @@ export default function OnboardingComponent() {
       }
 
     } catch (error) {
+      
+      Sentry.withScope((scope) => {
+        scope.setTag('component', 'onboarding');
+        scope.setTag('action', 'complete-profile');
+        scope.setContext('onboarding', { selectedRole, userId: profile.id });
+        Sentry.captureException(error);
+      });
+
       console.error('Error updating profile:', error);
       toast.error('Failed to complete profile', {description: error instanceof Error ? error.message : ''});
     } finally {
@@ -194,7 +232,6 @@ export default function OnboardingComponent() {
                   value={role.value}
                   selected={selectedRole === role.value}
                   onSelect={setSelectedRole}
-                  icon={role.icon}
                   title={role.title}
                   description={role.description}
                   activeClassName={role.activeClassName}
@@ -222,7 +259,6 @@ export function RoleOptionCard({
   value,
   selected,
   onSelect,
-  icon,
   title,
   description,
   activeClassName = 'border-orange-900 bg-orange-100 text-heading',
@@ -239,7 +275,6 @@ export function RoleOptionCard({
         }
       `}
     >
-      <div className="text-2xl mb-1">{icon}</div>
       <div className="font-medium">{title}</div>
       <div className="text-xs text-gray-500 mt-1">
         {description}
