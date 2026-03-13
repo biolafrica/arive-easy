@@ -47,7 +47,7 @@ export const PRE_APPROVAL_UI_CONFIG = {
     tone: 'neutral',
     title: 'No application in progress',
     description:
-      'Ready to get pre-approved? Start your mortgage application with Ariveasy and get pre-approved in as little as 48 hours.',
+      'Ready to get pre-approved? Start your mortgage application with Kletch and get pre-approved in as little as 48 hours.',
     primaryAction: 'Get Pre-approved',
     primaryButtonAction: '/application/pre-approval'
   },
@@ -65,7 +65,7 @@ export const PRE_APPROVAL_UI_CONFIG = {
     title: 'Application under review',
     description:
       "Your pre-approval application is currently being reviewed. We'll notify you once a decision has been made.",
-    primaryAction: 'Application in review',
+    primaryAction: 'Check Applocation Status',
   },
 
   approved: {

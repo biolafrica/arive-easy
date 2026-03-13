@@ -1,4 +1,4 @@
-export default function Loading() {
+export default function Loading({heading, subheading}:{heading?:string, subheading:string}) {
   return (
     <div
       className="fixed inset-0 bg-background flex items-center justify-center z-50"
@@ -42,12 +42,15 @@ export default function Loading() {
             }}
           />
         </div>
+          
+        <div>
+          { heading && (<h2 className="mt-4 text-xl">{heading}</h2>)}
+          <p className="text-gray-600 text-sm tracking-wide animate-pulse select-none">{subheading}</p>
+        </div>
 
-        <p className="text-sm text-muted-foreground tracking-wide animate-pulse select-none">
-          Loading…
-        </p>
       </div>
 
     </div>
   );
 }
+

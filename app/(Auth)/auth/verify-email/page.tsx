@@ -7,6 +7,8 @@ import { Button } from '@/components/primitives/Button';
 import { getDashboardForRole } from '@/utils/common/dashBoardForRole';
 import { useWelcomeEmail } from '@/hooks/useSpecialized/useUser';
 import * as Sentry from "@sentry/nextjs";
+import Loading from '@/components/feedbacks/Loading';
+import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 
 export default function VerifyEmailPage() {
@@ -49,18 +51,18 @@ export default function VerifyEmailPage() {
             );
 
             const user = data.session.user;
-            const role = user.user_metadata?.role || user.app_metadata?.role || 'public';
+            const role = user.user_metadata?.role || 'public';
 
             Sentry.setUser({
               id: user.id,
               email: user.email,
-              username: user.user_metadata?.full_name || user.email?.split('@')[0],
+              username: user.user_metadata?.name || user.email?.split('@')[0],
             });
 
             sendWelcomeEmail({
               userId: user.id,
               email: user.email!,
-              userName: user.user_metadata?.full_name || user.email!.split('@')[0],
+              userName: user.user_metadata?.name || 'customer',
               role: role as 'user' | 'seller' | 'admin' | 'agent',
             });
             
@@ -79,11 +81,11 @@ export default function VerifyEmailPage() {
         
         if (session) {
           const user = session.user;
-          const role = session.user.user_metadata?.role || session.user.app_metadata?.role || 'user';
+          const role = session.user.user_metadata?.role || 'public';
           Sentry.setUser({
             id: user.id,
             email: user.email,
-            username: user.user_metadata?.full_name,
+            username: user.user_metadata?.name,
           });
 
           setStatus('success');
@@ -116,28 +118,19 @@ export default function VerifyEmailPage() {
 
   return (
     <main style={{ padding: 24, textAlign: 'center', paddingTop: 100 }}>
+
       {status === 'loading' && (
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-            <h2 className="mt-4 text-xl">Verifying your email...</h2>
-            <p className="text-gray-600">Please wait a moment</p>
-          </div>
-        </div>
+        <Loading heading='Verifying your email' subheading="Please wait a moment" />
       )}
+
       {status === 'success' && (
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-            <h2 className="mt-4 text-xl">✓ Email verified!</h2>
-            <p className="text-gray-600">Redirecting to your dashboard...</p>
-          </div>
-        </div>
+        <Loading heading='Email verified!' subheading="Redirecting to your dashboard..." />
       )}
+
       {status === 'error' && (
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center max-w-md">
-            <div className="text-red-500 text-6xl mb-4">⚠️</div>
+            <ExclamationTriangleIcon className='text-red-500 text-6xl mb-4 h-7 w-7'/>
             <h2 className="text-xl font-semibold mb-2">Verification Failed</h2>
             <p className="text-gray-600 mb-4">Your email may already be verified. Please try signing in.</p>
             <Button

@@ -33,7 +33,7 @@ export const userWelcomeEmail = ({
     ${StatusBadge('success', 'Your Journey Starts Here', 'We built Kletch specifically to solve these problems')}
 
     ${InfoBox(
-      '🛡️ We Understand Your Concerns',
+      'We Understand Your Concerns',
       `
         <p style="margin: 0 0 15px 0; line-height: 1.6;">We've talked to hundreds of immigrants who share your frustrations:</p>
         <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
@@ -121,7 +121,7 @@ export const userWelcomeEmail = ({
     </div>
 
     ${InfoBox(
-      '💬 We\'re Here for You',
+      'We\'re Here for You',
       `
         <p style="margin: 0 0 10px 0;">Building from abroad shouldn't be scary or stressful. Our team understands the unique challenges you face, and we're here to support you every step of the way.</p>
         <p style="margin: 0;"><strong>Questions?</strong> Reply to this email or reach out anytime at <a href="mailto:support@usekletch.com" style="color: inherit; font-weight: 600;">support@usekletch.com</a></p>
@@ -183,7 +183,7 @@ export const sellerWelcomeEmail =({
     </div>
 
     ${InfoBox(
-      '💰 How Kletch Transforms Your Business',
+      'How Kletch Transforms Your Business',
       `
         <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
           <li><strong>Pre-Qualified Buyers:</strong> Every customer comes with mortgage pre-approval</li>
@@ -225,7 +225,7 @@ export const sellerWelcomeEmail =({
     ])}
 
     ${InfoBox(
-      '🎯 What This Means for Your Bottom Line',
+      'What This Means for Your Bottom Line',
       `
         <p style="margin: 0 0 15px 0; line-height: 1.6;">Imagine increasing your sales by <strong>300-500%</strong> by tapping into the diaspora market:</p>
         <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
@@ -278,7 +278,7 @@ export const sellerWelcomeEmail =({
     </div>
 
     ${InfoBox(
-      '📞 Questions? We\'re Here to Help',
+      'Questions? We\'re Here to Help',
       `
         <p style="margin: 0 0 10px 0;">Starting something new always comes with questions. That's completely normal, and we're here to help every step of the way.</p>
         <p style="margin: 0;">Reach out to <strong>Tayo</strong> at <a href="mailto:support@usekletch.com" style="color: inherit; font-weight: 600;">support@usekletch.com</a> or our support team at <a href="mailto:seller-support@usekletch.com" style="color: inherit; font-weight: 600;">seller-support@usekletch.com</a></p>
@@ -320,3 +320,27 @@ export const adminSellerNotificationEmail=({
 
   `
 }
+
+export const confirmationLinkEmail=({username, url}:{
+  username:string,
+  url:string
+})=>{
+  return`
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <h1 style="color: #4F46E5;">Welcome to Kletch!</h1>
+      <p>Hi ${username},</p>
+      <p>Thanks for signing up! Please verify your email address to complete your registration.</p>
+      <a href="${url}" 
+          style="display: inline-block; margin: 20px 0; padding: 12px 24px; background: #4F46E5; color: white; text-decoration: none; border-radius: 5px;">
+        Verify Email Address
+      </a>
+      <p style="color: #666; font-size: 14px;">
+        Or copy and paste this link in your browser:<br>
+        ${url}
+      </p>
+      <p style="color: #666; font-size: 14px;">
+        This link will expire in 24 hours.
+      </p>
+    </div>
+  `;
+};

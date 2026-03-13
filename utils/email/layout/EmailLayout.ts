@@ -50,7 +50,7 @@ export const EmailLayout = (
           <td align="center" style="padding: 40px 20px;">
             <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
               <tr>
-                <td>${EmailHeader(config)}</td>
+                <td>${EmailHeader(defaultConfig)}</td>
               </tr>
               
               <tr>
@@ -60,7 +60,7 @@ export const EmailLayout = (
               </tr>
               
               <tr>
-                <td>${EmailFooter(config)}</td>
+                <td>${EmailFooter(defaultConfig)}</td>
               </tr>
 
             </table>

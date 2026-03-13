@@ -58,7 +58,7 @@ export default function OnboardingComponent() {
       Sentry.setUser({
         id: user.id,
         email: user.email,
-        username: user.user_metadata?.full_name || user.user_metadata?.name,
+        username: user.user_metadata?.name || 'user',
       });
 
       const { data: existingProfile, error: profileError } = await supabase
@@ -76,7 +76,7 @@ export default function OnboardingComponent() {
       setProfile({
         id: user.id,
         email: user.email || '',
-        name: user.user_metadata?.full_name || user.user_metadata?.name || '',
+        name: user.user_metadata?.name || 'user',
         role: existingProfile?.role,
       });
 

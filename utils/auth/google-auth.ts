@@ -63,13 +63,13 @@ export async function getGoogleUserProfile() {
     Sentry.setUser({
       id: user.id,
       email: user.email,
-      username: user.user_metadata?.full_name || user.user_metadata?.name,
+      username: user.user_metadata?.name || 'customer'
     });
  
 
     const googleProfile = {
       email: user.email,
-      name: user.user_metadata?.full_name || user.user_metadata?.name,
+      name: user.user_metadata?.name || 'customer',
       avatar: user.user_metadata?.avatar_url || user.user_metadata?.picture,
       emailVerified: user.user_metadata?.email_verified,
       provider: 'google',

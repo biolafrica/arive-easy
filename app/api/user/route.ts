@@ -1,7 +1,8 @@
 import { createCRUDHandlers } from "@/utils/server/crudFactory";
 import { supabaseAdmin } from "@/utils/supabase/supabaseAdmin";
-import { sendEmail } from "@/utils/server/sendEmail";
 import { UserBackendFormProps } from "@/type/user";
+import { sendEmail } from "@/utils/email/send_email";
+import { confirmationLinkEmail } from "@/utils/email/templates/welcome";
 
 const handlers = createCRUDHandlers<UserBackendFormProps>({
   table: "users",
@@ -68,40 +69,25 @@ const handlers = createCRUDHandlers<UserBackendFormProps>({
         }
       });
 
-      console.log('linkData Generated', linkData)
-
       if (linkError || !linkData) {
         console.error("Failed to generate verification link:", linkError);
         throw new Error("Failed to generate verification link");
       }
 
       const verificationUrl = linkData.properties?.action_link;
-      console.log('verification url Generated', verificationUrl)
 
-      await sendEmail({
-        to: createdUser.email,
-        subject: "Verify your email - Kletch",
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <h1 style="color: #4F46E5;">Welcome to Ariveasy!</h1>
-            <p>Hi ${createdUser.name},</p>
-            <p>Thanks for signing up! Please verify your email address to complete your registration.</p>
-            <a href="${verificationUrl}" 
-               style="display: inline-block; margin: 20px 0; padding: 12px 24px; background: #4F46E5; color: white; text-decoration: none; border-radius: 5px;">
-              Verify Email Address
-            </a>
-            <p style="color: #666; font-size: 14px;">
-              Or copy and paste this link in your browser:<br>
-              ${verificationUrl}
-            </p>
-            <p style="color: #666; font-size: 14px;">
-              This link will expire in 24 hours.
-            </p>
-          </div>
-        `,
-      }).catch(error => {
-        console.error("Failed to send verification email:", error);
-      });
+      try {
+        await sendEmail({
+          to:  createdUser.email,
+          subject: 'Verify your email - Kletch',
+          html: confirmationLinkEmail({
+            username: createdUser.name,
+            url:verificationUrl
+          }),
+        });
+      } catch (error) {
+        console.error('Failed to verification email:', error);
+      }
     
     },
   },

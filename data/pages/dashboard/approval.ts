@@ -217,5 +217,3 @@ export const statusConfig: StatusConfig[] = [
   { value: 'rejected', label: 'Rejected', variant: 'red' },
   { value: 'draft', label: 'Draft', variant: 'blue' },
 ];
-
-
