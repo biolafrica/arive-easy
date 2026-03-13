@@ -9,50 +9,26 @@ import { DashboardRole } from '@/type/layout/dashboard';
 import { dashboardForRole } from '@/utils/common/dashBoardForRole';
 import Link from 'next/link';
 import ConfirmBanner from '@/components/feedbacks/ConfirmBanner';
-import { createClient } from '@/utils/supabase/client';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
 import lglogo from '@/public/icons/kletch-web-lg.svg'
 import smlogo from '@/public/icons/kletch-color.svg'
 import Image from 'next/image';
+import { useLogout } from '@/hooks/useSpecialized/useUser';
+
 
 export function DashboardHeader({ role }: { role: DashboardRole }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
-  const router = useRouter();
+
+  const { logout } = useLogout();
 
   const requestLogout = () => {
     setShowLogoutDialog(true);
   };
 
   const handleConfirmLogout = async () => {
-    const supabase = createClient();
-
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        toast.error('Failed to logout. Please try again.', {
-          description: error.message,
-        });
-        console.error('Error logging out:', error);
-
-      } else {
-        toast.success('Successfully logged out.', {
-          description: 'You have been logged out of your account.',
-        });
-        router.push('/signin');
-      }
-
-    } catch (err) {
-      toast.error('An unexpected error occurred during logout.', {
-        description: String(err),
-      });
-
-      console.error('Unexpected error during logout:', err);
-    } finally {
-      setShowLogoutDialog(false);
-      setMobileOpen(false);
-    }
+    await logout();
+    setShowLogoutDialog(false);
+    setMobileOpen(false);
   };
 
   return (

@@ -80,7 +80,7 @@ const handlers = createCRUDHandlers<UserBackendFormProps>({
 
       await sendEmail({
         to: createdUser.email,
-        subject: "Verify your email - Ariveasy",
+        subject: "Verify your email - Kletch",
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <h1 style="color: #4F46E5;">Welcome to Ariveasy!</h1>

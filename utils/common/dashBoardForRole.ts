@@ -19,6 +19,8 @@ export function getDashboardForRole(role: string) {
       return '/user-dashboard';
     case 'admin':
       return '/admin-dashboard';
+    case 'public':
+      return '/';
     default:
       return '/user-dashboard'; 
   }

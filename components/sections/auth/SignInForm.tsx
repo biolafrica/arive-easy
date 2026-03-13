@@ -6,6 +6,9 @@ import { SignInForm } from "@/type/auth/signIn";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import * as Sentry from "@sentry/nextjs";
+import { getDashboardForRole } from "@/utils/common/dashBoardForRole";
+
 
 export default function SignInFormPage(){
   const router = useRouter();
@@ -40,14 +43,31 @@ export default function SignInFormPage(){
         password:values.password
       });
 
+      if (data.user) {
+        Sentry.setUser({
+          id: data.user.id,
+          email: data.user.email,
+          username: data.user.user_metadata?.full_name || data.user.email?.split('@')[0],
+        });
+      }
+
       if (error) {
         throw error;
       }
       
+      const role = data.user.user_metadata?.role || 'public';
+      const dashboardUrl = getDashboardForRole(role)
+      
       toast.success("Logged In Successfully");
-      router.push('/')
+      router.push(dashboardUrl)
       
     } catch (error) {
+      Sentry.withScope((scope) => {
+        scope.setTag('component', 'sign-in');
+        scope.setContext('auth', { email: values.email });
+        Sentry.captureException(error);
+      });
+
       toast.error(error instanceof Error ? error.message : "Error logging in, please try again.");
       console.error("Error submitting login form:", error);
     }   

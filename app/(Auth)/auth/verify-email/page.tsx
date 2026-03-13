@@ -6,10 +6,13 @@ import { createClient } from '@/utils/supabase/client';
 import { Button } from '@/components/primitives/Button';
 import { getDashboardForRole } from '@/utils/common/dashBoardForRole';
 import { useWelcomeEmail } from '@/hooks/useSpecialized/useUser';
+import * as Sentry from "@sentry/nextjs";
+
 
 export default function VerifyEmailPage() {
   const router = useRouter();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
+  const [verifyError, setVerifyError] = useState<unknown>(null);
   const { sendWelcomeEmail } = useWelcomeEmail();
 
   useEffect(() => {
@@ -33,6 +36,7 @@ export default function VerifyEmailPage() {
 
           if (error) {
             console.error('Error setting session:', error);
+            setVerifyError(error); 
             setStatus('error');
             return;
           }
@@ -45,7 +49,13 @@ export default function VerifyEmailPage() {
             );
 
             const user = data.session.user;
-            const role = user.user_metadata?.role || user.app_metadata?.role || 'user';
+            const role = user.user_metadata?.role || user.app_metadata?.role || 'public';
+
+            Sentry.setUser({
+              id: user.id,
+              email: user.email,
+              username: user.user_metadata?.full_name || user.email?.split('@')[0],
+            });
 
             sendWelcomeEmail({
               userId: user.id,
@@ -68,7 +78,14 @@ export default function VerifyEmailPage() {
         const { data: { session } } = await supabase.auth.getSession();
         
         if (session) {
+          const user = session.user;
           const role = session.user.user_metadata?.role || session.user.app_metadata?.role || 'user';
+          Sentry.setUser({
+            id: user.id,
+            email: user.email,
+            username: user.user_metadata?.full_name,
+          });
+
           setStatus('success');
           const dashboardUrl = getDashboardForRole(role);
           router.replace(dashboardUrl);
@@ -77,6 +94,7 @@ export default function VerifyEmailPage() {
 
         setStatus('error');
       } catch (error) {
+        setVerifyError(error);  
         console.error('Verification error:', error);
         setStatus('error');
       }
@@ -84,6 +102,16 @@ export default function VerifyEmailPage() {
 
     handleVerification();
   }, [router]);
+
+  useEffect(() => {
+    if (verifyError) {
+      Sentry.withScope((scope) => {
+        scope.setTag('component', 'verify-email');
+        scope.setLevel('error');
+        Sentry.captureException(verifyError);
+      });
+    }
+  }, [verifyError]);
 
 
   return (

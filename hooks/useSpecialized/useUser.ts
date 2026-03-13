@@ -9,6 +9,9 @@ import { useCrud } from '../useCrud';
 import { toast } from 'sonner';
 import { getEntityCacheConfig, } from "@/lib/cache-config";
 import { createEntityHooks } from './useFactory';
+import * as Sentry from '@sentry/nextjs';
+import { createClient } from '@/utils/supabase/client';
+import { clearUserSession } from '@/utils/auth/clearUserSession';
 
 interface SendWelcomeEmailParams {
   userId: string;
@@ -196,3 +199,40 @@ export function useSubscriber() {
 
   return create
 }
+
+export function useLogout() {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+ 
+  const logout = async () => {
+    const supabase = createClient();
+ 
+    try {
+      const { error } = await supabase.auth.signOut();
+ 
+      if (error) {
+        Sentry.captureException(error, { tags: { component: 'logout' } });
+        toast.error('Failed to logout. Please try again.', {
+          description: error.message,
+        });
+        return;
+      }
+ 
+      await clearUserSession(queryClient);
+ 
+      toast.success('Successfully logged out.', {
+        description: 'You have been logged out of your account.',
+      });
+ 
+      router.push('/signin');
+    } catch (err) {
+      Sentry.captureException(err, { tags: { component: 'logout' } });
+      toast.error('An unexpected error occurred during logout.', {
+        description: String(err),
+      });
+    }
+  };
+ 
+  return { logout };
+}
+ 

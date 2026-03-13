@@ -3,15 +3,17 @@ import { ArrowPathIcon, HomeIcon } from "@heroicons/react/24/outline";
 import { ErrorProps } from "@/app/error";
 import { Button } from "../primitives/Button";
 import { useRouter } from "next/navigation";
-
+import * as Sentry from "@sentry/nextjs"
 
 export default function GlobalError({ error, reset }: ErrorProps) {
   const router = useRouter();
 
-  // Log to Sentry after setup
   useEffect(() => {
+
     console.error("[Error Boundary]", error);
+    Sentry.captureException(error);
   }, [error]);
+
 
   const handleReset = useCallback(() => {
     reset();

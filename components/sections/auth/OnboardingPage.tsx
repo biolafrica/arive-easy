@@ -14,6 +14,16 @@ interface UserProfile {
   role?: string;
 }
 
+interface RoleOptionCardProps {
+  value: string;
+  selected: boolean;
+  onSelect: (value: string) => void;
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  activeClassName?: string;
+}
+
 const ROLE_OPTIONS = [
   { value: 'user', title: 'Homebuyer', description: 'Looking to buy property', icon: '🏠', activeClassName: 'border-border bg-background text-heading'},
   { value: 'seller', title: 'Seller', description: 'Listing properties', icon: '🏢', activeClassName: 'border-accent bg-accent/5 text-accent'},
@@ -206,17 +216,6 @@ export default function OnboardingComponent() {
       </div>
     </div>
   );
-}
-
-
-interface RoleOptionCardProps {
-  value: string;
-  selected: boolean;
-  onSelect: (value: string) => void;
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  activeClassName?: string;
 }
 
 export function RoleOptionCard({
