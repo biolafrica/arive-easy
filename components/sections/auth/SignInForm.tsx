@@ -8,10 +8,13 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import * as Sentry from "@sentry/nextjs";
 import { getDashboardForRole } from "@/utils/common/dashBoardForRole";
+import { useState } from "react";
+import { ErrorDisplay } from "./TabHeader";
 
 
 export default function SignInFormPage(){
   const router = useRouter();
+  const [error, setError] = useState<string>('')
 
   const validateProfile = (values: SignInForm) => {
     const errors: Partial<Record<keyof SignInForm, string>> = {};
@@ -36,6 +39,7 @@ export default function SignInFormPage(){
 
   const handleEventSubmit = async (values: SignInForm) => {
     const supabase = createClient();
+    setError('')
 
     try {
       const {error, data} = await supabase.auth.signInWithPassword({
@@ -69,6 +73,7 @@ export default function SignInFormPage(){
       });
 
       toast.error(error instanceof Error ? error.message : "Error logging in, please try again.");
+      setError(error instanceof Error ? error.message : "Error logging in, please try again.")
       console.error("Error submitting login form:", error);
     }   
 
@@ -76,13 +81,20 @@ export default function SignInFormPage(){
 
   return(
     <>
-      <Form
-        fields={siginFields}
-        initialValues={initialValues}
-        validate={validateProfile}
-        onSubmit={handleEventSubmit}
-        submitLabel='Sign In'
-      />
+      <div>
+
+        {error && (
+          <ErrorDisplay error={error}/>
+        )}
+        
+        <Form
+          fields={siginFields}
+          initialValues={initialValues}
+          validate={validateProfile}
+          onSubmit={handleEventSubmit}
+          submitLabel='Sign In'
+        />
+      </div>
     </>
   )
 }

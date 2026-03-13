@@ -63,6 +63,7 @@ export function useInfiniteProperties(params?: any) {
       filters: {
         ...params?.filters,
         status: ['active', 'offers'],
+        is_active :true
       },
     };
   }, [params]);
@@ -124,6 +125,7 @@ export function useFeaturedProperties() {
         is_featured: true,
         status: ['active', 'offers'],
         limit: 3,
+        is_active :true
       });
 
       return response.data ?? []; 
@@ -144,6 +146,7 @@ export function useSimilarProperties(
       const response = await apiClient.get<ApiResponse<PropertyData[]>>('/api/properties', {
         city: currentProperty.city,
         status: ['active', 'offers'],
+        is_active :true,
         property_type: currentProperty.property_type,
         'price.gte': toNumber(currentProperty.price, { min: 0 }) * 0.8,
         'price.lte': toNumber(currentProperty.price, { min: 0 }) * 1.2,  

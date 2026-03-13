@@ -39,8 +39,17 @@ export function Divider() {
         <div className="w-full border-t border-gray-300"></div>
       </div>
       <div className="relative flex justify-center text-sm">
-        <span className="bg-white px-2 text-gray-500">Or continue with</span>
+        <span className="px-2 text-gray-500">Or continue with</span>
       </div>
     </div>
   );
+}
+
+export function ErrorDisplay({error}:{error:string}){
+  return(
+    <div className="mb-4 flex items-start gap-2 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+      <span className="font-medium">Error:</span>
+      <span>{error}</span>
+    </div>
+  )
 }

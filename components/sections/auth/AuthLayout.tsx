@@ -1,6 +1,7 @@
-import { HomeModernIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import { ReactNode } from 'react';
+import smlogo from '@/public/icons/kletch-color.svg'
+import Image from 'next/image';
 
 interface AuthCardProps {
   title: string;
@@ -15,7 +16,13 @@ export function AuthCard({ title, description, children }: AuthCardProps) {
       <div className="w-full md:max-w-md md:rounded-2xl md:bg-white p-8 md:shadow-lg">
 
         <div className='flex items-center justify-center'>
-          <Link href='/'> <HomeModernIcon className='w-7 h-7 text-btn-primary mb-4'/> </Link>
+          <Link href='/'> 
+            <Image
+              src={smlogo}
+              alt="Kletch"
+              className="h-6 w-auto mb-4"
+            />
+          </Link>
         </div>
         
         <h1 className="text-2xl font-semibold text-heading text-center">

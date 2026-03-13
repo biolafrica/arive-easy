@@ -1,15 +1,18 @@
 "use client"
 
+import { useState } from "react";
 import Form from "@/components/form/Form";
 import { initialValues, sigupFields } from "@/data/auth/signUp";
 import { useUserRegistration } from "@/hooks/useSpecialized/useUser";
 import { SignUpForm } from "@/type/auth/signUp";
-import { useRouter } from "next/navigation";
+import { ErrorDisplay } from "./TabHeader";
 
 
 export default function SignUpFormPage(){
-  const router = useRouter();
+  const [error, setError] = useState<string>('')
+
   const create = useUserRegistration()
+
 
   const validateProfile = (values: SignUpForm) => {
     const errors: Partial<Record<keyof SignUpForm, string>> = {};
@@ -36,18 +39,29 @@ export default function SignUpFormPage(){
   };
 
   const handleEventSubmit = async (values: SignUpForm) => {
+    setError('');
+
     const formData = {
       name : values.name,
       email: values.email,
       password: values.password,
       role: values.role
     }
-    
-    await create(formData)
+
+    try {
+      await create(formData)
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Signup Error, please try again.")
+    }
   }
 
   return(
-    <>
+    <div>
+
+      {error && (
+        <ErrorDisplay error={error}/>
+      )}
+
       <Form
         fields={sigupFields}
         initialValues={initialValues}
@@ -55,6 +69,6 @@ export default function SignUpFormPage(){
         onSubmit={handleEventSubmit}
         submitLabel='Create Account'
       />
-    </>
+    </div>
   )
 }
