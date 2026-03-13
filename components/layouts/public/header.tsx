@@ -56,7 +56,7 @@ export const Header: React.FC<HeaderProps> = ({
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-sm font-medium text-text hover:text-accent"
+                className="text-sm font-medium text-text hover:text-[#EA580C]"
               >
                 {item.label}
               </Link>

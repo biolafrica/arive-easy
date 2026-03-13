@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { HeroRotatingHeadline } from "./HeroRotatingHeadline";
 
 interface HeroSectionProps {
@@ -11,10 +12,15 @@ export default function HeroSection({
 }: HeroSectionProps) {
   return (
     <section className="relative min-h-[85vh] w-full overflow-hidden">
-
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url(${backgroundImage})` }}
+      
+      <Image
+        src={backgroundImage}
+        alt="Hero background"
+        fill
+        priority 
+        quality={85}
+        sizes="100vw"
+        className="object-cover object-center"
       />
 
       <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80" />

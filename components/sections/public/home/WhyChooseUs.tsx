@@ -39,12 +39,14 @@ export const WhyChooseUs: React.FC<Props> = ({
           </ul>
         </div>
 
-        <div className="relative">
+        <div className="relative w-full aspect-square max-w-[600px] mx-auto lg:mx-0">
           <Image
             src={image}
-            alt="Why choose Arive"
-            width={600}
-            height={600}
+            alt="Why choose Kletch"
+            fill
+            loading="lazy" 
+            quality={85}
+            sizes="(max-width: 768px) 100vw, 50vw"
             className="rounded-xl object-cover"
           />
         </div>

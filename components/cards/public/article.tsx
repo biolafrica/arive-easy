@@ -25,6 +25,7 @@ export const ArticleCard = ({article}:Props) => {
           className="h-56 w-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
       </Link>
+
       <div className="mt-4 flex flex-col gap-2">
         <span className="text-sm font-medium text-secondary">
           {article.category}
@@ -55,6 +56,7 @@ export const ArticleCard = ({article}:Props) => {
               </>
             )}
           </div>
+          
         </div>
       </div>
     </article>

@@ -21,7 +21,6 @@ export const Footer: React.FC<FooterProps> = ({
 
   const handleNewsletterSubmit = async (values: NewsletterValues) => {
     create(values)
-    console.log('Newsletter signup:', values.email);
   };
 
   return (

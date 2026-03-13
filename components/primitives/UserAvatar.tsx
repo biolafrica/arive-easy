@@ -41,7 +41,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   return (
     <div
       className={cn(
-        'relative inline-flex shrink-0 items-center justify-center rounded-full bg-hover text-secondary overflow-hidden',
+        'relative inline-flex shrink-0 items-center justify-center rounded-full bg-gray-300 text-secondary overflow-hidden',
         sizeClasses[size],
         className
       )}

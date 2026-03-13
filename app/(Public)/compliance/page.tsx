@@ -175,7 +175,7 @@ export default function CompliancePage() {
       <LegalSection title="Contact">
         <p>
           If you have compliance-related questions, please contact us at{" "}
-          <strong>info@kletch.com</strong>.
+          <strong>support@usekletch.com</strong>.
         </p>
       </LegalSection>
     </LegalPageLayout>

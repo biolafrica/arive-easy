@@ -174,7 +174,7 @@ export default function PrivacyPolicyPage() {
           of, or deletion of your personal data, as well as withdrawal of consent.
         </p>
         <p>
-          Requests can be sent to: <strong>info@kletch.com</strong>
+          Requests can be sent to: <strong>support@usekletch.com</strong>
         </p>
       </LegalSection>
 
@@ -211,7 +211,7 @@ export default function PrivacyPolicyPage() {
       <LegalSection title="10. Contact">
         <p>
           If you have any questions or concerns regarding this Privacy Policy,
-          please contact us at <strong>info@kletch.com</strong>.
+          please contact us at <strong>support@usekletch.com</strong>.
         </p>
       </LegalSection>
     </LegalPageLayout>
