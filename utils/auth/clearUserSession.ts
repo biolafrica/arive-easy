@@ -6,7 +6,8 @@ export async function clearUserSession(queryClient?: QueryClient) {
   Sentry.setUser(null);
 
   if (queryClient) {
-    queryClient.clear();
+    await queryClient.cancelQueries();
+    queryClient.removeQueries();
   }
 
   const keysToKeep = ['theme', 'language']; 

@@ -6,6 +6,8 @@ import { getEntityCacheConfig } from '@/lib/cache-config';
 import { queryKeys } from '@/lib/query-keys';
 import apiClient from '@/lib/api-client';
 import { createEntityHooks } from './useFactory';
+import { useEffect, useState } from 'react';
+import { createClient } from '@/utils/supabase/client';
 
 const notificationHooks = createEntityHooks<
   NotificationBase, 
@@ -23,6 +25,22 @@ const notificationHooks = createEntityHooks<
 export const useNotifications = notificationHooks.useOwnerList;
 
 export function useUnreadNotificationCount() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsAuthenticated(!!session);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsAuthenticated(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   return useQuery({
     queryKey: queryKeys.notifications.count(),
     queryFn: async () => {
@@ -30,6 +48,7 @@ export function useUnreadNotificationCount() {
       return res.count;
     },
     ...getEntityCacheConfig('notifications', 'count'),
+    enabled: isAuthenticated,
   });
 }
 

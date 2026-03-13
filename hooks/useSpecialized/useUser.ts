@@ -225,11 +225,15 @@ export function useLogout() {
       });
  
       router.push('/signin');
+      
     } catch (err) {
+      if ((err as Error)?.name === 'CancelledError') return;
+
       Sentry.captureException(err, { tags: { component: 'logout' } });
       toast.error('An unexpected error occurred during logout.', {
         description: String(err),
       });
+      console.log("error logout", err)
     }
   };
  
