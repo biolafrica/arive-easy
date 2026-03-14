@@ -84,7 +84,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const paymentMethodTypes: string[] = [];
     
     if (paymentMethodType === 'us_bank_account' || paymentMethodType === 'acss_debit') {
-      paymentMethodTypes.push('us_bank_account');
       paymentMethodTypes.push('acss_debit');
     }
     paymentMethodTypes.push('card');

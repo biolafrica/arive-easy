@@ -132,13 +132,13 @@ export const propertyPreferenceFields:FormField[] = [
 ]
 
 export const DocumentInfoFields:FormField[] = [
-  { name: 'pay_stubs', label: 'Pay Stubs(Last 12 months)', type: 'image', required: true, accept:'image/jpeg,image/png', aspectRatio: '16:9'},
+  { name: 'pay_stubs', label: 'Pay Stubs(Last 12 months)', type: 'image', required: true, accept:'image/jpeg,image/png,image/pdf', aspectRatio: '16:9'},
 
-  { name: 'tax_returns', label: 'Tax Returns(Last 12 months)', type: 'image', required: true, accept:'image/jpeg,image/png', aspectRatio: '16:9' },
+  { name: 'tax_returns', label: 'Tax Returns(Last 12 months)', type: 'image', required: true, accept:'image/jpeg,image/png,image/pdf', aspectRatio: '16:9' },
 
-  { name: 'bank_statements', label: 'Bank Statement(Last 12 months)', type: 'image', required: true, accept:'image/jpeg,image/png', aspectRatio: '16:9'},
+  { name: 'bank_statements', label: 'Bank Statement(Last 12 months)', type: 'image', required: true, accept:'image/jpeg,image/png,image/pdf', aspectRatio: '16:9'},
 
-  { name: 'employment_verification', label: 'Employment Verification', type: 'image', required: true, accept:'image/jpeg,image/png', aspectRatio: '16:9'},
+  { name: 'employment_verification', label: 'Employment Verification', type: 'image', required: true, accept:'image/jpeg,image/png,image/pdf', aspectRatio: '16:9'},
 ]
 
 export const getEmploymentInfoFields = (employmentStatus: string): FormField[] => {

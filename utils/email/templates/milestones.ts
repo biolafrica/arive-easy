@@ -1,3 +1,4 @@
+import { formatUSD, toNumber } from "@/lib/formatter";
 import { AmountDisplay, EmailButton, StatusBadge } from "../components/EmailButton";
 import { DataTable, InfoBox, Timeline } from "../components/EmailCard";
 
@@ -170,7 +171,7 @@ export const paymentCompletionEmail=({
     ${StatusBadge('success', 'All Payments Complete', 'Property secured successfully')}
 
     <h2 style="color: #10b981; font-size: 24px; margin: 0 0 10px 0;">
-      Payment Processing Complete!
+      Payment Stage Complete!
     </h2>
     
     <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 25px 0;">
@@ -182,17 +183,17 @@ export const paymentCompletionEmail=({
       Your ${propertyName} is reserved exclusively for you while we complete the final activation process.
     </p>
 
-    ${AmountDisplay(totalPaid, 'Total Investment Secured')}
+    ${AmountDisplay(formatUSD({amount:toNumber(totalPaid)}), 'Total Investment Secured')}
 
     ${DataTable([
-      { label: 'Escrow Payment', value: paymentBreakdown.escrow },
-      { label: 'Legal Processing', value: paymentBreakdown.legal },
-      { label: 'Property Valuation', value: paymentBreakdown.valuation },
-      { label: 'Total Paid', value: totalPaid, highlight: true },
+      { label: 'Escrow Payment', value:  formatUSD({amount:toNumber(paymentBreakdown.escrow)}) },
+      { label: 'Legal Processing', value:  formatUSD({amount:toNumber(paymentBreakdown.legal)})},
+      { label: 'Property Valuation', value:  formatUSD({amount:toNumber(paymentBreakdown.valuation)}) },
+      { label: 'Total Paid', value:  formatUSD({amount:toNumber(totalPaid)}), highlight: true },
     ], 'Payment Summary')}
 
     ${InfoBox(
-      '🛡️ Your Investment is Protected',
+      'Your Investment is Protected',
       `
         <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
           <li><strong>Escrow Protection:</strong> Your funds are held in secure, regulated escrow accounts</li>
@@ -304,7 +305,7 @@ export const mortgageActivationEmail=({
           <strong>Property:</strong> ${propertyName}
         </p>
         <p style="color: white; margin: 0 0 10px 0; font-size: 16px;">
-          <strong>Total Value:</strong> ${mortgageAmount}
+          <strong>Total Value:</strong> ${formatUSD({amount:toNumber(mortgageAmount)}) }
         </p>
         <p style="color: white; margin: 0; font-size: 16px;">
           <strong>Activated:</strong> ${new Date().toLocaleDateString('en-US', {
@@ -320,8 +321,8 @@ export const mortgageActivationEmail=({
     ${DataTable([
       { label: 'Application Number', value: applicationNumber },
       { label: 'Property Name', value: propertyName },
-      { label: 'Mortgage Amount', value: mortgageAmount, highlight: true },
-      { label: 'Monthly Payment', value: monthlyPayment, highlight: true },
+      { label: 'Mortgage Amount', value: formatUSD({amount:toNumber(mortgageAmount)}), highlight: true },
+      { label: 'Monthly Payment', value: formatUSD({amount:toNumber( monthlyPayment)}), highlight: true },
       { label: 'Loan Term', value: `${totalLoanTerm} years` },
       { label: 'First Payment Due', value: new Date(firstPaymentDate).toLocaleDateString('en-US', {
         year: 'numeric',
@@ -381,7 +382,7 @@ export const mortgageActivationEmail=({
       `
         <p style="margin: 0 0 15px 0;">Your mortgage is now active with the following payment schedule:</p>
         <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
-          <li><strong>Monthly Payment:</strong> ${monthlyPayment}</li>
+          <li><strong>Monthly Payment:</strong> ${formatUSD({amount:toNumber( monthlyPayment)})}</li>
           <li><strong>First Payment Due:</strong> ${new Date(firstPaymentDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</li>
           <li><strong>Auto-debit Setup:</strong> Payments will be automatically collected from your account</li>
           <li><strong>Payment Reminders:</strong> You'll receive reminders 3 days before each payment</li>
@@ -448,12 +449,12 @@ export const propertyAcquiredEmail=({
       A qualified buyer has completed the mortgage process and your property sale is now confirmed.
     </p>
 
-    ${AmountDisplay(saleAmount, 'Property Sale Value')}
+    ${AmountDisplay(formatUSD ({amount:toNumber(saleAmount)}), 'Property Sale Value')}
 
     ${DataTable([
       { label: 'Property Name', value: propertyName },
       { label: 'Property ID', value: propertyId },
-      { label: 'Sale Amount', value: saleAmount, highlight: true },
+      { label: 'Sale Amount', value: formatUSD({amount:toNumber(saleAmount)}), highlight: true },
       { label: 'Buyer', value: buyerName },
       { label: 'Application Number', value: applicationNumber },
       { label: 'Acquisition Date', value: new Date().toLocaleDateString('en-US', {

@@ -70,11 +70,11 @@ export function getDirectDebitConfirmationEmailTemplate(params: DirectDebitConfi
     ${AmountDisplay(formatUSD({ amount: monthlyPayment }), 'Monthly Payment')}
 
     ${DataTable([
-      { label: 'Monthly Payment', value: formatUSD({ amount: totalPayments }), highlight: true },
+      { label: 'Total Payment', value: formatUSD({ amount: totalPayments }), highlight: true },
       { label: 'Payment Day', value: `${paymentDayOfMonth}${getOrdinalSuffix( paymentDayOfMonth)} of each month` },
       { label: 'First Payment', value: formatDate(firstPaymentDate) },
       { label: 'Payment Method', value: paymentMethodDisplay },
-      { label: 'Total Payments', value: `${totalPayments} months` },
+      { label: 'Monthly Payments', value: `${formatUSD({ amount: monthlyPayment })} every month` },
       ...(applicationNumber ? [{ label: 'Reference', value: applicationNumber }] : [])
     ], 'Payment Details')}
 

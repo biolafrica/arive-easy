@@ -22,6 +22,12 @@ export default function TableSkeleton({
       {Array.from({ length: rows }).map((_, rowIndex) => (
         <tr key={rowIndex} className="border-b border-separator">
 
+          <td className="sticky left-0 z-10 bg-card w-12 min-w-[3rem] px-3 py-4 border-r border-separator">
+            <div className="flex items-center justify-center">
+              <div className="h-4 w-5 rounded bg-hover animate-pulse" />
+            </div>
+          </td>
+
           {Array.from({ length: columns }).map((_, colIndex) => (
             <td key={colIndex} className="px-6 py-4">
               <div className="animate-pulse">

@@ -9,12 +9,6 @@ export function NoActiveMortgageState() {
       icon={<HomeIcon className="h-24 w-24" />}
       title="No active mortgages yet"
       description="Once you purchase a property or your mortgage is approved, it will appear here."
-      actions={[
-        {
-          label: 'Start Pre-Approval',
-          onClick: () => {router.push('/user-dashboard/application/pre-approval')},
-        },
-      ]}
     />
   );
 }

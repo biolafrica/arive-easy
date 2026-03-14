@@ -1,3 +1,4 @@
+import { formatUSD, toNumber } from "@/lib/formatter";
 import { EmailButton, StatusBadge } from "../components/EmailButton";
 import { DataTable, InfoBox, Timeline } from "../components/EmailCard";
 
@@ -27,7 +28,7 @@ export const sendOfferAcceptedEmail = ({userName, propertyName, applicationNumbe
       { label: 'Application Number', value: applicationNumber },
       { label: 'Property', value: propertyName },
       { label: 'Status', value: 'Offer Accepted', highlight: true },
-      ...(offerAmount ? [{ label: 'Offer Amount', value: offerAmount, highlight: true }] : [])
+      ...(offerAmount ? [{ label: 'Offer Amount', value: formatUSD({amount:toNumber(offerAmount)}) , highlight: true }] : [])
     ], 'Application Details')}
 
     <h3 style="color: #374151; font-size: 18px; margin: 30px 0 20px 0;">
@@ -79,7 +80,7 @@ export const sendOfferDeclinedEmail = ({
       { label: 'Application Number', value: applicationNumber },
       { label: 'Property', value: propertyName },
       { label: 'Status', value: 'Offer Declined' },
-      ...(offerAmount ? [{ label: 'Offered Amount', value: offerAmount }] : [])
+      ...(offerAmount ? [{ label: 'Offered Amount', value: formatUSD({amount:toNumber(offerAmount)}) }] : [])
     ], 'Application Details')}
 
     ${reason ? InfoBox('Seller\'s Feedback', reason, 'error') : ''}

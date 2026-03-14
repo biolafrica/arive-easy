@@ -12,7 +12,7 @@ import { TransactionBase } from '@/type/pages/dashboard/transactions';
 import { sendEmail } from '../email/send_email';
 
 interface StageHandler {
-  shouldExecute(application: ApplicationBase): boolean;
+  shouldExecute(application: ApplicationBase): Promise<boolean>;
   execute(application: ApplicationBase, context: StageHandlerContext): Promise<void>;
 }
 
@@ -20,6 +20,16 @@ interface StageHandlerContext {
   propertyQB: SupabaseQueryBuilder<PropertyBase>;
   offerQB: SupabaseQueryBuilder<OfferBase>;
   userQB: SupabaseQueryBuilder<UserBase>;
+}
+
+function isStageJustCompleted(
+  currentStage: any,
+  previousStage: any
+): boolean {
+  const nowCompleted = currentStage?.completed === true && currentStage?.status === 'completed';
+  const wasCompleted = previousStage?.completed === true && previousStage?.status === 'completed';
+  
+  return nowCompleted && !wasCompleted;
 }
 
 async function notifyUser(params: {
@@ -62,7 +72,7 @@ async function notifyUser(params: {
 }
 
 class PropertySelectionHandler implements StageHandler {
-  shouldExecute(app: ApplicationBase): boolean {
+  async shouldExecute(app: ApplicationBase): Promise<boolean> {
     return (
       app.stages_completed?.property_selection?.data?.status === 'sent' &&
       !!app.property_id
@@ -153,17 +163,28 @@ class PropertySelectionHandler implements StageHandler {
 }
 
 class MortgageActivationHandler implements StageHandler {
-  shouldExecute(app: ApplicationBase): boolean {
+  async shouldExecute(app: ApplicationBase): Promise<boolean> {
     const stage = app.stages_completed?.mortgage_activation;
-    return stage?.completed === true && stage?.status === 'completed';
+
+    if (!(stage?.completed === true && stage?.status === 'completed')) {
+      return false;
+    }
+
+    const alreadyExecuted = stage?.data?.handler_executed === true;
+
+    return !alreadyExecuted
   }
 
   async execute(app: ApplicationBase, context: StageHandlerContext): Promise<void> {
     const { propertyQB, userQB } = context;
 
     const transactionQB = new SupabaseQueryBuilder<TransactionBase>('transactions');
+    const applicationQB = new SupabaseQueryBuilder<ApplicationBase>('applications');
 
-    const [user, seller,escrowTransaction] = await Promise.all([
+    console.log(`Executing MortgageActivationHandler for application ${app.id}`);
+
+
+    const [user, seller, escrowTransaction] = await Promise.all([
       userQB.findById(app.user_id),
       app.developer_id ? userQB.findById(app.developer_id) : null,
       this.getEscrowTransaction(app.id, transactionQB)
@@ -175,23 +196,51 @@ class MortgageActivationHandler implements StageHandler {
 
     if (app.property_id) {
       await propertyQB.update(app.property_id, { status: 'sold' });
+      console.log("updated property for mortgage activation")
+
     }
 
     if (escrowTransaction) {
       await this.releaseEscrowFunds(escrowTransaction, transactionQB);
+      console.log("updated escrow for mortgage activation")
     } else {
       console.warn(`No escrow transaction found for application ${app.id}`);
+      console.log("!updated escrow for mortgage activation")
+
     }
 
     await this.notifyBuyer(user, app);
+    console.log("notified buyer for mortgage activation")
+
 
     if (seller) {
       await this.notifySeller(seller, user, app);
+      console.log("notified seller for mortgage activation")
     }
 
     if (escrowTransaction && seller) {
       await this.notifyAdminForFundRelease(app, escrowTransaction, seller, user);
+      console.log("notified admin for mortgage activation")
     }
+
+    await applicationQB.update(app.id, {
+      stages_completed: {
+        ...app.stages_completed,
+        mortgage_activation: {
+          status:'completed',
+          completed:true,
+          ...app.stages_completed?.mortgage_activation,
+          data: {
+            ...app.stages_completed?.mortgage_activation?.data,
+            handler_executed: true,
+            handler_executed_at: new Date().toISOString()
+          }
+        }
+      }
+    });
+
+    console.log(`MortgageActivationHandler completed for application ${app.id}`);
+
   }
 
   private async notifyBuyer(user: UserBase, app: ApplicationBase): Promise<void> {
@@ -314,15 +363,24 @@ class MortgageActivationHandler implements StageHandler {
   }
 }
 
-
 class PaymentSetupHandler implements StageHandler {
-  shouldExecute(app: ApplicationBase): boolean {
+  async shouldExecute(app: ApplicationBase): Promise<boolean> {
     const stage = app.stages_completed?.payment_setup;
-    return stage?.completed === true && stage?.status === 'completed';
+    
+    if (!(stage?.completed === true && stage?.status === 'completed')) {
+      return false;
+    }
+
+    const alreadyExecuted = stage?.data?.handler_executed === true;
+    return !alreadyExecuted;
   }
+
 
   async execute(app: ApplicationBase, context: StageHandlerContext): Promise<void> {
     const { userQB } = context;
+    const applicationQB = new SupabaseQueryBuilder<ApplicationBase>('applications');
+
+    console.log(`Executing PaymentSetupHandler for application ${app.id}`);
 
     const user = await userQB.findById(app.user_id);
     if (!user) {
@@ -330,6 +388,7 @@ class PaymentSetupHandler implements StageHandler {
     }
 
     const paymentBreakdown = this.calculatePaymentBreakdown(app);
+    console.log("calculated payments breakdown for payment setup", paymentBreakdown)
 
     await notifyUser({
       userId: user.id,
@@ -354,6 +413,26 @@ class PaymentSetupHandler implements StageHandler {
         cta_url: 'https://usekletch.com/user-dashboard/applications',
       }
     });
+    console.log("sent notification to user for payment setup")
+
+    await applicationQB.update(app.id, {
+      stages_completed: {
+        ...app.stages_completed,
+        payment_setup: {
+          status:'completed',
+          completed:true,
+          ...app.stages_completed?.payment_setup,
+          data: {
+            ...app.stages_completed?.payment_setup?.data,
+            handler_executed: true,
+            handler_executed_at: new Date().toISOString()
+          }
+        }
+      }
+    });
+    console.log("tag addednfor payment setup")
+
+    console.log(`PaymentSetupHandler completed for application ${app.id}`);
   }
 
   private calculatePaymentBreakdown(app: ApplicationBase) {
@@ -371,18 +450,28 @@ class PaymentSetupHandler implements StageHandler {
 }
 
 class TermsAgreementHandler implements StageHandler {
-  shouldExecute(app: ApplicationBase): boolean {
+  async shouldExecute(app: ApplicationBase): Promise<boolean> {
     const stage = app.stages_completed?.terms_agreement;
-    return stage?.completed === true && stage?.status === 'completed';
+    
+    if (!(stage?.completed === true && stage?.status === 'completed')) {
+      return false;
+    }
+
+    const alreadyExecuted = stage?.data?.handler_executed === true;
+    return !alreadyExecuted;
   }
 
   async execute(app: ApplicationBase, context: StageHandlerContext): Promise<void> {
     const { userQB } = context;
+    const applicationQB = new SupabaseQueryBuilder<ApplicationBase>('applications');
+
+    console.log(`Executing TermsAgreementHandler for application ${app.id}`);
 
     const user = await userQB.findById(app.user_id);
     if (!user) {
       throw new Error(`User ${app.user_id} not found`);
     }
+    console.log("fetched user for terms and agreement")
 
     await notifyUser({
       userId: user.id,
@@ -402,6 +491,26 @@ class TermsAgreementHandler implements StageHandler {
         cta_url: 'https://usekletch.com/user-dashboard/applications',
       }
     });
+    console.log("notify user for terms and agreement")
+
+    await applicationQB.update(app.id, {
+      stages_completed: {
+        ...app.stages_completed,
+        terms_agreement: {
+          status:'completed',
+          completed:true,
+          ...app.stages_completed?.terms_agreement,
+          data: {
+            ...app.stages_completed?.terms_agreement?.data,
+            handler_executed: true,
+            handler_executed_at: new Date().toISOString()
+          }
+        }
+      }
+    });
+    console.log("added tag for terms and agreement")
+
+    console.log(`TermsAgreementHandler completed for application ${app.id}`);
   }
 }
 
@@ -419,14 +528,17 @@ export async function executeStageHandlers(
   const errors: Error[] = [];
 
   for (const handler of STAGE_HANDLERS) {
-    if (handler.shouldExecute(application)) {
+    const shouldRun = await handler.shouldExecute(application);
+    if (shouldRun) {
       try {
         await handler.execute(application, context);
       } catch (error) {
         console.error(`Stage handler failed for ${handler.constructor.name}:`, error);
         errors.push(error as Error);
+        // Continue with other handlers
       }
     }
+   
   }
 
   if (errors.length > 0) {

@@ -36,6 +36,10 @@ const applicationHandlers = createCRUDHandlers<ApplicationBase>({
     }
   },
   hooks: {
+    beforeUpdate: async (id, body, context)=>{
+      //body partial body 
+      
+    },
     afterUpdate: async (updated, previous, context) => {
       try {
         const stageContext = {

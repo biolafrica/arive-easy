@@ -27,7 +27,7 @@ export default function DocumentUploadForm({initialValues, handleSubmit, handleC
         onCancel={handleCancel}
         fullWidthSubmit={false}
         showCancel={true}
-        className="grid grid-cols-1 md:grid-cols-2 gap-4 space-y-0"  
+        className="grid grid-cols-1 md:grid-cols-2 gap-4 space-y-4"  
       />
     </div>
 
