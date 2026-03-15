@@ -139,10 +139,8 @@ export function useStageTransition(applicationId: string, currentStages: Applica
 
     const transition = transitions[type];
     const { successMessage, ...updateData } = transition;
-    console.log("payload user will receive", updateData)
 
-
-    //await updateApplication(applicationId, updateData, { successMessage });
+    await updateApplication(applicationId, updateData, { successMessage });
   };
 
   return { completeStage };

@@ -1079,3 +1079,11 @@ async function handleManualMortgagePaymentFailed(paymentIntent: Stripe.PaymentIn
 
   console.log(`Manual mortgage payment failed for mortgage ${mortgage_id}`);
 }
+
+export async function GET() {
+  return NextResponse.json({ 
+    message: 'Webhook endpoint is working',
+    timestamp: new Date().toISOString(),
+    path: '/api/webhook/stripe'
+  });
+}
