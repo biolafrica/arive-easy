@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Select } from './Select';
 import { PropertySearchFilters } from './PropertySearchFilter';
+import { STATUS_OPTIONS } from '@/data/propertyFilters';
 
 
 export function MobilePropertySearch({
@@ -38,7 +39,7 @@ export function MobilePropertySearch({
                 label="Listing Status"
                 placeholder="Select status"
                 value={filters.status}
-                options={['Available', 'Sold', 'Pending']}
+                options={STATUS_OPTIONS}
                 onChange={setStatus}
               />
             </div>

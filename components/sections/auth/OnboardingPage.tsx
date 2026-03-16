@@ -7,18 +7,20 @@ import { toast } from 'sonner';
 import { Button } from '@/components/primitives/Button';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import * as Sentry from '@sentry/nextjs';
+import { useWelcomeEmail } from '@/hooks/useSpecialized/useUser';
 
+type Role = 'user' | 'seller' | 'admin' | 'agent'
 interface UserProfile {
   id: string;
   email: string;
   name: string;
-  role?: string;
+  role?: Role ;
 }
 
 interface RoleOptionCardProps {
-  value: string;
+  value: Role;
   selected: boolean;
-  onSelect: (value: string) => void;
+  onSelect: (value: Role) => void;
   title: string;
   description: string;
   activeClassName?: string;
@@ -34,9 +36,11 @@ export default function OnboardingComponent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [selectedRole, setSelectedRole] = useState('user');
+  const [selectedRole, setSelectedRole] = useState<Role>('user');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+
+  const { sendWelcomeEmail } = useWelcomeEmail();
 
   const isWelcome = searchParams.get('welcome') === 'true';
 
@@ -126,6 +130,7 @@ export default function OnboardingComponent() {
       }
 
       const { error: refreshError } = await supabase.auth.refreshSession();
+
       if (refreshError) {
 
         Sentry.withScope((scope) => {
@@ -142,6 +147,13 @@ export default function OnboardingComponent() {
         id: profile.id,
         email: profile.email,
         username: profile.name,
+      });
+
+      sendWelcomeEmail({
+        userId: profile.id,
+        email: profile.email,
+        userName: profile.name || 'customer',
+        role: selectedRole,
       });
 
       Sentry.setTag('user.role', selectedRole);
@@ -234,7 +246,6 @@ export default function OnboardingComponent() {
                   onSelect={setSelectedRole}
                   title={role.title}
                   description={role.description}
-                  activeClassName={role.activeClassName}
                 />
               ))}
             </div>

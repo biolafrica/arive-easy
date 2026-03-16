@@ -57,12 +57,12 @@ export function useProperty(id: string) {
 }
 
 export function useInfiniteProperties(params?: any) {
+  console.log('received params', params)
   const queryParams = useMemo(() => {
     return {
       ...params,
       filters: {
         ...params?.filters,
-        status: ['active', 'offers'],
         is_active :true
       },
     };

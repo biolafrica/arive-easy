@@ -11,6 +11,12 @@ interface PropertySearchDesktopProps {
   home?: boolean;
 }
 
+const items = [
+  {id:1, key : "Available", value:'active'},
+  {id:2, key : "Pending", value:'offers'},
+  {id:3, key : "Sold", value:'sold'}
+]
+
 export function PropertySearchDesktop({
   filters,
   setStatus,
@@ -24,18 +30,18 @@ export function PropertySearchDesktop({
   return (
     <>
       <div className="flex gap-2">
-        {(['Available', 'Sold', 'Pending'] as const).map((item) => (
+        {items.map(({id,value,key}) => (
           <button
-            key={item}
-            onClick={() => setStatus(item)}
+            key={id}
+            onClick={() => setStatus(value)}
             className={`rounded-md rounded-b-none px-4 py-2 text-sm font-medium transition
               ${
-                filters.status === item
+                filters.status === value
                   ? `bg-layout border border-b-0 ${home? 'text-black' : 'text-black'} shadow-sm`
                   : `  ${home? 'text-white' : 'text-black'}`
               }`}
           >
-            {item}
+            {key}
           </button>
         ))}
       </div>

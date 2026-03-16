@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo } from 'react';
 
-export type PropertyStatus = 'Available' | 'Sold' | 'Pending';
+export type PropertyStatus = 'active' | 'sold' | 'offers';
 
 export interface PropertySearchFiltersState {
   status: PropertyStatus;
@@ -22,93 +22,57 @@ export interface ProcessedFilters {
 }
 
 const PRICE_RANGES: Record<string, { min?: number; max?: number }> = {
-  '20-50': { min: 20000000, max: 50000000 },
-  '50-100': { min: 50000000, max: 100000000 },
-  '100-300k': { min: 100000000, max: 300000000 },
-  '300+': { min: 300000000 },
+  '20-50': { min: 20_000_000, max: 50_000_000 },
+  '50-100': { min: 50_000_000, max: 100_000_000 },
+  '100-300k': { min: 100_000_000, max: 300_000_000 },
+  '300+': { min: 300_000_000 },
 };
 
-export function usePropertySearchFilters(onFiltersChange?: (filters: ProcessedFilters) => void) {
+export function usePropertySearchFilters(
+  onFiltersChange?: (filters: ProcessedFilters) => void,
+  initialFilters?: Partial<PropertySearchFiltersState>
+
+) {
+
   const [filters, setFilters] = useState<PropertySearchFiltersState>({
-    status: 'Available',
+    status: 'active',
+    ...initialFilters,
   });
+
 
  
   const processedFilters = useMemo((): ProcessedFilters => {
     const processed: ProcessedFilters = {};
 
-    // Map status
-    if (filters.status) {
-      processed.status = filters.status;
-    }
+    if (filters.status) processed.status = filters.status;
+    if (filters.state) processed.state = filters.state;
+    if (filters.city) processed.city = filters.city;
+    if (filters.propertyType) processed.property_type = filters.propertyType;
+    
 
-    // Map location filters
-    if (filters.state) {
-      processed.state = filters.state;
-    }
-    if (filters.city) {
-      processed.city = filters.city;
-    }
-
-    // Map property type
-    if (filters.propertyType) {
-      processed.property_type = filters.propertyType;
-    }
-
-    // Map price range to min/max
     if (filters.priceRange && PRICE_RANGES[filters.priceRange]) {
       const range = PRICE_RANGES[filters.priceRange];
-      if (range.min) processed['price.gte'] = range.min;
-      if (range.max) processed['price.lte'] = range.max;
+      if (range.min !== undefined) processed['price.gte'] = range.min;
+      if (range.max !== undefined) processed['price.lte'] = range.max;
     }
 
     return processed;
   }, [filters]);
 
-  // Notify parent component when filters change
   const notifyChange = useCallback(() => {
-    if (onFiltersChange) {
-      onFiltersChange(processedFilters);
-    }
+    if (onFiltersChange) onFiltersChange(processedFilters);
   }, [processedFilters, onFiltersChange]);
 
   return {
     filters,
     processedFilters,
-
-    setStatus: (status: PropertyStatus) => {
-      setFilters((f) => ({ ...f, status }));
-    },
-
-    setState: (state?: string) => {
-      setFilters((f) => ({
-        ...f,
-        state,
-        city: undefined, // Reset city when state changes
-      }));
-    },
-
-    setCity: (city?: string) => {
-      setFilters((f) => ({ ...f, city }));
-    },
-
-    setPropertyType: (propertyType?: string) => {
-      setFilters((f) => ({ ...f, propertyType }));
-    },
-
-    setPriceRange: (priceRange?: string) => {
-      setFilters((f) => ({ ...f, priceRange }));
-    },
-
-    submit: () => {
-      console.log('Applying filters:', processedFilters);
-      notifyChange();
-    },
-
-    reset: () => {
-      setFilters({ status: 'Available' });
-    },
-
-    hasActiveFilters: Object.keys(filters).length > 1 || filters.status !== 'Available',
+    setStatus: (status: PropertyStatus) => setFilters((f) => ({ ...f, status })),
+    setState: (state?: string) => setFilters((f) => ({...f, state, city: undefined })),
+    setCity: (city?: string) => setFilters((f) => ({ ...f, city })),
+    setPropertyType: (propertyType?: string) => setFilters((f) => ({ ...f, propertyType })),
+    setPriceRange: (priceRange?: string) => setFilters((f) => ({ ...f, priceRange })),
+    submit: () => notifyChange(),
+    reset: () => setFilters({ status: 'active' }),
+    hasActiveFilters: Object.keys(filters).length > 1 || filters.status !== 'active',
   };
 }

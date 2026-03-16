@@ -4,21 +4,19 @@ import { useMemo } from 'react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { Select } from './Select';
 import { Divider } from './Divider';
-import { STATES, PROPERTY_TYPES, PRICE_RANGES} from '@/data/propertyFilters';
+import { PRICE_RANGES} from '@/data/propertyFilters';
+import { CITIES_BY_STATE, PROPERTY_TYPES, STATES } from '../sections/dashboard/listing/property-form';
 
 interface PropertySearchFiltersProps {
   state?: string;
   city?: string;
   propertyType?: string;
   priceRange?: string;
-
   onStateChange: (value: string) => void;
   onCityChange: (value: string) => void;
   onPropertyTypeChange: (value: string) => void;
   onPriceRangeChange: (value: string) => void;
-
   onSearch: () => void;
-
   showDividers?: boolean;
 }
 
@@ -34,10 +32,11 @@ export function PropertySearchFilters({
   onSearch,
   showDividers = true,
 }: PropertySearchFiltersProps) {
-  const cities = useMemo(() => {
-    if (!state) return [];
-    return STATES[state as keyof typeof STATES];
-  }, [state]);
+
+  const cities = useMemo(
+    () => CITIES_BY_STATE[state ?? ''] ?? CITIES_BY_STATE[''], 
+    [state]
+  );
 
   return (
     <div className="flex flex-col gap-3 rounded-2xl rounded-tl-none lg:border lg:border-border bg-white p-4 shadow-sm lg:flex-row lg:items-center lg:gap-0 ">
@@ -45,7 +44,7 @@ export function PropertySearchFilters({
         label="State"
         placeholder="Select State"
         value={state}
-        options={Object.keys(STATES)}
+        options={STATES}
         onChange={(value) => {
           onStateChange(value);
           onCityChange('');
