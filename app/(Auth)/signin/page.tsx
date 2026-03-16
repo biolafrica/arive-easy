@@ -10,7 +10,7 @@ export const metadata = createMetadata({ noIndex: true });
 export default function LoginPage() {
   return (
     <AuthCard title="Enter your credentials to access your account." >
-      <AuthTabs active="signin" />
+      <AuthTabs active="login" />
 
       <div className="space-y-4">
 

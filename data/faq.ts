@@ -1,213 +1,122 @@
 import { FAQCategory, FAQItem } from "@/type/faq";
 
 export const FAQ_CATEGORIES: FAQCategory[] = [
-  { id: 'all', label: 'All Questions' },
-  { id: 'general', label: 'Getting Started' },
-  { id: 'buying', label: 'Buying Property' },
-  { id: 'financing', label: 'Mortgages & Lenders' },
-  { id: 'legal', label: 'Legal & Compliance' },
-  { id: 'technical', label: 'Security & Data' },
+  { id: "all", label: "All Questions" },
+  { id: "about", label: "About Kletch" },
+  { id: "buying", label: "Buying Property" },
+  { id: "security", label: "Security & Verification" },
+  { id: "fees", label: "Fees" },
+  { id: "legal", label: "Legal & Closing" },
 ];
 
 export const FAQ_ITEMS: FAQItem[] = [
   {
-    id: 'faq-general-1',
-    category: 'general',
-    question: 'What is Kletch?',
+    id: "faq-about-1",
+    category: "about",
+    question: "What is Kletch?",
     answer:
-      'Kletch is a digital platform that connects buyers, sellers, and lenders to make cross-border property buying safer and more transparent for the diasporan community. We provide verified properties, virtual tours, document verification, secure e-signatures, and structured communication between all parties.',
+      "Kletch is a platform that helps diaspora buyers purchase verified properties abroad. It connects buyers, sellers, lenders, and legal professionals to coordinate property documentation, financing applications, and the closing process.",
   },
   {
-    id: 'faq-general-2',
-    category: 'general',
-    question: 'Is Kletch a bank, lender, or real estate agent?',
+    id: "faq-about-2",
+    category: "about",
+    question: "Does Kletch sell properties?",
     answer:
-      'No. Kletch is not a bank, lender, law firm, or real estate agency. We are a technology platform that helps buyers work with trusted sellers and licensed lenders.',
-  },
-
-  /* -------------------- BUYING PROPERTY -------------------- */
-  {
-    id: 'faq-buying-1',
-    category: 'buying',
-    question: 'Can I use Kletch if I live abroad?',
-    answer:
-      'Yes. Kletch is built for diasporans. You can search verified properties, take 3D virtual tours, book video walkthroughs, upload documents, sign agreements, and monitor your progress entirely from abroad.',
+      "No. Kletch does not own or sell properties. Sellers list their properties on the platform, and Kletch helps coordinate verification, documentation, and the transaction process.",
   },
   {
-    id: 'faq-buying-2',
-    category: 'buying',
-    question: 'Can I buy a property that is not listed on Kletch?',
+    id: "faq-about-3",
+    category: "about",
+    question: "Who can use Kletch?",
     answer:
-      'Yes. You can bring your own property found through an agent, friend, or private source. However, it must pass Kletch’s verification process before any lender or partner can proceed.',
+      "Kletch is designed for diaspora buyers looking to purchase property abroad, property sellers and developers, lenders offering mortgage financing, and legal professionals involved in property transactions.",
   },
   {
-    id: 'faq-buying-3',
-    category: 'buying',
-    question: 'What is the typical journey for a buyer?',
+    id: "faq-about-4",
+    category: "about",
+    question: "Which countries does Kletch support?",
     answer:
-      'Create an account, complete your profile, get pre-approved for a mortgage, upload documents for verification, select or submit a property, complete verification, receive a lender decision, make the required down payment, sign agreements electronically, and set up mortgage payments.',
+      "Kletch currently focuses on property purchases in Nigeria. Additional markets may be supported in the future.",
   },
 
-  /* -------------------- PROPERTY VERIFICATION -------------------- */
   {
-    id: 'faq-buying-4',
-    category: 'buying',
-    question: 'How does Kletch verify a property?',
+    id: "faq-buying-1",
+    category: "buying",
+    question: "How does buying property through Kletch work?",
     answer:
-      'We work only with verified sellers and reputable partners. Properties are checked for seller identity, ownership documents, relevant property records, and supporting documentation. Only verified properties proceed.',
+      "The process typically involves creating an account, verifying identity, reviewing available properties, submitting interest or an application, uploading required documents, lender review if financing is needed, preparation of legal documentation, and coordinating closing with the seller and legal counsel.",
   },
   {
-    id: 'faq-buying-5',
-    category: 'buying',
-    question: 'Why do you verify every property, even if I bring it myself?',
+    id: "faq-buying-2",
+    category: "buying",
+    question: "Do I need to travel to Nigeria to buy property?",
     answer:
-      'Verification protects buyers and lenders from fake listings, double-selling, and ownership disputes. It is a core part of how Kletch reduces fraud risk.',
-  },
-
-  /* -------------------- MORTGAGES & LENDERS -------------------- */
-  {
-    id: 'faq-financing-1',
-    category: 'financing',
-    question: 'Does Kletch provide mortgages?',
-    answer:
-      'No. Mortgage and financing decisions are made by licensed partner lenders. Kletch securely organizes and transmits information to support the process.',
+      "Not necessarily. Many parts of the transaction process, including identity verification, document submission, and signing agreements, can be completed remotely.",
   },
   {
-    id: 'faq-financing-2',
-    category: 'financing',
-    question: 'Does Kletch guarantee mortgage approval?',
+    id: "faq-buying-3",
+    category: "buying",
+    question: "Are properties verified before they are listed?",
     answer:
-      'No. All lending decisions, rates, and approvals are made independently by lenders. Kletch does not guarantee approval.',
+      "Kletch verifies seller identity and business registration during onboarding. Additional property documentation and verification steps are completed during the transaction process before closing.",
   },
   {
-    id: 'faq-financing-3',
-    category: 'financing',
-    question: 'How do lenders use Kletch?',
+    id: "faq-buying-4",
+    category: "buying",
+    question: "Can I apply for financing through Kletch?",
     answer:
-      'Lenders receive applications and documents, request additional information, issue pre-approvals or decisions, and electronically sign agreements through the platform.',
+      "Yes. Kletch can route borrower applications to partner lenders who offer mortgage or financing options for eligible buyers.",
   },
 
-  /* -------------------- SELLERS -------------------- */
   {
-    id: 'faq-buying-6',
-    category: 'buying',
-    question: 'Who can list a property on Kletch?',
+    id: "faq-security-1",
+    category: "security",
+    question: "How does Kletch verify sellers?",
     answer:
-      'Verified individual property owners, developers, and real estate companies can list properties after passing identity and documentation checks.',
+      "Sellers must complete identity verification and, if applicable, business registration verification. Additional documentation related to the property and transaction is reviewed before closing.",
   },
   {
-    id: 'faq-buying-7',
-    category: 'buying',
-    question: 'Do sellers pay any fees?',
+    id: "faq-security-2",
+    category: "security",
+    question: "Does Kletch hold buyer funds?",
     answer:
-      'Sellers are not charged platform fees. Kletch may earn referral commissions from sellers, lenders, or both.',
+      "No. Kletch does not custody funds. Buyers make payments directly to sellers or lenders according to the payment instructions provided during the transaction process.",
   },
-
-  /* -------------------- BROKERS & REFERRALS -------------------- */
   {
-    id: 'faq-general-3',
-    category: 'general',
-    question: 'Can brokers work with Kletch?',
+    id: "faq-security-3",
+    category: "security",
+    question: "How does Kletch help prevent fraud?",
     answer:
-      'Yes. Brokers can refer qualified buyers to Kletch and earn commissions through referral or partner programs, subject to agreement terms.',
+      "Kletch verifies the identity of platform participants, reviews documentation during the transaction process, and coordinates with legal professionals to support a structured closing process.",
   },
 
-  /* -------------------- PAYMENTS & FEES -------------------- */
   {
-    id: 'faq-financing-4',
-    category: 'financing',
-    question: 'Does Kletch handle my money directly?',
+    id: "faq-fees-1",
+    category: "fees",
+    question: "Does Kletch charge buyers a platform fee?",
     answer:
-      'No. Kletch never holds customer funds. All payments, deposits, and mortgage remittances are handled by licensed third-party providers.',
+      "Kletch does not charge a platform usage fee. A document verification fee may apply during the transaction process.",
   },
   {
-    id: 'faq-financing-5',
-    category: 'financing',
-    question: 'What fees does Kletch charge?',
+    id: "faq-fees-2",
+    category: "fees",
+    question: "When do I pay the document verification fee?",
     answer:
-      'We charge a flat processing fee for document verification. There are no subscriptions or general platform access fees.',
-  },
-  {
-    id: 'faq-financing-6',
-    category: 'financing',
-    question: 'Are processing fees refundable?',
-    answer:
-      'Processing fees are non-refundable because verification work begins immediately after payment, unless explicitly stated otherwise.',
+      "The document verification fee is typically charged during the transaction process when required documents are being reviewed.",
   },
 
-  /* -------------------- SECURITY & DATA -------------------- */
   {
-    id: 'faq-technical-1',
-    category: 'technical',
-    question: 'What information does Kletch collect?',
+    id: "faq-legal-1",
+    category: "legal",
+    question: "Who prepares the legal documents for the transaction?",
     answer:
-      'We collect basic account details, profile information, employment and income data, property preferences, and documents required for verification.',
+      "Kletch coordinates with legal counsel in the country where the property is located to prepare and review transaction documents.",
   },
   {
-    id: 'faq-technical-2',
-    category: 'technical',
-    question: 'How is my information protected?',
+    id: "faq-legal-2",
+    category: "legal",
+    question: "How are agreements signed?",
     answer:
-      'We use encrypted storage, secure connections, strict access controls, and reputable third-party verification and payment processors. We comply with PIPEDA and NDPA.',
-  },
-  {
-    id: 'faq-technical-3',
-    category: 'technical',
-    question: 'Do you sell my data?',
-    answer:
-      'No. Kletch does not sell personal data under any circumstances.',
-  },
-  {
-    id: 'faq-technical-4',
-    category: 'technical',
-    question: 'Does Kletch store my bank or card details?',
-    answer:
-      'No. All bank and card information is handled by licensed third-party processors and never stored by Kletch.',
-  },
-
-  /* -------------------- LEGAL & COMPLIANCE -------------------- */
-  {
-    id: 'faq-legal-1',
-    category: 'legal',
-    question: 'Is Kletch providing legal, tax, or investment advice?',
-    answer:
-      'No. Kletch does not provide legal, tax, or investment advice. Users should consult qualified professionals before making decisions.',
-  },
-  {
-    id: 'faq-legal-2',
-    category: 'legal',
-    question: 'Does Kletch guarantee property appreciation?',
-    answer:
-      'No. Property values can rise or fall. Kletch does not guarantee future performance, rental income, or appreciation.',
-  },
-  {
-    id: 'faq-legal-3',
-    category: 'legal',
-    question: 'Who is responsible if there is a dispute?',
-    answer:
-      'Property disputes are handled between buyers and sellers, while financing disputes are handled between buyers and lenders. Kletch provides transparency, documentation, and traceability but is not a legal arbitrator.',
-  },
-
-  /* -------------------- ACCOUNT & SUPPORT -------------------- */
-  {
-    id: 'faq-general-4',
-    category: 'general',
-    question: 'Who can use Kletch?',
-    answer:
-      'You must be at least 18 years old, legally able to enter binding contracts, and provide accurate information.',
-  },
-  {
-    id: 'faq-general-5',
-    category: 'general',
-    question: 'Can I delete my account?',
-    answer:
-      'Yes. You may request account deletion. Some information may be retained temporarily to comply with legal or fraud-prevention requirements.',
-  },
-  {
-    id: 'faq-general-6',
-    category: 'general',
-    question: 'How do I contact support?',
-    answer:
-      'You can contact us by submitting a support ticket on the platform or emailing support@kletch.com.',
+      "Documents can be signed electronically using the platform’s secure e-signature system.",
   },
 ];

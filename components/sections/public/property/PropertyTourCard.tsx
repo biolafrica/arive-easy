@@ -20,7 +20,6 @@ export function PropertyTourCard({
   const buttonLabel = video ? "Play Video" : "Start Virtual Tour";
   const modalTitle = video ? "Property Video Tour" : "3D Virtual Tour";
  
-  // Use YouTube thumbnail if available, fall back to property image
   const youtubeThumbnail = url ? getYouTubeThumbnail(url) : null;
   const coverImage = youtubeThumbnail ?? images[0];
  

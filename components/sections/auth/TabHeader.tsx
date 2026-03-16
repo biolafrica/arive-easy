@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 interface AuthTabsProps {
-  active: 'signup' | 'signin';
+  active: 'signup' | 'login';
 }
 
 export function AuthTabs({ active }: AuthTabsProps) {
@@ -21,12 +21,12 @@ export function AuthTabs({ active }: AuthTabsProps) {
       <Link
         href="/signin"
         className={`pb-3 text-center font-medium ${
-          active === 'signin'
+          active === 'login'
             ? 'border-b-2 border-accent text-heading'
             : 'text-secondary'
         }`}
       >
-        Signin
+        Log In
       </Link>
     </div>
   );

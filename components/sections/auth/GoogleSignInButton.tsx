@@ -83,7 +83,7 @@ export function GoogleSignInButton({
         )
       }
     >
-      { isLoading ? 'Connecting...' : variant === 'signup' ? 'Sign up with Google' : 'Sign in with Google' }
+      { isLoading ? 'Connecting...' : variant === 'signup' ? 'Sign Up with Google' : 'Log In with Google' }
 
     </Button>
   );

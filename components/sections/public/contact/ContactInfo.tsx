@@ -28,13 +28,8 @@ export function ContactInfo() {
         </li>
 
         <li className="flex items-center gap-3">
-          <PhoneIcon className="h-5 w-5 text-accent" />
-          <span>+1 (555) 000-0000</span>
-        </li>
-
-        <li className="flex items-center gap-3">
           <MapPinIcon className="h-5 w-5 text-accent" />
-          <span>123 Sample St, Sydney NSW 2000 AU</span>
+          <span>970 Upper Wentworth St, Suite 1015, Hamilton, Ontario, L8A 4V8</span>
         </li>
       </ul>
     </div>

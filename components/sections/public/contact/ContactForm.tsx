@@ -11,7 +11,6 @@ interface ContactFormValues {
   email: string;
   subject: string;
   message: string;
-  terms: boolean;
 }
 
 interface SuccessData {
@@ -29,7 +28,6 @@ export function ContactForm() {
     email: '',
     subject: '',
     message: '',
-    terms: false,
   };
 
   const validateContact = (values: ContactFormValues) => {
@@ -52,10 +50,7 @@ export function ContactForm() {
     if (!values.message || values.message.length < 10) {
       errors.message = 'Message must be at least 10 characters';
     }
-    
-    if (!values.terms) {
-      errors.terms = 'You must accept the terms';
-    }
+
     
     return errors;
   };

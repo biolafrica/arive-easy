@@ -22,160 +22,197 @@ export default function CompliancePage() {
     >
       <LegalSection title="Our Commitment">
         <p>
-          At Kletch, your security and peace of mind come first. Whether you’re
+          At Kletch, your security and peace of mind come first. Whether you are
           buying property, selling a verified home, or partnering as a lender,
-          we are committed to delivering a transparent and secure experience
-          powered by industry-leading technology and licensed third-party
-          providers.
+          we are committed to providing a transparent and secure experience
+          supported by trusted technology and licensed third-party providers.
         </p>
       </LegalSection>
 
       <LegalSection title="1. We Never Hold Customer Funds">
         <p>
-          Kletch does not accept, store, or move money on your behalf. All
-          payments, deposits, fees, and transfers are handled exclusively
-          through licensed and regulated third-party providers.
+          Kletch does not accept, store, or move money on your behalf.
         </p>
 
-        <p className="mt-3">These include:</p>
+        <p className="mt-3">
+          All payments, deposits, fees, and transfers related to property
+          transactions occur exclusively through licensed and regulated
+          third-party providers.
+        </p>
+
+        <p className="mt-3">These providers may include:</p>
+
         <ul className="list-disc space-y-2 pl-5">
-          <li>Stripe (payment processing)</li>
-          <li>Licensed escrow partners (funds safeguarding)</li>
-          <li>Foreign exchange and cross-border payment providers</li>
-          <li>Plaid (identity and bank verification)</li>
+          <li>Licensed payment processors</li>
+          <li>Escrow and settlement service providers</li>
+          <li>Foreign exchange or cross-border payment providers</li>
         </ul>
 
         <p className="mt-3 font-medium">
-          Your money is always held in secure, regulated financial institutions
-          — never by Kletch.
+          Your funds are always held with regulated financial institutions or
+          authorized providers — never by Kletch.
         </p>
       </LegalSection>
 
-      <LegalSection title="2. Secure Identity & Document Verification">
+      <LegalSection title="2. Secure Identity and Document Verification">
         <p>
-          To maintain a safe marketplace, Kletch uses trusted verification
-          tools and licensed partners for identity and document verification.
+          To maintain a safe and trusted marketplace, Kletch uses secure
+          verification systems and licensed service providers to confirm user
+          identity and validate documentation.
         </p>
 
+        <p className="mt-3">Verification processes may include:</p>
+
         <ul className="list-disc space-y-2 pl-5">
-          <li>Plaid for identity and bank verification</li>
-          <li>Approved verification partners for document checks</li>
-          <li>E-signature tools for secure and auditable contract signing</li>
+          <li>Identity verification checks</li>
+          <li>Document authentication and validation</li>
+          <li>Compliance and fraud-prevention screening</li>
+          <li>Secure electronic signing of agreements</li>
         </ul>
 
         <p className="mt-3">
-          Advanced fraud-prevention systems help ensure that buyers, sellers,
-          and lenders on the platform are who they claim to be.
+          These safeguards help ensure that buyers, sellers, and lenders on the
+          platform are properly verified before participating in transactions.
         </p>
       </LegalSection>
 
-      <LegalSection title="3. Strict Data Privacy & Protection">
+      <LegalSection title="3. Data Privacy and Protection">
         <p>
-          Kletch complies with applicable data protection laws and standards,
+          Kletch complies with applicable data protection and privacy standards,
           including:
         </p>
 
         <ul className="list-disc space-y-2 pl-5">
           <li>PIPEDA (Canada)</li>
-          <li>NDPA (Nigeria)</li>
+          <li>NDPA (Nigeria) where applicable</li>
         </ul>
 
         <p className="mt-3">
-          Your data is encrypted, stored securely, and shared only with verified
-          partners involved in your transaction — and only with your consent.
+          Personal information is encrypted, stored securely, and shared only
+          with verified partners involved in your transaction when necessary.
+        </p>
+
+        <p>
+          We follow a minimal data retention model, storing only the information
+          required to operate the platform and comply with legal obligations.
         </p>
 
         <p className="font-medium">
-          We do not sell your data. Ever.
+          Kletch does not sell personal data.
         </p>
       </LegalSection>
 
-      <LegalSection title="4. Verified Sellers & Trusted Property Partners">
+      <LegalSection title="4. Verified Sellers and Property Screening">
         <p>
-          Properties listed on Kletch undergo screening to reduce fraud and
-          improve buyer confidence. We verify:
+          Kletch takes steps to reduce fraud and improve buyer confidence by
+          screening property listings and participating sellers.
         </p>
 
+        <p className="mt-3">Verification procedures may include:</p>
+
         <ul className="list-disc space-y-2 pl-5">
-          <li>Seller identity</li>
-          <li>Proof of ownership</li>
-          <li>Property documentation</li>
-          <li>Developer legitimacy (for new developments)</li>
+          <li>Seller identity verification</li>
+          <li>Proof of property ownership</li>
+          <li>Review of supporting property documentation</li>
+          <li>Verification of developers for new construction listings</li>
         </ul>
 
         <p className="mt-3">
-          This helps protect buyers from risks such as fake listings, duplicate
-          sales, and non-existent properties.
+          These checks are intended to reduce risks such as fraudulent listings,
+          duplicate sales, or misrepresented properties.
         </p>
       </LegalSection>
 
       <LegalSection title="5. Transparent Transaction Process">
         <p>
-          Every transaction on Kletch follows a clear and traceable flow:
+          Property transactions facilitated through Kletch follow a structured
+          and traceable process that may include:
         </p>
 
         <ul className="list-disc space-y-2 pl-5">
-          <li>Identity verification</li>
+          <li>User identity verification</li>
           <li>Application submission</li>
-          <li>Document review</li>
-          <li>Secure agreement signing</li>
-          <li>Payment through licensed providers</li>
+          <li>Document and eligibility review</li>
+          <li>Electronic signing of agreements</li>
+          <li>Payment coordination through licensed providers</li>
         </ul>
 
         <p className="mt-3">
-          No hidden steps. No manual back-and-forth. No uncertainty.
+          This structured workflow helps ensure that all participants understand
+          the steps involved in completing a property transaction.
         </p>
       </LegalSection>
 
       <LegalSection title="6. Independent Decision-Making">
         <p>
-          Kletch is not a lender or real estate developer. Decision-making
-          remains fully independent:
+          Kletch is a technology platform and does not make financial or real
+          estate decisions on behalf of users.
         </p>
 
+        <p className="mt-3">For example:</p>
+
         <ul className="list-disc space-y-2 pl-5">
-          <li>Sellers decide whether to accept or reject offers</li>
-          <li>Lenders make independent approval decisions</li>
-          <li>Kletch facilitates the process using technology only</li>
+          <li>Sellers decide whether to accept or reject purchase offers</li>
+          <li>Lenders independently evaluate and approve financing applications</li>
+          <li>Buyers decide whether to proceed with a property purchase</li>
         </ul>
 
         <p className="mt-3">
-          This structure ensures fairness and prevents conflicts of interest.
+          Kletch provides tools that help facilitate the process but does not
+          control transaction outcomes.
         </p>
       </LegalSection>
 
-      <LegalSection title="7. Continuous Compliance Monitoring">
+      <LegalSection title="7. Ongoing Compliance Monitoring">
         <p>
-          We regularly review and improve our systems to keep pace with evolving
-          regulations and emerging risks.
+          Kletch continuously reviews and improves its compliance and security
+          practices to address evolving risks and regulatory expectations.
         </p>
 
+        <p className="mt-3">These efforts may include:</p>
+
         <ul className="list-disc space-y-2 pl-5">
-          <li>Security standards</li>
-          <li>Partner compliance requirements</li>
-          <li>Data protection controls</li>
-          <li>Fraud-monitoring rules</li>
+          <li>Security and infrastructure reviews</li>
+          <li>Vendor and partner compliance checks</li>
+          <li>Data protection assessments</li>
+          <li>Fraud monitoring and prevention measures</li>
         </ul>
       </LegalSection>
 
       <LegalSection title="8. Disclaimer">
         <p>
-          Kletch does not provide legal, financial, or investment advice.
-          Users should consult qualified professionals before making decisions.
+          Kletch does not provide legal, financial, tax, or investment advice.
         </p>
 
         <p className="mt-3">
-          Kletch cannot guarantee approval outcomes, property appreciation,
-          third-party performance, or lender decisions. Our role is to
-          facilitate — not to underwrite, guarantee, or execute financial
-          transactions ourselves.
+          Users should consult qualified professionals before making decisions
+          related to property purchases, financing arrangements, or contractual
+          agreements.
+        </p>
+
+        <p className="mt-3">Kletch does not guarantee:</p>
+
+        <ul className="list-disc space-y-2 pl-5">
+          <li>Mortgage approvals</li>
+          <li>Property value appreciation</li>
+          <li>Performance of third-party service providers</li>
+          <li>Transaction completion or outcomes</li>
+        </ul>
+
+        <p className="mt-3">
+          Our role is to facilitate connections and workflows between parties,
+          not to underwrite, guarantee, or execute financial transactions.
         </p>
       </LegalSection>
 
       <LegalSection title="Contact">
         <p>
-          If you have compliance-related questions, please contact us at{" "}
-          <strong>support@usekletch.com</strong>.
+          If you have questions about compliance, security, or regulatory
+          matters, please contact us at:
+        </p>
+
+        <p>
+          <strong>support@usekletch.com</strong>
         </p>
       </LegalSection>
     </LegalPageLayout>
