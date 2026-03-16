@@ -4,66 +4,53 @@ import React from 'react';
 import Link from 'next/link';
 import { FooterProps } from '@/type/layout/public';
 import { DEFAULT_COLUMNS } from '@/data/layout/public';
-import { newsletterFields } from '@/data/newsletter';
-import { validateNewsletter } from '@/utils/common/validate';
-import Form from '@/components/form/Form';
-import { NewsletterValues } from '@/type/newsletter';
 import { Facebook, Linkedin, Twitter } from '@/data/icons';
-import { useSubscriber } from '@/hooks/useSpecialized/useUser';
 import lglogo from '@/public/icons/kletch-full-white.svg'
 import Image from 'next/image';
+import { NewsletterForm } from './NewsletterForm';
 
 
 export const Footer: React.FC<FooterProps> = ({
   columns = DEFAULT_COLUMNS,
 }) => {
-  const create = useSubscriber();
 
-  const handleNewsletterSubmit = async (values: NewsletterValues) => {
-    create(values)
-  };
 
   return (
     <footer className="bg-[#0B1F4B] text-white">
-      <div className="border-b border-white/10">
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 grid gap-8 md:grid-cols-2">
 
-          <div className='flex-col content-center'>
-            <h3 className="text-lg font-semibold">
-              Join our newsletter
-            </h3>
-            <p className="mt-2 text-sm text-white/80 max-w-md">
-              Stay updated on verified property listings, mortgage options, and smarter ways to buy property abroad.
-            </p>
-          </div>
-
-          <div>
-            <Form<NewsletterValues>
-              fields={newsletterFields}
-              validate={validateNewsletter}
-              initialValues={{email:""}}
-              onSubmit={handleNewsletterSubmit}
-              submitLabel="Subscribe"
-              fullWidthSubmit={false}
-              className="flex flex-col md:flex-row sm:gap-3 sm:justify-end" 
-              submitButtonVariant="outline"
-            />
-
-            <p className="mt-3 text-xs text-white/70 md:text-right ">
-              By subscribing you agree to our{' '}
-              <Link
-                href="/privacy"
-                className="underline hover:text-white"
-              >
-                Privacy Policy
-              </Link>
-            </p>
-
+      <div className="relative border-t border-white/8">
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+  
+        <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+          <div className="grid gap-10 md:grid-cols-2 md:gap-16 md:items-center">
+  
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="h-px w-6 bg-blue-400/60" />
+                <span className="text-xs font-medium tracking-widest text-blue-300/80 uppercase">
+                  Newsletter
+                </span>
+              </div>
+  
+              <h3 className="text-2xl font-semibold tracking-tight text-white leading-snug">
+                Stay ahead of the <br className="hidden sm:block" />
+                property market.
+              </h3>
+  
+              <p className="text-sm text-white/55 leading-relaxed max-w-sm">
+                Verified listings, mortgage insights, and smarter ways to invest in 
+                property back home, delivered straight to your inbox.
+              </p>
+            </div>
+  
+            <div>
+              <NewsletterForm />
+            </div>
+  
           </div>
         </div>
       </div>
 
-      {/* Main footer */}
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 grid gap-12 md:grid-cols-4">
         <div>
           <Link href="/" className="flex items-center gap-2">

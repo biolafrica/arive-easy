@@ -184,13 +184,18 @@ export function useCrud<T extends { id: string }>({
       return { previousItems };
     },
     onError: (error, newItem, context) => {
-      // Rollback on error
+
       if (context?.previousItems) {
         queryClient.setQueryData(keys.lists(), context.previousItems);
       }
-      notify.error(error.error?.message || 'Failed to create');
+
+      if (showNotifications && !onError.create) {
+        notify.error(error.error?.message || 'Failed to create');
+      }
+
       onError.create?.(error);
     },
+
     onSuccess: (data) => {
       notify.success('Created successfully');
       onSuccess.create?.(data);
@@ -240,10 +245,15 @@ export function useCrud<T extends { id: string }>({
       if (context?.previousList) {
         queryClient.setQueryData(keys.lists(), context.previousList);
       }
+
       if (context?.previousItem) {
         queryClient.setQueryData(keys.detail(variables.id, {}), context.previousItem);
       }
-      notify.error(error.error?.message || 'Failed to update');
+
+      if (showNotifications && !onError.update) {
+        notify.error(error.error?.message || 'Failed to update');
+      }
+
       onError.update?.(error);
     },
     onSuccess: (data) => {
@@ -290,7 +300,11 @@ export function useCrud<T extends { id: string }>({
       if (context?.previousList) {
         queryClient.setQueryData(keys.lists(), context.previousList);
       }
-      notify.error(error.error?.message || 'Failed to delete');
+
+      if (showNotifications && !onError.delete) {
+        notify.error(error.error?.message || 'Failed to delete');
+      }
+
       onError.delete?.(error);
     },
     onSuccess: (_, id) => {
@@ -316,6 +330,7 @@ export function useCrud<T extends { id: string }>({
       invalidateQueries();
     },
     onError: (error) => {
+      
       notify.error(error.error?.message || 'Failed to create items');
     },
     ...mutationConfig,

@@ -1,5 +1,4 @@
 import { createClient } from '@/utils/supabase/client';
-import { toast } from 'sonner';
 
 
 export interface ApiResponse<T = any> {
@@ -347,11 +346,6 @@ class ApiClient {
 export const apiClient = new ApiClient({
   onError: (error) => {
     console.error('API Error:', error);
-    
-    // Show toast notification for user-facing errors
-    if (typeof window !== 'undefined') {
-      toast.error(error.error.message || 'An error occurred');
-    }
   },
   onRequest: (config) => {
     // Add any global request modifications here

@@ -113,9 +113,10 @@ export function useUserRegistration() {
     },
     onError: {
       create: (error) => {
+        console.log("error received", error)
         const message = error?.error?.message || "Registration failed";
         
-        if (message.includes("already registered")) {
+        if (message === 'duplicate key value violates unique constraint "subscribers_email_key"') {
           toast.error("This email is already registered. Please login instead.");
         } else {
           toast.error(message);
@@ -172,7 +173,7 @@ export function useUpdateProfile() {
 
 export function useSubscriber() {
   const {
-    create,
+    create, isCreating
   } = useCrud({
     resource: 'subscribers',
     interfaceType: 'client', 
@@ -188,7 +189,7 @@ export function useSubscriber() {
         const message = error?.error?.message || "Subscription failed, try again";
         
         if (message.includes("duplicate key value violates unique constraint")) {
-          toast.error("This email is already subscribed.");
+          return toast.error("This email is already subscribed.");
         } else {
           toast.error(message);
         }
@@ -197,7 +198,7 @@ export function useSubscriber() {
   });
 
 
-  return create
+  return {create, isCreating}
 }
 
 export function useLogout() {
