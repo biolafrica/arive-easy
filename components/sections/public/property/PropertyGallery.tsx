@@ -79,6 +79,7 @@ export function PropertyGallery({
             )}
           </div>
         )}
+        
       </div>
 
       <ImageZoomModal

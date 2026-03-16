@@ -5,27 +5,27 @@ import Image from 'next/image';
 import { Button } from '@/components/primitives/Button';
 import { CubeIcon, PlayIcon } from '@heroicons/react/24/outline';
 import { PropertyTourCardProps } from '@/type/pages/property';
-import { VideoModal } from './VideoModal';
+import { VideoModal, getYouTubeThumbnail } from './VideoModal';
 
 export function PropertyTourCard({
   images,
   tours,
   video
 }: PropertyTourCardProps) {
-  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
-  
+  const [isModalOpen, setIsModalOpen] = useState(false);
+ 
   const Icon = video ? PlayIcon : CubeIcon;
   const title = video ? "Video Tour" : "3D Virtual Tour";
-  const coverImage = images[0];
   const url = video ? tours?.video?.url : tours?.virtual3D?.url;
   const buttonLabel = video ? "Play Video" : "Start Virtual Tour";
-
+  const modalTitle = video ? "Property Video Tour" : "3D Virtual Tour";
+ 
+  // Use YouTube thumbnail if available, fall back to property image
+  const youtubeThumbnail = url ? getYouTubeThumbnail(url) : null;
+  const coverImage = youtubeThumbnail ?? images[0];
+ 
   const handleClick = () => {
-    if (video && tours?.video?.url) {
-      setIsVideoModalOpen(true);
-    } else if (!video && tours?.virtual3D?.url) {
-      window.open(tours.virtual3D.url, '_blank');
-    }
+    if (url) setIsModalOpen(true);
   };
 
   return (
@@ -62,12 +62,12 @@ export function PropertyTourCard({
         </Button>
       </div>
 
-      {video && tours?.video?.url && (
+      {url && (
         <VideoModal
-          videoUrl={tours.video.url}
-          isOpen={isVideoModalOpen}
-          onClose={() => setIsVideoModalOpen(false)}
-          title="Property Video Tour"
+          videoUrl={url}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          title={modalTitle}
         />
       )}
     </>

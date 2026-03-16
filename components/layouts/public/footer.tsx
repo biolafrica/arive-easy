@@ -33,7 +33,7 @@ export const Footer: React.FC<FooterProps> = ({
               Join our newsletter
             </h3>
             <p className="mt-2 text-sm text-white/80 max-w-md">
-              Lorem ipsum dolor sit amet, consectetur.
+              Stay updated on verified property listings, mortgage options, and smarter ways to buy property abroad.
             </p>
           </div>
 

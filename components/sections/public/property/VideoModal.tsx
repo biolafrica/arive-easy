@@ -10,6 +10,32 @@ interface VideoModalProps {
   title?: string;
 }
 
+export function getYouTubeId(url: string): string | null {
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  return match && match[2].length === 11 ? match[2] : null;
+}
+
+export function getYouTubeThumbnail(url: string): string | null {
+  const id = getYouTubeId(url);
+  return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
+}
+ 
+function getEmbedUrl(url: string): string | null {
+  const youtubeId = getYouTubeId(url);
+  if (youtubeId) {
+    return `https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0&modestbranding=1`;
+  }
+ 
+  try {
+    new URL(url);
+    return url;
+  } catch {
+    return null;
+  }
+}
+ 
+
 export function VideoModal({ 
   videoUrl, 
   isOpen, 
@@ -35,16 +61,10 @@ export function VideoModal({
 
   if (!isOpen) return null;
 
-  const getYouTubeId = (url: string) => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    return (match && match[2].length === 11) ? match[2] : null;
-  };
-
-  const videoId = getYouTubeId(videoUrl);
-
-  if (!videoId) {
-    console.error('Invalid YouTube URL');
+  const embedUrl = getEmbedUrl(videoUrl);
+ 
+  if (!embedUrl) {
+    console.error('Invalid or unsupported URL:', videoUrl);
     return null;
   }
 
@@ -66,7 +86,7 @@ export function VideoModal({
           <iframe
             width="100%"
             height="100%"
-            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`}
+            src={embedUrl}
             title={title}
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
