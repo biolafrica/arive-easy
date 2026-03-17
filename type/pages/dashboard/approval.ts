@@ -44,6 +44,7 @@ export interface PropertyPreferenceType {
   preffered_loan_term:string;
   other_loan_amount?:string;
   existing_mortgage?:string;
+  mortgage_options:string;
 }
 
 export const personalInfoInitialValues:PersonalInfoType= {
@@ -85,7 +86,8 @@ export const propertyPreferenceInitialValues:PropertyPreferenceType ={
   down_payment_amount:"",
   preffered_loan_term:"",
   other_loan_amount:"",
-  existing_mortgage:""
+  existing_mortgage:"",
+  mortgage_options: ''
 };
 
 export interface PreApprovalBase{

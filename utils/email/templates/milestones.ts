@@ -84,7 +84,7 @@ export const termsCompletionEmail=({
     ], 'Application Progress')}
 
     ${InfoBox(
-      '📋 What You\'ve Just Completed',
+      'What You\'ve Just Completed',
       `
         <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
          <li><strong>Down Payment:</strong> Secured you chosen property ${propertyName} </li>
@@ -449,7 +449,8 @@ export const propertyAcquiredEmail=({
       A qualified buyer has completed the mortgage process and your property sale is now confirmed.
     </p>
 
-    ${AmountDisplay(formatUSD ({amount:toNumber(saleAmount)}), 'Property Sale Value')}
+    ${AmountDisplay(formatUSD({amount:toNumber(saleAmount)}), 'Property Sale Value')}
+
 
     ${DataTable([
       { label: 'Property Name', value: propertyName },
@@ -512,7 +513,7 @@ export const propertyAcquiredEmail=({
     </div>
 
     ${InfoBox(
-      '🤝 We\'re Here for Your Continued Success',
+      'We\'re Here for Your Continued Success',
       `
         <p style="margin: 0 0 15px 0;">Your journey with Kletch continues beyond this sale:</p>
         <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">

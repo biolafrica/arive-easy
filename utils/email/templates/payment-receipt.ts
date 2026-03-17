@@ -36,6 +36,14 @@ export const paymentReceiptBody = ({
           </ul>
         `;
       case 'Escrow':
+        return `
+          <ul style="margin: 0; padding-left: 20px;">
+            <li style="margin-bottom: 5px;">Our team and the seller will confirm receipt of your payment.</li>
+            <li style="margin-bottom: 5px;">You will receive a separate email with a link to complete the bank’s mortgage application form. Please complete this form promptly so the financing review can proceed.</li>
+            <li style="margin-bottom: 5px;">The bank will request a property valuation as part of its review process. You will receive an email with instructions to make the required valuation payment.</li>
+            <li style="margin-bottom: 5px;">Once the valuation step is completed, the necessary agreements and supporting documents will be prepared for review and signing. If you wish, you may seek legal advice from Kletch partner lawyers to review the documents before signing.</li>
+          </ul>
+        `;
       case 'Valuation':
         return `
           <ul style="margin: 0; padding-left: 20px;">
@@ -110,5 +118,10 @@ export const paymentReceiptBody = ({
       getNextStepsContent(type),
       'warning'
     )}
+
+
+    <h3 style="color: #374151; font-size: 18px; margin: 30px 0 20px 0;">
+      You can monitor your transaction progress at any time from your dashboard.
+    </h3>
   `;
 };

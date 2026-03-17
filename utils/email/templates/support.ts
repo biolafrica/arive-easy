@@ -1,4 +1,3 @@
-
 import { EmailButton } from "../components/EmailButton";
 import { DataTable } from "../components/EmailCard";
 

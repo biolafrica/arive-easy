@@ -104,12 +104,12 @@ export const AMENITIES = [
 
 
 export const VALIDATION_RULES = {
-  title: { minLength: 20, maxLength: 30, required: true },
+  title: { minLength: 30, maxLength: 50, required: true },
   description: { minLength: 100, maxLength: 200, required: true },
   price: { min: 1000, max: 100000000, required: true },
   bedrooms: { min: 0, max: 20, required: true },
   bathrooms: { min: 0, max: 20, required: true },
-  images: { minCount: 1, maxCount: 4,
+  images: { minCount: 1, maxCount: 40,
     maxSizeBytes: 5 * 1024 * 1024, // 5MB
     allowedTypes: ['image/jpeg', 'image/png', 'image/webp'],
     required: true,

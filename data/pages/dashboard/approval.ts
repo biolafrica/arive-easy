@@ -101,6 +101,17 @@ export const propertyPreferenceFields:FormField[] = [
     ],
   },
 
+  { name: 'mortgage_option', label: 'Mortgage Option', type: 'select', required: true,
+    options: [
+      { label: 'Select mortgage option', value: '' },
+      { label: 'No Interest', value: 'no_interest' },
+      { label: 'Interest', value: 'interest' },
+      { label: '12-month installments', value: '12_month_instalments'},
+      { label: 'Outrightly', value: 'outright'},
+    
+    ],
+  },
+
   { name: 'property_value', label: 'Property Value', type: 'select', required: true,
     options: [
       { label: 'Select property value', value: '' },

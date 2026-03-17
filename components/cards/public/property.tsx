@@ -55,7 +55,7 @@ export function PropertyCard({ property, interfaceType = 'client' }: Props) {
 
         <div className="p-5">
           <div className="flex items-start justify-between gap-2">
-            <h3 className="text-lg font-semibold text-heading">
+            <h3 className="text-lg font-semibold text-heading truncate max-w-[30ch]">
               {property.title}
             </h3>
 

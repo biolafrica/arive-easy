@@ -146,7 +146,7 @@ class PropertySelectionHandler implements StageHandler {
       emailSubject: `Offer for ${property.title}`,
       emailHtml: offerNotificationBody({
         sellerName: seller.name,
-        propertyId: property.id,
+        propertyId: property.property_number,
         propertyName: property.title,
         offerAmount: property.price,
       }),

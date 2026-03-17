@@ -127,6 +127,8 @@ export function useSellerOfferActions() {
       const result = await update(offerId, {
         status: 'accepted',
         updated_at: new Date().toISOString(),
+        developer_id: user.id
+
       });
       toast.success('Offer accepted successfully');
       return result;
@@ -147,7 +149,8 @@ export function useSellerOfferActions() {
         status: 'declined',
         rejection_note:reason,
         updated_at: new Date().toISOString(),
-        
+        developer_id: user.id
+
       });
       toast.success('Offer rejected successfully');
       return result;

@@ -96,7 +96,7 @@ export const sendOfferDeclinedEmail = ({
     ])}
 
     <div style="text-align: center; margin: 30px 0;">
-      ${EmailButton('https://www.usekletch.com/user-dashboard/properties', 'Browse Properties', 'success')}
+      ${EmailButton('https://www.usekletch.com/user-dashboard/properties?tab=browse', 'Browse Properties', 'success')}
       ${EmailButton('https://www.usekletch.com/support', 'Get Support')}
     </div>
 

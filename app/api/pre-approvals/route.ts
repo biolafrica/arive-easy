@@ -9,6 +9,7 @@ import { requireAuth } from "@/utils/server/authMiddleware";
 import { createCRUDHandlers } from "@/utils/server/crudFactory";
 import { SupabaseQueryBuilder } from "@/utils/supabase/queryBuilder";
 import { NextRequest } from "next/server";
+import { UserBase } from "@/type/user";
 
 const preApprovalHandlers = createCRUDHandlers<PreApprovalBase>({
   table: 'pre_approvals',
@@ -39,33 +40,38 @@ const preApprovalHandlers = createCRUDHandlers<PreApprovalBase>({
   hooks:{
     afterUpdate:async(created,_,context)=>{
       
+      const userQB = new SupabaseQueryBuilder<UserBase>("users")
+
       if(created.completed_steps === 4 && created.current_step === 5){
+        const user = await userQB.findById(created.user_id)
 
-        try {
-          await sendEmail({
-            to:  `${created.personal_info.email}`,
-            subject: 'Pre-Approval Application Received',
-            html: preApprovalReceivedBody({
-              userName: `${created.personal_info.first_name}`,
-              referenceNumber: `${created.reference_number}`,
-            }),
-          });
-        } catch (error) {
-          console.error('Failed to send pre-approval received email:', error);
-        }
+        if(user.id){{
+          try {
+            await sendEmail({
+              to:  `${created.personal_info.email}`,
+              subject: 'Pre-Approval Application Received',
+              html: preApprovalReceivedBody({
+                userName: `${user.name}`,
+                referenceNumber: `${created.reference_number}`,
+              }),
+            });
+          } catch (error) {
+            console.error('Failed to send pre-approval received email:', error);
+          }
 
-        await createNotification(
-          buildNotificationPayload('pre_approval_submitted', {
-            user_id: created.user_id,
-            pre_approval_id: created.id,
-            type:'pre_approval_submitted',
-            channel: 'in_app',
-            metadata: {
-              reference_number: created.reference_number,
-              cta_url: `/user-dashboard/applications`,
-            },
-          })
-        );
+          await createNotification(
+            buildNotificationPayload('pre_approval_submitted', {
+              user_id: created.user_id,
+              pre_approval_id: created.id,
+              type:'pre_approval_submitted',
+              channel: 'in_app',
+              metadata: {
+                reference_number: created.reference_number,
+                cta_url: `/user-dashboard/applications`,
+              },
+            })
+          );
+        }}
        
       }
 
@@ -138,63 +144,76 @@ const preApprovalHandlers = createCRUDHandlers<PreApprovalBase>({
           } satisfies Partial<CreateApplication>;
 
           await application.create(body)
-          
-          await sendEmail({
-            to:  `${created.personal_info.email}`,
-            subject: 'Pre-Approval Application Feedbacks',
-            html: preApprovalAcceptedBody({
-              userName: `${created.personal_info.first_name}`,
-              referenceNumber: `${created.reference_number}`,
-            }),
-          });
+
+          const user = await userQB.findById(created.user_id)
+
+          if(user.id){
+            try {
+              await sendEmail({
+                to:  `${created.personal_info.email}`,
+                subject: 'Pre-Approval Application Feedbacks',
+                html: preApprovalAcceptedBody({
+                  userName: `${user.name}`,
+                  referenceNumber: `${created.reference_number}`,
+                }),
+              });
+
+              await createNotification(
+                buildNotificationPayload('pre_approval_accepted', {
+                  user_id: created.user_id,
+                  pre_approval_id: created.id,
+                  type:'pre_approval_accepted',
+                  channel: 'in_app',
+                  metadata: {
+                    reference_number: created.reference_number,
+                    cta_url: `/user-dashboard/applications`,
+                  },
+                })
+              );
+            } catch (error) {
+              console.error('Failed to send pre-approval approval email:', error);
+            }
+
+          }
 
         } catch (error) {
-          console.error('Failed to send pre-approval acceptance feedback email:', error);
+          console.error('Failed to create application:', error);
         }
-
-        await createNotification(
-          buildNotificationPayload('pre_approval_accepted', {
-            user_id: created.user_id,
-            pre_approval_id: created.id,
-            type:'pre_approval_accepted',
-            channel: 'in_app',
-            metadata: {
-              reference_number: created.reference_number,
-              cta_url: `/user-dashboard/applications`,
-            },
-          })
-        );
-      
       }
 
       // change to admin when you setup admin 
       if(created.status === 'rejected' && context.auth?.role === 'seller'){
-        try {
-          await sendEmail({
-            to:  `${created.personal_info.email}`,
-            subject: 'Pre-Approval Application Feedbacks',
-            html:preApprovalRejectedBody({
-              userName: `${created.personal_info.first_name}`,
-              referenceNumber: `${created.reference_number}`,
-              rejectionReasons: created.rejection_reasons
-            }),
-          });
-        } catch (error) {
-          console.error('Failed to send pre-approval rejection feedback email:', error);
-        }
+        const user = await userQB.findById(created.user_id)
 
-        await createNotification(
-          buildNotificationPayload('pre_approval_rejected', {
-            user_id: created.user_id,
-            pre_approval_id: created.id,
-            type:'pre_approval_rejected',
-            channel: 'in_app',
-            metadata: {
-              reference_number: created.reference_number,
-              cta_url: `/user-dashboard/applications`,
-            },
-          })
-        )
+        if(user.id){
+          try {
+            await sendEmail({
+              to:  `${created.personal_info.email}`,
+              subject: 'Pre-Approval Application Feedbacks',
+              html:preApprovalRejectedBody({
+                userName: `${user.name}`,
+                referenceNumber: `${created.reference_number}`,
+                rejectionReasons: created.rejection_reasons
+              }),
+            });
+          } catch (error) {
+            console.error('Failed to send pre-approval rejection feedback email:', error);
+          }
+
+          await createNotification(
+            buildNotificationPayload('pre_approval_rejected', {
+              user_id: created.user_id,
+              pre_approval_id: created.id,
+              type:'pre_approval_rejected',
+              channel: 'in_app',
+              metadata: {
+                reference_number: created.reference_number,
+                cta_url: `/user-dashboard/applications`,
+              },
+            })
+          )
+            
+        }
 
       }
 

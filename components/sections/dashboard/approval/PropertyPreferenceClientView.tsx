@@ -37,6 +37,7 @@ export default function PropertyPreferenceClientView({id}:{id:string}){
           preffered_loan_term: preApproval.property_info?.preffered_loan_term || "",
           other_loan_amount: preApproval.property_info?.other_loan_amount || "",
           existing_mortgage: preApproval.property_info?.existing_mortgage || "",
+          mortgage_options: preApproval.property_info.mortgage_options || ""
         });
       }
     }

@@ -127,6 +127,14 @@ export function PropertyPreferenceSection({ data }: PProps) {
             : fallback,
           },
         },
+        {
+          label: 'Mortgage Type',
+          value: {
+            type: 'text',
+            value: data.mortgage_options ? `${data.mortgage_options}`
+            : fallback,
+          },
+        },
 
         {
           label: 'Other Loan Amount',

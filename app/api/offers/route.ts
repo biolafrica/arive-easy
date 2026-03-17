@@ -42,15 +42,18 @@ const offersHandlers = createCRUDHandlers<OfferBase>({
   hooks: {
     beforeUpdate: async (id, body, context)=>{
       if (body.status === 'accepted') {
-        const PartnerDocumentQB = new SupabaseQueryBuilder<PartnerDocumentBase>('partner_documents');
+        const partnerDocumentQB = new SupabaseQueryBuilder<PartnerDocumentBase>('partner_documents');
+        const userQB = new SupabaseQueryBuilder<UserBase>('users')
 
-        const ExistingSalesofContract = PartnerDocumentQB.findOneByCondition({
+        const existingSalesofContract = partnerDocumentQB.findOneByCondition({
           document_type: "contract_of_sales",
           status: 'active',
-          partner_id: context.auth?.userId
+          partner_id: body.developer_id
         });
 
-        if(!ExistingSalesofContract){
+        console.log('existing sales of contract', existingSalesofContract)
+
+        if(!existingSalesofContract){
           throw new Error ( "Kindly setup your contract of Sales Document to accept offer")
         }
 

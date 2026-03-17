@@ -1,3 +1,4 @@
+import { formatUSD, toNumber } from "@/lib/formatter";
 import { AmountDisplay, EmailButton } from "../components/EmailButton";
 import { DataTable, InfoBox } from "../components/EmailCard";
 
@@ -26,12 +27,12 @@ export const offerNotificationBody = ({
       You have received a new offer for your property <strong>${propertyName}</strong> through the Kletch platform.
     </p>
 
-    ${AmountDisplay(offerAmount, 'Offer Amount', false)}
+    ${AmountDisplay(formatUSD({amount:toNumber(offerAmount)}), 'Offer Amount', false)}
 
     ${DataTable([
       { label: 'Property', value: propertyName },
       { label: 'Property ID', value: propertyId },
-      { label: 'Offer Amount', value: offerAmount, highlight: true }
+      { label: 'Offer Amount', value: formatUSD({amount:toNumber(offerAmount)}), highlight: true }
     ], 'Offer Details')}
 
     <div style="text-align: center; margin: 30px 0;">
