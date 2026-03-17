@@ -117,19 +117,22 @@ export function useSellerOfferActions() {
   const { user } = useAuthContext();
   const { update, isUpdating }  = offerHooks.useUpdate()
 
-  const acceptOffer = async (offerId: string, notes?: string) => {
+  const acceptOffer = async (offerId: string, developerId: string, notes?: string) => {
     if (!user?.id) {
       toast.error('Please login to accept offers');
       return;
     }
+    console.log("sent offer", offerId, developerId, notes )  
+
 
     try {
       const result = await update(offerId, {
         status: 'accepted',
         updated_at: new Date().toISOString(),
-        developer_id: user.id
+        developer_id:developerId
 
       });
+      console.log("sent offer", offerId, developerId, notes )  
       toast.success('Offer accepted successfully');
       return result;
     } catch (error) {
@@ -138,7 +141,7 @@ export function useSellerOfferActions() {
     }
   };
 
-  const rejectOffer = async (offerId: string, reason?: string) => {
+  const rejectOffer = async (offerId: string, developerId:string, reason?: string) => {
     if (!user?.id) {
       toast.error('Please login to reject offers');
       return;
@@ -149,7 +152,7 @@ export function useSellerOfferActions() {
         status: 'declined',
         rejection_note:reason,
         updated_at: new Date().toISOString(),
-        developer_id: user.id
+        developer_id: developerId
 
       });
       toast.success('Offer rejected successfully');

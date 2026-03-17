@@ -41,9 +41,9 @@ export const OfferActions = ({ offer, close }: OfferActionsProps) => {
 
   const handleModalSubmit = async (data: ActionModalData) => {
     if (data.action === 'approve') {
-      await acceptOffer(offer.id, data.notes);
+      await acceptOffer(offer.id, offer.developer_id, data.notes,);
     } else if (data.action === 'decline') {
-      await rejectOffer(offer.id, data.notes);
+      await rejectOffer(offer.id,offer.developer_id, data.notes);
     }
     setTimeout(()=>{
       close()

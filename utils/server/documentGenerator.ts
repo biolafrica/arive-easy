@@ -6,6 +6,7 @@ import { PartnerDocumentBase, TemplateBase, TransactionDocumentBase } from '@/ty
 import { ApplicationBase } from '@/type/pages/dashboard/application';
 import { PropertyBase } from '@/type/pages/property';
 import { PreApprovalBase } from '@/type/pages/dashboard/approval';
+import { humanizeSnakeCase } from '../common/humanizeSnakeCase';
 
 export interface DocumentGenerationParams {
   applicationId: string;
@@ -150,13 +151,12 @@ export class DocumentGeneratorService {
     if (!masterTemplate) {
       return {
         success: false,
-        error: `Kindly setup Master template for ${documentType}`,
+        error: `Kindly setup Master template for ${humanizeSnakeCase(documentType)}`,
       };
     }
 
     return { success: true, data: masterTemplate };
   }
-
 
   private async validatePartnerDocument(
     partnerId: string,
@@ -194,7 +194,7 @@ export class DocumentGeneratorService {
     if (existingDocument) {
       return {
         success: false,
-        error: `A document of type ${documentType} has already been generated for this application`,
+        error: `A document of type ${humanizeSnakeCase(documentType)} has already been generated for this application`,
       };
     }
 

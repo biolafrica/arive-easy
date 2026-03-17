@@ -43,7 +43,6 @@ const offersHandlers = createCRUDHandlers<OfferBase>({
     beforeUpdate: async (id, body, context)=>{
       if (body.status === 'accepted') {
         const partnerDocumentQB = new SupabaseQueryBuilder<PartnerDocumentBase>('partner_documents');
-        const userQB = new SupabaseQueryBuilder<UserBase>('users')
 
         const existingSalesofContract = partnerDocumentQB.findOneByCondition({
           document_type: "contract_of_sales",

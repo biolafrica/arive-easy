@@ -46,7 +46,7 @@ export default function OfferDetails({ offer, close }: Props) {
 
       </div>
 
-     <OfferActions offer={offer} close={close}/>
+     <OfferActions offer={offer} close={close} />
 
     </div>
   );
