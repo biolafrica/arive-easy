@@ -269,3 +269,19 @@ export const EmailSupportAcknowledgement = (data: AcknowledgementData) => {
     </html>
   `;
 }
+
+export const SubscriptionEmail =({email}:{email:string})=>{
+  return `
+    <div>
+      <p>Hello ${email}</p>
+
+      <p>Thank you for subscribing to our newsletter!</p>
+
+      <p>You’ll now receive updates, insights, and announcements directly in your inbox.</p>
+
+      <p>If you did not subscribe or wish to stop receiving emails, you can unsubscribe at any time.</p>
+
+      <p>Welcome aboard </p>
+    </div>
+  `;
+}

@@ -672,7 +672,7 @@ async function processGenericPayment(session: Stripe.Checkout.Session) {
       transactionId: transaction.id,
       applicationId: applicationId || '',
       type: 'Application Processing',
-      subject: 'Payment Receipt - Ariveasy',
+      subject: 'Payment Receipt - Kletch',
     });
 
     await createNotification(
@@ -813,7 +813,7 @@ async function sendReceiptUrlEmail(userId: string, receiptUrl: string): Promise<
 
     await sendEmail({
       to: user.email,
-      subject: 'Your Payment Receipt is Ready - Ariveasy',
+      subject: 'Your Payment Receipt is Ready - Kletch',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <h2 style="color: #4F46E5;">Your Receipt is Ready!</h2>

@@ -1,8 +1,12 @@
+'use client'
+
 export default function Test(){
+
+
   return(
     <div>
-      HI
-      
+      <h4>Hi</h4>
+     
     </div>
   )
 }

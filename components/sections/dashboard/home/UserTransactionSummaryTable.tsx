@@ -26,7 +26,7 @@ export default function UserTransactionSummaryTable() {
     <div>
       <SummaryTable
         title="Recent Transactions" 
-        onViewAll={() => router.push('/seller-dashboard/offers')}
+        onViewAll={() => router.push('/user-dashboard/payments')}
         viewAllLabel="View all" 
         columns={columns}
         data={transactions}

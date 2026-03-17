@@ -8,6 +8,7 @@ import { Button } from '@/components/primitives/Button';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import * as Sentry from '@sentry/nextjs';
 import { useWelcomeEmail } from '@/hooks/useSpecialized/useUser';
+import { BuildingOfficeIcon, HomeModernIcon } from '@heroicons/react/24/solid';
 
 type Role = 'user' | 'seller' | 'admin' | 'agent'
 interface UserProfile {
@@ -23,12 +24,13 @@ interface RoleOptionCardProps {
   onSelect: (value: Role) => void;
   title: string;
   description: string;
+  icon: React.ReactNode;
   activeClassName?: string;
 }
 
 const ROLE_OPTIONS = [
-  { value: 'user', title: 'Homebuyer', description: 'Looking to buy property', activeClassName: 'border-border bg-background text-heading'},
-  { value: 'seller', title: 'Seller', description: 'Listing properties', activeClassName: 'border-accent bg-accent/5 text-accent'},
+  { value: 'user', title: 'Homebuyer', description: 'Looking to buy property', activeClassName: 'border-border bg-background text-heading', icon: <HomeModernIcon className='w-5 h-5'/>},
+  { value: 'seller', title: 'Seller', description: 'Listing properties', activeClassName: 'border-accent bg-accent/5 text-accent', icon:<BuildingOfficeIcon className='w-5 h-5'/>},
 ] as const;
 
 
@@ -245,6 +247,7 @@ export default function OnboardingComponent() {
                   selected={selectedRole === role.value}
                   onSelect={setSelectedRole}
                   title={role.title}
+                  icon={role.icon}
                   description={role.description}
                 />
               ))}
@@ -273,6 +276,7 @@ export function RoleOptionCard({
   title,
   description,
   activeClassName = 'border-orange-900 bg-orange-100 text-heading',
+  icon,
 }: RoleOptionCardProps) {
   return (
     <button
@@ -286,6 +290,7 @@ export function RoleOptionCard({
         }
       `}
     >
+      <div className="text-2xl mb-1 flex justify-center">{icon}</div>
       <div className="font-medium">{title}</div>
       <div className="text-xs text-gray-500 mt-1">
         {description}

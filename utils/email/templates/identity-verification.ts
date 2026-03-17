@@ -41,13 +41,18 @@ export const identityVerificationSuccessBody = ({
     </h3>
 
     ${Timeline([
-      { title: 'Browse Partner Properties', description: 'Explore verified properties from our trusted developer partners within your budget', status: 'current'},
-      { title: 'Select Your Property', description: 'Choose your ideal property and submit your final mortgage application', status: 'pending'},
-      { title: 'Down Payment',description: 'Make a down payment for the property', status: 'pending'}
+      { title: 'Browse verified Properties', description: 'Explore available listings and review property details, documents, and virtual tours.', status: 'current'},
+      { title: 'Select a Property', description: 'Choose the property you’re interested in and proceed with your application.', status: 'pending'},
+      { title: 'Submit Application', description: 'Provide the required information so lenders or sellers can review your request.', status: 'pending'},
+      { title: 'Review and sign documents', description: 'If your application moves forward, you will be guided through the next steps, including agreement review and secure electronic signing.', status: 'pending'}
     ])}
 
+    <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin: 25px 0 0 0;">
+      You can access your dashboard anytime to continue.
+    </p>
+
     <div style="text-align: center; margin: 30px 0;">
-      ${EmailButton('https://www.usekletch.com/user-dashboard/applications', 'View Application Status')}
+      ${EmailButton('https://www.usekletch.com/user-dashboard/applications', 'Continue on Kletch')}
     </div>
 
     ${InfoBox(
@@ -55,6 +60,8 @@ export const identityVerificationSuccessBody = ({
       'Your identity verification data is encrypted and securely stored in compliance with data protection regulations.',
       'info'
     )}
+
+  
 
   `;
 };
@@ -98,16 +105,10 @@ export const identityVerificationDeclineBody = ({
     </h3>
 
     ${Timeline([
-      { title: 'Gather Required Documents', description: 'Ensure all documents are clear, legible, and meet our requirements', status: 'current'},
-      { title: 'Upload Through Dashboard', description: 'Submit your updated documents via your secure dashboard', status: 'pending' },
-      { title: canResubmit ? 'Get Verified' : 'Contact Support',
-        description: canResubmit 
-          ? (resubmitAfterDays 
-            ? `You can resubmit after ${resubmitAfterDays} days. Our team will review within 24-48 hours.`
-            : 'Our team will review your updated documents within 24-48 hours.')
-          : 'Speak with our verification team for personalized guidance',
-        status: 'pending'
-      }
+      { title: 'Review your information', description: 'Review the reason above and ensure that your name and personal details match exactly with your government-issued identification.', status: 'current'},
+      { title: 'Ensure document photo is clear', description: 'Use a valid government-issued ID and make sure the entire document is visible, well-lit, and not blurry.', status: 'pending' },
+      { title: 'Complete the identity check again', description: ' Follow the verification prompts in your dashboard and ensure your face is clearly visible during the verification step..', status: 'pending' },
+      { title: 'Try using a different device or browser', description: 'Sometimes verification works better on a mobile device with a good camera. If the issue continues, please contact our support team and we will assist you with the next steps.', status: 'pending' },
     ])}
 
     <div style="text-align: center; margin: 30px 0;">

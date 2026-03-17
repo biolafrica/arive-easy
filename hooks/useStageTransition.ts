@@ -16,6 +16,7 @@ export function useStageTransition(applicationId: string, currentStages: Applica
             completed: true,
             completed_at: new Date().toISOString(),
             status: 'completed' as const,
+            error_message:"",
             data:{
               ...currentStages.identity_verification?.data,
               updated_at: new Date().toISOString(),
@@ -24,6 +25,7 @@ export function useStageTransition(applicationId: string, currentStages: Applica
               home_country_status: "approved",
               home_country_verified_at: new Date().toISOString(),
               immigration_verified_at: new Date().toISOString(),
+              immigration_error_message: '',
             }
           },
           property_selection:{

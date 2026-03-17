@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/primitives/Button';
 import { toast } from 'sonner';
 import { GoogleIcon } from '@/public/icons/google-icon';
@@ -27,14 +27,45 @@ export function GoogleSignInButton({
 }: GoogleSignInButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
 
+  const toastIdRef = useRef<string | number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (toastIdRef.current !== null) {
+        toast.dismiss(toastIdRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && toastIdRef.current !== null) {
+        setTimeout(() => {
+          toast.dismiss(toastIdRef.current!);
+          toastIdRef.current = null;
+          setIsLoading(false);
+        }, 500);
+      }
+    };
+ 
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, []);
+
   const handleGoogleSignIn = async () => {
+
+    if (toastIdRef.current !== null) {
+      toast.dismiss(toastIdRef.current);
+      toastIdRef.current = null;
+    }
+ 
     setIsLoading(true);
 
     try {
       const result = await signInWithGoogle({redirectTo});
 
       if (result.success) {
-        toast.loading(
+        toastIdRef.current = toast.loading(
           variant === 'signup' ? 'Creating your account with Google...' : 'Signing you in with Google...'
         );
         
@@ -64,7 +95,7 @@ export function GoogleSignInButton({
         onError(error);
       }
     } finally {
-      setTimeout(() => setIsLoading(false), 5000);
+      setTimeout(() => setIsLoading(false), 3000);
     }
   };
 

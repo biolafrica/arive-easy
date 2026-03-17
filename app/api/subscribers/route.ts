@@ -1,5 +1,6 @@
+import { sendEmail } from "@/utils/email/send_email";
+import { SubscriptionEmail } from "@/utils/email/templates/support";
 import { createCRUDHandlers } from "@/utils/server/crudFactory";
-import { sendEmail } from "@/utils/server/sendEmail";
 
 interface Subscriber {
   id: string;
@@ -14,21 +15,18 @@ const handlers = createCRUDHandlers<Subscriber>({
 
   hooks: {
     afterCreate: async (createdSubscriber) => {
-      await sendEmail({
-        to: createdSubscriber.email,
-        subject: 'Subscription Successful 🎉',
-        html: `
-          <p>Hello ${createdSubscriber.email}</p>
-
-          <p>Thank you for subscribing to our newsletter!</p>
-
-          <p>You’ll now receive updates, insights, and announcements directly in your inbox.</p>
-
-          <p>If you did not subscribe or wish to stop receiving emails, you can unsubscribe at any time.</p>
-
-          <p>Welcome aboard 🚀</p>
-        `,
-      });
+      try {
+        await sendEmail({
+          to:  createdSubscriber.email,
+          subject: 'Subscription Successful',
+          html: SubscriptionEmail ({
+            email:createdSubscriber.email
+          }),
+        });
+      } catch (error) {
+        console.error('Failed to send successful subscription email:', error);
+      }
+    
     },
   },
 

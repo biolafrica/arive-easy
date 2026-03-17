@@ -12,10 +12,6 @@ export default function PersonalInfoForm({initialValues, handleSubmit, handleCan
   const validate = (values:PersonalInfoFormValues)=>{
     const errors: Partial<Record<keyof PersonalInfoFormValues, string>> = {};
 
-    if (values.phone_number.length < 11 || values.phone_number.length > 11) {
-      errors.phone_number = 'Phone number must be 11 characters';
-    } 
-
     if (values.date_of_birth) {
       const dob = new Date(values.date_of_birth);
       const today = new Date();

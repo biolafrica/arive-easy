@@ -170,7 +170,6 @@ export function useUpdateProfile() {
   });
 }
 
-
 export function useSubscriber() {
   const {
     create, isCreating
