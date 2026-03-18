@@ -6,7 +6,7 @@ import { AddPlan, AdminApplicationModalProps } from "@/type/pages/dashboard/appl
 
 
 export default function CreatePlan(
-  {showModal, setShowModal, id}:AdminApplicationModalProps)
+  {showModal, setShowModal, id, close}:AdminApplicationModalProps)
 {
 
   const { updateApplication} = useUpdateApplication()

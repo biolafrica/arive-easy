@@ -5,7 +5,7 @@ import { useTransactionalDocument} from "@/hooks/useSpecialized/useDocuments";
 import { AdminApplicationModalProps } from "@/type/pages/dashboard/application";
 import { DynamicDocumentForm } from "@/type/pages/dashboard/documents";
 
-export default function AddDocuments({showModal, setShowModal, id}:AdminApplicationModalProps){
+export default function AddDocuments({showModal, setShowModal, id, close}:AdminApplicationModalProps){
   const { generateContractDocument, isGenerating } = useTransactionalDocument();
 
   const handleCreateDocument = async (values:DynamicDocumentForm) => {

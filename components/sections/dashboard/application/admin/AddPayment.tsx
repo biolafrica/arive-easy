@@ -8,7 +8,7 @@ import { AddLegalForm, AddValuationForm, AdminApplicationModalProps } from "@/ty
 
 
 export default function AddPayment(
-  {showModal, setShowModal, id}:AdminApplicationModalProps)
+  {showModal, setShowModal, id, close}:AdminApplicationModalProps)
 {
 
   const [actionType, setActionType]=useState<'valuation' |'legal' | null>(null)

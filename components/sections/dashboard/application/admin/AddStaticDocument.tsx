@@ -6,7 +6,7 @@ import { AdminApplicationModalProps } from "@/type/pages/dashboard/application";
 import { StaticDocumentForm, StaticTransactionDocumentForm } from "@/type/pages/dashboard/documents";
 import { generateApplicationRefNo } from "@/utils/common/generateApplicationRef";
 
-export default function AddStaticDocuments({showModal, setShowModal, id}:AdminApplicationModalProps){
+export default function AddStaticDocuments({showModal, setShowModal, id, close}:AdminApplicationModalProps){
 
   const { uploadDocument, isUploading } = useUploadStaticDocuments();
 

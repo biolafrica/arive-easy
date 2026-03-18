@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/utils/server/authMiddleware';
 import { documentGenerator } from '@/utils/server/documentGenerator';
+import { TransactionDocumentBase } from '@/type/pages/dashboard/documents';
+import { SupabaseQueryBuilder } from '@/utils/supabase/queryBuilder';
+import { humanizeSnakeCase } from '@/utils/common/humanizeSnakeCase';
 
 export async function POST(request: NextRequest) {
   try {
     const user = await requireAuth();
+    const transactionDocumentQB = new SupabaseQueryBuilder<TransactionDocumentBase>('document_transactions'); 
 
-    // change to if not admin later
+
     if (!user || user.user_metadata?.role !== 'seller') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -17,6 +21,18 @@ export async function POST(request: NextRequest) {
     if (!applicationId || !documentType) {
       return NextResponse.json(
         { error: 'applicationId and documentType are required' },
+        { status: 400 }
+      );
+    }
+
+    const previousTransactionTemplate = await transactionDocumentQB.findOneByCondition({
+      application_id: applicationId,
+      document_type: documentType
+    });
+
+    if (previousTransactionTemplate) {
+      return NextResponse.json(
+        { error: `you already created ${humanizeSnakeCase(documentType)} for this application` },
         { status: 400 }
       );
     }

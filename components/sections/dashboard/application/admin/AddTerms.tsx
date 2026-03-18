@@ -5,7 +5,7 @@ import { useUpdateApplication } from "@/hooks/useSpecialized/useApplications";
 import { AddTermsForm, AdminApplicationModalProps } from "@/type/pages/dashboard/application";
 
 export default function AddTerms(
-  {showModal, setShowModal, id}:AdminApplicationModalProps)
+  {showModal, setShowModal, id, close}:AdminApplicationModalProps)
 {
 
   const { updateApplication} = useUpdateApplication()

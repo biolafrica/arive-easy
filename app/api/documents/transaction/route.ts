@@ -41,26 +41,47 @@ const transactionTemplateHandlers = createCRUDHandlers<TransactionDocumentBase>(
     beforeCreate:async(body, context)=>{
       const transactionDocumentQB = new SupabaseQueryBuilder<TransactionDocumentBase>('document_transactions'); 
       const applicationQB = new SupabaseQueryBuilder<ApplicationBase>('applications');
+
+      const previousTransactionTemplate = await transactionDocumentQB.findOneByCondition({
+        application_id: body.application_id,
+        document_type:body.document_type
+      });
+
+      console.log(previousTransactionTemplate)
+      
+      if(previousTransactionTemplate){
+        throw new Error( `you already created ${humanizeSnakeCase(body.document_type)} for this application`)
+      }
+
+      const application = await applicationQB.findById(body.application_id)
+      if(!application){
+        throw new Error('application not found')
+      }
+
+      const now = new Date().toISOString();
+
+      body.created_at = now;
+      body.updated_at = now;
+      body.status = 'completed'
+      body.buyer_id = application.user_id
+      body.seller_id =application.developer_id
+      body.property_id = application.property_id
+      body.esign_provider = 'static'
+         
+    },
+
+    afterCreate:async(updated, previous, context)=>{
       const userQB = new SupabaseQueryBuilder<UserBase>('users')
+      const applicationQB = new SupabaseQueryBuilder<ApplicationBase>('applications');
 
       try {
-
-        const previousTransactionTemplate = await transactionDocumentQB.findOneByCondition({
-          application_id: body.application_id,
-          document_type:body.document_type
-        });
-
-        if(previousTransactionTemplate){
-          throw new Error( `you already created ${humanizeSnakeCase(body.document_type)} for this application`)
-        }
-
-        const application = await applicationQB.findById(body.application_id)
+        const application = await applicationQB.findById(updated.application_id)
         if(!application){
-          throw new Error('application not found')
+          console.error('Application not found in afterCreate:', updated.application_id);
+          return;
         }
-
+    
         const currentStage = application.stages_completed.mortgage_activation;
-
         await applicationQB.update(application.id, {
           stages_completed: {
             ...application.stages_completed,
@@ -70,68 +91,65 @@ const transactionTemplateHandlers = createCRUDHandlers<TransactionDocumentBase>(
               completed: currentStage?.completed || false,
               data: {
                 ...currentStage?.data,
-                [body.document_type]: true,
-                [`${body.document_type}_uploaded_at`]: new Date().toISOString(),
+                [updated.document_type]: true,
+                [`${updated.document_type}_uploaded_at`]: new Date().toISOString(),
               }
             }
           }
         })
-
-        const now = new Date().toISOString();
-
-        body.created_at = now;
-        body.updated_at = now;
-        body.status = 'completed'
-        body.buyer_id = application.user_id
-        body.seller_id =application.developer_id
-        body.property_id = application.property_id
-        body.esign_provider = 'static'
-
-        const user = await userQB.findById(application.user_id)
-       
-        if(user?.email){
-          try {
-            await sendEmail({
-              to:  `${user.email}`,
-              subject: 'Property Documents Available - Kletch',
-              html: documentUploadNotificationEmail({
-                userName: user.name,
-                applicationNumber: application.application_number,
-                propertyName:application.property_name,
-                uploadedDocuments:{
-                  name:`${application.property_name} '' ${body.document_type}`,
-                  type:body.document_type,
-                  uploadDate:now,
-                }
-              }),
-            });
-
-            await createNotification(
-              buildNotificationPayload('document_submitted', {
-                user_id:user.id,
-                application_id: application.id,
-                property_id:application.property_id,
-                type:'document_submitted',
-                channel: 'in_app',
-                metadata: {
-                  currency:body.document_type,
-                  cta_url: `https://www.usekletch.com/user-dashboard/applications`,
-                  property_name:application.property_name 
-                },
-              })
-            );
-
-          } catch (error) {
-            console.error('Failed to send notification email:', error);
-          }
-        }
       
+        const user = await userQB.findById(application.user_id)
+
+        if (!user?.email) {
+          console.warn('User or email not found, skipping notification');
+          return;
+        }
+
+        await Promise.allSettled([
+          sendEmail({
+            to: user.email,
+            subject: 'Property Documents Available - Kletch',
+            html: documentUploadNotificationEmail({
+              userName: user.name,
+              applicationNumber: application.application_number,
+              propertyName: application.property_name,
+              uploadedDocuments: {
+                name: `${application.property_name} - ${humanizeSnakeCase(updated.document_type)}`,
+                type: updated.document_type,
+                uploadDate: updated.created_at || '',
+              }
+            }),
+          }),
+          createNotification(
+            buildNotificationPayload('document_submitted', {
+              user_id: user.id,
+              application_id: application.id,
+              property_id: application.property_id,
+              type: 'document_submitted',
+              channel: 'in_app',
+              metadata: {
+                document_type: updated.document_type,
+                cta_url: 'https://www.usekletch.com/user-dashboard/applications',
+                property_name: application.property_name
+              },
+            })
+          )
+        ]).then(results => {
+          results.forEach((result, index) => {
+            if (result.status === 'rejected') {
+              const action = index === 0 ? 'email' : 'notification';
+              console.error(`Failed to send ${action}:`, result.reason);
+            } else {
+              const action = index === 0 ? 'email' : 'notification';
+              console.log(`Successfully sent ${action}`);
+            }
+          });
+        });
 
       } catch (error) {
-        console.error('transactional Document create hook:', error);
-        
+        console.error('Error in afterCreate hook:', error);
       }
-         
+
     }
     
   }

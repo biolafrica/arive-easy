@@ -34,6 +34,8 @@ export default function AdminPreMortgageDetails({ applications, close }: Props) 
   const { completeStage } = useStageTransition(applications.id, applications.stages_completed);
   const { open, banner, openConfirm, closeConfirm } = useConfirmAction(confirmConfig, completeStage);
 
+  
+
   const getStep=()=>{
     switch (applications.current_stage) {
       case 'identity_verification': return 1;
