@@ -1,4 +1,4 @@
-import { formatUSD, toNumber } from "@/lib/formatter";
+import { formatDate, formatUSD, toNumber } from "@/lib/formatter";
 import { AmountDisplay, EmailButton, StatusBadge } from "../components/EmailButton";
 import { DataTable, InfoBox, Timeline } from "../components/EmailCard";
 
@@ -37,10 +37,11 @@ interface PropertyAcquiredParams {
   buyerName: string;
   saleAmount: string;
   applicationNumber: string;
+  escrowAmount:number
 }
 
 interface AdminEscrowProps {
-  amount:string;
+  amount:number;
   propertyName:string;
   applicationNumber:string;
   transactionID:string;
@@ -324,11 +325,7 @@ export const mortgageActivationEmail=({
       { label: 'Mortgage Amount', value: formatUSD({amount:toNumber(mortgageAmount)}), highlight: true },
       { label: 'Monthly Payment', value: formatUSD({amount:toNumber( monthlyPayment)}), highlight: true },
       { label: 'Loan Term', value: `${totalLoanTerm} years` },
-      { label: 'First Payment Due', value: new Date(firstPaymentDate).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      }) }
+      { label: 'First Payment Due', value: formatDate(firstPaymentDate) }
     ], ' Mortgage Summary')}
 
     ${InfoBox(
@@ -432,6 +429,7 @@ export const propertyAcquiredEmail=({
   buyerName,
   saleAmount,
   applicationNumber,
+  escrowAmount
 }:PropertyAcquiredParams)=>{
   return `
     ${StatusBadge('success', 'Property Sold!', 'Congratulations on your successful sale')}
@@ -488,7 +486,7 @@ export const propertyAcquiredEmail=({
       },
       {
         title: 'Down Fund Transfer',
-        description: 'Down payment will be wired to your verified account in 3 - 4 working days ',
+        description: `${formatUSD({amount:toNumber(escrowAmount),fromCents:true })}  will be wired to your verified account in 3 - 4 working days `,
         status: 'pending'
       },
    
@@ -555,7 +553,7 @@ export const AdminEscrowNotification=({
       A mortgage has been successfully activated, and the escrow funds are now ready to be released to the seller. Please process this payment manually as per the standard procedure.
     </p>
 
-    ${AmountDisplay(amount, 'Escrowed Amount')}
+    ${AmountDisplay(formatUSD({amount, fromCents:true}), 'Escrowed Amount')}
 
     ${DataTable([
       { label: 'Property Name', value: propertyName },

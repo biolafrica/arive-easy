@@ -1,547 +1,508 @@
-import { ApplicationBase } from '@/type/pages/dashboard/application';
-import { OfferBase } from '@/type/pages/dashboard/offer';
-import { PropertyBase } from '@/type/pages/property';
-import { UserBase } from '@/type/user';
-import { SupabaseQueryBuilder } from '@/utils/supabase/queryBuilder';
-import { createNotification } from '../notifications/createNotification';
-import { buildNotificationPayload } from '../notifications/notificationContent';
-import { NotificationMetadata, NotificationType } from '@/type/pages/dashboard/notification';
-import { offerNotificationBody } from '../email/templates/application';
-import { AdminEscrowNotification, mortgageActivationEmail, paymentCompletionEmail, propertyAcquiredEmail, termsCompletionEmail } from '../email/templates/milestones';
-import { TransactionBase } from '@/type/pages/dashboard/transactions';
-import { sendEmail } from '../email/send_email';
+import { ApplicationBase } from "@/type/pages/dashboard/application";
+import { SupabaseQueryBuilder } from "../supabase/queryBuilder";
+import { PropertyBase } from "@/type/pages/property";
+import { OfferBase } from "@/type/pages/dashboard/offer";
+import { UserBase } from "@/type/user";
+import { TransactionBase } from "@/type/pages/dashboard/transactions";
+import { sendEmail } from "../email/send_email";
+import { AdminEscrowNotification, mortgageActivationEmail, paymentCompletionEmail, propertyAcquiredEmail, termsCompletionEmail } from "../email/templates/milestones";
+import { createNotification } from "../notifications/createNotification";
+import { buildNotificationPayload } from "../notifications/notificationContent";
+import { sendOfferAcceptedEmail } from "../email/templates/offers";
 
-interface StageHandler {
-  shouldExecute(application: ApplicationBase): Promise<boolean>;
-  execute(application: ApplicationBase, context: StageHandlerContext): Promise<void>;
-}
+export type StageType = 'identity' | 'property' | 'terms' | 'payment' | 'mortgage';
 
-interface StageHandlerContext {
-  propertyQB: SupabaseQueryBuilder<PropertyBase>;
-  offerQB: SupabaseQueryBuilder<OfferBase>;
-  userQB: SupabaseQueryBuilder<UserBase>;
-}
-
-function isStageJustCompleted(
-  currentStage: any,
-  previousStage: any
-): boolean {
-  const nowCompleted = currentStage?.completed === true && currentStage?.status === 'completed';
-  const wasCompleted = previousStage?.completed === true && previousStage?.status === 'completed';
-  
-  return nowCompleted && !wasCompleted;
-}
-
-async function notifyUser(params: {
+interface StageCompletionParams {
+  application: ApplicationBase;
+  stageType: StageType;
+  stageData: any;
   userId: string;
-  email: string;
-  userName: string;
-  emailSubject: string;
-  emailHtml: string;
-  notificationType: NotificationType;
-  notificationMetadata: NotificationMetadata;
-}) {
-  const {
-    userId,
-    email,
-    userName,
-    emailSubject,
-    emailHtml,
-    notificationType,
-    notificationMetadata
-  } = params;
+}
+
+interface StageCompletionResult {
+  success: boolean;
+  error?: string;
+  message?: string;
+  updatedApplication?: ApplicationBase;
+}
+
+export async function executeStageCompletion(
+  params: StageCompletionParams
+): Promise<StageCompletionResult> {
+  const { application, stageType, stageData, userId } = params;
 
   try {
-    await sendEmail({
-      to: email,
-      subject: emailSubject,
-      html: emailHtml,
-    });
-
-    await createNotification(
-      buildNotificationPayload(notificationType, {
-        user_id: userId,
-        type: notificationType,
-        channel: 'in_app',
-        metadata: notificationMetadata,
-      })
+    const updatePayload = buildStageUpdatePayload(
+      application.stages_completed,
+      stageType,
+      stageData
     );
+
+    const applicationQB = new SupabaseQueryBuilder<ApplicationBase>('applications');
+    const updatedApplication = await applicationQB.update(application.id, updatePayload);
+
+    await executeStageHandler(stageType, updatedApplication);
+
+    return {
+      success: true,
+      message: getSuccessMessage(stageType),
+      updatedApplication,
+    };
+
   } catch (error) {
-    console.error(`Failed to notify user ${userId}:`, error);
+    console.error(`Stage completion error (${stageType}):`, error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+    
+    
   }
+
+
 }
 
-class PropertySelectionHandler implements StageHandler {
-  async shouldExecute(app: ApplicationBase): Promise<boolean> {
-    return (
-      app.stages_completed?.property_selection?.data?.status === 'sent' &&
-      !!app.property_id
-    );
-  }
+function buildStageUpdatePayload(
+  currentStages: ApplicationBase['stages_completed'],
+  stageType: StageType,
+  stageData: any
+): Partial<ApplicationBase> {
 
-  async execute(app: ApplicationBase, context: StageHandlerContext): Promise<void> {
-    const { propertyQB, offerQB, userQB } = context;
-    const propertyData = app.stages_completed?.property_selection?.data;
-
-    const property = await propertyQB.findById(app.property_id!);
-    if (!property) {
-      throw new Error(`Property ${app.property_id} not found`);
-    }
-
-    const existingOffer = await offerQB.findOneByCondition({
-      application_id: app.id,
-      property_id: app.property_id
-    });
-
-    if (existingOffer) {
-      await offerQB.update(existingOffer.id, {
-        status: 'pending',
-        rejection_note: '',
-        updated_at: new Date().toISOString()
-      });
-    } else {
-      const offerData: Partial<OfferBase> = {
-        user_id: app.user_id,
-        application_id: app.id,
-        property_id: app.property_id,
-        property_name: propertyData.property_name || property.title,
-        amount: String(app.property_price || property.price),
-        status: 'pending',
-        type: propertyData.type || 'mortgage',
-        developer_id: property.developer_id || '',
-        created_at: new Date().toISOString(),
+  switch (stageType) {
+    case 'identity':
+      return {
+        stages_completed: {
+          ...currentStages,
+          identity_verification: {
+            ...currentStages.identity_verification,
+            completed: true,
+            completed_at: new Date().toISOString(),
+            status: 'completed',
+            error_message:"",
+            data: {
+              ...currentStages.identity_verification?.data,
+              ...stageData,
+              updated_at: new Date().toISOString(),
+            },
+          },
+          property_selection: {
+            status: 'current',
+            completed: false,
+          },
+        },
+        processing_fee_payment_status: 'paid',
+        processing_fee_payment_date: new Date().toISOString(),
+        kyc_verified_at: new Date().toISOString(),
+        current_stage: 'property_selection',
+        current_step: 6,
+      };
+    
+    case 'property':
+      return {
+        stages_completed: {
+          ...currentStages,
+          property_selection: {
+            ...currentStages.property_selection,
+            completed: true,
+            completed_at: new Date().toISOString(),
+            status: 'completed',
+            data: {
+              ...currentStages.property_selection?.data,
+              ...stageData,
+              submitted_at: new Date().toISOString(),
+            },
+          },
+          terms_agreement: {
+            status: 'current',
+            completed: false,
+          },
+        },
+        current_stage: 'terms_agreement',
+        current_step: 7,
       };
 
-      await offerQB.create(offerData);
-      
-      await this.updatePropertyOffers(property.id);
-    }
+    case 'terms':
+      return {
+        stages_completed: {
+          ...currentStages,
+          terms_agreement: {
+            ...currentStages.terms_agreement,
+            completed: true,
+            completed_at: new Date().toISOString(),
+            status: 'completed',
+            data: {
+              ...currentStages.terms_agreement?.data,
+              ...stageData,
+            },
+          },
+          payment_setup: {
+            status: 'current',
+            completed: false,
+            data: {
+              ...currentStages.payment_setup?.data,
+              terms_agreement_signed: true,
+            },
+          },
+        },
+        current_stage: 'payment_setup',
+        current_step: 8,
+      };
 
-    await this.notifySeller(property, app, userQB);
-  }
+    case 'payment':
+      return {
+        stages_completed: {
+          ...currentStages,
+          payment_setup: {
+            ...currentStages.payment_setup,
+            completed: true,
+            completed_at: new Date().toISOString(),
+            status: 'completed',
+            data: {
+              ...currentStages.payment_setup?.data,
+              ...stageData,
+            },
+          },
+          mortgage_activation: {
+            status: 'current',
+            completed: false,
+          },
+        },
+        current_stage: 'mortgage_activation',
+        current_step: 9,
+      };
 
-  private async updatePropertyOffers(propertyId: string): Promise<void> {
-    const propertyQB = new SupabaseQueryBuilder<PropertyBase>('properties');
-    const property = await propertyQB.findById(propertyId);
-    await propertyQB.update(propertyId, {
-      offers: (property.offers || 0) + 1,
-      status: 'offers'
-    });
-  }
-
-  private async notifySeller(
-    property: PropertyBase,
-    app: ApplicationBase,
-    userQB: SupabaseQueryBuilder<UserBase>
-  ): Promise<void> {
-    if (!property.developer_id) return;
-
-    const seller = await userQB.findById(property.developer_id);
-    if (!seller?.email) return;
-
-    await notifyUser({
-      userId: seller.id,
-      email: seller.email,
-      userName: seller.name,
-      emailSubject: `Offer for ${property.title}`,
-      emailHtml: offerNotificationBody({
-        sellerName: seller.name,
-        propertyId: property.property_number,
-        propertyName: property.title,
-        offerAmount: property.price,
-      }),
-      notificationType: 'offer_received',
-      notificationMetadata: {
-        reference_number: app.application_number,
-        application_id: app.id,
-        property_id: app.property_id,
-        cta_url: '/seller-dashboard/offers',
-        property_name: app.property_name
-      }
-    });
+    case 'mortgage':
+      return {
+        stages_completed: {
+          ...currentStages,
+          mortgage_activation: {
+            ...currentStages.mortgage_activation,
+            completed: true,
+            completed_at: new Date().toISOString(),
+            status: 'completed',
+            data: {
+              ...currentStages.mortgage_activation?.data,
+              ...stageData,
+              current_step: 'success',
+              direct_debit_status: 'active',
+              direct_debit_creation_date: new Date().toISOString(),
+            },
+          },
+        },
+        direct_debit_status: 'active',
+        status: 'active',
+        current_stage: 'mortgage_activation',
+        current_step: 9,
+      };
+  
+    default:
+      throw new Error(`Unknown stage type: ${stageType}`);
   }
 }
 
-class MortgageActivationHandler implements StageHandler {
-  async shouldExecute(app: ApplicationBase): Promise<boolean> {
-    const stage = app.stages_completed?.mortgage_activation;
+async function executeStageHandler(
+  stageType: StageType,
+  application: ApplicationBase
+): Promise<void> {
+  const propertyQB = new SupabaseQueryBuilder<PropertyBase>('properties');
+  const offerQB = new SupabaseQueryBuilder<OfferBase>('offers');
+  const userQB = new SupabaseQueryBuilder<UserBase>('users');
+  const transactionQB = new SupabaseQueryBuilder<TransactionBase>('transactions');
 
-    if (!(stage?.completed === true && stage?.status === 'completed')) {
-      return false;
-    }
+  switch (stageType) {
+    case 'property':
+      await handlePropertySelection(application, { propertyQB, offerQB, userQB });
+      break;
 
-    const alreadyExecuted = stage?.data?.handler_executed === true;
+    case 'terms':
+      await handleTermsAgreement(application, { userQB });
+      break;
 
-    return !alreadyExecuted
+    case 'payment':
+      await handlePaymentSetup(application, { userQB });
+      break;
+
+    case 'mortgage':
+      await handleMortgageActivation(application, { propertyQB, userQB, transactionQB });
+      break;
+
+    case 'identity':
+      // No handler needed for identity verification
+      break;
+
+    default:
+      console.log(`No handler for stage type: ${stageType}`);
+      
   }
 
-  async execute(app: ApplicationBase, context: StageHandlerContext): Promise<void> {
-    const { propertyQB, userQB } = context;
+}
 
-    const transactionQB = new SupabaseQueryBuilder<TransactionBase>('transactions');
-    const applicationQB = new SupabaseQueryBuilder<ApplicationBase>('applications');
+async function handlePropertySelection(
+  app: ApplicationBase,
+  context: {
+    propertyQB: SupabaseQueryBuilder<PropertyBase>;
+    offerQB: SupabaseQueryBuilder<OfferBase>;
+    userQB: SupabaseQueryBuilder<UserBase>;
+  }
+): Promise<void> {
+  const {offerQB, userQB } = context;
 
-    console.log(`Executing MortgageActivationHandler for application ${app.id}`);
-
-
-    const [user, seller, escrowTransaction] = await Promise.all([
-      userQB.findById(app.user_id),
-      app.developer_id ? userQB.findById(app.developer_id) : null,
-      this.getEscrowTransaction(app.id, transactionQB)
-    ]);
-
-    if (!user) {
-      throw new Error(`User ${app.user_id} not found`);
-    }
-
-    if (app.property_id) {
-      await propertyQB.update(app.property_id, { status: 'sold' });
-      console.log("updated property for mortgage activation")
-
-    }
-
-    if (escrowTransaction) {
-      await this.releaseEscrowFunds(escrowTransaction, transactionQB);
-      console.log("updated escrow for mortgage activation")
-    } else {
-      console.warn(`No escrow transaction found for application ${app.id}`);
-      console.log("!updated escrow for mortgage activation")
-
-    }
-
-    await this.notifyBuyer(user, app);
-    console.log("notified buyer for mortgage activation")
-
-
-    if (seller) {
-      await this.notifySeller(seller, user, app);
-      console.log("notified seller for mortgage activation")
-    }
-
-    if (escrowTransaction && seller) {
-      await this.notifyAdminForFundRelease(app, escrowTransaction, seller, user);
-      console.log("notified admin for mortgage activation")
-    }
-
-    await applicationQB.update(app.id, {
-      stages_completed: {
-        ...app.stages_completed,
-        mortgage_activation: {
-          status:'completed',
-          completed:true,
-          ...app.stages_completed?.mortgage_activation,
-          data: {
-            ...app.stages_completed?.mortgage_activation?.data,
-            handler_executed: true,
-            handler_executed_at: new Date().toISOString()
-          }
-        }
-      }
-    });
-
-    console.log(`MortgageActivationHandler completed for application ${app.id}`);
-
+  const offer = await offerQB.findOneByCondition({
+    application_id: app.id
+  })
+  if (!offer) {
+    throw new Error(`User is yet to create any offer`);
   }
 
-  private async notifyBuyer(user: UserBase, app: ApplicationBase): Promise<void> {
-    await notifyUser({
-      userId: user.id,
-      email: user.email,
-      userName: user.name,
-      emailSubject: 'Congratulations! You\'re Now a Property Owner!',
-      emailHtml: mortgageActivationEmail({
-        userName: user.name,
-        propertyName: app.property_name,
-        mortgageAmount: `${app.approved_loan_amount}`,
-        totalLoanTerm: app.loan_term_months,
-        applicationNumber: app.application_number,
-        monthlyPayment: `${app.monthly_payment}`,
-        firstPaymentDate: app.first_payment_date
-      }),
-      notificationType: 'mortgage_activated',
-      notificationMetadata: {
+  const user = await userQB.findById(app.user_id);
+  if (!user) {
+    throw new Error(`User ${app.user_id} not found`);
+  }
+
+  if (user?.email) {
+    try {
+      await sendEmail({
+        to:  `${user.email}`,
+        subject: 'Property Offer Feedback',
+        html: sendOfferAcceptedEmail({
+          userName: user.name,
+          applicationNumber: app.application_number,
+          propertyName:app.property_name,
+          offerAmount:offer.amount
+        }),
+      });
+    } catch (error) {
+      console.error('Failed to send offer accepted email:', error);
+    }
+
+    await createNotification(
+      buildNotificationPayload('offer_accepted', {
+        user_id:user.id,
         application_id: app.id,
-        property_id: app.property_id,
-        due_date: app.first_payment_date,
-        cta_url: 'https://usekletch.com/user-dashboard/properties',
-        property_name: app.property_name
-      }
+        property_id:offer.property_id,
+        type:'offer_accepted',
+        channel: 'in_app',
+        metadata: {
+          reference_number: app.application_number,
+          application_number: app.id,
+          cta_url: `https://www.usekletch.com/user-dashboard/applications`,
+          property_name:offer.property_name 
+        },
+      })
+    );
+  }
+         
+}
+
+async function handleTermsAgreement(
+  app: ApplicationBase,
+  context: { userQB: SupabaseQueryBuilder<UserBase> }
+): Promise<void> {
+  const { userQB } = context;
+
+  const user = await userQB.findById(app.user_id);
+  if (!user) {
+    throw new Error(`User ${app.user_id} not found`);
+  }
+
+  await sendEmail({
+    to: user.email,
+    subject: 'Legal Documentation Complete, Next Step: Secure Your Property',
+    html: termsCompletionEmail({
+      userName: user.name,
+      propertyName: app.property_name,
+      applicationNumber: app.id,
+    }),
+  });
+
+  await createNotification(
+    buildNotificationPayload('terms_stage_completed', {
+      user_id: user.id,
+      application_id: app.id,
+      property_id: app.property_id,
+      type: 'terms_stage_completed',
+      channel: 'in_app',
+      metadata: {
+        application_number: app.application_number,
+        cta_url: 'https://usekletch.com/user-dashboard/applications',
+      },
+    })
+  );
+
+}
+
+async function handlePaymentSetup(
+  app: ApplicationBase,
+  context: { userQB: SupabaseQueryBuilder<UserBase> }
+): Promise<void> {
+  const { userQB } = context;
+
+  const user = await userQB.findById(app.user_id);
+  if (!user) {
+    throw new Error(`User ${app.user_id} not found`);
+  }
+
+  const escrow = app.stages_completed?.terms_agreement?.data?.down_payment_amount || 0;
+  const legal = app.stages_completed?.payment_setup?.data?.legal_fee_amount || 0;
+  const valuation = app.stages_completed?.payment_setup?.data?.valuation_fee_amount || 0;
+  const total = escrow + legal + valuation;
+
+  await sendEmail({
+    to: user.email,
+    subject: 'Payments Complete, Your Property is Secured!',
+    html: paymentCompletionEmail({
+      userName: user.name,
+      propertyName: app.property_name,
+      totalPaid: total,
+      paymentBreakdown: { escrow, legal, valuation },
+    }),
+  });
+
+  await createNotification(
+    buildNotificationPayload('payment_stage_completed', {
+      user_id: user.id,
+      application_id: app.id,
+      property_id: app.property_id,
+      type: 'payment_stage_completed',
+      channel: 'in_app',
+      metadata: {
+        application_number: app.application_number,
+        cta_url: 'https://usekletch.com/user-dashboard/applications',
+      },
+    })
+  );
+
+}
+
+async function handleMortgageActivation(
+  app: ApplicationBase,
+  context: {
+    propertyQB: SupabaseQueryBuilder<PropertyBase>;
+    userQB: SupabaseQueryBuilder<UserBase>;
+    transactionQB: SupabaseQueryBuilder<TransactionBase>;
+  }
+): Promise<void> {
+  const { propertyQB, userQB, transactionQB } = context;
+
+  const [user, seller, escrowTransaction] = await Promise.all([
+    userQB.findById(app.user_id),
+    app.developer_id ? userQB.findById(app.developer_id) : null,
+    transactionQB.findOneByCondition({
+      application_id: app.id,
+      type: 'escrow_down_payment',
+      status: 'succeeded',
+    }),
+  ]);
+
+  if (!user) {
+    throw new Error(`User ${app.user_id} not found`);
+  }
+
+  if (app.property_id) {
+    await propertyQB.update(app.property_id, { status: 'sold' });
+  }
+
+  if (escrowTransaction) {
+    await transactionQB.update(escrowTransaction.id, {
+      status: 'released',
+      state: 'released',
+      metadata: {
+        ...escrowTransaction.metadata,
+        escrow_status: 'released',
+        initiated_at: new Date().toISOString(),
+        session_url:escrowTransaction.metadata?.session_url || null,
+        expires_at:escrowTransaction.metadata?.expires_at || ''
+      },
     });
   }
 
-  private async notifySeller(
-    seller: UserBase,
-    buyer: UserBase,
-    app: ApplicationBase
-  ): Promise<void> {
-    await notifyUser({
-      userId: seller.id,
-      email: seller.email,
-      userName: seller.name,
-      emailSubject: 'Congratulations! Your Property Has Been Sold',
-      emailHtml: propertyAcquiredEmail({
+  await sendEmail({
+    to: user.email,
+    subject: "Congratulations! You're Now a Property Owner!",
+    html: mortgageActivationEmail({
+      userName: user.name,
+      propertyName: app.property_name,
+      mortgageAmount: `${app.approved_loan_amount}`,
+      totalLoanTerm: app.loan_term_months,
+      applicationNumber: app.application_number,
+      monthlyPayment: `${app.monthly_payment}`,
+      firstPaymentDate: app.first_payment_date,
+    }),
+  });
+
+  await createNotification(
+    buildNotificationPayload('mortgage_activated', {
+      user_id: user.id,
+      application_id: app.id,
+      property_id: app.property_id,
+      type: 'mortgage_activated',
+      channel: 'in_app',
+      metadata: {
+        due_date: app.first_payment_date,
+        escrow_amount: escrowTransaction?.amount || 0,
+        cta_url: 'https://usekletch.com/user-dashboard/properties',
+        property_name: app.property_name,
+      },
+    })
+  );
+
+  if (seller) {
+    await sendEmail({
+      to: seller.email,
+      subject: 'Congratulations! Your Property Has Been Sold',
+      html: propertyAcquiredEmail({
         sellerName: seller.name,
         propertyName: app.property_name,
         propertyId: app.property_id,
-        buyerName: buyer.name,
+        buyerName: user.name,
         saleAmount: `${app.property_price}`,
         applicationNumber: app.application_number,
+        escrowAmount:escrowTransaction?.amount || 0
       }),
-      notificationType: 'property_acquired',
-      notificationMetadata: {
+    });
+
+    await createNotification(
+      buildNotificationPayload('property_acquired', {
+        user_id: seller.id,
         application_id: app.id,
         property_id: app.property_id,
-        cta_url: `https://usekletch.com/seller-dashboard/listings/${app.property_id}`,
-        property_name: app.property_name
-      }
-    });
-  }
-
-  private async getEscrowTransaction(
-    applicationId: string,
-    transactionQB: SupabaseQueryBuilder<TransactionBase>
-  ): Promise<TransactionBase | null> {
-    return await transactionQB.findOneByCondition({
-      application_id: applicationId,
-      type: 'escrow_down_payment',
-      status: 'succeeded'
-    });
-  }
-
-  private async releaseEscrowFunds(
-    transaction: TransactionBase,
-    transactionQB: SupabaseQueryBuilder<TransactionBase>
-  ): Promise<void> {
-    try {
-      await transactionQB.update(transaction.id, {
-        status: 'released',
-        state: 'released',
+        type: 'property_acquired',
+        channel: 'in_app',
         metadata: {
-          ...transaction.metadata,
-          escrow_status: 'released',
-          session_url:transaction.metadata?.session_url || null,
-          expires_at: transaction.metadata?.expires_at || '',
-          initiated_at:new Date().toISOString()
-        }
-      });
-
-      console.log(`Escrow funds released for transaction ${transaction.id}`);
-    } catch (error) {
-      console.error('Failed to release escrow funds:', error);
-      throw error;
-    }
+          cta_url: `https://usekletch.com/seller-dashboard/listings/${app.property_id}`,
+          property_name: app.property_name,
+        },
+      })
+    );
   }
 
-  private async notifyAdminForFundRelease(
-    app: ApplicationBase,
-    escrowTransaction: TransactionBase,
-    seller: UserBase,
-    buyer: UserBase
-  ): Promise<void> {
-    const escrowAmount = (escrowTransaction.amount / 100).toFixed(2);
-
-    try {
-      await sendEmail({
-        to: 'muhammedolaleye@gmail.com',
-        subject: `Action Required: Release Escrow Funds - Application ${app.application_number}`,
-        html: AdminEscrowNotification({
-          applicationNumber: app.application_number,
-          propertyName: app.property_name,
-          amount: escrowAmount,
-          sellerName: seller.name,
-          sellerEmail: seller.email,
-          sellerID: seller.id,
-          buyerName: buyer.name,
-          transactionID: escrowTransaction.id,
-        }),
-      });
-
-      console.log(`Admin notification sent for escrow release: ${escrowTransaction.id}`);
-    } catch (error) {
-      console.error('Failed to notify admin for fund release:', error);
-    }
-  }
-}
-
-class PaymentSetupHandler implements StageHandler {
-  async shouldExecute(app: ApplicationBase): Promise<boolean> {
-    const stage = app.stages_completed?.payment_setup;
-    
-    if (!(stage?.completed === true && stage?.status === 'completed')) {
-      return false;
-    }
-
-    const alreadyExecuted = stage?.data?.handler_executed === true;
-    return !alreadyExecuted;
-  }
-
-
-  async execute(app: ApplicationBase, context: StageHandlerContext): Promise<void> {
-    const { userQB } = context;
-    const applicationQB = new SupabaseQueryBuilder<ApplicationBase>('applications');
-
-    console.log(`Executing PaymentSetupHandler for application ${app.id}`);
-
-    const user = await userQB.findById(app.user_id);
-    if (!user) {
-      throw new Error(`User ${app.user_id} not found`);
-    }
-
-    const paymentBreakdown = this.calculatePaymentBreakdown(app);
-    console.log("calculated payments breakdown for payment setup", paymentBreakdown)
-
-    await notifyUser({
-      userId: user.id,
-      email: user.email,
-      userName: user.name,
-      emailSubject: 'Payments Complete, Your Property is Secured!',
-      emailHtml: paymentCompletionEmail({
-        userName: user.name,
+  if (escrowTransaction && seller) {
+    await sendEmail({
+      to: 'muhammedolaleye@gmail.com',
+      subject: `Action Required: Release Escrow Funds - Application ${app.application_number}`,
+      html: AdminEscrowNotification({
+        applicationNumber: app.application_number,
         propertyName: app.property_name,
-        totalPaid: paymentBreakdown.total,
-        paymentBreakdown: {
-          escrow: paymentBreakdown.escrow,
-          legal: paymentBreakdown.legal,
-          valuation: paymentBreakdown.valuation
-        }
+        amount: escrowTransaction.amount,
+        sellerName: seller.name,
+        sellerEmail: seller.email,
+        sellerID: seller.id,
+        buyerName: user.name,
+        transactionID: escrowTransaction.id,
       }),
-      notificationType: 'payment_stage_completed',
-      notificationMetadata: {
-        application_id: app.id,
-        property_id: app.property_id,
-        application_number: app.application_number,
-        cta_url: 'https://usekletch.com/user-dashboard/applications',
-      }
     });
-    console.log("sent notification to user for payment setup")
-
-    await applicationQB.update(app.id, {
-      stages_completed: {
-        ...app.stages_completed,
-        payment_setup: {
-          status:'completed',
-          completed:true,
-          ...app.stages_completed?.payment_setup,
-          data: {
-            ...app.stages_completed?.payment_setup?.data,
-            handler_executed: true,
-            handler_executed_at: new Date().toISOString()
-          }
-        }
-      }
-    });
-    console.log("tag addednfor payment setup")
-
-    console.log(`PaymentSetupHandler completed for application ${app.id}`);
   }
 
-  private calculatePaymentBreakdown(app: ApplicationBase) {
-    const escrow = app.stages_completed?.terms_agreement?.data?.down_payment_amount || 0;
-    const legal = app.stages_completed?.payment_setup?.data?.legal_fee_amount || 0;
-    const valuation = app.stages_completed?.payment_setup?.data?.valuation_fee_amount || 0;
-    
-    return {
-      escrow,
-      legal,
-      valuation,
-      total: escrow + legal + valuation
-    };
-  }
 }
 
-class TermsAgreementHandler implements StageHandler {
-  async shouldExecute(app: ApplicationBase): Promise<boolean> {
-    const stage = app.stages_completed?.terms_agreement;
-    
-    if (!(stage?.completed === true && stage?.status === 'completed')) {
-      return false;
-    }
+function getSuccessMessage(stageType: StageType): string {
+  const messages = {
+    identity: 'Identity verification completed',
+    property: 'Property selection completed',
+    terms: 'Terms and agreement completed',
+    payment: 'Payment setup completed',
+    mortgage: 'Mortgage activated',
+  };
 
-    const alreadyExecuted = stage?.data?.handler_executed === true;
-    return !alreadyExecuted;
-  }
-
-  async execute(app: ApplicationBase, context: StageHandlerContext): Promise<void> {
-    const { userQB } = context;
-    const applicationQB = new SupabaseQueryBuilder<ApplicationBase>('applications');
-
-    console.log(`Executing TermsAgreementHandler for application ${app.id}`);
-
-    const user = await userQB.findById(app.user_id);
-    if (!user) {
-      throw new Error(`User ${app.user_id} not found`);
-    }
-    console.log("fetched user for terms and agreement")
-
-    await notifyUser({
-      userId: user.id,
-      email: user.email,
-      userName: user.name,
-      emailSubject: 'Legal Documentation Complete, Next Step: Secure Your Property',
-      emailHtml: termsCompletionEmail({
-        userName: user.name,
-        propertyName: app.property_name,
-        applicationNumber: app.id,
-      }),
-      notificationType: 'terms_stage_completed',
-      notificationMetadata: {
-        application_id: app.id,
-        property_id: app.property_id,
-        application_number: app.application_number,
-        cta_url: 'https://usekletch.com/user-dashboard/applications',
-      }
-    });
-    console.log("notify user for terms and agreement")
-
-    await applicationQB.update(app.id, {
-      stages_completed: {
-        ...app.stages_completed,
-        terms_agreement: {
-          status:'completed',
-          completed:true,
-          ...app.stages_completed?.terms_agreement,
-          data: {
-            ...app.stages_completed?.terms_agreement?.data,
-            handler_executed: true,
-            handler_executed_at: new Date().toISOString()
-          }
-        }
-      }
-    });
-    console.log("added tag for terms and agreement")
-
-    console.log(`TermsAgreementHandler completed for application ${app.id}`);
-  }
-}
-
-const STAGE_HANDLERS: StageHandler[] = [
-  new PropertySelectionHandler(),
-  new MortgageActivationHandler(),
-  new PaymentSetupHandler(),
-  new TermsAgreementHandler(),
-];
-
-export async function executeStageHandlers(
-  application: ApplicationBase,
-  context: StageHandlerContext
-): Promise<void> {
-  const errors: Error[] = [];
-
-  for (const handler of STAGE_HANDLERS) {
-    const shouldRun = await handler.shouldExecute(application);
-    if (shouldRun) {
-      try {
-        await handler.execute(application, context);
-      } catch (error) {
-        console.error(`Stage handler failed for ${handler.constructor.name}:`, error);
-        errors.push(error as Error);
-        // Continue with other handlers
-      }
-    }
-   
-  }
-
-  if (errors.length > 0) {
-    console.error(`${errors.length} stage handler(s) failed`);
-  }
+  return messages[stageType];
 }

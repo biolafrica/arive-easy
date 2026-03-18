@@ -110,6 +110,8 @@ export interface ApplicationBase{
   down_payment_percentage: number;
   interest_rate: number;
   loan_term_months: number;
+  kyc_verified_at:string;
+
 
   monthly_payment:number;
   first_payment_date:string;
