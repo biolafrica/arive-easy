@@ -1,8 +1,15 @@
 'use client';
 
 import { useState, useRef, useCallback, DragEvent, ChangeEvent, useEffect } from 'react';
-import { PhotoIcon, XMarkIcon, CloudArrowUpIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, DocumentIcon } from '@heroicons/react/24/outline';
 import { ImageFieldProps } from '@/type/form';
+
+const aspectRatioClass: Record<string, string> = {
+  '1:1':  'aspect-square',
+  '16:9': 'aspect-video',
+  '4:3':  'aspect-[4/3]',
+  '3:2':  'aspect-[3/2]',
+};
 
 const ImageField: React.FC<ImageFieldProps> = ({
   name,
@@ -18,7 +25,7 @@ const ImageField: React.FC<ImageFieldProps> = ({
   helperText,
   preview = true,
   multiple = false,
-  aspectRatio = 'free',
+  aspectRatio,
   className = '',
 }) => {
   const [isDragging, setIsDragging] = useState(false);
@@ -27,7 +34,7 @@ const ImageField: React.FC<ImageFieldProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (value instanceof File) {
+    if (value instanceof File && value.type.startsWith('image/')) {
       const url = URL.createObjectURL(value);
       setPreviewUrl(url);
       return () => URL.revokeObjectURL(url);
@@ -40,80 +47,63 @@ const ImageField: React.FC<ImageFieldProps> = ({
   }, [value]);
 
   const validateFile = (file: File): string | null => {
-    if (!file.type.startsWith('image/')) {
-      return 'Please upload an image file';
-    }
-
     const maxSizeBytes = maxSize * 1024 * 1024;
     if (file.size > maxSizeBytes) {
       return `File size must be less than ${maxSize}MB`;
     }
-
-    if (accept !== 'image/*') {
-      const acceptedTypes = accept.split(',').map(type => type.trim());
+    if (accept !== 'image/*' && accept !== '*') {
+      const acceptedTypes = accept.split(',').map((t) => t.trim());
       const fileExtension = `.${file.name.split('.').pop()?.toLowerCase()}`;
-      const mimeType = file.type;
-      
-      const isAccepted = acceptedTypes.some(type => 
-        type === mimeType || type === fileExtension || 
-        (type.endsWith('/*') && mimeType.startsWith(type.replace('/*', '')))
+      const isAccepted = acceptedTypes.some(
+        (t) =>
+          t === file.type ||
+          t === fileExtension ||
+          (t.endsWith('/*') && file.type.startsWith(t.replace('/*', '')))
       );
-      
-      if (!isAccepted) {
-        return `File type not accepted. Please upload: ${accept}`;
-      }
+      if (!isAccepted) return `File type not accepted. Allowed: ${accept}`;
     }
-
     return null;
   };
 
-  const handleFileSelect = useCallback((file: File | null) => {
-    if (!file) {
-      onChange(null);
+  const handleFileSelect = useCallback(
+    (file: File | null) => {
+      if (!file) {
+        onChange(null);
+        setUploadError('');
+        return;
+      }
+      const err = validateFile(file);
+      if (err) {
+        setUploadError(err);
+        return;
+      }
       setUploadError('');
-      return;
-    }
-
-    const validationError = validateFile(file);
-    if (validationError) {
-      setUploadError(validationError);
-      return;
-    }
-
-    setUploadError('');
-    onChange(file);
-  }, [onChange, maxSize, accept]);
+      onChange(file);
+    },
+    [onChange, maxSize, accept]
+  );
 
   const handleDragEnter = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!disabled) {
-      setIsDragging(true);
-    }
+    if (!disabled) setIsDragging(true);
   };
-
   const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
   };
-
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
   };
-
   const handleDrop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
-
     if (disabled) return;
-
     const files = e.dataTransfer.files;
-    if (files && files.length > 0) {
-      handleFileSelect(files[0]);
-    }
+    if (files?.length > 0) handleFileSelect(files[0]);
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -122,33 +112,27 @@ const ImageField: React.FC<ImageFieldProps> = ({
       handleFileSelect(files[0]);
     }
   };
-
   const handleRemove = () => {
     onChange(null);
     setPreviewUrl(null);
     setUploadError('');
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
-
   const handleClick = () => {
-    if (!disabled && fileInputRef.current) {
-      fileInputRef.current.click();
-    }
+    if (!disabled) fileInputRef.current?.click();
   };
 
-  const getAspectRatioClass = () => {
-    switch (aspectRatio) {
-      case '1:1': return 'aspect-square';
-      case '16:9': return 'aspect-video';
-      case '4:3': return 'aspect-4/3';
-      case '3:2': return 'aspect-3/2';
-      default: return '';
-    }
-  };
-
+  const isImageFile = value instanceof File && value.type.startsWith('image/');
+  const isNonImageFile = value instanceof File && !value.type.startsWith('image/');
   const displayError = uploadError || error;
+
+  const acceptLabel = (() => {
+    if (accept === 'image/*') return 'PNG, JPG, GIF, WebP';
+    if (accept === '*' || accept === '*/*') return 'Any file type';
+    return accept.toUpperCase();
+  })();
+
+  const ratioClass = aspectRatio ? (aspectRatioClass[aspectRatio] ?? '') : '';
 
   return (
     <div className={className}>
@@ -160,22 +144,24 @@ const ImageField: React.FC<ImageFieldProps> = ({
       )}
 
       <div
-        className={`
-          relative border border-dashed flex items-center justify-center rounded-xl transition-all ${getAspectRatioClass()} duration-200
-          ${isDragging 
-            ? 'border-accent bg-btn-secondary-active' 
-            : displayError
-            ? 'border-red-500 bg-red-50 dark:bg-red-900/10'
-            : 'border-border hover:border-btn-secondary bg-card'
-          }
-          ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-        `}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
-        onClick={handleClick}
         onBlur={onBlur}
+        onClick={!value ? handleClick : undefined}
+        className={[
+          'relative rounded-xl border border-dashed transition-all duration-200 overflow-hidden',
+          ratioClass,
+          !ratioClass ? 'min-h-[200px]' : '',
+          isDragging
+            ? 'border-accent bg-accent/5'
+            : displayError
+            ? 'border-red-400 bg-red-50 dark:bg-red-900/10'
+            : 'border-border bg-card',
+          !value && !disabled ? 'cursor-pointer hover:border-secondary hover:bg-hover/40' : '',
+          disabled ? 'opacity-50 cursor-not-allowed' : '',
+        ].join(' ')}
       >
         <input
           ref={fileInputRef}
@@ -190,56 +176,140 @@ const ImageField: React.FC<ImageFieldProps> = ({
           aria-describedby={displayError ? `${name}-error` : undefined}
         />
 
-        {previewUrl && preview ? (
-          <div className={`relative ${getAspectRatioClass()} ${!aspectRatio ? 'h-64' : ''}`}>
-            <img
-              src={previewUrl}
-              alt="Preview"
-              className="w-full h-full object-cover rounded-lg border"
-            />
+        {/* ── Has file: image preview ── */}
+        {previewUrl && preview && isImageFile && (
+          <div className="p-4 flex flex-col items-center gap-3">
+            <div className="relative w-full">
+              <img
+                src={previewUrl}
+                alt="Preview"
+                className={[
+                  'w-full object-cover rounded-lg border border-border',
+                  aspectRatio === '1:1' ? 'aspect-square' : '',
+                  aspectRatio === '16:9' ? 'aspect-video' : '',
+                  aspectRatio === '4:3' ? 'aspect-[4/3]' : '',
+                  !aspectRatio || aspectRatio === 'free' ? 'max-h-56' : '',
+                ].join(' ')}
+              />
+              {!disabled && (
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); handleRemove(); }}
+                  className="absolute top-2 right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-md transition-colors"
+                  aria-label="Remove file"
+                >
+                  <XMarkIcon className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+            <p className="text-xs text-secondary truncate max-w-full px-2">
+              {(value as File).name} · {((value as File).size / 1024 / 1024).toFixed(2)} MB
+            </p>
+          </div>
+        )}
+
+        {/* ── Has file: non-image (PDF, doc, etc.) ── */}
+        {isNonImageFile && (
+          <div className="p-6 flex items-center gap-4">
+            <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center">
+              <DocumentIcon className="h-6 w-6 text-accent" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-heading truncate">{(value as File).name}</p>
+              <p className="text-xs text-secondary mt-0.5">
+                {((value as File).size / 1024 / 1024).toFixed(2)} MB
+              </p>
+            </div>
             {!disabled && (
               <button
                 type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleRemove();
-                }}
-                className="absolute top-2 right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-colors"
-                aria-label="Remove image"
+                onClick={(e) => { e.stopPropagation(); handleRemove(); }}
+                className="flex-shrink-0 p-1.5 text-secondary hover:text-red-500 rounded-full transition-colors"
+                aria-label="Remove file"
               >
                 <XMarkIcon className="h-4 w-4" />
               </button>
             )}
-            {value instanceof File && (
-              <div className="absolute bottom-2 left-2 right-2 bg-black/70 text-white p-2 rounded text-xs">
-                <p className="truncate">{value.name}</p>
-                <p>{(value.size / 1024 / 1024).toFixed(2)} MB</p>
-              </div>
-            )}
           </div>
-        ) : (
-          <div className="p-8 text-center">
-            <div className="flex justify-center items-center mb-4">
-              {isDragging ? (
-                <CloudArrowUpIcon className="h-12 w-12 text-accent animate-bounce" />
-              ) : (
-                <PhotoIcon className="h-12 w-12 text-secondary" />
+        )}
+
+        {/* ── Has string URL ── */}
+        {typeof value === 'string' && previewUrl && preview && (
+          <div className="p-4 flex flex-col items-center gap-3">
+            <div className="relative w-full">
+              <img
+                src={previewUrl}
+                alt="Preview"
+                className="w-full object-cover rounded-lg border border-border max-h-56"
+              />
+              {!disabled && (
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); handleRemove(); }}
+                  className="absolute top-2 right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-md transition-colors"
+                  aria-label="Remove file"
+                >
+                  <XMarkIcon className="h-3.5 w-3.5" />
+                </button>
               )}
             </div>
-            <p className="text-sm font-medium text-heading mb-1">
-              {isDragging ? 'Drop your image here' : 'Click to upload or drag and drop'}
-            </p>
+          </div>
+        )}
+
+        {/* ── Empty state ── */}
+        {!value && (
+          <div className="py-10 px-6 flex flex-col items-center text-center gap-4">
+            {/* Cloud upload icon — inline SVG matching the reference */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 64 64"
+              className={`w-14 h-14 transition-colors ${isDragging ? 'text-accent' : 'text-heading'}`}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M44 38c4.4 0 8-3.6 8-8 0-4-2.9-7.3-6.7-7.9C44.4 16.4 40.5 13 36 13c-1.3 0-2.5.3-3.6.7C30.5 11 27.4 9 24 9c-5.5 0-10 4.5-10 10 0 .3 0 .7.1 1C10.2 21.5 8 24.5 8 28c0 5.5 4.5 10 10 10h4" />
+              <polyline points="24 44 32 36 40 44" />
+              <line x1="32" y1="36" x2="32" y2="56" />
+            </svg>
+
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-heading">
+                {isDragging ? 'Drop your file here' : (label || 'Upload file')}
+              </p>
+              {helperText && (
+                <p className="text-sm text-secondary">{helperText}</p>
+              )}
+            </div>
+
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); handleClick(); }}
+              disabled={disabled}
+              className="
+                px-5 py-2 rounded-lg border border-border bg-card
+                text-sm font-medium text-heading
+                hover:bg-hover hover:border-secondary
+                active:scale-[0.98]
+                transition-all duration-150
+                disabled:opacity-50 disabled:cursor-not-allowed
+              "
+            >
+              Select file
+            </button>
+
             <p className="text-xs text-secondary">
-              {accept === 'image/*' ? 'PNG, JPG, GIF, WebP' : accept.toUpperCase()} up to {maxSize}MB
+              {acceptLabel} · up to {maxSize}MB
             </p>
           </div>
         )}
       </div>
 
-      {helperText && !displayError && (
+      {helperText && !displayError && !(!value) && (
         <p className="mt-1 text-xs text-secondary">{helperText}</p>
       )}
-
       {displayError && (
         <p id={`${name}-error`} className="mt-1 text-sm text-red-600 dark:text-red-400">
           {displayError}

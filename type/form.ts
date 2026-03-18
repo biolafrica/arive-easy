@@ -15,6 +15,7 @@ export type FieldType =
 | 'image'
 | 'file'
 | 'money'
+| 'profile'
 
 
 export interface SelectOption {
@@ -79,6 +80,7 @@ export interface FormField {
   currency?: string;  // 'USD', 'EUR', 'GBP', 'NGN', etc.
   locale?: string;    // 'en-US', 'en-GB', 'en-NG', etc.
   showCurrencySymbol?: boolean;
+  size?:'sm' | 'md' | 'lg'
 }
 
 export interface DynamicFieldBuilderProps {

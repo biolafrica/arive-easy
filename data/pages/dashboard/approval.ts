@@ -143,13 +143,13 @@ export const propertyPreferenceFields:FormField[] = [
 ]
 
 export const DocumentInfoFields:FormField[] = [
-  { name: 'pay_stubs', label: 'Pay Stubs(Last 12 months)', type: 'image', required: true, accept:'image/jpeg,image/png,image/pdf', aspectRatio: '16:9'},
+  { name: 'pay_stubs', label: 'Pay Stubs(Last 12 months)', helperText:'Upload your recent pay stubs', type: 'image', required: true, accept:'image/*,.pdf', aspectRatio: '16:9'},
 
-  { name: 'tax_returns', label: 'Tax Returns(Last 12 months)', type: 'image', required: true, accept:'image/jpeg,image/png,image/pdf', aspectRatio: '16:9' },
+  { name: 'tax_returns', label: 'Tax Returns(Last 12 months)',helperText:'Upload your tax returns document', type: 'image', required: true, accept:'image/*,.pdf', aspectRatio: '16:9' },
 
-  { name: 'bank_statements', label: 'Bank Statement(Last 12 months)', type: 'image', required: true, accept:'image/jpeg,image/png,image/pdf', aspectRatio: '16:9'},
+  { name: 'bank_statements', label: 'Bank Statement(Last 12 months)',helperText:'Upload your bank statement', type: 'image', required: true, accept:'image/*,.pdf', aspectRatio: '16:9'},
 
-  { name: 'employment_verification', label: 'Employment Verification', type: 'image', required: true, accept:'image/jpeg,image/png,image/pdf', aspectRatio: '16:9'},
+  { name: 'employment_verification', label: 'Employment Verification',helperText:'Upload letter from employer or W-2', type: 'image', required: true, accept:'image/*,.pdf', aspectRatio: '16:9'},
 ]
 
 export const getEmploymentInfoFields = (employmentStatus: string): FormField[] => {

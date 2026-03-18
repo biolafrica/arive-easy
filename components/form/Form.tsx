@@ -7,6 +7,7 @@ import { FormField, FormProps } from '@/type/form';
 import DateInput from '../ui/DatePicker';
 import { useCallback } from 'react';
 import MoneyInput from '../ui/MoneyInput';
+import ProfilePhotoField from './ProfilePhotoField';
 
 
 function Form<T extends Record<string, any>>({
@@ -297,7 +298,25 @@ function Form<T extends Record<string, any>>({
             showCurrencySymbol={field.showCurrencySymbol !== false}
           />
         );
-        
+        case 'profile':
+          return (
+            <ProfilePhotoField
+              name={name}
+              label={label}
+              value={values[name]}
+              onChange={(file) => {
+                setFieldValueWithCallback(name as keyof T, file as any);
+                setFieldTouched(name as keyof T, true);
+              }}
+              onBlur={() => setFieldTouched(name as keyof T, true)}
+              maxSize={maxSize}
+              required={required}
+              disabled={disabled}
+              error={showError ? errors[name] : undefined}
+              helperText={helperText}
+              size={field.size || 'lg'}
+            />
+          );
       default:
         return (
           <input
