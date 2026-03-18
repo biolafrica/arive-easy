@@ -70,7 +70,7 @@ export const planField:FormField[]=[
   {name:'monthly_payment', label:"Monthly Payment($)", type:'money', required:true, placeholder:"Enter Amount", currency:"USD", locale:"en-US", showCurrencySymbol:true},
 
   {name:'first_payment_date', label:"First Payment Date", type:"date", required:true,},
-  {name:'last_payment_date', label:"First Payment Date", type:"date", required:true},
+  {name:'last_payment_date', label:"Last Payment Date", type:"date", required:true},
 
   {name:'total_payment', label:"Total Payment($)", type:"money", required:true, placeholder:"Enter Amount", currency:"USD", locale:"en-US", showCurrencySymbol:true},
 

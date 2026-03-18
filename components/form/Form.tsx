@@ -4,7 +4,7 @@ import { useForm } from '@/hooks/useForm';
 import { Button } from '../primitives/Button';
 import ImageField from './ImageField'; 
 import { FormField, FormProps } from '@/type/form';
-import { CompositeDatePicker} from '../ui/DatePicker';
+import DateInput from '../ui/DatePicker';
 import { useCallback } from 'react';
 import MoneyInput from '../ui/MoneyInput';
 
@@ -259,24 +259,19 @@ function Form<T extends Record<string, any>>({
 
       case 'date':
         return (
-          <CompositeDatePicker
+          <DateInput
+            id={fieldId}
+            name={name}
             value={values[name]}
-            onChange={(date) => {
-              setFieldValue(name as keyof T, date as any);
-              setFieldTouched(name as keyof T, true);
+            onChange={(val) => {
+              setFieldValueWithCallback(name as keyof T, val as any);
             }}
             onBlur={() => setFieldTouched(name as keyof T, true)}
-            placeholder={placeholder || "Select date"}
+            min={typeof min === 'string' ? min : undefined}
+            max={typeof max === 'string' ? max : undefined}
             disabled={disabled}
             required={required}
             error={!!showError}
-            min={min as string}
-            max={max as string}
-            format="DMY" 
-            yearRange={{ 
-              start: 1900, 
-              end: new Date().getFullYear() 
-            }}
           />
         );
       case 'money':
