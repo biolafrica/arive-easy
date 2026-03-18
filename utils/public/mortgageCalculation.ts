@@ -1,42 +1,52 @@
 import { MortgageInputs, MortgageOutputs } from "@/type/pages/calculator";
 
+export const FIXED_INTEREST_RATE  = 0.0975;      // 9.75% p.a. — fixed
+export const FIXED_MANAGEMENT_FEE = 0.01;         // 1% of loan amount p.a.
+export const FIXED_ADVISORY_FEE   = 0.01;         // 1% of loan amount p.a.
+export const MIN_EQUITY_PERCENT   = 10;           // 10% minimum down payment
+export const MIN_HOME_PRICE       = 12_500_000;   // $12.5M minimum property value
+
 export function calculateMortgage(inputs: MortgageInputs): MortgageOutputs {
   const {
     homePrice,
     downPayment,
     loanTerm,
-    interestRate,
-    propertyTaxRate = 0.01,
-    homeInsurance = 100,
-    pmiRate = 0.005,
+    propertyTaxRate = 0.0052,
+    homeInsurance   = 100,
+    pmiRate         = 0.005,
   } = inputs;
 
-
-  const loanAmount = homePrice - downPayment;
-
-  const monthlyRate = interestRate / 12;
+  // Interest rate is fixed globally — any value passed in is ignored
+  const interestRate     = FIXED_INTEREST_RATE;
+  const loanAmount       = homePrice - downPayment;
+  const monthlyRate      = interestRate / 12;
   const numberOfPayments = loanTerm * 12;
 
-  let monthlyPrincipalInterest = 0;
-  if (monthlyRate > 0) {
-    monthlyPrincipalInterest =
-      (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) /
-      (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
-  } else {
-    monthlyPrincipalInterest = loanAmount / numberOfPayments;
-  }
-
+  // Standard amortisation formula
+  const monthlyPrincipalInterest =
+    monthlyRate > 0
+      ? (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) /
+        (Math.pow(1 + monthlyRate, numberOfPayments) - 1)
+      : loanAmount / numberOfPayments;
 
   const monthlyPropertyTax = (homePrice * propertyTaxRate) / 12;
-
   const downPaymentPercent = (downPayment / homePrice) * 100;
-  const monthlyPMI = downPaymentPercent < 20 ? (loanAmount * pmiRate) / 12 : 0;
+  const monthlyPMI         = downPaymentPercent < 20 ? (loanAmount * pmiRate) / 12 : 0;
 
-  const totalMonthlyPayment = monthlyPrincipalInterest + monthlyPropertyTax + homeInsurance + monthlyPMI;
+  // New fees — annual rate on loan amount, divided to monthly
+  const monthlyManagementFee = (loanAmount * FIXED_MANAGEMENT_FEE) / 12;
+  const monthlyAdvisoryFee   = (loanAmount * FIXED_ADVISORY_FEE)   / 12;
+
+  const totalMonthlyPayment =
+    monthlyPrincipalInterest +
+    monthlyPropertyTax +
+    homeInsurance +
+    monthlyPMI +
+    monthlyManagementFee +
+    monthlyAdvisoryFee;
 
   const totalInterestPaid = monthlyPrincipalInterest * numberOfPayments - loanAmount;
-
-  const totalCostOfLoan = loanAmount + totalInterestPaid;
+  const totalCostOfLoan   = loanAmount + totalInterestPaid;
 
   return {
     loanAmount,
@@ -44,6 +54,8 @@ export function calculateMortgage(inputs: MortgageInputs): MortgageOutputs {
     monthlyPropertyTax,
     monthlyHomeInsurance: homeInsurance,
     monthlyPMI,
+    monthlyManagementFee,   // ← new
+    monthlyAdvisoryFee,     // ← new
     totalMonthlyPayment,
     totalInterestPaid,
     totalCostOfLoan,

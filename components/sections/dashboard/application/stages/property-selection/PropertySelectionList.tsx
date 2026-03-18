@@ -93,7 +93,7 @@ export function PropertySelectionList({
 
   return(
     <div className="space-y-3">
-      {/* ── Filter toggle bar ─────────────────────────────────── */}
+
       <div className="flex items-center justify-between gap-2">
         <button
           onClick={() => setShowFilters((v) => !v)}
@@ -128,7 +128,6 @@ export function PropertySelectionList({
         </span>
       </div>
  
-      {/* ── Filter row (collapsible) ──────────────────────────── */}
       {showFilters && (
         <div className="flex flex-wrap gap-2 rounded-xl border border-border bg-white/60 p-3">
           <FilterSelect
@@ -153,7 +152,6 @@ export function PropertySelectionList({
         </div>
       )}
  
-      {/* ── Property grid ─────────────────────────────────────── */}
       {properties.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-10 text-center">
           <ExclamationTriangleIcon className="h-10 w-10 text-secondary/40 mb-3" />

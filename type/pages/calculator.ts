@@ -18,4 +18,6 @@ export interface MortgageOutputs {
   totalMonthlyPayment: number;
   totalInterestPaid: number;
   totalCostOfLoan: number;
+    monthlyManagementFee:number,   // ← new
+    monthlyAdvisoryFee:number, 
 }
