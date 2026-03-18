@@ -34,14 +34,14 @@ export function MortgageActivationStage({ application, onActivate, onCreatePlan,
           label: 'Payment Plan',
           value: {
             type: 'custom',
-            node: <Button onClick={onCreatePlan} size='xs'>Create Plan</Button>
+            node: <Button onClick={onCreatePlan} size='xs' disabled={application.total_payment !== 0}>Create Plan</Button>
           }
         },
         {
           label: 'Mortgage Activation',
           value: {
             type: 'custom',
-            node: <Button onClick={onActivate} size='xs'>Activate Mortgage</Button>
+            node: <Button onClick={onActivate} size='xs' disabled={!stage?.data.direct_debit_status || stage.completed === true}>Activate Mortgage</Button>
           }
         },
       ]}

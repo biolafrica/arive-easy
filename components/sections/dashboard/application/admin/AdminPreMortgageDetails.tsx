@@ -10,12 +10,13 @@ import { IdentityStage } from "../stages/verification/AdminIdentityVerification"
 import { PropertyStage } from "../stages/property-selection/AdminPropertySelection";
 import { TermsStage } from "../stages/terms-agreement/AdminTermsAgreement";
 import { PaymentStage } from "../stages/payment-setup/AdminPaymentStage";
+import { MortgageActivationStage } from "../stages/mortgage-activation/AdminMortgageActivation";
+
 
 import AddPayment from "./AddPayment";
 import AddDocuments from "./AddDocuments";
 import AddTerms from "./AddTerms";
 import CreatePlan from "./CreatePlan";
-import { MortgageActivationStage } from "../stages/mortgage-activation/AdminMortgageActivation";
 import AddStaticDocuments from "./AddStaticDocument";
 
 interface Props {

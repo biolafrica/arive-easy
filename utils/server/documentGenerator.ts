@@ -122,6 +122,8 @@ export class DocumentGeneratorService {
         expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
       });
 
+      await this.updateApplicationStage(application, documentType, 'sent');
+
       return {
         success: true,
         etchPacketEid: etchResult.etchPacketEid,
@@ -296,6 +298,37 @@ export class DocumentGeneratorService {
       etchPacketEid: etchPacket.eid,
       envelopeEid: etchPacket.documentGroup?.eid,
     };
+  }
+
+  private async updateApplicationStage(
+    application: ApplicationBase,
+    documentType: string,
+    status: 'sent' | 'completed'
+  ): Promise<void> {
+    try {
+    
+      const currentStage = application.stages_completed.terms_agreement;
+
+      await this.applicationQB.update(application.id, {
+        stages_completed: {
+          ...application.stages_completed,
+          terms_agreement: {
+            ...currentStage,
+            status: currentStage?.status || 'current',
+            completed: currentStage?.completed || false,
+            data: {
+              ...currentStage?.data,
+              [`${documentType}_status`]: status,
+              [`${documentType}_sent_at`]: new Date().toISOString(),
+            }
+          }
+        }
+      });
+
+      console.log(`Updated terms and agreement stage with ${documentType} status: ${status}`);
+    } catch (error) {
+      console.error('Failed to update application stage:', error);
+    }
   }
 }
 

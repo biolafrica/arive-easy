@@ -29,7 +29,7 @@ export function TermsStage({ application, onComplete, onAddTerms, onAddDocuments
           label: 'Terms Details',
           value: {
             type: 'custom',
-            node: <Button onClick={onAddTerms} size='xs'>Add Terms</Button>
+            node: <Button onClick={onAddTerms} size='xs' disabled={application.approved_loan_amount !== 0 }>Add Terms</Button>
           }
         },
         { label: 'Loan Amount', value: { type: 'text', value: `${formatUSD({amount:application.approved_loan_amount}) || 0}` }},
@@ -41,7 +41,7 @@ export function TermsStage({ application, onComplete, onAddTerms, onAddDocuments
           label: 'Agreement Documents',
           value: {
             type: 'custom',
-            node: <Button onClick={onAddDocuments} size='xs'>Add Documents</Button>
+            node: <Button onClick={onAddDocuments} size='xs' >Add Documents</Button>
           }
         },
         
@@ -49,7 +49,7 @@ export function TermsStage({ application, onComplete, onAddTerms, onAddDocuments
           label: 'Complete Stage',
           value: {
             type: 'custom',
-            node: <CompleteStageButton onComplete={onComplete} stageType='terms' />
+            node: <CompleteStageButton onComplete={onComplete} stageType='terms' disabled={stage?.completed === true } />
           }
         },
       ]}

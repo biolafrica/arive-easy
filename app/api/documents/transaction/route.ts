@@ -1,6 +1,7 @@
 import { ApplicationBase } from "@/type/pages/dashboard/application";
 import { TransactionDocumentBase } from "@/type/pages/dashboard/documents";
 import { UserBase } from "@/type/user";
+import { humanizeSnakeCase } from "@/utils/common/humanizeSnakeCase";
 import { sendEmail } from "@/utils/email/send_email";
 import { documentUploadNotificationEmail } from "@/utils/email/templates/document";
 import { createNotification } from "@/utils/notifications/createNotification";
@@ -50,13 +51,31 @@ const transactionTemplateHandlers = createCRUDHandlers<TransactionDocumentBase>(
         });
 
         if(previousTransactionTemplate){
-          throw new Error( `you already created ${body.document_type} for this application`)
+          throw new Error( `you already created ${humanizeSnakeCase(body.document_type)} for this application`)
         }
 
         const application = await applicationQB.findById(body.application_id)
         if(!application){
           throw new Error('application not found')
         }
+
+        const currentStage = application.stages_completed.mortgage_activation;
+
+        await applicationQB.update(application.id, {
+          stages_completed: {
+            ...application.stages_completed,
+            mortgage_activation: {
+              ...currentStage,
+              status: currentStage?.status || 'current',
+              completed: currentStage?.completed || false,
+              data: {
+                ...currentStage?.data,
+                [body.document_type]: true,
+                [`${body.document_type}_uploaded_at`]: new Date().toISOString(),
+              }
+            }
+          }
+        })
 
         const now = new Date().toISOString();
 

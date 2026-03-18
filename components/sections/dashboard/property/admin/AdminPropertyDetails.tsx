@@ -6,7 +6,6 @@ import { PropertyGallery } from "@/components/sections/public/property/PropertyG
 import { PropertyPricing } from "@/components/sections/public/property/PropetyPricing";
 import { PropertyBase } from "@/type/pages/property";
 import PropertyDocumentsList from "./PropertyDocumentList";
-import { useState } from "react";
 import ConfirmBanner, { BannerVariant } from "@/components/feedbacks/ConfirmBanner";
 import { useAdminPropertyActions } from "@/hooks/useSpecialized";
 import { useConfirmAction } from "@/hooks/useConfirmation";

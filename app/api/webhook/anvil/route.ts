@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { storageManager } from "@/utils/server/storageManager";
 import { SupabaseQueryBuilder } from "@/utils/supabase/queryBuilder";
 import { TransactionDocumentBase } from "@/type/pages/dashboard/documents";
+import { ApplicationBase } from "@/type/pages/dashboard/application";
 
 const ANVIL_WEBHOOK_TOKEN = process.env.ANVIL_WEBHOOK_TOKEN!;
 
@@ -51,11 +52,13 @@ async function handleEtchPacketComplete(data: any) {
     throw new Error('Missing documentGroup.eid in webhook payload');
   }
 
-  const transactionDocumentQueryBuilder = new SupabaseQueryBuilder<TransactionDocumentBase>(
+  const transactionDocumentQB = new SupabaseQueryBuilder<TransactionDocumentBase>(
     'document_transactions'
   );
 
-  const transactionDoc = await transactionDocumentQueryBuilder.findOneByCondition({
+  const applicationQB = new SupabaseQueryBuilder<ApplicationBase>('applications');
+
+  const transactionDoc = await transactionDocumentQB.findOneByCondition({
     esign_document_id: etchPacketEid,
   });
 
@@ -72,7 +75,6 @@ async function handleEtchPacketComplete(data: any) {
   // Fetch the zip directly from Anvil's URL
   const response = await fetch(downloadZipURL, {
     headers: {
-      // Anvil requires auth even on download URLs
       Authorization: `Basic ${Buffer.from(`${process.env.ANVIL_API_KEY}:`).toString('base64')}`,
     },
   });
@@ -86,7 +88,6 @@ async function handleEtchPacketComplete(data: any) {
 
   console.log('Anvil webhook: Downloaded zip, size:', buffer.byteLength, 'bytes');
 
-  // Upload to Supabase storage
   const file = new File(
     [buffer],
     `signed-${transactionDoc.id}-${Date.now()}.zip`,
@@ -102,11 +103,17 @@ async function handleEtchPacketComplete(data: any) {
 
   console.log('Anvil webhook: Uploaded to storage:', publicUrl);
 
-  await transactionDocumentQueryBuilder.update(transactionDoc.id, {
+  await transactionDocumentQB.update(transactionDoc.id, {
     generated_document_url: publicUrl,
     status: 'completed',
     completed_at: new Date().toISOString(),
   });
+
+  await updateApplicationStageOnCompletion(
+    applicationQB,
+    transactionDoc.application_id,
+    transactionDoc.document_type
+  );
 
   console.log('Anvil webhook: Transaction completed successfully:', transactionDoc.id);
 }
@@ -118,11 +125,13 @@ async function handleSignerComplete(data: any) {
     throw new Error('Missing etchPacket.eid in signerComplete payload');
   }
 
-  const transactionDocumentQueryBuilder = new SupabaseQueryBuilder<TransactionDocumentBase>(
+  const transactionDocumentQB = new SupabaseQueryBuilder<TransactionDocumentBase>(
     'document_transactions'
   );
+  const applicationQB = new SupabaseQueryBuilder<ApplicationBase>('applications');
 
-  const transactionDoc = await transactionDocumentQueryBuilder.findOneByCondition({
+
+  const transactionDoc = await transactionDocumentQB.findOneByCondition({
     esign_document_id: etchPacket.eid,
   });
 
@@ -131,12 +140,11 @@ async function handleSignerComplete(data: any) {
     return;
   }
 
-  // Build the updated signatures object by merging into existing
   const existingSignatures = (transactionDoc.signatures as Record<string, any>) || {};
 
   const updatedSignatures = {
     ...existingSignatures,
-    [aliasId]: {                        // keyed by "buyer" or "seller"
+    [aliasId]: {                
       eid,
       name,
       email,
@@ -146,16 +154,103 @@ async function handleSignerComplete(data: any) {
     },
   };
 
-  // Derive overall transaction status from all signers
   const allSigners = signers ?? [];
   const completedCount = allSigners.filter((s: any) => s.status === 'completed').length;
   const totalCount = allSigners.length;
   const transactionStatus = completedCount === totalCount ? 'completed' : 'partially_signed';
 
-  await transactionDocumentQueryBuilder.update(transactionDoc.id, {
+  await transactionDocumentQB.update(transactionDoc.id, {
     signatures: updatedSignatures,
     status: transactionStatus,
   });
 
+  await updateApplicationStageOnSignature(
+    applicationQB,
+    transactionDoc.application_id,
+    transactionDoc.document_type,
+    aliasId,
+    completedCount,
+    totalCount
+  );
+
   console.log(`Anvil webhook: Signer "${aliasId}" (${name}) completed. ${completedCount}/${totalCount} signed.`);
+}
+
+
+async function updateApplicationStageOnCompletion(
+  applicationQB: SupabaseQueryBuilder<ApplicationBase>,
+  applicationId: string,
+  documentType: string
+): Promise<void> {
+  try {
+    const application = await applicationQB.findById(applicationId);
+    if (!application) {
+      console.warn('Application not found:', applicationId);
+      return;
+    }
+
+    const currentStage = application.stages_completed.terms_agreement;
+
+    await applicationQB.update(applicationId, {
+      stages_completed: {
+        ...application.stages_completed,
+        terms_agreement: {
+          ...currentStage,
+          status: currentStage?.status || 'current',
+          completed: currentStage?.completed || false,
+          data: {
+            ...currentStage?.data,
+            [`${documentType}_status`]: 'completed',
+            [`${documentType}_completed_at`]: new Date().toISOString(),
+          }
+        }
+      }
+    });
+
+    console.log(`Updated terms and agreement: ${documentType} completed`);
+  } catch (error) {
+    console.error('Failed to update application stage on completion:', error);
+  }
+}
+
+async function updateApplicationStageOnSignature(
+  applicationQB: SupabaseQueryBuilder<ApplicationBase>,
+  applicationId: string,
+  documentType: string,
+  signerRole: string,
+  completedCount: number,
+  totalCount: number
+): Promise<void> {
+  try {
+    const application = await applicationQB.findById(applicationId);
+    if (!application) {
+      console.warn('Application not found:', applicationId);
+      return;
+    }
+
+    const currentStage = application.stages_completed.terms_agreement;
+    const signatureStatus = completedCount === totalCount ? 'fully_signed' : 'partially_signed';
+
+    await applicationQB.update(applicationId, {
+      stages_completed: {
+        ...application.stages_completed,
+        terms_agreement: {
+          ...currentStage,
+          status: currentStage?.status || 'current',
+          completed: currentStage?.completed || false,
+          data: {
+            ...currentStage?.data,
+            [`${documentType}_signature_status`]: signatureStatus,
+            [`${documentType}_${signerRole}_signed_at`]: new Date().toISOString(),
+            [`${documentType}_signatures_completed`]: completedCount,
+            [`${documentType}_signatures_total`]: totalCount,
+          }
+        }
+      }
+    });
+
+    console.log(`Updated terms and agreement: ${documentType} - ${signerRole} signed (${completedCount}/${totalCount})`);
+  } catch (error) {
+    console.error('Failed to update application stage on signature:', error);
+  }
 }

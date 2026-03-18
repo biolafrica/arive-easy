@@ -20,11 +20,12 @@ export function useStageTransition(
         immigration_error_message: '',
       },
 
+      //FIX LATER
       property: {
-        status: 'sent', // This triggers offer creation
+        status: "approved",
         submitted_at: new Date().toISOString(),
-        property_name: currentStages.property_selection?.data?.property_name || 'Property',
-        type: 'mortgage',
+        property_name: "Mary Keyes Residence",
+        type: "mortgage"
       },
 
       terms: null, 
@@ -41,18 +42,12 @@ export function useStageTransition(
 
     const stageData = stageDataMap[type];
 
-    try {
-      const result = await completeStageRequest({
-        applicationId,
-        stageType: type,
-        stageData: stageData || {},
-      });
+    await completeStageRequest({
+      applicationId,
+      stageType: type,
+      stageData: stageData || {},
+    });
 
-      return result;
-    } catch (error) {
-      // Error already handled by useStageCompletion
-      throw error;
-    }
   };
 
   return {

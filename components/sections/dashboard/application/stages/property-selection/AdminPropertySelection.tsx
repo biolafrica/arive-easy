@@ -31,7 +31,7 @@ export function PropertyStage({ application, onComplete }: PropertyStageProps) {
           label: 'Complete Stage',
           value: {
             type: 'custom',
-            node: <CompleteStageButton onComplete={onComplete} stageType='property' />
+            node: <CompleteStageButton onComplete={onComplete} stageType='property' disabled={property?.completed === true} />
           }
         },
       ]}

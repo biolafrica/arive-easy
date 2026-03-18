@@ -1,6 +1,8 @@
 import { formatDate } from "@/lib/formatter";
 import { EmailButton, StatusBadge } from "../components/EmailButton";
 import { DataTable, InfoBox } from "../components/EmailCard";
+import { humanizeSnakeCase } from '../../common/humanizeSnakeCase';
+
 
 interface DocumentUploadParams {
   userName: string;
@@ -42,7 +44,7 @@ export const documentUploadNotificationEmail=(
     ${DataTable([
       { label: 'Application Number', value: applicationNumber },
       { label: 'Property', value: propertyName },
-      { label: 'Documents Uploaded', value: `${uploadedDocuments.type}` },
+      { label: 'Documents Uploaded', value: `${humanizeSnakeCase(uploadedDocuments.type)}` },
       { label: 'Uploaded By', value: "Kletch Admin Team" },
       { label: 'Upload Date', value: formatDate(uploadedDocuments.uploadDate)}
     ], 'Upload Summary')}
@@ -54,7 +56,7 @@ export const documentUploadNotificationEmail=(
           <div style="border-bottom: 1px solid #e5e7eb; padding: 10px 0;">
             <p style="margin: 0 0 5px 0; font-weight: 600; color: #1f2937;">${uploadedDocuments.name}</p>
             <p style="margin: 0 0 5px 0; font-size: 14px; color: #6b7280;">
-              <strong>Type:</strong> ${uploadedDocuments.type}
+              <strong>Type:</strong> ${humanizeSnakeCase(uploadedDocuments.type)}
             </p>
             ${uploadedDocuments.description ? `
               <p style="margin: 0; font-size: 14px; color: #6b7280; font-style: italic;">

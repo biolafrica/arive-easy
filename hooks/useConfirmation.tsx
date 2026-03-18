@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { StageType } from './useSpecialized/useApplications';
 import { ApplicationBase } from '@/type/pages/dashboard/application';
 
 export interface ConfirmConfig {
@@ -16,13 +15,13 @@ interface Banner {
 }
 
 export function useConfirmAction<T extends string>(
-  config: Record<StageType, ConfirmConfig>,
-  handler: (type: StageType) => Promise<ApplicationBase> | void
+  config: Record<T, ConfirmConfig>,
+  handler: (type: T) => Promise<void> | void
 ) {
   const [open, setOpen] = useState(false);
   const [banner, setBanner] = useState<Banner | null>(null);
 
-  const openConfirm = (type: StageType) => {
+  const openConfirm = (type: T) => {
     setBanner({
       ...config[type],
       confirm: async () => {

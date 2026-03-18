@@ -29,7 +29,14 @@ export function PaymentStage({ application, onComplete, onAddPayments }: Payment
           label: 'Payments',
           value: {
             type: 'custom',
-            node: <Button onClick={onAddPayments} size='xs'>Add Payments</Button>
+            node: 
+            <Button 
+              onClick={onAddPayments} 
+              size='xs' 
+              disabled={payment?.data.valuation_fee_amount !== 0 && payment?.data.legal_fee_amount !== 0 }
+            >
+              Add Payments
+            </Button>
           }
         },
         {
@@ -66,7 +73,12 @@ export function PaymentStage({ application, onComplete, onAddPayments }: Payment
           label: 'Complete Stage',
           value: {
             type: 'custom',
-            node: <CompleteStageButton onComplete={onComplete} stageType='payment' />
+            node: 
+            <CompleteStageButton 
+              onComplete={onComplete} 
+              stageType='payment' 
+              disabled={payment?.completed === true} 
+            />
           }
         },
       ]}

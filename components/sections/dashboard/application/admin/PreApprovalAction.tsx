@@ -17,10 +17,10 @@ const PRE_APPROVAL_CONFIG: ActionModalConfig = {
     buttonText: 'Approve',
     variant: 'filled',
     inputType: 'array',
-    inputLabel: 'Conditions (Optional)',
+    inputLabel: 'Conditions (Required)',
     inputPlaceholder: 'Enter condition',
     inputDescription: 'Add any conditions that apply to this approval. Leave empty if none.',
-    required: false,
+    required: true,
   },
   decline: {
     title: 'Decline Application',

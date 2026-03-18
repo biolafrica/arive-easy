@@ -24,7 +24,7 @@ export default function TableSkeleton({
 
           <td className="sticky left-0 z-10 bg-card w-12 min-w-[3rem] px-3 py-4 border-r border-separator">
             <div className="flex items-center justify-center">
-              <div className="h-4 w-5 rounded bg-hover animate-pulse" />
+              <div className="h-4 w-5 rounded bg-gray-300 animate-pulse" />
             </div>
           </td>
 

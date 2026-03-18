@@ -72,7 +72,7 @@ export function IdentityStage({ application, onComplete }: IdentityStageProps) {
           label: 'Complete Stage',
           value: {
             type: 'custom',
-            node: <CompleteStageButton onComplete={onComplete} stageType='identity' />
+            node: <CompleteStageButton onComplete={onComplete} stageType='identity' disabled={stage?.completed === true} />
           }
         },
       ]}
