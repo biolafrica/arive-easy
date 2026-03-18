@@ -32,7 +32,7 @@ export default function AdminApplicationsClientView (){
       >
         {detailPanel.mode === 'edit' && detailPanel.selectedItem ? 
           (<AdminPreApprovalDetails pre_approvals={detailPanel.selectedItem} close={handleClose} />):
-          (<AdminPreMortgageDetails applications={detailPanel.selectedItem} />)
+          (<AdminPreMortgageDetails applications={detailPanel.selectedItem} close={handleClose}  />)
         }
       </SidePanel>
 
@@ -44,8 +44,8 @@ export default function AdminApplicationsClientView (){
         />
       </div>
 
-      {tab === 'pre_approval' && (<AdminPreApprovalClientView detailPanel={detailPanel} close={detailPanel.close}/> )}
-      {tab === 'pre_mortgage' && (<AdminPreMortgageClientView detailPanel={detailPanel}/> ) }
+      {tab === 'pre_approval' && (<AdminPreApprovalClientView detailPanel={detailPanel} close={detailPanel.close} /> )}
+      {tab === 'pre_mortgage' && (<AdminPreMortgageClientView detailPanel={detailPanel}  /> ) }
       
     </div>
   )

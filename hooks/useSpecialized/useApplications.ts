@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useMemo } from "react";
 import { createEntityHooks } from "./useFactory";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { captureError } from "@/utils/auth/captureError";
 
 
@@ -14,6 +15,14 @@ interface PaymentStatus {
   receipt_url: string | null;
   transaction_id?: string;
   payment_date?: string;
+}
+
+export type StageType = 'identity' | 'property' | 'terms' | 'payment' | 'mortgage';
+
+interface CompleteStageParams {
+  applicationId: string;
+  stageType: StageType;
+  stageData: any;
 }
 
 const applicationHooks = createEntityHooks<
@@ -280,3 +289,59 @@ export function useApplicationByProperty(propertyId?: string) {
   };
 }
 
+
+async function completeStageRequest(params: CompleteStageParams): Promise<ApplicationBase> {
+  const { applicationId, stageType, stageData } = params;
+
+  const response = await fetch(`/api/applications/${applicationId}/complete-stage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      stageType,
+      stageData,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to complete stage');
+  }
+
+  const result = await response.json();
+  return result.data;
+}
+
+export function useStageCompletion(applicationId: string) {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: completeStageRequest,
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['applications'] });
+      queryClient.invalidateQueries({ queryKey: ['application', applicationId] });
+
+      const messages: Record<StageType, string> = {
+        identity: 'Identity verification completed',
+        property: 'Property selection completed',
+        terms: 'Terms and agreement completed',
+        payment: 'Payment setup completed',
+        mortgage: 'Mortgage activated successfully',
+      };
+
+      toast.success(messages[variables.stageType]);
+    },
+    onError: (error: Error, variables) => {
+      captureError(error, {
+        component: `useStageCompletion for ${variables.stageType}` ,
+        action: 'complete-stage',
+      });
+
+      toast.error(error.message || 'Failed to complete stage');
+    },
+  });
+
+  return {
+    completeStage: mutation.mutateAsync,
+    isCompleting: mutation.isPending,
+  };
+}

@@ -200,4 +200,5 @@ export interface AdminApplicationModalProps{
   showModal:boolean
   setShowModal:(value:boolean)=>void
   id:string
+  close: ()=>void
 }

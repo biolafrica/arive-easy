@@ -2,14 +2,11 @@ import Modal from "@/components/common/ContentModal";
 import Form from "@/components/form/Form";
 import { staticDocumentField, staticDocumentInitialValue } from "@/data/pages/dashboard/documents";
 import { useUploadStaticDocuments } from "@/hooks/useSpecialized/useDocuments";
+import { AdminApplicationModalProps } from "@/type/pages/dashboard/application";
 import { StaticDocumentForm, StaticTransactionDocumentForm } from "@/type/pages/dashboard/documents";
 import { generateApplicationRefNo } from "@/utils/common/generateApplicationRef";
 
-export default function AddStaticDocuments({showModal, setShowModal, id}:{
-  showModal:boolean
-  setShowModal:(value:boolean)=>void
-  id:string
-}){
+export default function AddStaticDocuments({showModal, setShowModal, id}:AdminApplicationModalProps){
 
   const { uploadDocument, isUploading } = useUploadStaticDocuments();
 
@@ -26,10 +23,10 @@ export default function AddStaticDocuments({showModal, setShowModal, id}:{
     try {
       const result = await uploadDocument(formData);
       if (result) {
-        console.log("document created successfully:", result);
+        setShowModal(false)
         setTimeout(()=>{
-          setShowModal(false)
-        }, 1500)
+          close()
+        },1500)
       }
       
     } catch (error) {

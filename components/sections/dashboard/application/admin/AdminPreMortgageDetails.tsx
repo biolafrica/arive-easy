@@ -20,9 +20,10 @@ import AddStaticDocuments from "./AddStaticDocument";
 
 interface Props {
   applications: ApplicationBase;
+  close: ()=>void
 }
 
-export default function AdminPreMortgageDetails({ applications }: Props) {
+export default function AdminPreMortgageDetails({ applications, close }: Props) {
   const [paymentShowModal, setPaymentShowModal] = useState(false);
   const [documentShowModal, setDocumentShowModal] = useState(false);
   const [staticDocumentShowModal, setStaticDocumentShowModal] = useState(false);
@@ -85,11 +86,11 @@ export default function AdminPreMortgageDetails({ applications }: Props) {
         </div>
       </div>
 
-      <AddPayment showModal={paymentShowModal} setShowModal={setPaymentShowModal} id={applications.id} />
-      <AddDocuments showModal={documentShowModal} setShowModal={setDocumentShowModal} id={applications.id} />
-      <AddStaticDocuments showModal={staticDocumentShowModal} setShowModal={setStaticDocumentShowModal} id={applications.id} />
-      <AddTerms showModal={termShowModal} setShowModal={setTermShowModal} id={applications.id} />
-      <CreatePlan showModal={planShowModal} setShowModal={setPlanShowModal} id={applications.id} />
+      <AddPayment showModal={paymentShowModal} setShowModal={setPaymentShowModal} id={applications.id} close={close} />
+      <AddDocuments showModal={documentShowModal} setShowModal={setDocumentShowModal} id={applications.id} close={close} />
+      <AddStaticDocuments showModal={staticDocumentShowModal} setShowModal={setStaticDocumentShowModal} id={applications.id} close={close} />
+      <AddTerms showModal={termShowModal} setShowModal={setTermShowModal} id={applications.id} close={close} />
+      <CreatePlan showModal={planShowModal} setShowModal={setPlanShowModal} id={applications.id} close={close} />
 
       {banner && (
         <ConfirmBanner

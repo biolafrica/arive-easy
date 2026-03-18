@@ -38,6 +38,9 @@ export default function AddPayment(
   const handleValuationSubmit = async(values:AddValuationForm)=>{
     await updateApplication(id, values, {successMessage: 'Valuation fee added successfully'})
     setShowModal(false);
+    setTimeout(()=>{
+      close()
+    },1500)
   }
 
   return(

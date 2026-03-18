@@ -2,13 +2,10 @@ import Modal from "@/components/common/ContentModal";
 import Form from "@/components/form/Form";
 import { dynamicDocumentField, dynamicDocumentInitialValue} from "@/data/pages/dashboard/documents";
 import { useTransactionalDocument} from "@/hooks/useSpecialized/useDocuments";
+import { AdminApplicationModalProps } from "@/type/pages/dashboard/application";
 import { DynamicDocumentForm } from "@/type/pages/dashboard/documents";
 
-export default function AddDocuments({showModal, setShowModal, id}:{
-  showModal:boolean
-  setShowModal:(value:boolean)=>void
-  id:string
-}){
+export default function AddDocuments({showModal, setShowModal, id}:AdminApplicationModalProps){
   const { generateContractDocument, isGenerating } = useTransactionalDocument();
 
   const handleCreateDocument = async (values:DynamicDocumentForm) => {
@@ -19,8 +16,10 @@ export default function AddDocuments({showModal, setShowModal, id}:{
       });
 
       if (result?.success) {
-        console.log('Signing URLs:', result);
         setShowModal(false);
+        setTimeout(()=>{
+          close()
+        },1500)
       }
     } catch (error) {
       console.error('Error creating document:', error);
