@@ -1,13 +1,13 @@
 import { useApplicationProperties} from "@/hooks/useSpecialized";
 import { PropertySelectionStageData, Props,} from "@/type/pages/dashboard/application";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { PropertyBase } from "@/type/pages/property";
 import { PropertySelectionCard } from "@/components/cards/dashboard/SelectionProperty";
-import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
 import { formatUSD, toNumber } from "@/lib/formatter";
 import { AllPropertyGridSkeleton } from "@/components/skeleton/PropertyCardSkeleton";
 import PropertyStageStatusBanner from "./PropertyStageStatusBanner";
+import { PropertySelectionList } from "./PropertySelectionList";
 
 
 function SelectedPropertyView({  property,status
@@ -42,13 +42,7 @@ export default function PropertySelectionStage({
   
   const userBuyingPower = 500000 // change to selected property price later
 
-  const {
-    properties,
-    property: submittedProperty,
-    isLoading,
-    mode,
-    isDefaultProperty,
-  } = useApplicationProperties(
+  const { property: submittedProperty, isLoading, mode} = useApplicationProperties(
     application.property_id,
     userBuyingPower
   );
@@ -61,13 +55,6 @@ export default function PropertySelectionStage({
     type: 'mortgage'
   };
 
-  const selectedProperty = useMemo(() => {
-    if (selectedPropertyId) {
-      return properties.find(p => p.id === selectedPropertyId) || null;
-    }
-    return null;
-  }, [selectedPropertyId, properties]);
-
   const currentStatus = selectionData.status;
   const isSelectionMode = currentStatus === '' || currentStatus === 'declined';
 
@@ -78,16 +65,16 @@ export default function PropertySelectionStage({
   };
 
   const handleConfirmSelection = async () => {
-    if (!selectedProperty) return;
+    if (!selectedPropertyId) return;
 
     setIsSubmitting(true);
     try {
       await onUpdate({
-        property_id: selectedProperty.id,
-        property_name: selectedProperty.title,
-        property_price: Number(selectedProperty.price),
+        property_id: selectedPropertyId,
+        property_name: '',
+        property_price: 0,
         type: 'mortgage',
-        developer_id: selectedProperty?.developer_id || ""
+        developer_id: ""
       });
       setSelectedPropertyId(null);
     } catch (error) {
@@ -102,7 +89,8 @@ export default function PropertySelectionStage({
     return ( <AllPropertyGridSkeleton/> );
   }
 
-  const shouldShowSubmittedProperty = (currentStatus === 'sent' || currentStatus === 'approved') && 
+  const shouldShowSubmittedProperty = 
+  (currentStatus === 'sent' || currentStatus === 'approved') && 
   mode === 'single' && submittedProperty;
 
   return (
@@ -121,10 +109,12 @@ export default function PropertySelectionStage({
         />
       ) : (
         <>
+
           <div className="text-center">
             <h2 className="text-2xl font-bold text-heading">
               {currentStatus === 'declined' ? 'Select Another Property' : 'Select Your Property'}
             </h2>
+
             <p className="mt-2 text-secondary">
               Choose a property within your approved budget of{' '}
               <span className="font-semibold">
@@ -137,34 +127,23 @@ export default function PropertySelectionStage({
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {properties.map((property) => (
-              <PropertySelectionCard
-                key={property.id}
-                property={property}
-                isSelected={selectedPropertyId === property.id}
-                onSelect={handlePropertySelect}
-                formatPrice={()=>formatUSD({amount:toNumber(property.price),fromCents:false, decimals:2})}
-                disabled={isReadOnly || isUpdating}
-              />
-            ))}
-          </div>
+          <PropertySelectionList
+            applicationPropertyId={application.property_id}
+            userBuyingPower={userBuyingPower}
+            selectedPropertyId={selectedPropertyId}
+            onSelect={handlePropertySelect}
+            isReadOnly={isReadOnly}
+            isUpdating={isUpdating}
+          />
 
-          {properties.length === 0 && (
-            <div className="text-center py-12">
-              <ExclamationTriangleIcon className="h-12 w-12 text-secondary mx-auto mb-4" />
-              <p className="text-secondary">No properties available at the moment.</p>
-            </div>
-          )}
-
-          {selectedPropertyId && selectedProperty && (
+          {selectedPropertyId && (
             <div className="sticky bottom-4 mt-8">
               <div className="max-w-md mx-auto p-4 bg-card border border-border rounded-lg shadow-lg">
                 <div className="flex items-center justify-between gap-4">
                   <div className="min-w-0">
-                    <p className="text-sm text-secondary">Selected:</p>
-                    <p className="font-medium text-heading truncate">
-                      {selectedProperty.title}
+                    <p className="text-sm text-secondary">Ready to confirm?</p>
+                    <p className="text-xs text-secondary/70 truncate">
+                      1 property selected
                     </p>
                   </div>
                   <button
@@ -172,12 +151,14 @@ export default function PropertySelectionStage({
                     disabled={isUpdating || isSubmitting}
                     className="shrink-0 px-6 py-2.5 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {isUpdating || isSubmitting ? 'Submitting...' : 'Confirm Selection'}
+                    {isUpdating || isSubmitting ? 'Submitting…' : 'Confirm Selection'}
                   </button>
                 </div>
               </div>
             </div>
           )}
+ 
+
         </>
       )}
 

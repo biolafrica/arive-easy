@@ -14,6 +14,12 @@ import { FavoriteBase, PropertyFavorite } from '@/type/pages/dashboard/favorite'
 import { Property } from '@/components/sections/dashboard/listing/property-form';
 
 
+export interface ApplicationPropertyFilters {
+  state?: string;
+  city?: string;
+  propertyType?: string;
+}
+
 export function usesellerProperty(id: string) {
   const crud = useCrud<PropertyBase>({
     resource: 'properties',
@@ -310,32 +316,33 @@ export function useAdminPropertyActions() {
 
 export function useApplicationProperties(
   propertyId?: string,
-  maxPrice?: number
+  maxPrice?: number,
+  filters?: ApplicationPropertyFilters
 ) {
   const DEFAULT_PROPERTY_ID = '0ca3e480-6a3e-4c47-bed0-637386b5f64c';
   const isDefaultProperty = !propertyId || propertyId === DEFAULT_PROPERTY_ID;
+
+  const queryFilters = {
+    is_active: true,
+    status: ['active', 'offers'],
+    ...(maxPrice && { 'price.lte': maxPrice }),
+    ...(filters?.state && { state: filters.state }),
+    ...(filters?.city && { city: filters.city }),
+    ...(filters?.propertyType && { property_type: filters.propertyType }),
+  };
+ 
 
   const {
     data: propertiesList,
     isLoading: isLoadingList,
     error: listError,
   } = useQuery({
-    queryKey: queryKeys.properties.list({
-      filters: {
-        is_active: true,
-        status: ['active', 'offers'],
-        ...(maxPrice && { 'price.lte': maxPrice }),
-      },
-    }),
+    queryKey: queryKeys.properties.list({ filters: queryFilters }),
     queryFn: async () => {
       const response = await apiClient.get<PaginatedResponse<PropertyBase>>(
         '/api/properties',
         {
-          filters: {
-            is_active: true,
-            status: ['active', 'offers'],
-            ...(maxPrice && { 'price.lte': maxPrice }),
-          },
+          filters: queryFilters,
           sortBy: 'created_at',
           sortOrder: 'desc',
         }
