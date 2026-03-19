@@ -14,6 +14,7 @@ import ActiveFilters from "@/components/table/ActiveFilters";
 import { adminTransactionFilterConfigs } from "../common/TransactionFilter";
 import { useAdminTransactions } from "@/hooks/useSpecialized/useTransaction";
 import ErrorState from "@/components/feedbacks/ErrorState";
+import { AdminDashboardStats } from "@/components/common/AdminDashboardStats";
 
 export default function AdminTransactionClientView() {
   const detailPanel = useSidePanel<TransactionBase>();
@@ -47,7 +48,8 @@ export default function AdminTransactionClientView() {
   );
 
   return (
-    <div>
+    <div className="space-y-4">
+
       <SidePanel
         isOpen={detailPanel.isOpen}
         onClose={detailPanel.close}
@@ -58,6 +60,8 @@ export default function AdminTransactionClientView() {
         )}
 
       </SidePanel>
+
+      <AdminDashboardStats section="transactions" />
 
       <DataTable
         title="Payment History"

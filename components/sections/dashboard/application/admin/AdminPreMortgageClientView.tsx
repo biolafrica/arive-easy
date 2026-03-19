@@ -8,6 +8,7 @@ import ActiveFilters from "@/components/table/ActiveFilters";
 import { getTableEmptyMessage } from "@/components/table/TableEmptyMessage";
 import { useAdminApplications } from "@/hooks/useSpecialized/useApplications";
 import ErrorState from "@/components/feedbacks/ErrorState";
+import { AdminDashboardStats } from "@/components/common/AdminDashboardStats";
 
 export default function AdminPreMortgageClientView ({detailPanel}:any){
   const { sortBy, sortOrder, searchValue, filters, queryParams: baseQueryParams,     
@@ -38,7 +39,9 @@ export default function AdminPreMortgageClientView ({detailPanel}:any){
   );
 
   return(
-    <div>
+    <div className=" space-y-4">
+      <AdminDashboardStats section="applications" />
+
       <DataTable
         title="Applications"
         columns={columns}

@@ -8,6 +8,7 @@ import ActiveFilters from "@/components/table/ActiveFilters";
 import { useAdminPrepApprovals } from "@/hooks/useSpecialized/usePreApproval";
 import { getTableEmptyMessage } from "@/components/table/TableEmptyMessage";
 import ErrorState from "@/components/feedbacks/ErrorState";
+import { AdminDashboardStats } from "@/components/common/AdminDashboardStats";
 
 export default function AdminPreApprovalClientView ({detailPanel}:any){
 
@@ -40,7 +41,10 @@ export default function AdminPreApprovalClientView ({detailPanel}:any){
 
 
   return(
-    <div>
+    <div className="space-y-4">
+
+      <AdminDashboardStats section="pre-approvals" />
+
       <DataTable
         title="Pre-Approvals"
         columns={columns}

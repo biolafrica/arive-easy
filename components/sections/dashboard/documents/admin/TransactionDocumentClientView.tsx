@@ -12,6 +12,7 @@ import { tStatusConfig, transactionalColumns } from "@/data/pages/dashboard/docu
 import FilterDropdown from "@/components/table/FilterDropdown";
 import { transactionConfigs } from "../common/DocumentFilter";
 import ActiveFilters from "@/components/table/ActiveFilters";
+import { AdminDashboardStats } from "@/components/common/AdminDashboardStats";
 
 export default  function TransactionalDocumentClientView(){
   const detailPanel = useSidePanel<TransactionDocumentBase>();
@@ -44,7 +45,7 @@ export default  function TransactionalDocumentClientView(){
   );
 
   return(
-    <div>
+    <div className="space-y-4">
       <SidePanel
         isOpen={detailPanel.isOpen}
         onClose={detailPanel.close}
@@ -55,6 +56,8 @@ export default  function TransactionalDocumentClientView(){
         )}
 
       </SidePanel>
+
+      <AdminDashboardStats section="transactional-documents" />
 
       <DataTable
         title="Documents Table"

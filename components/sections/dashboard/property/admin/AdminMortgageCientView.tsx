@@ -8,6 +8,7 @@ import DataTable from "@/components/table/DataTable";
 import FilterDropdown from "@/components/table/FilterDropdown";
 import { getTableEmptyMessage } from "@/components/table/TableEmptyMessage";
 import { mStatusConfig, mfilterConfigs, mortgageColums } from "@/data/pages/dashboard/mortgage";
+import { AdminDashboardStats } from "@/components/common/AdminDashboardStats";
 
 
 
@@ -41,7 +42,10 @@ export default function AdminMortgageClientView({detailPanel}:any){
   );
 
   return(
-    <div>
+    <div className="space-y-4">
+
+      <AdminDashboardStats section="mortgages" />
+
       <DataTable
         title="Mortgages"
         columns={mortgageColums}

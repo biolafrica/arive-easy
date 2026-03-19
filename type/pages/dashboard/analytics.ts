@@ -68,3 +68,18 @@ export interface AdminDashboardAnalytics {
   failedTransactionAmount: number;
 }
 
+export type AdminStatSection =
+  | 'pre-approvals'
+  | 'applications'
+  | 'transactional-documents'
+  | 'partner-documents'
+  | 'document-templates'
+  | 'users'
+  | 'properties'
+  | 'mortgages'
+  | 'transactions';
+
+export interface AdminDashboardStatsProps {
+  section?: AdminStatSection; 
+}
+

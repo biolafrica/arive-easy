@@ -16,6 +16,7 @@ import { TableHeader } from "@/components/table/TableHeader";
 import CreatePartnerDetails from "./CreatePartnerDetails";
 import EditPartnerDetails from "./EditPartnerDetails";
 import ErrorState from "@/components/feedbacks/ErrorState";
+import { AdminDashboardStats } from "@/components/common/AdminDashboardStats";
 
 export default function SellerDocumentClientView() {
   const detailPanel = useSidePanel<PartnerDocumentBase>();
@@ -66,6 +67,9 @@ export default function SellerDocumentClientView() {
         }
 
       </SidePanel>
+
+      <AdminDashboardStats section="partner-documents" />
+
 
       <TableHeader
         title="Partner Documents"

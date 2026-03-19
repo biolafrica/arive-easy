@@ -10,6 +10,7 @@ import ActiveFilters from "@/components/table/ActiveFilters";
 import { adminPropertyFilterConfigs } from "./PropertyFilter";
 import { useAdminProperties } from "@/hooks/useSpecialized";
 import ErrorState from "@/components/feedbacks/ErrorState";
+import { AdminDashboardStats } from "@/components/common/AdminDashboardStats";
 
 export default function AdminPropertyClientView ({detailPanel}:any){
 
@@ -42,7 +43,9 @@ export default function AdminPropertyClientView ({detailPanel}:any){
 
 
   return(
-    <div>
+    <div className="space-y-4">
+      <AdminDashboardStats section="properties" />
+
       <DataTable
         title="Properties"
         columns={columns}

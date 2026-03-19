@@ -16,6 +16,7 @@ import FilterDropdown from "@/components/table/FilterDropdown";
 import ActiveFilters from "@/components/table/ActiveFilters";
 import { userFilterConfigs } from "./UserFilter";
 import ErrorState from "@/components/feedbacks/ErrorState";
+import { AdminDashboardStats } from "@/components/common/AdminDashboardStats";
 
 export default function UserClientView(){
   const detailPanel = useSidePanel<UserBase>();
@@ -52,7 +53,7 @@ export default function UserClientView(){
   }
 
   return(
-    <div className="space-y-6">
+    <div className="space-y-4">
 
       <SidePanel
         isOpen={detailPanel.isOpen}
@@ -66,6 +67,8 @@ export default function UserClientView(){
 
       </SidePanel>
 
+      <AdminDashboardStats section="users" />
+      
       <TableHeader
         title="Users Table"
         subtitle="List of Registered User"

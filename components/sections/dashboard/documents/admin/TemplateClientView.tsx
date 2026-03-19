@@ -14,6 +14,7 @@ import { templateConfigs } from "../common/DocumentFilter";
 import { TableHeader } from "@/components/table/TableHeader";
 import CreateTemplateDetail from "./CreateTemplateDetail";
 import ErrorState from "@/components/feedbacks/ErrorState";
+import { AdminDashboardStats } from "@/components/common/AdminDashboardStats";
 
 export default function TemplateClientView() {
   const detailPanel = useSidePanel<TemplateBase>();
@@ -51,7 +52,7 @@ export default function TemplateClientView() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <SidePanel
         isOpen={detailPanel.isOpen}
         onClose={detailPanel.close}
@@ -63,6 +64,8 @@ export default function TemplateClientView() {
         }
 
       </SidePanel>
+
+      <AdminDashboardStats section="document-templates" />
 
       <TableHeader
         title="Template Documents"
