@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-
 import { useSidePanel } from "@/hooks/useSidePanel";
 import { usePartnerDocuments } from "@/hooks/useSpecialized/useDocuments";
 import { useTableFilters } from "@/hooks/useTableQuery";

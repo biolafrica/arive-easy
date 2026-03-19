@@ -4,10 +4,12 @@ import { useState } from "react";
 import { SegmentedTabs } from "@/components/common/SegmentedTabs";
 import SellerDocumentClientView from "./SellerDocumentClientView";
 import TemplateClientView from "./TemplateClientView";
+import TransactionalDocumentClientView from "./TransactionDocumentClientView";
 
 export const TABS = [
   { id: 'partners', label: 'Partners' },
   { id: 'templates', label: 'Templates' },
+  { id: 'properties', label: 'Properties' },
 ];
 
 export default function DocumentClientView() {
@@ -25,6 +27,7 @@ export default function DocumentClientView() {
 
       {tab === 'partners' && (<SellerDocumentClientView />)}
       {tab === 'templates' && (<TemplateClientView />)}
+      {tab === 'properties' && (<TransactionalDocumentClientView/>)}
       
     </div>
   );

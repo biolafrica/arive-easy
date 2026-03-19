@@ -59,3 +59,33 @@ export const partnerConfigs: FilterConfig[] = [
 export const sellerConfigs: FilterConfig[] = [
  statusOptions
 ];
+
+export const transactionConfigs: FilterConfig[] = [
+  {
+    key: 'status',
+    label: 'Status',
+    placeholder: 'All Statuses',
+    type: 'select', 
+    options: [
+      { value: '', label: 'All Statuses' },
+      { value: 'completed', label: 'Completed' },
+      { value: 'sent', label: 'Sent' },
+      { value: 'partially_signed', label: 'Partial' },
+      { value: 'voided', label: 'Voided' },
+      { value: 'expired', label: 'Expired' },
+     
+    ],
+  },
+  {
+    key: 'esign_provider',
+    label: 'Provider',
+    placeholder: 'All Provider',
+    type: 'select', 
+    options: [
+      { value: '', label: 'All Providers' },
+      { value: 'anvil', label: 'Anvil' },
+      { value: 'static', label: 'Static' },
+      
+    ],
+  },
+];

@@ -5,7 +5,7 @@ import * as document from "@/type/pages/dashboard/documents";
 import { humanizeSnakeCase } from "@/utils/common/humanizeSnakeCase";
 
 export const columns:TableColumn<document.TemplateBase>[] = [
-  {key: 'template_number', header: 'ID' , sortable: false},
+  {key: 'template_number', header: 'Document ID' , sortable: false},
   {key: 'name', header: 'Name' , sortable: false},
   {key: 'type', header: 'Type' , sortable: false, accessor:(value) => humanizeSnakeCase(value.type)},
   {key: 'version', header: 'Template Version' , sortable: false},
@@ -18,11 +18,18 @@ export const columns:TableColumn<document.TemplateBase>[] = [
 ]
 
 export const partnerColumns:TableColumn<document.PartnerDocumentBase>[] = [
-  {key: 'partner_document_number', header: 'ID' , sortable: false},
+  {key: 'partner_document_number', header: 'Document ID' , sortable: false},
   {key: 'document_name', header: 'Name' , sortable: false},
   {key: "created_at", header: 'Created At' , sortable: false, accessor:(value) =>formatDate(value?.created_at || '')},
   {key: 'template_version', header: 'Template Version' , sortable: false},
   {key: 'partner_type', header: 'Document Type' , sortable: false,},  
+]
+
+export const transactionalColumns:TableColumn<document.TransactionDocumentBase>[] = [
+  {key: 'transaction_document_number', header: 'Document ID' , sortable: false},
+  {key: 'document_type', header: 'Document Type' , sortable: false},
+  {key: "created_at", header: 'Created At' , sortable: false, accessor:(value) =>formatDate(value?.created_at || '')},
+  {key: 'esign_provider', header: 'Provider' , sortable: false},
 ]
 
 export const sellerColumns:TableColumn<document.PartnerDocumentBase>[] = [
@@ -35,6 +42,14 @@ export const sellerColumns:TableColumn<document.PartnerDocumentBase>[] = [
 export const statusConfig: StatusConfig[] = [
   { value: 'active', label: 'Active', variant: 'green',  },
   { value: 'inactive', label: 'InActive', variant: 'blue' },
+];
+
+export const tStatusConfig: StatusConfig[] = [
+  { value: 'completed', label: 'Completed', variant: 'green'},
+  { value: 'sent', label: 'Sent', variant: 'blue' },
+  { value: 'partially_signed', label: 'Partial', variant: 'yellow' },
+  { value: 'voided', label: 'Voided', variant: 'red' },
+  { value: 'expired', label: 'Expired', variant: 'red' },
 ];
 
 export const partnerStatusConfig: StatusConfig[] = [

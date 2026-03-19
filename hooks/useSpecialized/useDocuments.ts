@@ -209,6 +209,7 @@ const transactionalDocumentHooks = createEntityHooks<
   createInterface: "admin"
 });
 
+export const useAdminTransactional = transactionalDocumentHooks.useAdminList;
 
 export function useUploadStaticDocuments() {
   const { user } = useAuthContext();

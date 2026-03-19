@@ -120,6 +120,7 @@ export class DocumentGeneratorService {
         status: 'sent',
         sent_at: new Date().toISOString(),
         expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        created_at: new Date().toISOString()
       });
 
       await this.updateApplicationStage(application, documentType, 'sent');
