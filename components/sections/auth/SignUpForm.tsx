@@ -11,7 +11,7 @@ import { ErrorDisplay } from "./TabHeader";
 export default function SignUpFormPage(){
   const [error, setError] = useState<string>('')
 
-  const create = useUserRegistration()
+  const create = useUserRegistration(false)
 
 
   const validateProfile = (values: SignUpForm) => {

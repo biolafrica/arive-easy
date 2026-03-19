@@ -38,14 +38,17 @@ export interface AdminDashboardAnalytics {
   totalDocumentTransactions: number;
   staticDocumentTransactions: number;
   dynamicDocumentTransactions: number;
+  partialDynamicDocumentTransactions:number
 
   totalPartnerDocuments: number;
   bankPartnerDocuments: number;
   sellerPartnerDocuments: number;
+  activeBankPartnerDocuments:number;
 
   totalDocumentTemplates: number;
   activeDocumentTemplates: number;
   inactiveDocumentTemplates: number;
+  archivedDocumentTemplates:number;
 
   totalUsers: number;
   adminUsers: number;

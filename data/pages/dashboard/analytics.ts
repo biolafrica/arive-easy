@@ -16,14 +16,17 @@ export const ADMIN_ANALYTICS_FALLBACK: AdminDashboardAnalytics = {
   totalDocumentTransactions: 0,
   staticDocumentTransactions: 0,
   dynamicDocumentTransactions: 0,
+  archivedDocumentTemplates:0,
 
   totalPartnerDocuments: 0,
   bankPartnerDocuments: 0,
   sellerPartnerDocuments: 0,
+  activeBankPartnerDocuments:0,
 
   totalDocumentTemplates: 0,
   activeDocumentTemplates: 0,
   inactiveDocumentTemplates: 0,
+  partialDynamicDocumentTransactions:0,
 
   totalUsers: 0,
   adminUsers: 0,
@@ -64,18 +67,21 @@ export const adminDocTransactionStats = (d: AdminDashboardAnalytics) => [
   { id: 'total',   title: 'Total Doc Transactions', value: d.totalDocumentTransactions,   icon: icon.DocumentDuplicateIcon },
   { id: 'static',  title: 'Static (PDF)',           value: d.staticDocumentTransactions,  icon: icon.DocumentTextIcon },
   { id: 'dynamic', title: 'Dynamic (Anvil)',        value: d.dynamicDocumentTransactions, icon: icon.LinkIcon },
+  { id: 'partial_dynamic', title: 'Partial Dynamic',        value: d.partialDynamicDocumentTransactions, icon: icon.LinkIcon },
 ];
 
 export const adminPartnerDocStats = (d: AdminDashboardAnalytics) => [
   { id: 'total',  title: 'Total Partner Docs', value: d.totalPartnerDocuments,  icon: icon.FolderOpenIcon },
   { id: 'bank',   title: 'Bank Documents',     value: d.bankPartnerDocuments,   icon: icon.BuildingLibraryIcon },
   { id: 'seller', title: 'Seller Documents',   value: d.sellerPartnerDocuments, icon: icon.TagIcon },
+  { id: 'active_bank', title: 'Active Bank Doc',   value: d.activeBankPartnerDocuments, icon: icon.BuildingLibraryIcon },
 ];
 
 export const adminTemplateStats = (d: AdminDashboardAnalytics) => [
   { id: 'total',    title: 'Total Templates',    value: d.totalDocumentTemplates,    icon: icon.DocumentDuplicateIcon },
   { id: 'active',   title: 'Active Templates',   value: d.activeDocumentTemplates,   icon: icon.CheckCircleIcon },
   { id: 'inactive', title: 'Inactive Templates', value: d.inactiveDocumentTemplates, icon: icon.XCircleIcon },
+  { id: 'archived', title: 'Archived Templates', value: d.archivedDocumentTemplates, icon: icon.XCircleIcon },
 ];
 
 export const adminUserStats = (d: AdminDashboardAnalytics) => [

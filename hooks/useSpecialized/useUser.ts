@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient, ApiError } from '@/lib/api-client';
 import { useAuthContext } from '@/providers/auth-provider';
 import { queryKeys } from '@/lib/query-keys';
-import { UserAvatarForm, UserBase } from '@/type/user';
+import { UserAvatarForm, UserBase, UserForm } from '@/type/user';
 import { useRouter } from 'next/navigation';
 import { useCrud } from '../useCrud';
 import { toast } from 'sonner';
@@ -97,7 +97,7 @@ export function useCurrentUsers() {
   });
 }
 
-export function useUserRegistration() {
+export function useUserRegistration(team:boolean) {
   const router = useRouter();
   const {
     create,
@@ -108,7 +108,12 @@ export function useUserRegistration() {
     optimisticUpdate: false,
     onSuccess: {
       create: (data:UserBase) => {
-        router.push('/auth/verify-email-sent')
+        if(team){
+          toast.success('team member created successfully!')
+        }else{
+          router.push('/auth/verify-email-sent')
+        }
+
       },
     },
     onError: {
@@ -116,8 +121,8 @@ export function useUserRegistration() {
         console.log("error received", error)
         const message = error?.error?.message || "Registration failed";
         
-        if (message === 'duplicate key value violates unique constraint "subscribers_email_key"') {
-          toast.error("This email is already registered. Please login instead.");
+        if (message.includes("duplicate key value violates unique constraint")) {
+          toast.error("This email is already registered.");
         } else {
           toast.error(message);
         }

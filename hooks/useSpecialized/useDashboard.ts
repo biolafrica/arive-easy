@@ -102,7 +102,7 @@ export function useAdminDashboardAnalytics() {
       return response || ADMIN_ANALYTICS_FALLBACK;
     },
     // change to admin later
-    enabled: !!user?.id && !isUserLoading && user?.user_metadata?.role === 'seller',
+    enabled: !!user?.id && !isUserLoading && user?.user_metadata?.role === 'admin',
     ...getEntityCacheConfig('analytics', 'dashboard'),
   });
 }

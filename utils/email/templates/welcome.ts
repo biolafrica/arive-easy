@@ -344,3 +344,29 @@ export const confirmationLinkEmail=({username, url}:{
     </div>
   `;
 };
+
+export const internalUserCredentialsEmail=({name, email, tempPassword}:{
+  name:string
+  email:string
+  tempPassword:string
+})=>{
+
+  return `
+    <h2 style="color: #f59e0b; font-size: 20px; margin: 0 0 15px 0;">
+      Welcome To Kletch Team
+    </h2>
+
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.8; margin: 0 0 25px 0;">
+      Dear ${name},Your account has been created.
+    </p>
+    
+    ${DataTable([
+      { label: 'Email', value: email },
+      { label: 'Temporary Password', value: tempPassword },
+    ])}
+
+    <p>Please sign in and change your password immediately.</p>
+
+    <p>Welcome aboard!</p>
+  ` 
+}
