@@ -2,9 +2,9 @@
 
 import { useAuthContext } from "@/providers/auth-provider";
 import { useRouter } from "next/navigation";
-import { DashboardWelcomeHeader } from "./DashboardWelcomeHeader";
+import { DashboardWelcomeHeader } from "../common/DashboardWelcomeHeader";
 import { UserDashboadStats } from "@/components/cards/dashboard/UserDashboard";
-import PreApprovalDashboardDisplayLogic from "../approval/PreApprovalDashboardDisplayLogic";
+import PreApprovalDashboardDisplayLogic from "../../approval/PreApprovalDashboardDisplayLogic";
 import UserTransactionSummaryTable from "./UserTransactionSummaryTable";
 
 export default function UserHomeClientView() {  

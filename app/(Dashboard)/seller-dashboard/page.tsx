@@ -1,6 +1,6 @@
 import { createMetadata } from '@/components/common/metaData';
 import { PageContainer } from '@/components/layouts/dashboard/PageContainer';
-import SellerHomeClientView from '@/components/sections/dashboard/home/SellerHomeClientView';
+import SellerHomeClientView from '@/components/sections/dashboard/home/seller/SellerHomeClientView';
 
 
 export const metadata = createMetadata({

@@ -1,7 +1,6 @@
-
-import { PagePlaceholder } from '@/components/common/Placeholder';
 import { createMetadata } from '@/components/common/metaData';
-import { Cog6ToothIcon } from '@heroicons/react/24/outline';
+import { PageContainer } from '@/components/layouts/dashboard/PageContainer';
+import AdminHomeClientView from '@/components/sections/dashboard/home/admin/AdminHomeClientView';
 
 
 export const metadata = createMetadata({
@@ -12,10 +11,8 @@ export const metadata = createMetadata({
 
 export default function AdminDashboardPage() {
   return (
-    <PagePlaceholder
-      title="Admin Dashboard"
-      description="This section is under construction. Admin tools and analytics will appear here."
-      icon={<Cog6ToothIcon className="h-7 w-7 text-accent" />}
-    />
+    <PageContainer className='space-y-5'>
+      <AdminHomeClientView/>
+    </PageContainer>
   );
 }

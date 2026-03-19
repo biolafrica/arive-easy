@@ -9,6 +9,7 @@ import {
   adminPropertyStats,
   adminMortgageStats,
   adminTransactionStats,
+  adminHomeStats,
 } from '@/data/pages/dashboard/analytics';
 
 import StatCardSkeleton from '../skeleton/StatCardSkeleton';
@@ -30,15 +31,16 @@ export function AdminDashboardStats({ section }: AdminDashboardStatsProps) {
   }
 
   const allSections: Record<AdminStatSection, { title: string; stats: StatDef[] }> = {
-    'pre-approvals':          { title: 'Pre-Approvals',           stats: adminApprovalStats(data) },
-    'applications':           { title: 'Applications',            stats: adminApplicationStats(data) },
+    'pre-approvals':  { title: 'Pre-Approvals',  stats: adminApprovalStats(data) },
+    'applications':  { title: 'Applications',  stats: adminApplicationStats(data) },
     'transactional-documents':{ title: 'Transactional Documents', stats: adminDocTransactionStats(data) },
-    'partner-documents':      { title: 'Partner Documents',       stats: adminPartnerDocStats(data) },
-    'document-templates':     { title: 'Document Templates',      stats: adminTemplateStats(data) },
-    'users':                  { title: 'Users',                   stats: adminUserStats(data) },
-    'properties':             { title: 'Properties',              stats: adminPropertyStats(data) },
-    'mortgages':              { title: 'Mortgages',               stats: adminMortgageStats(data) },
-    'transactions':           { title: 'Transactions',            stats: adminTransactionStats(data) },
+    'partner-documents':  { title: 'Partner Documents', stats: adminPartnerDocStats(data) },
+    'document-templates': { title: 'Document Templates', stats: adminTemplateStats(data) },
+    'users': { title: 'Users', stats: adminUserStats(data) },
+    'properties': { title: 'Properties', stats: adminPropertyStats(data) },
+    'mortgages': { title: 'Mortgages',  stats: adminMortgageStats(data) },
+    'transactions': { title: 'Transactions', stats: adminTransactionStats(data) },
+    'home': { title: 'Dashboard', stats: adminHomeStats(data) },
   };
 
   const sectionsToRender = section

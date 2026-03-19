@@ -1,6 +1,6 @@
 import { createMetadata } from "@/components/common/metaData";
 import { PageContainer } from "@/components/layouts/dashboard/PageContainer";
-import UserHomeClientView from "@/components/sections/dashboard/home/UserHomeClientView";
+import UserHomeClientView from "@/components/sections/dashboard/home/user/UserHomeClientView";
 
 export const metadata = createMetadata({
   title: "User Dashboard - Home",

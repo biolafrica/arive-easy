@@ -1,7 +1,7 @@
 'use client'
 
 import { SellerDashboadStats } from "@/components/cards/dashboard/SellerDashboard";
-import { DashboardWelcomeHeader } from "./DashboardWelcomeHeader";
+import { DashboardWelcomeHeader } from "../common/DashboardWelcomeHeader";
 import { useAuthContext } from "@/providers/auth-provider";
 import { useRouter } from "next/navigation";
 import SellerHomeOfferTable from "./SellerHomeOfferTable";

@@ -77,7 +77,8 @@ export type AdminStatSection =
   | 'users'
   | 'properties'
   | 'mortgages'
-  | 'transactions';
+  | 'transactions'
+  | 'home';
 
 export interface AdminDashboardStatsProps {
   section?: AdminStatSection; 

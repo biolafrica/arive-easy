@@ -105,3 +105,14 @@ export const adminTransactionStats = (d: AdminDashboardAnalytics) => [
   { id: 'pending',   title: 'Pending',         value: formatUSD({ amount: d.pendingTransactionAmount,   fromCents: true }), icon: icon.ClockIcon },
   { id: 'failed',    title: 'Failed',          value: formatUSD({ amount: d.failedTransactionAmount,    fromCents: true }), icon: icon.XCircleIcon },
 ];
+
+export const adminHomeStats = (d: AdminDashboardAnalytics) => [
+  { id: 'total_approvals',title: 'Total Approvals', value: d.totalApprovals, icon: icon.ClipboardDocumentCheckIcon },
+  { id: 'total_applications',title: 'Total Applications', value: d.totalApplications, icon: icon.FolderOpenIcon },
+  { id: 'total_doc_trans',title: 'Total Doc Transactions', value: d.totalDocumentTransactions, icon: icon.DocumentDuplicateIcon },
+  { id: 'total_templates',title: 'Total Templates', value: d.totalDocumentTemplates, icon: icon.DocumentDuplicateIcon },
+  { id: 'total_users', title: 'Total Users', value: d.totalUsers, icon: icon.UsersIcon },
+  { id: 'total_properties', title: 'Total Properties', value: d.totalProperties, icon: icon.BuildingOffice2Icon },
+  { id: 'total_mortgages', title: 'Total Mortgages', value: d.totalMortgages, icon: icon.ShieldCheckIcon },
+  { id: 'total_volume', title: 'Total Volume', value: formatUSD({ amount: d.totalTransactionAmount,fromCents: true }), icon: icon.BanknotesIcon },
+];

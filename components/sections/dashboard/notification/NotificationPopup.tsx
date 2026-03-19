@@ -9,6 +9,7 @@ import {
   useNotifications, 
   useUnreadNotificationCount 
 } from '@/hooks/useSpecialized/useNotifications';
+import { useRouter } from 'next/navigation';
 
 interface NotificationItemProps{
   notification: NotificationBase;
@@ -17,10 +18,26 @@ interface NotificationItemProps{
 
 function NotificationItem({ notification, onRead}:NotificationItemProps) {
   const isUnread = notification.status === 'unread';
+  const router = useRouter()
+  const url = notification.metadata.cta_url || ''
+
+  const handleClick = () => {
+    if (isUnread) onRead(notification.id);
+
+    if (!url) return;
+
+    const isExternal = url.startsWith('http://') || url.startsWith('https://');
+    if (isExternal) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } else {
+      router.push(url);
+    }
+  };
+
 
   return (
     <div
-      onClick={() => isUnread && onRead(notification.id)}
+      onClick={handleClick}
       className={`flex gap-3 px-4 py-3 cursor-pointer transition hover:bg-muted ${
         isUnread ? 'bg-orange-50/60' : ''
       }`}
