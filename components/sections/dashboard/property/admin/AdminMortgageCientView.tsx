@@ -1,17 +1,17 @@
-"use client";
-
-import { getTableEmptyMessage } from "@/components/table/TableEmptyMessage";
-import { columns, statusConfig } from "@/data/pages/dashboard/property";
-import { useTableFilters } from "@/hooks/useTableQuery";
 import { useMemo } from "react";
+import { useAdminMortgages } from "@/hooks/useSpecialized/useMortgage";
+import { useTableFilters } from "@/hooks/useTableQuery";
+
+import ErrorState from "@/components/feedbacks/ErrorState";
+import ActiveFilters from "@/components/table/ActiveFilters";
 import DataTable from "@/components/table/DataTable";
 import FilterDropdown from "@/components/table/FilterDropdown";
-import ActiveFilters from "@/components/table/ActiveFilters";
-import { adminPropertyFilterConfigs } from "./PropertyFilter";
-import { useAdminProperties } from "@/hooks/useSpecialized";
-import ErrorState from "@/components/feedbacks/ErrorState";
+import { getTableEmptyMessage } from "@/components/table/TableEmptyMessage";
+import { mStatusConfig, mfilterConfigs, mortgageColums } from "@/data/pages/dashboard/mortgage";
 
-export default function AdminPropertyClientView ({detailPanel}:any){
+
+
+export default function AdminMortgageClientView({detailPanel}:any){
 
   const { sortBy, sortOrder, searchValue, filters, queryParams: baseQueryParams,     
     hasActiveFilters, handlePageChange, handleItemsPerPageChange, handleSort,
@@ -20,33 +20,32 @@ export default function AdminPropertyClientView ({detailPanel}:any){
     initialFilters: { status: '' },searchFields: [], defaultLimit: 10,
   });
 
-  const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['users'],
+  const queryParams = useMemo(() => ({ ...baseQueryParams, include: [],
   }), [baseQueryParams]);
 
-  const {properties, isLoading, pagination, error, refresh} = useAdminProperties(queryParams);
-  
+  const{ items:mortgages, pagination, isLoading, error, refresh} = useAdminMortgages(queryParams)
+
   if (error) {
     return (
       <ErrorState
-        message="Error loading property tables"
-        retryLabel="Reload properties"
+        message="Error loading mortgage tables"
+        retryLabel="Reload mortgage"
         onRetry={refresh}
       />
     );
   }
 
   const emptyMessage = useMemo(
-    () => getTableEmptyMessage(hasActiveFilters, 'properties'),
+    () => getTableEmptyMessage(hasActiveFilters, 'mortgages'),
     [hasActiveFilters]
   );
-
 
   return(
     <div>
       <DataTable
-        title="Properties"
-        columns={columns}
-        data={properties}
+        title="Mortgages"
+        columns={mortgageColums}
+        data={mortgages}
         pagination={ pagination ||{
           page: 1,
           limit: 10,
@@ -56,24 +55,24 @@ export default function AdminPropertyClientView ({detailPanel}:any){
         loading={isLoading}
         searchValue={searchValue}
         onSearchChange={handleSearchChange}
-        searchPlaceholder="Search property name"
+        searchPlaceholder="Search"
         filterDropdown={
           <FilterDropdown
             filters={filters}
-            filterConfigs={adminPropertyFilterConfigs}
+            filterConfigs={mfilterConfigs}
             onFilterChange={handleFilterChange}
           />
         }
         activeFiltersSlot={
           <ActiveFilters
             filters={filters}
-            filterConfigs={adminPropertyFilterConfigs}
+            filterConfigs={mfilterConfigs}
             onFilterChange={handleFilterChange}
           />
         }
-        statusConfig={statusConfig}
+        statusConfig={mStatusConfig}
         getStatus={(row) => row.status}
-        onMore={detailPanel.openEdit}
+        onMore={detailPanel.openView}
         onPageChange={handlePageChange}
         onItemsPerPageChange={handleItemsPerPageChange}
         onSort={handleSort}
@@ -81,7 +80,7 @@ export default function AdminPropertyClientView ({detailPanel}:any){
         sortOrder={sortOrder}
         emptyMessage={emptyMessage}
       />
-
+    
     </div>
   )
 }

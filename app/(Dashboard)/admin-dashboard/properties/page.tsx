@@ -1,6 +1,7 @@
 import { createMetadata } from "@/components/common/metaData";
 import { PageContainer } from "@/components/layouts/dashboard/PageContainer"
-import AdminPropertyClientView from "@/components/sections/dashboard/property/admin/AdminPropertyClientView"
+import AdminPropertiesClientView from "@/components/sections/dashboard/property/admin/AdminPropertiesClientView";
+
 
 
 export const metadata = createMetadata({
@@ -13,7 +14,7 @@ export const metadata = createMetadata({
 export default function AdminDashboardProperties (){
   return(
     <PageContainer>
-      <AdminPropertyClientView />
+      <AdminPropertiesClientView/>
     </PageContainer>
   )
 }

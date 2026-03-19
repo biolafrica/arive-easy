@@ -15,6 +15,6 @@ const mortgageHooks = createEntityHooks<
   ownerField: 'user_id',
 });
 
-export const useMortgages      = mortgageHooks.useOwnerList;
-export const useMortgage       = mortgageHooks.useDetail;
+export const useMortgages = mortgageHooks.useOwnerList;
+export const useMortgage = mortgageHooks.useDetail;
 export const useAdminMortgages = mortgageHooks.useAdminList;

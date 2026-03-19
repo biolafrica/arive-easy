@@ -126,7 +126,7 @@ export function ApplicationDetails({ application: initialApplication }: Props) {
   };
   
   return (
-    <div className="max-w-5xl mx-auto p-6 space-y-8">
+    <div className="max-w-5xl mx-auto space-y-8">
 
       <StepProgress 
         currentStep={progressData.currentStep} 

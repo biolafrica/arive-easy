@@ -2,7 +2,7 @@ import { FilterConfig } from "@/components/table/FilterDropdown";
 import { TableColumn } from "@/components/table/SummaryTable";
 import { StatusConfig } from "@/components/table/TableCore";
 import { formatDate, formatUSD } from "@/lib/formatter"
-import { MortgagePayment, TabType } from "@/type/pages/dashboard/mortgage";
+import { Mortgage, MortgagePayment, TabType } from "@/type/pages/dashboard/mortgage";
 import * as icon from "@heroicons/react/24/outline"
 
 export const statData =(money:number, next:string, last:string )=>{
@@ -66,3 +66,40 @@ export const filterConfigs: FilterConfig[] = [
     ],
   },
 ];
+
+export const mortgageColums:TableColumn<Mortgage>[]=[
+  { key: 'application_id', header: 'Application ID', sortable: false},
+  { key: 'created_at', header: 'Date Created', sortable: false, accessor: (row) => formatDate(row.created_at)},
+  { key: 'payment_method_display', header: 'Payment Method', sortable: false},
+  { key: 'payments_made', header: 'Payment Made', sortable: false},
+  { key: 'number_of_payments', header: 'Total Payment', sortable: false,},
+]
+
+export const mStatusConfig: StatusConfig[] = [
+  { value: 'active', label: 'Active', variant: 'green' },
+  { value: 'completed', label: 'Completed', variant: 'green' },
+  { value: 'paused', label: 'Paused', variant: 'blue' },
+  { value: 'pending_payment_method', label: 'Payment', variant: 'yellow' },
+  { value: 'payment_failed', label: 'Failed', variant: 'red' },
+  { value: 'cancelled', label: 'Cancelled', variant: 'red' },
+];
+
+export const mfilterConfigs: FilterConfig[] = [
+  {
+    key: 'status',
+    label: 'Status',
+    placeholder: 'All Statuses',
+    type: 'select', 
+    options: [
+      { value: '', label: 'All Statuses'},
+      { value: 'active', label: 'Active'},
+      { value: 'completed', label: 'Completed'},
+      { value: 'paused', label: 'Paused'},
+      { value: 'pending_payment_method', label: 'Payment'},
+      { value: 'payment_failed', label: 'Failed'},
+      { value: 'cancelled', label: 'Cancelled'},
+    ],
+  },
+];
+
+
