@@ -3,7 +3,8 @@ import { queryKeys } from "@/lib/query-keys";
 import { useAuthContext } from "@/providers/auth-provider";
 import { useQuery } from "@tanstack/react-query";
 import { getEntityCacheConfig } from '@/lib/cache-config';
-import { SellerDashboardAnalytics, SellerTransactionAnalytics, UserDashboardAnalytics, UserTransactionAnalytics } from "@/type/pages/dashboard/analytics";
+import * as analytics from "@/type/pages/dashboard/analytics";
+import { ADMIN_ANALYTICS_FALLBACK } from "@/data/pages/dashboard/analytics";
 
 
 export function useUserDashboardAnalytics() {
@@ -12,7 +13,7 @@ export function useUserDashboardAnalytics() {
   return useQuery({
     queryKey: queryKeys.analytics.dashboard('user'),
     queryFn: async () => {
-      const response = await apiClient.get<UserDashboardAnalytics>(`/api/analytics/user/dashboard`, {
+      const response = await apiClient.get<analytics.UserDashboardAnalytics>(`/api/analytics/user/dashboard`, {
         userId: user?.id
       });
       
@@ -33,7 +34,7 @@ export function useUserTransactionAnalytics() {
   return useQuery({
     queryKey: queryKeys.analytics.dashboard('user'),
     queryFn: async () => {
-      const response = await apiClient.get<UserTransactionAnalytics>(`/api/analytics/user/transaction`, {
+      const response = await apiClient.get<analytics.UserTransactionAnalytics>(`/api/analytics/user/transaction`, {
         userId: user?.id
       });
       
@@ -54,7 +55,7 @@ export function useSellerDashboardAnalytics() {
   return useQuery({
     queryKey: queryKeys.analytics.dashboard('seller'),
     queryFn: async () => {
-      const response = await apiClient.get<SellerDashboardAnalytics>(`/api/analytics/seller/dashboard`, {
+      const response = await apiClient.get<analytics.SellerDashboardAnalytics>(`/api/analytics/seller/dashboard`, {
         developerId: user?.id
       });
       return response || {
@@ -75,7 +76,7 @@ export function useSellerTransactionAnalytics() {
   return useQuery({
     queryKey: queryKeys.analytics.dashboard('seller'),
     queryFn: async () => {
-      const response = await apiClient.get<SellerTransactionAnalytics>(`/api/analytics/seller/transaction`, {
+      const response = await apiClient.get<analytics.SellerTransactionAnalytics>(`/api/analytics/seller/transaction`, {
         developerId: user?.id
       });
       return response || {
@@ -86,5 +87,22 @@ export function useSellerTransactionAnalytics() {
     },
     enabled: !!user?.id && !isUserLoading,
     ...getEntityCacheConfig('analytics', 'dashboard'), 
+  });
+}
+
+export function useAdminDashboardAnalytics() {
+  const { user, loading: isUserLoading } = useAuthContext();
+
+  return useQuery({
+    queryKey: queryKeys.analytics.dashboard('admin'),
+    queryFn: async () => {
+      const response = await apiClient.get<analytics.AdminDashboardAnalytics>(
+        '/api/analytics/admin/dashboard'
+      );
+      return response || ADMIN_ANALYTICS_FALLBACK;
+    },
+    // change to admin later
+    enabled: !!user?.id && !isUserLoading && user?.user_metadata?.role === 'seller',
+    ...getEntityCacheConfig('analytics', 'dashboard'),
   });
 }

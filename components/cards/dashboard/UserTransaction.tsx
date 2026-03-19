@@ -8,23 +8,26 @@ import StatCardSkeleton from "@/components/skeleton/StatCardSkeleton";
 
 
 export function PaymentMortgageStats() {
-  const {data, isLoading, error} = useUserTransactionAnalytics()
+  const {data, isLoading, error, isFetching} = useUserTransactionAnalytics()
 
   if (error) {
     console.error('Transaction analytics error:', error);
   }
 
+  const showSkeleton = isLoading || isFetching;
+
+
   return (
 
     <div className="mb-5">
-      {isLoading && <StatCardSkeleton /> }
+      {showSkeleton && <StatCardSkeleton /> }
 
       {!isLoading && data && (
         <StatsGrid>
           {userTransactionStat(
-            data.totalEscrow || 0, 
-            data.pendingTransactions || 0, 
-            data.totalSpent || 0
+            data.totalEscrow ?? 0, 
+            data.pendingTransactions ?? 0, 
+            data.totalSpent ?? 0
           ).map((stat) => {
             const Icon = stat.icon;
 

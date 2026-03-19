@@ -24,3 +24,47 @@ export type SellerTransactionAnalytics = {
   pendingRevenue: number; 
 }
 
+export interface AdminDashboardAnalytics {
+  totalApprovals: number;
+  draftApprovals: number;
+  approvedApprovals: number;
+  pendingApprovals: number;
+
+  totalApplications: number;
+  inProgressApplications: number;
+  activeApplications: number;
+  rejectedApplications: number;
+
+  totalDocumentTransactions: number;
+  staticDocumentTransactions: number;
+  dynamicDocumentTransactions: number;
+
+  totalPartnerDocuments: number;
+  bankPartnerDocuments: number;
+  sellerPartnerDocuments: number;
+
+  totalDocumentTemplates: number;
+  activeDocumentTemplates: number;
+  inactiveDocumentTemplates: number;
+
+  totalUsers: number;
+  adminUsers: number;
+  sellerUsers: number;
+  regularUsers: number;
+
+  totalProperties: number;
+  activeProperties: number;
+  inactiveProperties: number;
+  featuredProperties: number;
+
+  totalMortgages: number;
+  activeMortgages: number;
+  completedMortgages: number;
+  cancelledMortgages: number;
+
+  totalTransactionAmount: number;
+  succeededTransactionAmount: number;
+  pendingTransactionAmount: number;
+  failedTransactionAmount: number;
+}
+

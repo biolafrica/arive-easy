@@ -6,22 +6,24 @@ import StatCardSkeleton from "@/components/skeleton/StatCardSkeleton";
 
 
 export function SellerDashboadStats() {
-  const {data, isLoading, error} = useSellerDashboardAnalytics()
+  const {data, isLoading, error, isFetching} = useSellerDashboardAnalytics()
 
   if (error) {
     console.error('Dashboard analytics error:', error);
   }
 
+  const showSkeleton = isLoading || isFetching;
+
   return (
     <div className="mb-5">
-      {isLoading && <StatCardSkeleton /> }
+      {showSkeleton && <StatCardSkeleton /> }
 
       {!isLoading && data && (
         <StatsGrid>
           {sellerDashboardStat(
-            data.totalPendingOffers|| 0,
-            data.activeListings || 0,
-            data.totalEscrowBalance || 0
+            data.totalPendingOffers ?? 0,
+            data.activeListings ?? 0,
+            data.totalEscrowBalance ?? 0
           ).map((stat) => {
             const Icon = stat.icon;
             return (

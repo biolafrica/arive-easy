@@ -8,23 +8,26 @@ import StatCardSkeleton from "@/components/skeleton/StatCardSkeleton";
 
 
 export function UserDashboadStats() {
-  const {data, isLoading, error} = useUserDashboardAnalytics()
+  const {data, isLoading, error, isFetching} = useUserDashboardAnalytics()
   console.log('User dashboard analytics data:', data);
 
   if (error) {
     console.error('Dashboard analytics error:', error);
   }
 
+  const showSkeleton = isLoading || isFetching;
+
+
   return (
     <div className="mb-5">
-      {isLoading && <StatCardSkeleton /> }
+      {showSkeleton && <StatCardSkeleton /> }
 
       {!isLoading && data && (
         <StatsGrid>
           {buyerDashboardStat(
-            data.totalApplications || 0,
-            data.propertiesOwned || 0,
-            data.totalDownPayments || 0
+            data.totalApplications ?? 0,
+            data.propertiesOwned ?? 0,
+            data.totalDownPayments ?? 0
           ).map((stat) => {
             const Icon = stat.icon;
             return (
