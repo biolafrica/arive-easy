@@ -285,7 +285,7 @@ async function handlePropertySelection(
         metadata: {
           reference_number: app.application_number,
           application_number: app.id,
-          cta_url: `https://www.usekletch.com/user-dashboard/applications`,
+          cta_url: `/user-dashboard/applications`,
           property_name:offer.property_name 
         },
       })
@@ -324,7 +324,7 @@ async function handleTermsAgreement(
       channel: 'in_app',
       metadata: {
         application_number: app.application_number,
-        cta_url: 'https://usekletch.com/user-dashboard/applications',
+        cta_url: '/user-dashboard/applications',
       },
     })
   );
@@ -367,7 +367,7 @@ async function handlePaymentSetup(
       channel: 'in_app',
       metadata: {
         application_number: app.application_number,
-        cta_url: 'https://usekletch.com/user-dashboard/applications',
+        cta_url: '/user-dashboard/applications',
       },
     })
   );
@@ -440,7 +440,7 @@ async function handleMortgageActivation(
       metadata: {
         due_date: app.first_payment_date,
         escrow_amount: escrowTransaction?.amount || 0,
-        cta_url: 'https://usekletch.com/user-dashboard/properties',
+        cta_url: '/user-dashboard/properties',
         property_name: app.property_name,
       },
     })
@@ -469,7 +469,7 @@ async function handleMortgageActivation(
         type: 'property_acquired',
         channel: 'in_app',
         metadata: {
-          cta_url: `https://usekletch.com/seller-dashboard/listings/${app.property_id}`,
+          cta_url: `/seller-dashboard/listings/${app.property_id}`,
           property_name: app.property_name,
         },
       })

@@ -1,7 +1,7 @@
 import { TableColumn } from "@/components/table/DataTable";
 import { formatDate } from "@/lib/formatter";
 import { FormField } from "@/type/form";
-import { UserBase } from "@/type/user";
+import { UserBase, UserForm } from "@/type/user";
 
 export const buyerUserFields:FormField[] = [
   { name: 'avatar', label: 'Photo', type: 'file', required: true, accept:'image/jpeg,image/png', aspectRatio: "1:1", helperText: 'Recommended size: 1MB max', },
@@ -41,3 +41,23 @@ export const columns:TableColumn<UserBase>[]=[
   { key: 'role', header: 'Role', sortable: false},
   { key: 'email', header: 'Email', sortable: false},
 ]
+
+
+export const userFields:FormField[] =[
+  { name: 'name', label: 'Name', type: 'text', placeholder: 'enter name', required: true},
+  { name: 'email', label: 'Email Address', type: 'email', placeholder: 'you@example.com', required: true},
+  { name: 'role', label: 'Role', type: 'select',required: true,
+    options: [
+      { label: 'Select role', value: '' },
+      { label: 'Admin', value: 'admin' },
+      { label: 'Support', value: 'support'},
+    ],
+  },
+
+]
+
+export const userInitialValues:UserForm ={
+  name: "",
+  role: "",
+  email: ''
+}

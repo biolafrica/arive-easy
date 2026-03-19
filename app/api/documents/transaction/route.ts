@@ -129,7 +129,7 @@ const transactionTemplateHandlers = createCRUDHandlers<TransactionDocumentBase>(
               channel: 'in_app',
               metadata: {
                 document_type: updated.document_type,
-                cta_url: 'https://www.usekletch.com/user-dashboard/applications',
+                cta_url: '/user-dashboard/applications',
                 property_name: application.property_name
               },
             })

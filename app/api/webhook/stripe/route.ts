@@ -359,7 +359,7 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
             metadata: {
               amount: formatUSD({amount:invoice.amount_paid/100}),
               currency:'USD',
-              cta_url: `/user-dashboard/properties`,
+              cta_url: `/user-dashboard/properties/${mortgage.id}/mortgages`,
               property_name: application.property_name,
               reference_number:mortgage.id
             },
@@ -444,7 +444,7 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
         metadata: {
           amount: formatUSD({amount:invoice.amount_due,fromCents:true}),
           currency:'USD',
-          cta_url: `/user-dashboard/properties`,
+          cta_url: `/user-dashboard/properties/${mortgage.id}/mortgages`,
           property_name: application.property_name,
           reference_number:mortgage.id
         },
@@ -963,7 +963,7 @@ async function handleManualMortgagePaymentSucceeded(paymentIntent: Stripe.Paymen
           currency: 'USD',
           payment_count: numPayments,
           payment_numbers: payment_numbers,
-          cta_url: `/user-dashboard/mortgages/${mortgage_id}`,
+          cta_url: `/user-dashboard/properties/${mortgage_id}/mortgages`,
           property_name: application?.property_name,
           reference_number: mortgage_id,
         },
@@ -1069,7 +1069,7 @@ async function handleManualMortgagePaymentFailed(paymentIntent: Stripe.PaymentIn
           amount: formatUSD({ amount: paymentIntent.amount , fromCents: true }),
           currency: 'USD',
           error: paymentIntent.last_payment_error?.message,
-          cta_url: `/user-dashboard/mortgages/${mortgage_id}`,
+          cta_url: `/user-dashboard/properties/${mortgage_id}/mortgages`,
           property_name: application?.property_name,
           reference_number: mortgage_id,
         },

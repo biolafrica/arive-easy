@@ -29,3 +29,4 @@ export type UserProfileUserForm = Pick<UserBase, 'avatar' | 'name' | 'email' | '
 
 
 export type SellerProfileUserForm = Pick<UserBase, 'avatar' | 'name' | 'email' | 'phone_number'  | 'address' | 'bio'>
+export type UserForm = Pick<UserBase, 'name' | 'email' | 'role'  >

@@ -26,6 +26,7 @@ export async function POST(request: NextRequest) {
     let subject: string;
     let topic: NotificationType;
 
+
     if (role === 'seller' || role === 'agent') {
       subject = 'Welcome to Kletch - Start Listing Properties';
       emailHtml = sellerWelcomeEmail({ sellerName: userName });
@@ -60,6 +61,7 @@ export async function POST(request: NextRequest) {
         channel: 'in_app',
         metadata: {
           property_name : userName,
+          cta_url: '/'
         },
       })
     )
