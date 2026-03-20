@@ -8,7 +8,7 @@ export interface UserBase {
   created_at: string;
   updated_at: string;
   home_country?: string;
-  residence_country: string;
+  residence_country?: string;
   address?:string;
   bio?:string;
   provider?: string;
@@ -16,9 +16,10 @@ export interface UserBase {
 }
 
 
-export type UserAvatarForm =Pick<UserBase, 'avatar' | 'name' | 'email' | 'residence_country' | 'phone_number'> & {
+export type UserAvatarForm =Pick<UserBase, 'avatar' | 'name' | 'email' | 'residence_country' | 'phone_number' | 'address' | 'bio'> & {
   avatarFile?: File ;
 }
+
 
 export type UserBackendFormProps = Pick<UserBase, 'email' | 'id' | 'name' | "role"> &{
   password: string;

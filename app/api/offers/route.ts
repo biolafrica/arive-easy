@@ -50,8 +50,6 @@ const offersHandlers = createCRUDHandlers<OfferBase>({
           partner_id: body.developer_id
         });
 
-        console.log('existing sales of contract', existingSalesofContract)
-
         if(!existingSalesofContract){
           throw new Error ( "Kindly setup your contract of Sales Document to accept offer")
         }

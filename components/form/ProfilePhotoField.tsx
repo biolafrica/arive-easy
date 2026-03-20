@@ -1,6 +1,8 @@
 'use client';
 
+import { PhotoIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useState, useRef, useCallback, ChangeEvent, useEffect } from 'react';
+import { Button } from '../primitives/Button';
 
 interface ProfilePhotoFieldProps {
   name: string;
@@ -33,7 +35,7 @@ const ProfilePhotoField: React.FC<ProfilePhotoFieldProps> = ({
   disabled = false,
   error,
   helperText,
-  size = 'lg',
+  size = 'md',
 }) => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string>('');
@@ -139,19 +141,7 @@ const ProfilePhotoField: React.FC<ProfilePhotoFieldProps> = ({
           ) : (
             /* Placeholder image icon */
             <div className="w-full h-full flex items-center justify-center">
-              <svg
-                viewBox="0 0 24 24"
-                className="w-1/2 h-1/2 text-secondary"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <rect x="3" y="3" width="18" height="18" rx="2" />
-                <circle cx="8.5" cy="8.5" r="1.5" />
-                <polyline points="21 15 16 10 5 21" />
-              </svg>
+              <PhotoIcon className="w-1/2 h-1/2 text-secondary"/>
             </div>
           )}
 
@@ -167,38 +157,19 @@ const ProfilePhotoField: React.FC<ProfilePhotoFieldProps> = ({
                 transition-colors duration-200 group
               "
             >
-              <svg
-                viewBox="0 0 24 24"
-                className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              >
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
+              <XMarkIcon className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity"/>
             </button>
           )}
         </div>
 
-        {/* ── Upload button ── */}
-        <button
+        <Button 
           type="button"
           onClick={handleClick}
           disabled={disabled}
-          className="
-            flex-1 py-3 px-6 rounded-xl
-            border border-border bg-card
-            text-sm font-semibold text-heading
-            hover:bg-hover hover:border-secondary
-            active:scale-[0.98]
-            transition-all duration-150
-            disabled:opacity-50 disabled:cursor-not-allowed
-          "
+          variant='outline'
         >
           {previewUrl ? 'Change photo' : 'Upload photo'}
-        </button>
+        </Button>
       </div>
 
       {helperText && !displayError && (

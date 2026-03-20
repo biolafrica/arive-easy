@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     const transactionDocumentQB = new SupabaseQueryBuilder<TransactionDocumentBase>('document_transactions'); 
 
 
-    if (!user || user.user_metadata?.role !== 'seller') {
+    if (!user || user.user_metadata?.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

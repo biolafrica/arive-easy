@@ -4,7 +4,7 @@ import { FormField } from "@/type/form";
 import { UserBase, UserForm } from "@/type/user";
 
 export const buyerUserFields:FormField[] = [
-  { name: 'avatar', label: 'Photo', type: 'file', required: true, accept:'image/jpeg,image/png', aspectRatio: "1:1", helperText: 'Recommended size: 1MB max', },
+  { name: 'avatar', label: '', type: 'profile', required: false, accept:'image/jpeg,image/png', aspectRatio: "1:1", },
   { name: 'name', label: 'Name', type: 'text', placeholder: 'name', required: true},
   { name: 'email', label: 'Email Address', type: 'email', placeholder: "email", required: true ,disabled:true },
   { name: 'phone_number', label: 'Phone Number', type: 'text', placeholder: 'Enter phone number', required: false },
@@ -19,10 +19,10 @@ export const buyerUserFields:FormField[] = [
 ]
 
 export const sellerUserFields:FormField[] = [
-  { name: 'avatar', label: 'Avatar', type: 'file', required: true, accept:'image/jpeg,image/png', aspectRatio: "1:1", helperText: 'Recommended size: 1MB max' },
+  { name: 'avatar', label: '', type: 'profile', required: false, accept:'image/jpeg,image/png', aspectRatio: "1:1", },
   { name: 'name', label: 'Name', type: 'text', placeholder: 'name', required: true},
   { name: 'email', label: 'Email Address', type: 'email', placeholder: "email", required: true ,disabled:true },
-  { name: 'phone', label: 'Phone Number', type: 'text', placeholder: 'Enter phone number', required: false },
+  { name: 'phone_number', label: 'Phone Number', type: 'text', placeholder: 'Enter phone number', required: false },
   { name: 'address', label: 'Address', type: 'textarea', placeholder: '123 Seller St, City, Country', required: false },
   { name: 'bio', label: 'Bio', type: 'textarea', placeholder: 'Experienced property seller specializing in luxury real estate.', required: false },
   

@@ -46,8 +46,6 @@ const transactionTemplateHandlers = createCRUDHandlers<TransactionDocumentBase>(
         application_id: body.application_id,
         document_type:body.document_type
       });
-
-      console.log(previousTransactionTemplate)
       
       if(previousTransactionTemplate){
         throw new Error( `you already created ${humanizeSnakeCase(body.document_type)} for this application`)

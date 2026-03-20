@@ -21,10 +21,6 @@ export default function UserForm (){
   const validateUser = (values:UserProfileUserForm)=>{
     const errors: Partial<Record<keyof UserProfileUserForm, string>> = {};
 
-    if (values.phone_number.length < 11 || values.phone_number.length > 11) {
-      errors.phone_number = 'Phone number must be 11 characters';
-    } 
-
     return errors
   }
 

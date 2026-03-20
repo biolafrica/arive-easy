@@ -2,12 +2,12 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import { dashboardForRole } from '../common/dashBoardForRole';
 
-type Role =  "seller" | "user" | "admin";
+type Role =  "seller" | "user" | "admin" | 'support';
 
 const PROTECTED: Record<string, Role[]> = {
-  "/seller-dashboard": ["seller", "admin"],
-  "/user-dashboard": ["user", "admin"],
-  "/admin-dashboard": ["admin", "seller"],
+  "/seller-dashboard": ["seller"],
+  "/user-dashboard": ["user"],
+  "/admin-dashboard": ["admin", 'support'],
 };
 
 function findProtectedMatch(pathname: string) {
