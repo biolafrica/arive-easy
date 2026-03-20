@@ -157,9 +157,7 @@ export function DocumentsInformationSection({ data }: DProps) {
   if (!data) return null;
 
   const files = formatPreApprovalDocuments(data);
-
   if (files.length === 0) return null;
-
 
   return (
     <DescriptionList

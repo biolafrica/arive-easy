@@ -93,7 +93,7 @@ export interface TransactionDocumentBase {
   document_type :string
 
   populated_data :Record<string, any>;
-  generated_document_url :string | File | null
+  generated_document_url :any
 
   esign_provider : "anvil" | "static"
   esign_document_id :string
@@ -132,3 +132,5 @@ export type StaticDocumentForm = Pick<TransactionDocumentBase, 'document_type' >
   generated_document_url: File | null
 
 }
+
+

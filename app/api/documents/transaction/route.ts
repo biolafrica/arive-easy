@@ -62,11 +62,14 @@ const transactionTemplateHandlers = createCRUDHandlers<TransactionDocumentBase>(
 
       body.created_at = now;
       body.updated_at = now;
+      body.sent_at = now;
+      body.completed_at = now;
       body.status = 'completed'
       body.buyer_id = application.user_id
       body.seller_id =application.developer_id
       body.property_id = application.property_id
       body.esign_provider = 'static'
+
          
     },
 

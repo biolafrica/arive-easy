@@ -52,7 +52,7 @@ export default  function TransactionalDocumentClientView(){
         title="Transactional Documents Detail"
       >
         {detailPanel.selectedItem && (
-          <TransactionalDocumentDetails/>
+          <TransactionalDocumentDetails document={detailPanel.selectedItem}/>
         )}
 
       </SidePanel>
