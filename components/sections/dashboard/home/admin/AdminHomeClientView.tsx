@@ -4,6 +4,7 @@ import { useAuthContext } from "@/providers/auth-provider";
 import { DashboardWelcomeHeader } from "../common/DashboardWelcomeHeader";
 import { AdminDashboardStats } from "@/components/common/AdminDashboardStats";
 import { useRouter } from "next/navigation";
+import { AdminHomeOffers } from "./AdminHomeOffers";
 
 export default function AdminHomeClientView(){
   const { user } = useAuthContext();
@@ -21,6 +22,9 @@ export default function AdminHomeClientView(){
       />
       
       <AdminDashboardStats section="home" />
+
+      <AdminHomeOffers/>
+
 
     </div>
   )
