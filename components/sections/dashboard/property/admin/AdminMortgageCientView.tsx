@@ -59,7 +59,7 @@ export default function AdminMortgageClientView({detailPanel}:any){
         loading={isLoading}
         searchValue={searchValue}
         onSearchChange={handleSearchChange}
-        searchPlaceholder="Search"
+        searchPlaceholder="Search by name"
         filterDropdown={
           <FilterDropdown
             filters={filters}

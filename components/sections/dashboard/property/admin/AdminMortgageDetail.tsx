@@ -28,7 +28,7 @@ export default function AdminMortgageDetail({mortgage}:{
           title={mortgage.id}
           subtitle={`More info About the mortgage`}
           items={[
-            { label: 'Mortgage ID', value: { type: 'text', value: mortgage.id ?? fallback } },
+            { label: 'Mortgage ID', value: { type: 'text', value: mortgage.mortgage_number ?? fallback } },
             { label: 'Property Price', value: { type: 'text', value: formatUSD({ amount: mortgage.property_price, decimals: 2 }) || fallback } },
             { label: 'Down Payment', value: { type: 'text', value: formatUSD({ amount: mortgage.down_payment_made, decimals: 2 }) || fallback } },
             { label: 'Approved Loan Amount', value: { type: 'text', value: formatUSD({ amount: mortgage.approved_loan_amount, decimals: 2 }) || fallback } },
@@ -42,7 +42,7 @@ export default function AdminMortgageDetail({mortgage}:{
             { label: 'Next Payment Date', value: { type: 'text', value: mortgage.next_payment_date ?? fallback } },
             { label: 'Status', value: { type: 'text', value: mortgage.status ?? fallback } },
             { label: 'Property ID', value: { type: 'text', value: mortgage.property_id ?? fallback } },
-            { label: 'User ID', value: { type: 'text', value: mortgage.user_id ?? fallback } },
+            { label: 'User Name', value: { type: 'text', value: mortgage.user_name ?? fallback } },
             { label: 'Application ID', value: { type: 'text', value: mortgage.application_id ?? fallback } },
           ]}
         />

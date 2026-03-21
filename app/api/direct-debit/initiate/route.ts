@@ -6,6 +6,7 @@ import { requireAuth } from '@/utils/server/authMiddleware';
 import { ApplicationBase } from '@/type/pages/dashboard/application';
 import { PreApprovalBase } from '@/type/pages/dashboard/approval';
 import { Mortgage } from '@/type/pages/dashboard/mortgage';
+import { generateApplicationRefNo } from '@/utils/common/generateApplicationRef';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2026-02-25.clover",
@@ -140,9 +141,10 @@ export async function POST(request: NextRequest) {
 
     const mortgageData = {
       application_id: application_id,
-      user_id: user.id,
+      user_id: applicationUser.id,
       property_id: application.property_id,
-      
+      user_name:applicationUser.name,
+      mortgage_number:generateApplicationRefNo('MOR'),
       property_price: application.property_price,
       down_payment_made: application.down_payment_amount,
       approved_loan_amount: application.approved_loan_amount,

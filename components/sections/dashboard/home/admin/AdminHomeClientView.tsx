@@ -4,7 +4,8 @@ import { useAuthContext } from "@/providers/auth-provider";
 import { DashboardWelcomeHeader } from "../common/DashboardWelcomeHeader";
 import { AdminDashboardStats } from "@/components/common/AdminDashboardStats";
 import { useRouter } from "next/navigation";
-import { AdminHomeOffers } from "./AdminHomeOffers";
+import AdminHomeMortgagePayment from "./AdminHomeMortgagePay";
+import AdminHomeOffers from "./AdminHomeOffers";
 
 export default function AdminHomeClientView(){
   const { user } = useAuthContext();
@@ -25,6 +26,7 @@ export default function AdminHomeClientView(){
 
       <AdminHomeOffers/>
 
+      <AdminHomeMortgagePayment/>
 
     </div>
   )

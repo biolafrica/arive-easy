@@ -4,7 +4,7 @@ import { columns, statusConfig } from "@/data/pages/dashboard/offer";
 import { useAdminOffers } from "@/hooks/useSpecialized/useOffers";
 import { useRouter } from "next/navigation";
 
-export function AdminHomeOffers(){
+export default function AdminHomeOffers(){
   const router = useRouter()
   const {items:offers, isLoading, error, refresh} = useAdminOffers({
     include: ['users'],
@@ -27,9 +27,7 @@ export function AdminHomeOffers(){
   return(
     <div>
       <SummaryTable
-        title="Pending Offers" 
-        onViewAll={() => router.push('/admin-dashboard/')}
-        viewAllLabel="Check Offer Table" 
+        title="Pending Offers Awaiting Response" 
         columns={columns}
         data={offers}
         loading={isLoading}

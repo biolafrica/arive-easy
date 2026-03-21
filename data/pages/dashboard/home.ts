@@ -1,6 +1,7 @@
 import { StatusConfig, TableColumn } from "@/components/table/DataTable";
-import {formatUSD } from "@/lib/formatter";
+import {formatDate, formatUSD } from "@/lib/formatter";
 import { ApplicationBase, } from "@/type/pages/dashboard/application";
+import { MortgagePaymentRPCData } from "@/type/pages/dashboard/mortgage";
 import { humanizeSnakeCase } from "@/utils/common/humanizeSnakeCase";
 import { LockClosedIcon, HomeModernIcon, FolderIcon, } from '@heroicons/react/24/outline';
   
@@ -10,6 +11,23 @@ export const columns: TableColumn<ApplicationBase>[] = [
   { key: 'property_name', header: 'Property Name', sortable: true, accessor:(row)=>row.properties.title},
   { key: 'current_stage', header: 'Current Step', sortable: false, accessor: (row) => humanizeSnakeCase(row.current_stage)},
   { key: 'progress', header: 'Progress', sortable: false, accessor:(row)=>getStagePercentage(row.current_stage)},
+];
+
+export const mortgagePayColumns: TableColumn<MortgagePaymentRPCData>[] = [
+  { key: 'mortgage_number', header: 'Mortgage Number', sortable: false},
+  { key: 'payment_number', header: 'Payment Number', sortable: true},
+  { key: 'user_name', header: 'User Name', sortable: false},
+  { key: 'amount', header: 'Amount', sortable: false, accessor:(row)=>formatUSD({amount:row.amount})},
+  { key: 'due_date', header: 'Due Date', sortable: false},
+  { key: 'paid_at', header: 'Paid At', sortable: false, accessor:(row)=> formatDate(row.paid_at || '') || 'Not yet'},
+ 
+];
+
+export const MPstatusConfig: StatusConfig[] = [
+  { value: 'scheduled', label: 'Scheduled', variant: 'yellow' },
+  { value: 'succeeded', label: 'Succeeded', variant: 'green' },
+  { value: 'failed', label: 'Failed', variant: 'red' },
+  { value: 'processing', label: 'Processing', variant: 'blue' },
 ];
 
 export const statusConfig: StatusConfig[] = [
@@ -101,7 +119,6 @@ export const PRE_APPROVAL_UI_CONFIG = {
   }
 } as const;
 
-
 export const buyerDashboardStat=(
   application:number, property:number, balance:number
 )=>{
@@ -120,8 +137,6 @@ export const buyerDashboardStat=(
     },
   ]
 }
-
-
 
 export const sellerDashboardStat=(
   offer:number, listing:number, balance:number

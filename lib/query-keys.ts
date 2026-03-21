@@ -226,6 +226,8 @@ export const queryKeys = {
       [...queryKeys.analytics.all, 'properties', period] as const,
     performance: (metric?: string, period?: string) =>
       [...queryKeys.analytics.all, 'performance', metric, period] as const,
+    mortgagePayments: (period?: string) =>
+    [...queryKeys.analytics.all, 'mortgage-payments', period] as const,
   },
 
   // Settings
@@ -254,16 +256,9 @@ export const queryKeys = {
 
 // Helper functions for invalidation
 export const invalidatePatterns = {
-  // Invalidate all queries for a resource
   all: (resource: string) => [resource],
-  
-  // Invalidate all list queries for a resource
   lists: (resource: string) => [resource, 'list'],
-  
-  // Invalidate a specific item
-  detail: (resource: string, id: string) => [resource, 'detail', id],
-  
-  // Invalidate by prefix
+  detail: (resource: string, id: string) => [resource, 'detail', id],  
   byPrefix: (...prefix: string[]) => prefix,
 };
 
@@ -376,6 +371,7 @@ export type AnalyticsKeys=
   |ReturnType<typeof queryKeys.analytics.users>
   |ReturnType<typeof queryKeys.analytics.properties>
   |ReturnType<typeof queryKeys.analytics.performance>
+  |ReturnType<typeof queryKeys.analytics.mortgagePayments>
 
 export type SettingsKeys= 
   |typeof queryKeys.settings.all

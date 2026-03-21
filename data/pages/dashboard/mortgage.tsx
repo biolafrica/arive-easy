@@ -68,9 +68,9 @@ export const filterConfigs: FilterConfig[] = [
 ];
 
 export const mortgageColums:TableColumn<Mortgage>[]=[
-  { key: 'application_id', header: 'Application ID', sortable: false},
+  { key: 'mortgage_number', header: 'Mortgage Number', sortable: false},
   { key: 'created_at', header: 'Date Created', sortable: false, accessor: (row) => formatDate(row.created_at)},
-  { key: 'payment_method_display', header: 'Payment Method', sortable: false},
+  { key: 'user_name', header: 'User Name', sortable: false},
   { key: 'payments_made', header: 'Payment Made', sortable: false},
   { key: 'number_of_payments', header: 'Total Payment', sortable: false,},
 ]

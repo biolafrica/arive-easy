@@ -18,7 +18,7 @@ export function useUserDashboardAnalytics() {
       });
       
       return response || {
-        totalApplications: 1,
+        totalApplications: 0,
         propertiesOwned: 0,
         totalDownPayments: 0
       };

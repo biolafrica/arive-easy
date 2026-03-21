@@ -6,7 +6,7 @@ import { NextRequest } from "next/server";
 const mortgageHandlers = createCRUDHandlers<Mortgage>({
   table: 'mortgages',
   requiredFields: ['property_price','application_id', 'user_id'],
-  searchFields: ['application_id', 'user_id'],
+  searchFields: ['user_name'],
   defaultSort: {
     field: 'created_at',
     order: 'desc'

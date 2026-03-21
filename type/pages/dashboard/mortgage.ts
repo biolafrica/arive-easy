@@ -17,6 +17,8 @@ export interface Mortgage {
   id: string;
   application_id: string;
   user_id: string;
+  user_name:string;
+  mortgage_number:string;
   
   property_price: number;
   down_payment_made: number;
@@ -101,6 +103,10 @@ export type DirectDebitStatus =
   | 'paused'
   | 'cancelled';
 
+export type MortgagePaymentRPCData = Omit<MortgagePayment, 'stripe_subscription_id' | 'stripe_invoice_id' | 'stripe_payment_intent_id' | 'failure_reason' | 'retry_count' | "updated_at" > & {
+  user_name: string,
+  mortgage_number : string
+}
 export interface DirectDebitSetupRequest {
   application_id: string;
   user_country: string;
