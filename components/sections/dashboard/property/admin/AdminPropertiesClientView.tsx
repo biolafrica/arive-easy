@@ -8,10 +8,12 @@ import AdminPropertyClientView from "./AdminPropertyClientView";
 import SidePanel from "@/components/ui/SidePanel";
 import AdminPropertyDetails from "./AdminPropertyDetails";
 import AdminMortgageDetail from "./AdminMortgageDetail";
+import AdminOfferClientView from "./AdminOfferClientView";
 
 export const TABS = [
   { id: 'property', label: 'Property' },
   { id: 'mortgage', label: 'Mortgage' },
+  { id: 'offers', label: 'Offers'},
 ];
 
 
@@ -47,7 +49,8 @@ export default function AdminPropertiesClientView(){
       </div>
 
       {tab === 'property' && (<AdminPropertyClientView detailPanel={detailPanel} /> )}
-      {tab === 'mortgage' && (<AdminMortgageClientView  detailPanel={detailPanel} /> ) }
+      {tab === 'mortgage' && (<AdminMortgageClientView  detailPanel={detailPanel} /> )}
+      {tab === 'offers'  && (<AdminOfferClientView/>)}
     </div>
   )
 }

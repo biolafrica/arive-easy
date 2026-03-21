@@ -1,4 +1,5 @@
 import { StatusConfig, TableColumn } from "@/components/table/DataTable";
+import { FilterConfig } from "@/components/table/FilterDropdown";
 import { formatNumberDate, formatUSD, toNumber } from "@/lib/formatter";
 import { OfferBase} from "@/type/pages/dashboard/offer";
 
@@ -13,4 +14,20 @@ export const statusConfig: StatusConfig[] = [
   { label: 'Accepted', value: 'accepted', variant: 'green' },
   { label: 'Pending', value: 'pending', variant: 'yellow' },
   { label: 'Decline', value: 'declined', variant: 'red' }
+];
+
+export const adminOffersFilterConfigs: FilterConfig[] = [
+  {
+    key: 'status',
+    label: 'Status',
+    placeholder: 'All Statuses',
+    type: 'select', 
+    options: [
+      { value: '', label: 'All Statuses' },
+      { value: 'accepted', label: 'Accepted' },
+      { value: 'pending', label: 'Pending' },
+      { value: 'declined', label: 'Declined' },
+    ],
+  },
+
 ];

@@ -4,7 +4,6 @@ import { ApplicationBase, } from "@/type/pages/dashboard/application";
 import { MortgagePaymentRPCData } from "@/type/pages/dashboard/mortgage";
 import { humanizeSnakeCase } from "@/utils/common/humanizeSnakeCase";
 import { LockClosedIcon, HomeModernIcon, FolderIcon, } from '@heroicons/react/24/outline';
-  
 
 export const columns: TableColumn<ApplicationBase>[] = [
   { key: 'application_number', header: 'Application ID', sortable: true,},

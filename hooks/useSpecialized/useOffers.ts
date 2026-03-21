@@ -122,8 +122,6 @@ export function useSellerOfferActions() {
       toast.error('Please login to accept offers');
       return;
     }
-    console.log("sent offer", offerId, developerId, notes )  
-
 
     try {
       const result = await update(offerId, {
@@ -132,7 +130,6 @@ export function useSellerOfferActions() {
         developer_id:developerId
 
       });
-      console.log("sent offer", offerId, developerId, notes )  
       toast.success('Offer accepted successfully');
       return result;
     } catch (error) {
