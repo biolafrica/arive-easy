@@ -21,7 +21,7 @@ export default function AdminMortgageClientView({detailPanel}:any){
     initialFilters: { status: '' },searchFields: [], defaultLimit: 10,
   });
 
-  const queryParams = useMemo(() => ({ ...baseQueryParams, include: [],
+  const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['users'],
   }), [baseQueryParams]);
 
   const{ items:mortgages, pagination, isLoading, error, refresh} = useAdminMortgages(queryParams)

@@ -34,7 +34,7 @@ export default function AdminPropertiesClientView(){
       >
         {detailPanel.mode === 'edit' && detailPanel.selectedItem ? 
           (<AdminPropertyDetails property={detailPanel.selectedItem} onClose={handleClose} />):
-          (<AdminMortgageDetail />)
+          (<AdminMortgageDetail mortgage ={detailPanel.selectedItem}/>)
         }
       </SidePanel>
 

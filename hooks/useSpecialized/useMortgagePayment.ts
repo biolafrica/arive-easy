@@ -16,3 +16,4 @@ const mortgagePaymentHooks = createEntityHooks<
 
 export const useMortgagePayments = mortgagePaymentHooks.useList;
 export const useMortgagePayment = mortgagePaymentHooks.useDetail;
+export const useAdminMortgagePayment = mortgagePaymentHooks.useAdminList

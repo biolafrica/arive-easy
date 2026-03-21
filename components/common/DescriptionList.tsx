@@ -23,7 +23,7 @@ interface DescriptionListEmptyProps {
 
 export function DescriptionList({ title, subtitle, items }: DescriptionListProps) {
   return (
-    <section className="space-y-6">
+    <section className="space-y-6 mb-6">
 
       {(title || subtitle) && (
         <div>
