@@ -42,7 +42,7 @@ export default function PropertySelectionStage({
   
   const userBuyingPower = 500000 // change to selected property price later
 
-  const { property: submittedProperty, isLoading, mode} = useApplicationProperties(
+  const { property: submittedProperty,properties, isLoading, mode} = useApplicationProperties(
     application.property_id,
     userBuyingPower
   );
@@ -67,14 +67,17 @@ export default function PropertySelectionStage({
   const handleConfirmSelection = async () => {
     if (!selectedPropertyId) return;
 
+    const selectedProperty = properties.find(p => p.id === selectedPropertyId);
+    if (!selectedProperty) return;
+
     setIsSubmitting(true);
     try {
       await onUpdate({
         property_id: selectedPropertyId,
-        property_name: '',
-        property_price: 0,
+        property_name: selectedProperty.title ?? '',
+        property_price: toNumber(selectedProperty.price),
         type: 'mortgage',
-        developer_id: ""
+        developer_id: selectedProperty.developer_id ?? '', 
       });
       setSelectedPropertyId(null);
     } catch (error) {
