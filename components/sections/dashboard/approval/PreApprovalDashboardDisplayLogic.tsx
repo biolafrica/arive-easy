@@ -32,7 +32,7 @@ export default function PreApprovalDashboardDisplayLogic() {
     );
   }
 
-  const { handleGetPreApproved, isCreating } = useGetPreApproved();
+  const { handleGetPreApproved, isCreating } = useGetPreApproved(preApprovals);
 
   const handleGoToApplication = useCallback(async()=>{
     return router.push('/user-dashboard/applications')
@@ -55,6 +55,8 @@ export default function PreApprovalDashboardDisplayLogic() {
   }, []);
 
   const preApprovalDisplay = useMemo(() => {
+    if (isLoading || !preApprovals) return null;
+    
     if (!preApprovals || preApprovals.length === 0) {
       return {
         status: 'not_started' as const,
@@ -62,7 +64,6 @@ export default function PreApprovalDashboardDisplayLogic() {
         onPrimaryAction:handleGetPreApproved
       };
     }
-
 
     const sortedPreApprovals = [...preApprovals].sort((a, b) => 
       new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -142,7 +143,7 @@ export default function PreApprovalDashboardDisplayLogic() {
   }, [preApprovals, checkIfExpired, handleGetPreApproved, handleGoToApplication, handleReapply, isCreating]);
 
 
-  if (isLoading) {
+  if (isLoading || !preApprovalDisplay) {
     return (
       <div className="animate-pulse">
         <div className="h-48 bg-gray-200 rounded-xl"></div>

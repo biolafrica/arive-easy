@@ -181,8 +181,7 @@ const preApprovalHandlers = createCRUDHandlers<PreApprovalBase>({
         }
       }
 
-      // change to admin when you setup admin 
-      if(created.status === 'rejected' && context.auth?.role === 'seller'){
+      if(created.status === 'rejected' && context.auth?.role === 'admin'){
         const user = await userQB.findById(created.user_id)
 
         if(user.id){

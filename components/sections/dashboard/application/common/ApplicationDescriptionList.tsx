@@ -2,6 +2,7 @@ import { DescriptionList } from "@/components/common/DescriptionList";
 import { formatUSD, toNumber } from "@/lib/formatter";
 import { DocumentInfoTypes, EmploymentInfoType, PersonalInfoType, PropertyPreferenceType } from "@/type/pages/dashboard/approval";
 import { formatPreApprovalDocuments } from "@/utils/common/documents";
+import { humanizeSnakeCase } from "@/utils/common/humanizeSnakeCase";
 
 interface Props {
   data: PersonalInfoType;
@@ -39,7 +40,7 @@ export function PersonalInformationSection({ data }: Props) {
         { label: 'City', value: { type: 'text', value: data.address?.city || fallback } },
         { label: 'State', value: { type: 'text', value: data.address?.state || fallback } },
         { label: 'Postal Code', value: { type: 'text', value: data.address?.postal_code || fallback } },
-        { label: 'Country', value: { type: 'text', value: data.address?.country || fallback } },
+        { label: 'Country', value: { type: 'text', value: humanizeSnakeCase(data.address?.country || '') || fallback } },
 
         { label: 'Marital Status', value: { type: 'text', value: data.marital_status || fallback } },
         { label: 'Dependant', value: { type: 'text', value: data.dependant ?? fallback } },

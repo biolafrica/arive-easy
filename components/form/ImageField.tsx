@@ -294,13 +294,13 @@ const ImageField: React.FC<ImageFieldProps> = ({
                 hover:bg-hover hover:border-secondary
                 active:scale-[0.98]
                 transition-all duration-150
-                disabled:opacity-50 disabled:cursor-not-allowed
+                disabled:opacity-50 disabled:cursor-not-allowed 
               "
             >
               Select file
             </button>
 
-            <p className="text-xs text-secondary">
+            <p className="text-xs text-secondary py-5">
               {acceptLabel} · up to {maxSize}MB
             </p>
           </div>

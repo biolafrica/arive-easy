@@ -8,16 +8,19 @@ import {
   usePreApprovals,
 } from "@/hooks/useSpecialized/usePreApproval";
 import { generateApplicationRefNo } from "@/utils/common/generateApplicationRef";
+import { PreApprovalBase } from "@/type/pages/dashboard/approval";
 
 
-export function useGetPreApproved() {
+export function useGetPreApproved(existingPreApprovals?: PreApprovalBase[]) {
   const { user } = useAuthContext();
   const router = useRouter();
   const [isCreating, setIsCreating] = useState(false);
 
-  const { items: preApprovals } = usePreApprovals({
-    filters: { user_id: user?.id },
-  });
+  const { items: fetchedPreApprovals } = usePreApprovals(
+    existingPreApprovals ? null :
+    { filters: { user_id: user?.id }}
+  );
+   const preApprovals = existingPreApprovals ?? fetchedPreApprovals;
 
   const { submitPreApproval } = useCreatePreApproval();
 
