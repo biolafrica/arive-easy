@@ -5,7 +5,6 @@ import { PropertyDetails } from "@/components/sections/public/property/PropertyD
 import { PropertyGallery } from "@/components/sections/public/property/PropertyGallery";
 import { PropertyPricing } from "@/components/sections/public/property/PropetyPricing";
 import { PropertyBase } from "@/type/pages/property";
-import PropertyDocumentsList from "./PropertyDocumentList";
 import ConfirmBanner, { BannerVariant } from "@/components/feedbacks/ConfirmBanner";
 import { useAdminPropertyActions } from "@/hooks/useSpecialized";
 import { useConfirmAction } from "@/hooks/useConfirmation";
@@ -78,8 +77,6 @@ export default function AdminPropertyDetails ({ property, onClose }: Props){
           <PropertyAmenities
             amenities={property.amenities}
           />
-
-          <PropertyDocumentsList/>
 
         </div>
 

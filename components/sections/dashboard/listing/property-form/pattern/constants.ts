@@ -85,7 +85,7 @@ export const LISTING_TAGS:SelectOption[] = [
 
 
 export const AMENITIES = [
-  { id: 'swimming-pool', label: 'Swimming Pool'},
+  { id: 'swimming_pool', label: 'Swimming Pool'},
   { id: 'gym', label: 'Gym / Fitness Center'},
   { id: 'security', label: '24/7 Security'},
   { id: 'internet', label: 'High-Speed Internet'},
@@ -93,12 +93,12 @@ export const AMENITIES = [
   { id: 'generator', label: 'Backup Generator'},
   { id: 'parking', label: 'Parking Space'},
   { id: 'balcony', label: 'Balcony / Terrace'},
-  { id: 'air-conditioning', label: 'Air Conditioning'},
+  { id: 'air_conditioning', label: 'Air Conditioning'},
   { id: 'elevator', label: 'Elevator'},
   { id: 'cctv', label: 'CCTV Surveillance' },
   { id: 'water', label: 'Borehole / Water Supply'},
-  { id: 'smart-home', label: 'Smart Home Features'},
-  { id: 'servant-quarters', label: 'Servant Quarters'},
+  { id: 'smart_home', label: 'Smart Home Features'},
+  { id: 'servant_quarters', label: 'Servant Quarters'},
   { id: 'laundry', label: 'Laundry Room'}
 ] as const;
 

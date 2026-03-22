@@ -10,22 +10,32 @@ import {
   FireIcon,
   WindowIcon,
   CheckCircleIcon,
-} from '@heroicons/react/24/outline';
+  VideoCameraIcon,
+  DevicePhoneMobileIcon,
+  HomeIcon,
+  ShoppingCartIcon,
+  FunnelIcon,
+} from '@heroicons/react/24/solid';
 
 export const AMENITY_ICON_MAP: Record<
   string,
   React.ComponentType<React.SVGProps<SVGSVGElement>>
 > = {
-  'Swimming Pool': LifebuoyIcon,
-  'Gym / Fitness Center': Cog6ToothIcon,
-  '24/7 Security': ShieldCheckIcon,
-  'High-Speed Internet': WifiIcon,
-  'Garden & Landscaping': ViewColumnsIcon,
-  'Air Conditioning': CursorArrowRippleIcon,
-  'Parking Space': TruckIcon,
-  'Backup Generator': LightBulbIcon,
-  'Modern Kitchen': FireIcon,
-  'Balcony / Terrace': WindowIcon,
+  'swimming_pool': LifebuoyIcon,
+  'gym': Cog6ToothIcon,
+  'security': ShieldCheckIcon,
+  'internet': WifiIcon,
+  'garden': ViewColumnsIcon,
+  'air_conditioning': CursorArrowRippleIcon,
+  'parking': TruckIcon,
+  'generator': LightBulbIcon,
+  'balcony': WindowIcon,
+  'elevator': WindowIcon,
+  'cctv': VideoCameraIcon,
+  'water': FunnelIcon,
+  'smart_home': DevicePhoneMobileIcon,
+  'servant_quarters': HomeIcon,
+  'laundry': ShoppingCartIcon,
 };
 
 export const DefaultAmenityIcon = CheckCircleIcon;

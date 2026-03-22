@@ -1,5 +1,6 @@
 import { AMENITY_ICON_MAP, DefaultAmenityIcon } from "@/lib/amenityIcons";
 import { PropertyAmenitiesProps } from "@/type/pages/property";
+import { humanizeSnakeCase } from "@/utils/common/humanizeSnakeCase";
 
 
 export function PropertyAmenities({ amenities }: PropertyAmenitiesProps) {
@@ -19,8 +20,8 @@ export function PropertyAmenities({ amenities }: PropertyAmenitiesProps) {
               key={amenity}
               className="flex items-center gap-2 text-secondary"
             >
-              <Icon className="h-5 w-5 shrink-0 text-black" />
-              <span>{amenity}</span>
+              <Icon className="h-5 w-5 shrink-0 text-orange-600" />
+              <span>{humanizeSnakeCase(amenity)}</span>
             </li>
           );
         })}
