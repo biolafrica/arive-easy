@@ -1,12 +1,9 @@
-// 'use client'
+'use client'
 
-
-// export default function Test(){
-
-
-//   return(
-//     <div>
-
-//     </div>
-//   )
-// }
+export default function Test(){
+  return(
+    <div>
+      test 
+    </div>
+  )
+}
