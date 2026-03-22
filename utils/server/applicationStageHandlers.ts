@@ -9,6 +9,7 @@ import { AdminEscrowNotification, mortgageActivationEmail, paymentCompletionEmai
 import { createNotification } from "../notifications/createNotification";
 import { buildNotificationPayload } from "../notifications/notificationContent";
 import { sendOfferAcceptedEmail } from "../email/templates/offers";
+import { identityVerificationSuccessBody } from "../email/templates/identity-verification";
 
 export type StageType = 'identity' | 'property' | 'terms' | 'payment' | 'mortgage';
 
@@ -227,7 +228,7 @@ async function executeStageHandler(
       break;
 
     case 'identity':
-      // No handler needed for identity verification
+       await handleIdentityVerification(application, { userQB });
       break;
 
     default:
@@ -328,6 +329,31 @@ async function handleTermsAgreement(
       },
     })
   );
+
+}
+
+async function handleIdentityVerification(
+  app: ApplicationBase,
+  context: { userQB: SupabaseQueryBuilder<UserBase> }
+): Promise<void> {
+  const { userQB } = context;
+
+  const user = await userQB.findById(app.user_id);
+  if (!user) {
+    throw new Error(`User ${app.user_id} not found`);
+  }
+
+  await sendEmail({
+    to: user.email,
+    subject: 'Identity Verification Complete, Next Step: Select Your Property',
+    html: identityVerificationSuccessBody({
+      userName: user.name,
+      applicationId: app.id,
+      verificationDate: new Date().toISOString(),
+    }),
+  });
+
+  // add notification later
 
 }
 

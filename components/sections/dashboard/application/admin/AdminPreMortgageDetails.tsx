@@ -12,12 +12,13 @@ import { TermsStage } from "../stages/terms-agreement/AdminTermsAgreement";
 import { PaymentStage } from "../stages/payment-setup/AdminPaymentStage";
 import { MortgageActivationStage } from "../stages/mortgage-activation/AdminMortgageActivation";
 
-
 import AddPayment from "./AddPayment";
 import AddDocuments from "./AddDocuments";
 import AddTerms from "./AddTerms";
 import CreatePlan from "./CreatePlan";
 import AddStaticDocuments from "./AddStaticDocument";
+
+
 
 interface Props {
   applications: ApplicationBase;
@@ -45,6 +46,11 @@ export default function AdminPreMortgageDetails({ applications, close }: Props) 
       case 'mortgage_activation': return 5
       default: return 1
     }
+  }
+
+  const handleBannerClose=()=>{
+    banner?.confirm()
+    setTimeout(()=>close(), 1500)
   }
 
   return (
@@ -101,7 +107,7 @@ export default function AdminPreMortgageDetails({ applications, close }: Props) 
           title={banner.title}
           message={banner.message}
           variant={banner.variant}
-          onConfirm={banner.confirm}
+          onConfirm={handleBannerClose}
           onCancel={closeConfirm}
         />
       )}

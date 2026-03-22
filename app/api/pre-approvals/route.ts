@@ -42,7 +42,7 @@ const preApprovalHandlers = createCRUDHandlers<PreApprovalBase>({
       
       const userQB = new SupabaseQueryBuilder<UserBase>("users")
 
-      if(created.completed_steps === 4 && created.current_step === 5){
+      if(created.completed_steps === 4 && created.current_step === 5 && context.auth?.role === 'user'){
         const user = await userQB.findById(created.user_id)
 
         if(user.id){{
@@ -75,7 +75,7 @@ const preApprovalHandlers = createCRUDHandlers<PreApprovalBase>({
        
       }
 
-      if(created.status === 'approved'){
+      if(created.status === 'approved'&& context.auth?.role === 'admin'){
         try {
           const application = new SupabaseQueryBuilder<CreateApplication>("applications")
           const applicationNumber = generateApplicationRefNo("APP")
