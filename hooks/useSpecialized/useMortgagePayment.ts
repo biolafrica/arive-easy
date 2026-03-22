@@ -29,7 +29,7 @@ export function useMonthlyMortgagePayments() {
     queryKey: queryKeys.analytics.mortgagePayments('monthly'),
     queryFn: async () => {
       const response = await apiClient.get<{ success: boolean; data: MortgagePaymentRPCData[] }>('/api/mortgage-payments/monthly');
-      return response.data ?? [];
+      return response?.data ?? [];
     },
     enabled: !!user?.id && !isUserLoading && user?.user_metadata?.role === 'admin',
     staleTime: 30 * 60 * 1000,

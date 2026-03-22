@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --webpack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -11,8 +11,10 @@
   "dependencies": {
     "@anvilco/anvil": "^3.3.2",
     "@heroicons/react": "^2.2.0",
+    "@opentelemetry/core": "^2.6.0",
+    "@opentelemetry/instrumentation-http": "^0.213.0",
     "@radix-ui/react-popover": "^1.1.15",
-    "@sentry/nextjs": "^10.43.0",
+    "@sentry/nextjs": "^10.45.0",
     "@stripe/react-stripe-js": "^5.6.0",
     "@stripe/stripe-js": "^8.6.0",
     "@supabase/ssr": "^0.8.0",
@@ -24,7 +26,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
-    "next": "^16.1.6",
+    "next": "^15.2.1",
     "nodemailer": "^7.0.12",
     "react": "19.2.1",
     "react-day-picker": "^9.13.0",

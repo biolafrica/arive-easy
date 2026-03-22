@@ -2,11 +2,17 @@ import { formatUSD } from "@/lib/formatter";
 import { AdminDashboardAnalytics } from "@/type/pages/dashboard/analytics";
 import * as icon from "@heroicons/react/24/outline";
 
+
 export const ADMIN_ANALYTICS_FALLBACK: AdminDashboardAnalytics = {
   totalApprovals: 0,
   draftApprovals: 0,
   approvedApprovals: 0,
   pendingApprovals: 0,
+
+  totalOffers: 0,
+  acceptedOffers: 0,
+  declinedOffers: 0,
+  pendingOffers: 0,
 
   totalApplications: 0,
   inProgressApplications: 0,
@@ -110,6 +116,13 @@ export const adminTransactionStats = (d: AdminDashboardAnalytics) => [
   { id: 'succeeded', title: 'Successful',      value: formatUSD({ amount: d.succeededTransactionAmount, fromCents: true }), icon: icon.CheckCircleIcon },
   { id: 'pending',   title: 'Pending',         value: formatUSD({ amount: d.pendingTransactionAmount,   fromCents: true }), icon: icon.ClockIcon },
   { id: 'failed',    title: 'Failed',          value: formatUSD({ amount: d.failedTransactionAmount,    fromCents: true }), icon: icon.XCircleIcon },
+];
+
+export const adminOfferStats = (d: AdminDashboardAnalytics) => [
+  { id: 'total',     title: 'Total Offers',    value:d.totalOffers , icon: icon.ArrowDownTrayIcon },
+  { id: 'accepted', title: 'Accepted',      value:d.acceptedOffers, icon: icon.CheckCircleIcon },
+  { id: 'pending',   title: 'Pending',         value:d.pendingOffers , icon: icon.ClockIcon },
+  { id: 'declined',    title: 'Declined',          value: d.declinedOffers, icon: icon.XCircleIcon },
 ];
 
 export const adminHomeStats = (d: AdminDashboardAnalytics) => [

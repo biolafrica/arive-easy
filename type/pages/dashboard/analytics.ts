@@ -30,6 +30,11 @@ export interface AdminDashboardAnalytics {
   approvedApprovals: number;
   pendingApprovals: number;
 
+  totalOffers: number;
+  acceptedOffers: number;
+  declinedOffers: number;
+  pendingOffers: number;
+
   totalApplications: number;
   inProgressApplications: number;
   activeApplications: number;
@@ -81,6 +86,7 @@ export type AdminStatSection =
   | 'properties'
   | 'mortgages'
   | 'transactions'
+  | 'offers'
   | 'home';
 
 export interface AdminDashboardStatsProps {

@@ -8,11 +8,11 @@ import { OfferBase } from "@/type/pages/dashboard/offer";
 import { useMemo } from "react";
 import OfferDetails from "../../offers/OfferDetails";
 import DataTable from "@/components/table/DataTable";
-import { adminOffersFilterConfigs, columns } from "@/data/pages/dashboard/offer";
+import { adminOffersFilterConfigs, columns, statusConfig } from "@/data/pages/dashboard/offer";
 import FilterDropdown from "@/components/table/FilterDropdown";
 import ActiveFilters from "@/components/table/ActiveFilters";
 import { adminTransactionFilterConfigs } from "../../transaction/common/TransactionFilter";
-import { statusConfig } from "@/data/pages/dashboard/application";
+import { AdminDashboardStats } from "@/components/common/AdminDashboardStats";
 
 export default function AdminOfferClientView(){
   const detailPanel = useSidePanel<OfferBase>();
@@ -24,7 +24,7 @@ export default function AdminOfferClientView(){
     initialFilters: { status: '' },searchFields: [], defaultLimit: 10,
   });
 
-  const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['users'],
+  const queryParams = useMemo(() => ({ ...baseQueryParams, include: ['users', 'properties'],
   }), [baseQueryParams]);
 
   const {items:offers, isLoading, pagination, error, refresh} = useAdminOffers(queryParams);
@@ -49,7 +49,8 @@ export default function AdminOfferClientView(){
   }
 
   return(
-    <>
+    <div className="space-y-4">
+
       <SidePanel
         isOpen={detailPanel.isOpen}
         onClose={detailPanel.close}
@@ -59,6 +60,8 @@ export default function AdminOfferClientView(){
           <OfferDetails close={handleClose} offer={detailPanel.selectedItem} />
         )}
       </SidePanel>
+
+      <AdminDashboardStats section="offers" />
 
       <DataTable
         title="Sellers Offers"
@@ -98,6 +101,6 @@ export default function AdminOfferClientView(){
         sortOrder={sortOrder}
         emptyMessage={emptyMessage}
       />
-    </>
+    </div>
   )
 }

@@ -10,6 +10,7 @@ import {
   adminMortgageStats,
   adminTransactionStats,
   adminHomeStats,
+  adminOfferStats,
 } from '@/data/pages/dashboard/analytics';
 
 import StatCardSkeleton from '../skeleton/StatCardSkeleton';
@@ -39,6 +40,7 @@ export function AdminDashboardStats({ section }: AdminDashboardStatsProps) {
     'users': { title: 'Users', stats: adminUserStats(data) },
     'properties': { title: 'Properties', stats: adminPropertyStats(data) },
     'mortgages': { title: 'Mortgages',  stats: adminMortgageStats(data) },
+    'offers': { title: 'Offers',  stats: adminOfferStats(data) },
     'transactions': { title: 'Transactions', stats: adminTransactionStats(data) },
     'home': { title: 'Dashboard', stats: adminHomeStats(data) },
   };
