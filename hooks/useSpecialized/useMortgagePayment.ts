@@ -29,8 +29,13 @@ export function useMonthlyMortgagePayments() {
     queryKey: queryKeys.analytics.mortgagePayments('monthly'),
     queryFn: async () => {
       const response = await apiClient.get<{ success: boolean; data: MortgagePaymentRPCData[] }>('/api/mortgage-payments/monthly');
-      return response?.data ?? [];
+      const result = response?.data ?? response;
+      if (!Array.isArray(result)) {
+        throw new Error('Unexpected response shape from monthly mortgage payments');
+      }
+      return result; 
     },
+    
     enabled: !!user?.id && !isUserLoading && user?.user_metadata?.role === 'admin',
     staleTime: 30 * 60 * 1000,
     gcTime: 2 * 60 * 60 * 1000,

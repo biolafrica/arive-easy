@@ -6,6 +6,8 @@ import { useMonthlyMortgagePayments } from "@/hooks/useSpecialized/useMortgagePa
 export default function AdminHomeMortgagePayment(){
   const { data: payments, isLoading, error, refetch } = useMonthlyMortgagePayments()
 
+  console.log('pay', payments)
+
   if (error) {
     return (
       <ErrorState

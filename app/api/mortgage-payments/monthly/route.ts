@@ -16,7 +16,6 @@ export async function GET(request: NextRequest) {
       target_date: dateParam
     });
 
-
     if (error) throw error;
     return NextResponse.json({ success: true, data });
 
