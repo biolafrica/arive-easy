@@ -18,17 +18,27 @@ const propertyHandlers = createCRUDHandlers<FavoriteForm>({
 
       } : null
     },
+    permissions: async (action, context) => {
+      const role = context.auth?.role;
+      const userId = context.auth?.userId;
 
-    permissions: async(action,context)=>{
-      if (!context.auth?.userId) {
-        return false;
+      if (!userId) return false;
+
+      switch (role) {
+        case 'admin':
+          return true;
+        case 'user':
+        case 'seller':
+          return ['read', 'list', 'create', 'update'].includes(action);
+        default:
+          return false;
       }
-      return true
+    },
 
-    }
+   
 
   }
 
 });
 
-export const { GET,POST,DELETE,PUT } = propertyHandlers;
+export const { GET, POST, DELETE, PUT } = propertyHandlers;

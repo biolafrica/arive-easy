@@ -12,6 +12,23 @@ const handlers = createCRUDHandlers<NotificationBase>({
       const user = await requireAuth();
       return user ? { userId: user.id, role: user.app_metadata.role } : null;
     },
+    permissions: async (action, context) => {
+      const role = context.auth?.roles?.[0];
+      const userId = context.auth?.userId;
+
+      if (!userId) return false;
+
+      switch (role) {
+        case 'admin':
+          return true;
+        case 'user':
+        case 'seller':
+          return ['create', 'read', 'list', 'update', 'delete'].includes(action);
+        default:
+          return false;
+      }
+    },
+
   },
 });
 

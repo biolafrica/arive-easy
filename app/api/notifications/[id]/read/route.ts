@@ -19,7 +19,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       return NextResponse.json({ error: 'No notification' }, { status: 404 });
     }
 
-    const notification = await notificationQueryBuilder.update(verifiedNotification.id, {  // ← also await this
+    const notification = await notificationQueryBuilder.update(verifiedNotification.id, {
       status: 'read',
       read_at: new Date().toISOString()
     });

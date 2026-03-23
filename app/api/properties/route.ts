@@ -24,25 +24,23 @@ const propertyHandlers = createCRUDHandlers<PropertyBase>({
       } : null;
     },
     permissions: async (action, context) => {
-      if (action === 'read' || action === 'list' || action === 'delete') {
-        return true;
-      }
-      
-      if (!context.auth?.userId) {
-        return false;
-      }
+      const role = context.auth?.role;
 
-      if (action === 'create' || action === 'update') {
-        if (action === 'create' && context.auth.roles?.includes('seller')) {
+      if (action === 'read' || action === 'list') return true;
+
+      if (!context.auth?.userId) return false;
+
+      switch (role) {
+        case 'admin':
           return true;
-        }
-
-        return true
+        case 'seller':
+          return ['create', 'read', 'list', 'update', 'delete'].includes(action);
+        case 'user':
+          return action === 'update';
+        default:
+          return false;
       }
-
-      return false;
-      
-    }
+    },
   },
   hooks:{
     beforeCreate:async(body, context)=>{
