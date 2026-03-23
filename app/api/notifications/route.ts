@@ -13,7 +13,7 @@ const handlers = createCRUDHandlers<NotificationBase>({
       return user ? { userId: user.id, role: user.app_metadata.role } : null;
     },
     permissions: async (action, context) => {
-      const role = context.auth?.roles?.[0];
+      const role = context.auth?.role;
       const userId = context.auth?.userId;
 
       if (!userId) return false;

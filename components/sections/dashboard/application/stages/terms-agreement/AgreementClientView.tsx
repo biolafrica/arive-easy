@@ -11,7 +11,7 @@ export default function AgreementClientView({id}:{id:string}){
   const { documents, isLoading, error, refetch } = transactionDocs.useAnvil();
 
   if(isLoading){
-    (<DescriptionListSkeleton rows={6}/>)
+    return(<DescriptionListSkeleton rows={6}/>)
   }
 
   if(error){

@@ -24,14 +24,24 @@ const propertyHandlers = createCRUDHandlers<TransactionBase>({
 
       } : null
     },
+    permissions: async (action, context) => {
+      const role = context.auth?.role;
+      const userId = context.auth?.userId;
 
-    permissions:async(action,context)=>{
-      if (!context.auth?.userId) {
-        return false;
+      if (!userId) return false;
+
+      switch (role) {
+        case 'admin':
+          return true;
+        case 'user':
+          return ['create', 'read', 'list'].includes(action);
+        case 'seller':
+          return ['create', 'read', 'list'].includes(action);
+
+        default:
+          return false;
       }
-
-      return true
-    }
+    },
 
   },
   hooks:{

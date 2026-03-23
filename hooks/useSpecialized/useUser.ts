@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient, ApiError } from '@/lib/api-client';
 import { useAuthContext } from '@/providers/auth-provider';
 import { queryKeys } from '@/lib/query-keys';
-import { UserAvatarForm, UserBase, UserForm } from '@/type/user';
+import { UserAvatarForm, UserBase} from '@/type/user';
 import { useRouter } from 'next/navigation';
 import { useCrud } from '../useCrud';
 import { toast } from 'sonner';

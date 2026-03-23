@@ -3,11 +3,43 @@ import { supabaseAdmin } from "@/utils/supabase/supabaseAdmin";
 import { UserBackendFormProps, } from "@/type/user";
 import { sendEmail } from "@/utils/email/send_email";
 import { confirmationLinkEmail, internalUserCredentialsEmail } from "@/utils/email/templates/welcome";
+import { NextRequest } from "next/server";
+import { requireAuth } from "@/utils/server/authMiddleware";
 
 const handlers = createCRUDHandlers<UserBackendFormProps>({
   table: "users",
   requiredFields: ["email", "name", "role"],
   searchFields: ['name'],
+  middleware:{
+    auth:async(request:NextRequest)=>{
+      const user = await requireAuth();
+      return user ? {
+        userId: user.id,
+        email: user.email,
+        role: user.app_metadata.role,
+        name:user.user_metadata.name,
+        auth: user.role ? true : false,
+
+      } : null
+    },
+    permissions: async (action, context) => {
+      const role = context.auth?.role;
+      const userId = context.auth?.userId;
+
+      if (!userId) return false;
+
+      switch (role) {
+        case 'admin':
+          return true;
+
+        case 'user':
+        case 'seller':
+          return ['read', 'update'].includes(action);
+        default:
+          return false;
+      }
+    },
+  },
   
   hooks: {
     beforeCreate: async (data, context) => {
@@ -73,6 +105,21 @@ const handlers = createCRUDHandlers<UserBackendFormProps>({
         console.error('Failed to send email:', error);
       }
     },
+
+    beforeUpdate: async (id, data, context) => {
+      const role = context.auth?.roles?.[0];
+
+      if (role !== 'admin') {
+        delete (data as any).role;
+        delete (data as any).email;
+        delete (data as any).id;
+        delete (data as any).created_at;
+        delete (data as any).email_verified;
+      }
+
+      return data;
+    },
+
   },
 });
 
@@ -123,4 +170,4 @@ async function sendInternalUserCredentialsEmail(user: UserBackendFormProps, temp
   console.log(`Credentials email sent to ${user.role}: ${user.email}`);
 }
 
-export const { GET, POST, } = handlers;
+export const { GET, POST } = handlers;

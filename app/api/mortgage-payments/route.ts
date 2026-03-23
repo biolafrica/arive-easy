@@ -23,14 +23,21 @@ const mortgagePaymentHandlers = createCRUDHandlers<MortgagePayment>({
 
       } : null
     },
+    permissions: async (action, context) => {
+      const role = context.auth?.role;
+      const userId = context.auth?.userId;
 
-    permissions:async(action,context)=>{
-      if (!context.auth?.userId) {
-        return false;
+      if (!userId) return false;
+
+      switch (role) {
+        case 'admin':
+          return true;
+        case 'user':
+          return action === 'read' || action === 'list';
+        default:
+          return false;
       }
-
-      return true
-    }
+    },
 
   },
 
