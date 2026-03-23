@@ -14,9 +14,9 @@ import { UserBase } from "@/type/user";
 const preApprovalHandlers = createCRUDHandlers<PreApprovalBase>({
   table: 'pre_approvals',
   searchFields:['user_name'],
-
   requiredFields: ['user_id', 'status', 'reference_number'],
-    middleware:{
+  
+  middleware:{
     auth:async(request:NextRequest)=>{
       const user = await requireAuth();
       return user ? {
@@ -28,13 +28,23 @@ const preApprovalHandlers = createCRUDHandlers<PreApprovalBase>({
 
       } : null
     },
-    permissions:async(action,context)=>{
-      if (!context.auth?.userId) {
-        return false;
-      }
+    permissions: async (action, context) => {
+      const role = context.auth?.role;
+      const userId = context.auth?.userId;
 
-      return true
-    }
+      if (!userId) return false;
+
+      switch (role) {
+        case 'admin':
+          return true;
+        case 'user':
+          return ['create', 'read', 'list', 'update'].includes(action);
+        case 'seller':
+          return false;
+        default:
+          return false;
+      }
+    },
 
   },
   hooks:{

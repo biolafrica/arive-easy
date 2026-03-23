@@ -118,7 +118,6 @@ export function useUploadTemplateDocuments() {
       return result;
 
     } catch (error) {
-      console.error('Template upload error:', error);
       toast.error('Failed to upload template document');
       throw error;
 
@@ -167,10 +166,6 @@ export function useUploadPartnerDocuments() {
 
     setIsUploading(true);
 
-    if(formData.document_type !== "contract_of_sales"){
-      return toast.error('Only seller can create this document type');
-    }
-
     try {
       const result = await create({
         ...formData,
@@ -180,7 +175,6 @@ export function useUploadPartnerDocuments() {
       toast.success('Partner document created successfully')
       return result;
     } catch (error) {
-      console.error('Partner Document upload error:', error);
       toast.error('Failed to upload partner document');
       throw error;
 
@@ -248,13 +242,11 @@ export function useUploadStaticDocuments() {
       return result
       
     } catch (error) {
-      console.error('Template upload error:', error);
       toast.error('Failed to upload template document');
       throw error;
       
     }finally{
       setIsUploading(false);
-
     }
 
   }
@@ -294,7 +286,6 @@ export function useTransactionalDocument() {
       return result;
 
     } catch (error) {
-      console.error('Error generating document:', error);
       toast.error(error instanceof Error ? error.message : 'Failed to generate document');
       return null;
     } finally {

@@ -73,10 +73,7 @@ export function useUpdateApplication() {
 
     } catch (error) {
       captureError(error, { component: 'user-update-application', action: 'update-data' });
-      
-      const message = error instanceof Error
-        ? error.message
-        : 'Failed to update application';
+      const message = error instanceof Error ? error.message : 'Failed to update application';
       toast.error(message);
       throw error;
     }
@@ -239,9 +236,7 @@ export function usePaymentStatus(sessionId: string | null) {
       
       const response = await fetch(`/api/payments/verify-payment?session_id=${sessionId}`);
       
-      if (!response.ok) {
-        throw new Error('Failed to verify payment status');
-      }
+      if (!response.ok) throw new Error('Failed to verify payment status');
       
       const data = await response.json();
       return data;
@@ -251,9 +246,7 @@ export function usePaymentStatus(sessionId: string | null) {
       const data = query.state.data;
       if (!data) return 2000; 
       
-      return data.status === 'succeeded' || data.status === 'failed' || data.status === 'cancelled' 
-        ? false
-        : 2000;
+      return data.status === 'succeeded' || data.status === 'failed' || data.status === 'cancelled' ? false : 2000;
     },
     staleTime: 1000,
     retry: 3,

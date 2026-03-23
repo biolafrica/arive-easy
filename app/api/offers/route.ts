@@ -33,11 +33,22 @@ const offersHandlers = createCRUDHandlers<OfferBase>({
       } : null;
     },
     permissions: async (action, context) => {
-      if (!context.auth?.userId) {
-        return false;
+      const role = context.auth?.role;
+      const userId = context.auth?.userId;
+
+      if (!userId) return false;
+
+      switch (role) {
+        case 'admin':
+          return true;
+        case 'user':
+          return ['create', 'read', 'list', 'update'].includes(action);
+        case 'seller':
+          return ['read', 'list', 'update'].includes(action);
+        default:
+          return false;
       }
-      return true;
-    }
+    },
   },
   hooks: {
     beforeUpdate: async (id, body, context)=>{
