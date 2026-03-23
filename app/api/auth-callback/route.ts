@@ -58,8 +58,8 @@ export async function GET(request: Request) {
       const newUserData = {
         id: data.user.id,
         email: data.user.email,
-        name: data.user.user_metadata?.full_name || data.user.user_metadata?.name || '',
-        avatar: data.user.user_metadata?.avatar_url || data.user.user_metadata?.picture || '',
+        name: data.user.user_metadata?.name || '',
+        avatar: data.user.user_metadata?.avatar_url || '',
         role: null,
         provider: 'google',
         created_at: new Date().toISOString(),

@@ -13,7 +13,7 @@ const propertyHandlers = createCRUDHandlers<FavoriteForm>({
       return user ? {
         userId: user.id,
         email: user.email,
-        role: user.user_metadata.role,
+        role: user.app_metadata.role,
         auth: user.role ? true : false,
 
       } : null

@@ -18,7 +18,7 @@ const partnerTemplateHandlers = createCRUDHandlers<PartnerDocumentBase>({
       return user ? {
         userId: user.id,
         email: user.email,
-        role: user.user_metadata.role,
+        role: user.app_metadata.role,
         name: user.user_metadata.name,
         auth: user.role ? true : false,
       } : null;

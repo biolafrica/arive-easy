@@ -51,7 +51,7 @@ export default function VerifyEmailPage() {
             );
 
             const user = data.session.user;
-            const role = user.user_metadata?.role || 'public';
+            const role = user.app_metadata?.role || user.user_metadata?.role || 'public';
 
             Sentry.setUser({
               id: user.id,
@@ -81,7 +81,7 @@ export default function VerifyEmailPage() {
         
         if (session) {
           const user = session.user;
-          const role = session.user.user_metadata?.role || 'public';
+          const role = session.user.app_metadata?.role || 'public';
           Sentry.setUser({
             id: user.id,
             email: user.email,

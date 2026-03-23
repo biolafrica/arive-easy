@@ -10,7 +10,7 @@ const handlers = createCRUDHandlers<NotificationBase>({
   middleware: {
     auth: async (req: NextRequest) => {
       const user = await requireAuth();
-      return user ? { userId: user.id, role: user.user_metadata.role } : null;
+      return user ? { userId: user.id, role: user.app_metadata.role } : null;
     },
   },
 });

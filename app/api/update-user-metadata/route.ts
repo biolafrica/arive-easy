@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     }
 
     const { data, error } = await supabaseAdmin.auth.admin.updateUserById(
-      userId,{ user_metadata: {role: role}}
+      userId,{ app_metadata: {role: role}}
     );
 
     if (error) {

@@ -164,7 +164,7 @@ export function useUploadPartnerDocuments() {
       return;
     }
 
-    const partner_type = user.user_metadata.role === "admin" ? 'bank' : 'seller'
+    const partner_type = user.app_metadata.role === "admin" ? 'bank' : 'seller'
 
     setIsUploading(true);
 

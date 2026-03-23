@@ -101,7 +101,7 @@ export function useAdminDashboardAnalytics() {
       );
       return response || ADMIN_ANALYTICS_FALLBACK;
     },
-    enabled: !!user?.id && !isUserLoading && user?.user_metadata?.role === 'admin',
+    enabled: !!user?.id && !isUserLoading && user?.app_metadata?.role === 'admin',
     ...getEntityCacheConfig('analytics', 'dashboard'),
   });
 }

@@ -36,7 +36,7 @@ export function useMonthlyMortgagePayments() {
       return result; 
     },
     
-    enabled: !!user?.id && !isUserLoading && user?.user_metadata?.role === 'admin',
+    enabled: !!user?.id && !isUserLoading && user?.app_metadata?.role === 'admin',
     staleTime: 30 * 60 * 1000,
     gcTime: 2 * 60 * 60 * 1000,
     refetchOnWindowFocus: false, 

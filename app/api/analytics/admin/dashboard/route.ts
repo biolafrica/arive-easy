@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
   try {
     const user = await requireAuth();
 
-    if (user.user_metadata.role !== 'admin') {
+    if (user.app_metadata.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized Role' }, { status: 401 });
     }
 

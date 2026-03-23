@@ -12,7 +12,7 @@ export async function POST(
   try {
     const user = await requireAuth();
 
-    if (!user || user.user_metadata.role !== 'admin') {
+    if (!user || user.app_metadata.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

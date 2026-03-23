@@ -51,7 +51,7 @@ export default function SignInFormPage(){
         Sentry.setUser({
           id: data.user.id,
           email: data.user.email,
-          username: data.user.user_metadata?.full_name || data.user.email?.split('@')[0],
+          username: data.user.user_metadata?.name || data.user.email?.split('@')[0],
         });
       }
 
@@ -59,7 +59,7 @@ export default function SignInFormPage(){
         throw error;
       }
       
-      const role = data.user.user_metadata?.role || 'public';
+      const role = data.user.app_metadata?.role || 'public';
       const dashboardUrl = getDashboardForRole(role)
       
       toast.success("Logged In Successfully");

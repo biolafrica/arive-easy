@@ -55,8 +55,8 @@ export async function updateSession(request: NextRequest) {
   if (pathname === "/signin" || pathname === "/signup") {
     if (user) {
       const role =
-        (user.user_metadata?.role as string | undefined) ??
         (user.app_metadata?.role as string | undefined) ??
+        (user.user_metadata?.role as string | undefined) ??
         "";
       const dest = dashboardForRole(role) || "/";
       return NextResponse.redirect(new URL(dest, request.url));
@@ -76,8 +76,8 @@ export async function updateSession(request: NextRequest) {
   }
 
   const role =
-    (user.user_metadata?.role as string | undefined) ??
     (user.app_metadata?.role as string | undefined) ??
+    (user.user_metadata?.role as string | undefined) ??
     "";
   const allowedRoles = match[1];
 

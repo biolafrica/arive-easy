@@ -20,27 +20,40 @@ const applicationHandlers = createCRUDHandlers<ApplicationBase>({
     field: 'created_at',
     order: 'desc'
   },
+  
   middleware: {
     auth: async (request: NextRequest) => {
       const user = await requireAuth();
       return user ? {
         userId: user.id,
         email: user.email,
-        role: user.user_metadata.role,
+        role: user.app_metadata.role,
         name: user.user_metadata.name,
         auth: user.role ? true : false,
       } : null;
     },
     permissions: async (action, context) => {
-      console.log('context', context.auth)
-      if (!context.auth?.userId) {
-        return false;
-      }
-      return true;
-    }
-  },
-  hooks: {
+      const role = context.auth?.role;
+      const userId = context.auth?.userId;
 
+      if (!role || !userId) return false;
+      switch (role) {
+        case 'user':
+          return true;
+        case 'seller':
+          return action === 'read' || action === 'list';
+        case 'support':
+          return action === 'read' || action === 'list';
+        case 'admin':
+          return true;
+        default:
+          return false;
+      }
+    }
+
+  },
+
+  hooks: {
     afterUpdate: async (updated, previous, context) => {
       const propertyQueryBuilder = new SupabaseQueryBuilder<PropertyBase>("properties");
       const offerQueryBuilder = new SupabaseQueryBuilder<OfferBase>("offers");
@@ -135,6 +148,7 @@ const applicationHandlers = createCRUDHandlers<ApplicationBase>({
  
     }
   }
+
 });
 
 async function updateProperty(id: string, status: PropertyStatus) {
@@ -154,4 +168,4 @@ async function updateProperty(id: string, status: PropertyStatus) {
 }
 
 
-export const { GET, PUT, POST, PATCH } = applicationHandlers;
+export const { GET, PUT,} = applicationHandlers;

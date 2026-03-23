@@ -1,6 +1,6 @@
 import { createCRUDHandlers } from "@/utils/server/crudFactory";
 import { supabaseAdmin } from "@/utils/supabase/supabaseAdmin";
-import { UserBackendFormProps, UserBase } from "@/type/user";
+import { UserBackendFormProps, } from "@/type/user";
 import { sendEmail } from "@/utils/email/send_email";
 import { confirmationLinkEmail, internalUserCredentialsEmail } from "@/utils/email/templates/welcome";
 
@@ -24,8 +24,10 @@ const handlers = createCRUDHandlers<UserBackendFormProps>({
           email_confirm: isInternalUser,
           user_metadata: {
             name: data.name,
-            role: data.role,
           },
+          app_metadata:{
+            role:data.role
+          }
         });
 
         if (authError) {
@@ -121,4 +123,4 @@ async function sendInternalUserCredentialsEmail(user: UserBackendFormProps, temp
   console.log(`Credentials email sent to ${user.role}: ${user.email}`);
 }
 
-export const { GET, POST, PUT, } = handlers;
+export const { GET, POST, } = handlers;
