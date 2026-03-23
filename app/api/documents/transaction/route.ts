@@ -30,10 +30,20 @@ const transactionTemplateHandlers = createCRUDHandlers<TransactionDocumentBase>(
       } : null;
     },
     permissions: async (action, context) => {
-      if (!context.auth?.userId) {
-        return false;
+      const role = context.auth?.role;
+      const userId = context.auth?.userId;
+
+      if (!userId) return false;
+      switch (role) {
+        case 'admin':
+          return true;
+        case 'seller':
+          return action === 'read' || action === 'list' || action === 'create';
+        case 'user':
+          return action === 'read' || action === 'list';
+        default:
+          return false;
       }
-      return true;
     },
   
   },

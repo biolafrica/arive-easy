@@ -24,11 +24,22 @@ const partnerTemplateHandlers = createCRUDHandlers<PartnerDocumentBase>({
       } : null;
     },
     permissions: async (action, context) => {
-      if (!context.auth?.userId) {
-        return false;
+      const role = context.auth?.role;
+      const userId = context.auth?.userId;
+
+      if (!userId) return false;
+
+      switch (role) {
+        case 'admin':
+          return true;
+        case 'seller':
+          return ['read', 'list', 'create', 'update'].includes(action);
+        case 'user':
+          return false;
+        default:
+          return false;
       }
-      return true;
-    }
+    },
   },
   hooks: {
     beforeCreate:async(body, context)=>{

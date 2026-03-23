@@ -149,7 +149,6 @@ const partnerDocumentHooks = createEntityHooks<
 });
 
 export const usePartnerDocuments = partnerDocumentHooks.useAdminList;
-
 export const useSellerPartnerDocuments = partnerDocumentHooks.useSellerList;
 
 export function useUploadPartnerDocuments() {
