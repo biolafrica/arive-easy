@@ -70,8 +70,7 @@ const {
   };
 });
 
-// Rebuild chainObj reference for use in resetMocks()
-// (the internal chainObj inside hoisted is wired up correctly at factory time)
+
 const chainObj = {
   update: mockUpdateChain,
   select: mockSelect,
@@ -83,8 +82,6 @@ const chainObj = {
   single: mockSingle,
 };
 
-// ─── vi.mock() factories ──────────────────────────────────────────────────────
-// These are hoisted by Vitest — but now they safely reference hoisted variables.
 
 vi.mock('next/headers', () => ({
   headers: mockHeaders,
@@ -203,8 +200,6 @@ function resetMocks() {
   );
 }
 
-
-
 const MOCK_MORTGAGE = {
   id: 'mortgage_123',
   application_id: 'app_456',
@@ -243,7 +238,6 @@ const MOCK_USER = {
   email: 'emeka@example.com',
 };
 
-
 describe('GET /api/webhook/stripe', () => {
   it('returns a health check response', async () => {
     const res = await GET();
@@ -253,7 +247,6 @@ describe('GET /api/webhook/stripe', () => {
     expect(json.timestamp).toBeDefined();
   });
 });
-
 
 describe('POST /api/webhook/stripe — signature verification', () => {
   beforeEach(resetMocks);
@@ -562,7 +555,6 @@ describe('checkout.session.completed', () => {
   });
 });
 
-
 describe('checkout.session.expired', () => {
   beforeEach(resetMocks);
 
@@ -692,7 +684,6 @@ describe('payment_intent.succeeded', () => {
     );
   });
 });
-
 
 describe('payment_intent.payment_failed', () => {
   beforeEach(resetMocks);
@@ -830,7 +821,6 @@ describe('payment_intent.payment_failed', () => {
   });
 });
 
-
 describe('setup_intent.succeeded', () => {
   beforeEach(resetMocks);
 
@@ -932,7 +922,6 @@ describe('setup_intent.succeeded', () => {
     expect(mockUpdate).not.toHaveBeenCalled();
   });
 });
-
 
 describe('invoice.payment_succeeded', () => {
   beforeEach(resetMocks);
@@ -1129,7 +1118,6 @@ describe('invoice.payment_succeeded', () => {
   });
 });
 
-
 describe('invoice.payment_failed', () => {
   beforeEach(resetMocks);
 
@@ -1219,7 +1207,6 @@ describe('invoice.payment_failed', () => {
   });
 });
 
-
 describe('customer.subscription.updated', () => {
   beforeEach(resetMocks);
 
@@ -1280,7 +1267,6 @@ describe('customer.subscription.updated', () => {
     expect(mockUpdate).not.toHaveBeenCalled();
   });
 });
-
 
 describe('customer.subscription.deleted', () => {
   beforeEach(resetMocks);
@@ -1360,7 +1346,6 @@ describe('customer.subscription.deleted', () => {
   });
 });
 
-
 describe('payment_method.attached', () => {
   beforeEach(resetMocks);
 
@@ -1380,7 +1365,6 @@ describe('payment_method.attached', () => {
   });
 });
 
-
 describe('unhandled event types', () => {
   beforeEach(resetMocks);
 
@@ -1399,7 +1383,6 @@ describe('unhandled event types', () => {
   });
 });
 
-
 describe('global error handling', () => {
   beforeEach(resetMocks);
 
@@ -1411,7 +1394,6 @@ describe('global error handling', () => {
       })
     );
 
-    // Force an unexpected crash deep in the handler
     mockFrom.mockImplementationOnce(() => {
       throw new Error('Unexpected DB crash');
     });

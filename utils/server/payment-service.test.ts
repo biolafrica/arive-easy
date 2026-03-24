@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// ─── Hoisted mocks ────────────────────────────────────────────────────────────
 const {
   mockCreate,
   mockFindOneByCondition,
@@ -17,7 +16,6 @@ const {
   mockStripeSessionRetrieve: vi.fn(),
 }));
 
-// ─── Module mocks ─────────────────────────────────────────────────────────────
 
 vi.mock('@/utils/supabase/queryBuilder', () => {
   const QB = vi.fn().mockImplementation(function () {
@@ -47,10 +45,9 @@ vi.mock('stripe', () => {
   return { default: StripeMock, __esModule: true };
 });
 
-// ─── Import after mocks ───────────────────────────────────────────────────────
+
 import { PaymentService, PaymentType } from '@/utils/server/paymentService';
 
-// ─── Fixtures ─────────────────────────────────────────────────────────────────
 
 const BASE_PARAMS = {
   userId: 'user_123',
@@ -90,9 +87,6 @@ function resetMocks() {
   });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// validatePaymentParams (tested indirectly via createPaymentSession)
-// ─────────────────────────────────────────────────────────────────────────────
 
 describe('PaymentService — validatePaymentParams', () => {
   let service: PaymentService;
@@ -194,9 +188,6 @@ describe('PaymentService — validatePaymentParams', () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// checkExistingPayment — duplicate guard
-// ─────────────────────────────────────────────────────────────────────────────
 
 describe('PaymentService — checkExistingPayment (duplicate guard)', () => {
   let service: PaymentService;
@@ -311,9 +302,6 @@ describe('PaymentService — checkExistingPayment (duplicate guard)', () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// createPaymentSession — full flow per payment type
-// ─────────────────────────────────────────────────────────────────────────────
 
 describe('PaymentService — createPaymentSession (full flow)', () => {
   let service: PaymentService;
@@ -524,9 +512,6 @@ describe('PaymentService — createPaymentSession (full flow)', () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// getSessionStatus
-// ─────────────────────────────────────────────────────────────────────────────
 
 describe('PaymentService — getSessionStatus', () => {
   let service: PaymentService;
