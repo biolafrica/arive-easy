@@ -29,7 +29,6 @@ export interface QueryParams extends FilterParams {
 }
 
 export const queryKeys = {
-  // Base keys for each resource
   all: ['queries'] as const,
 
   // Properties (for client interface)

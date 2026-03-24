@@ -14,6 +14,7 @@
     "@opentelemetry/core": "^2.6.0",
     "@opentelemetry/instrumentation-http": "^0.213.0",
     "@radix-ui/react-popover": "^1.1.15",
+    "@sentry/cli": "^2.38.2",
     "@sentry/nextjs": "^10.45.0",
     "@stripe/react-stripe-js": "^5.6.0",
     "@stripe/stripe-js": "^8.6.0",
@@ -26,6 +27,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "jsdom": "^29.0.1",
     "next": "^15.2.1",
     "nodemailer": "^7.0.12",
     "react": "19.2.1",
@@ -40,15 +42,20 @@
     "zod": "^4.3.5"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.0.1",
     "autoprefixer": "^10.4.23",
     "baseline-browser-mapping": "^2.9.19",
     "eslint": "^10.0.3",
     "eslint-config-next": "^0.2.4",
+    "msw": "^2.12.14",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.19",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.1"
   }
 }

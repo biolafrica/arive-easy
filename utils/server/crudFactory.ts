@@ -638,4 +638,4 @@ async function handleExport<T>(
 }
 
 // Export helper types for consumers
-export type CRUDHandlers = ReturnType<typeof createCRUDHandlers>;
+export type CRUDHandlers = ReturnType<typeof createCRUDHandlers>; 
