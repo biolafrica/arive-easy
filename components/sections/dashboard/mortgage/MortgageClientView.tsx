@@ -80,14 +80,13 @@ export default function MortgageClientView({ id }: { id: string }) {
 
                     {mortgage?.properties && (
                       <p className="text-gray-500 mt-1 flex items-center gap-1">
-                        <icon.MapPinIcon className="w-4 h-4" />
+                        <icon.MapPinIcon className="w-4 h-4 hidden sm:block" />
                         {mortgage.properties.address_full}
                       </p>
                     )}
                   </div>
 
                   <div className="flex gap-3">
-
                     {mortgage?.status === 'active' && (
                       <Button 
                         leftIcon={<icon.CreditCardIcon className="w-4 h-4"/>} 
@@ -96,16 +95,6 @@ export default function MortgageClientView({ id }: { id: string }) {
                         Make Payment
                       </Button>
                     )}
-
-                    {mortgage?.status === 'payment_failed' && (
-                      <Button 
-                        variant='secondary' 
-                        leftIcon={<icon.ExclamationTriangleIcon className="w-4 h-4"/>}
-                      >
-                        Update Payment Method
-                      </Button>
-                    )}
-
                   </div>
                 </div>
 
@@ -114,17 +103,18 @@ export default function MortgageClientView({ id }: { id: string }) {
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                      className={`flex items-center gap-2 px-2 py-3 text-sm font-medium border-b-2 transition-colors ${
                         activeTab === tab.id
                           ? 'border-blue-600 text-blue-600'
                           : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                       }`}
                     >
-                      <tab.icon className="w-4 h-4" />
+                      <tab.icon className="w-4 h-4 hidden sm:block" />
                       {tab.label}
                     </button>
                   ))}
                 </div>
+                
               </div>
             </div>
 

@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { apiClient, PaginatedResponse, ApiError } from '../lib/api-client';
 import { queryKeys, FilterParams, QueryParams } from '../lib/query-keys';
 import { InterfaceType, getCacheConfig, getMutationConfig} from '../lib/cache-config';
+import { InfiniteData } from '@tanstack/react-query';
 
 // Generic CRUD hook configuration
 export interface UseCrudConfig<T> {
@@ -268,54 +269,90 @@ export function useCrud<T extends { id: string }>({
 
   // ============ DELETE ============
   type DeleteContext = {
-    previousList?: PaginatedResponse<T>;
+    previousLists?: [readonly unknown[], any][];
+    previousInfinite?: [readonly unknown[], InfiniteData<PaginatedResponse<T>> | undefined][];
   };
 
   const deleteMutation = useMutation<void, ApiError, string, DeleteContext>({
     mutationFn: async (id) => {
       await apiClient.delete(`${endpoint}?id=${id}`);
     },
-    onMutate: async (id) => {
-      if (!optimisticUpdate) return {};
-      
-      await queryClient.cancelQueries({ queryKey: keys.all });
-      const previousList = queryClient.getQueryData<PaginatedResponse<T>>(keys.lists());
 
-      if (previousList) {
-        queryClient.setQueryData<PaginatedResponse<T>>(keys.lists(), {
-          ...previousList,
-          data: previousList.data.filter(item => item.id !== id),
-          pagination: {
-            ...previousList.pagination,
-            total: previousList.pagination.total - 1,
-          },
-        });
-      }
-      
-      return { previousList };
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: keys.all });
+
+      const listEntries = queryClient.getQueriesData({ queryKey: keys.lists() });
+
+      listEntries.forEach(([queryKey, listData]) => {
+        // Check if this is an INFINITE query (has pages)
+        if (listData && typeof listData === 'object' && 'pages' in listData) {
+          // 💡 Explicitly type the 'old' data as InfiniteData<PaginatedResponse<T>>
+          queryClient.setQueryData<InfiniteData<PaginatedResponse<T>>>(queryKey, (old) => {
+            if (!old) return old;
+            return {
+              ...old,
+              pages: old.pages.map((page) => ({
+                ...page,
+                data: page.data.filter((item: any) => item.id !== id),
+                pagination: {
+                  ...page.pagination,
+                  total: Math.max(0, (page.pagination?.total ?? 1) - 1),
+                },
+              })),
+            };
+          });
+        } 
+        // Otherwise, treat as a STANDARD paginated query
+        // We use a type guard (as any) or a check to access .data safely
+        else if (listData && (listData as any).data) {
+          // 💡 Explicitly type the 'old' data as PaginatedResponse<T>
+          queryClient.setQueryData<PaginatedResponse<T>>(queryKey, (old) => {
+            if (!old) return old;
+            return {
+              ...old,
+              data: old.data.filter((item: any) => item.id !== id),
+              pagination: {
+                ...old.pagination,
+                total: Math.max(0, (old.pagination?.total ?? 1) - 1),
+              },
+            };
+          });
+        }
+      });
+
+      queryClient.removeQueries({
+        queryKey: [resource],
+        predicate: (query) => query.queryKey.includes(id),
+      });
+      return { previousLists: listEntries } as DeleteContext;
     },
-    
+
     onError: (error, id, context) => {
-      // Rollback
-      if (context?.previousList) {
-        queryClient.setQueryData(keys.lists(), context.previousList);
-      }
+      context?.previousLists?.forEach(([queryKey, listData]) => {
+        if (listData) queryClient.setQueryData(queryKey, listData);
+      });
+      context?.previousInfinite?.forEach(([queryKey, infiniteData]) => {
+        if (infiniteData) queryClient.setQueryData(queryKey, infiniteData);
+      });
 
       if (showNotifications && !onError.delete) {
         notify.error(error.error?.message || 'Failed to delete');
       }
-
       onError.delete?.(error);
     },
+
     onSuccess: (_, id) => {
-      notify.success('Deleted successfully');
-      // Remove from cache - Fixed: pass empty params object
-      queryClient.removeQueries({ queryKey: keys.detail(id, {}) });
+      if (showNotifications && !onSuccess.delete) {
+        notify.success('Deleted successfully');
+      }
       onSuccess.delete?.(id);
     },
+
     onSettled: () => {
-      invalidateQueries();
+      queryClient.invalidateQueries({ queryKey: keys.lists(), refetchType: 'active' });
+      queryClient.invalidateQueries({ queryKey: [resource, 'infinite'], refetchType: 'active' });
     },
+
     ...mutationConfig,
   });
 

@@ -7,7 +7,7 @@ import { ApplicationBase } from '@/type/pages/dashboard/application';
 import { Mortgage } from '@/type/pages/dashboard/mortgage';
 import { UserBase } from '@/type/user';
 import { sendEmail } from '@/utils/email/send_email';
-import { paymentReceiptBody } from '@/utils/email/templates/payment-receipt';
+import { generalPaymentReceipt, paymentReceiptBody } from '@/utils/email/templates/payment-receipt';
 import { getPaymentFailedEmailTemplate, getPaymentSuccessEmailTemplate } from '@/utils/email/templates/direct-debit';
 import { createNotification } from '@/utils/notifications/createNotification';
 import { buildNotificationPayload } from '@/utils/notifications/notificationContent';
@@ -814,19 +814,10 @@ async function sendReceiptUrlEmail(userId: string, receiptUrl: string): Promise<
     await sendEmail({
       to: user.email,
       subject: 'Your Payment Receipt is Ready - Kletch',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h2 style="color: #4F46E5;">Your Receipt is Ready!</h2>
-          <p>Dear ${user.name || 'Customer'},</p>
-          <p>Your official Stripe receipt is now available.</p>
-          <div style="margin: 30px 0;">
-            <a href="${receiptUrl}" style="display: inline-block; padding: 12px 24px; background-color: #4F46E5; color: white; text-decoration: none; border-radius: 6px; font-weight: 500;">
-              Download Receipt PDF
-            </a>
-          </div>
-          <p style="color: #6b7280; font-size: 14px;">This receipt serves as your official payment confirmation.</p>
-        </div>
-      `,
+      html: generalPaymentReceipt({
+        userName:user.name,
+        receiptUrl,
+      })
     });
     console.log(`Receipt URL email sent to: ${user.email}`);
   } catch (error) {

@@ -70,8 +70,7 @@ function DetailRow({
   );
 }
 
-export function MortgageCard({ mortgage, onMakePayment }: MortgageCardProps) {
-  console.log('Rendering MortgageCard with mortgage:', mortgage);
+export function MortgageCard({ mortgage}: MortgageCardProps) {
   const {
     id,
     property_price,
@@ -151,16 +150,7 @@ export function MortgageCard({ mortgage, onMakePayment }: MortgageCardProps) {
         </div>
       </div>
 
-      <div className="mt-6 flex flex-col sm:flex-row gap-3">
-        {status === 'active' && onMakePayment && (
-          <Button
-            className="flex-1"
-            onClick={() => onMakePayment(id)}
-          >
-            Make Payment
-          </Button>
-        )}
-        
+      <div className="mt-6 flex flex-col sm:flex-row gap-3">   
         <Link href={`/user-dashboard/properties/${id}/mortgages`} className="flex-1">
           <Button 
             variant='outline'

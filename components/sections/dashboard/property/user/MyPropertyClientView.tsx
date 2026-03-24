@@ -16,10 +16,6 @@ export default function MyPropertyClientView() {
   
   if (!user) return null;
 
-  const handleMakePayment = (mortgageId: string) => {
-    console.log('Make payment for mortgage:', mortgageId);
-  };
-
   if (error) {
     return (
       <ErrorState
@@ -42,7 +38,6 @@ export default function MyPropertyClientView() {
             <MortgageCard
               key={item.id}
               mortgage={item}
-              onMakePayment={() => handleMakePayment(item.id)} 
             />
           ))}
         </div>

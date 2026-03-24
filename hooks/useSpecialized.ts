@@ -431,7 +431,7 @@ export function useDeleteProperty() {
   });
 
   const deleteProperty = async (propertyId: string): Promise<boolean> => {
-    try {
+    try { 
       await remove(propertyId);
       return true;
     } catch (error) {
