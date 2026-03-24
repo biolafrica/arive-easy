@@ -224,7 +224,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-function calculateBillingCycleAnchor(firstPaymentDate: string | null, paymentDayOfMonth: number): number {
+export function calculateBillingCycleAnchor(firstPaymentDate: string | null, paymentDayOfMonth: number): number {
   if (firstPaymentDate) {
     return Math.floor(new Date(firstPaymentDate).getTime() / 1000);
   }
@@ -239,7 +239,7 @@ function calculateBillingCycleAnchor(firstPaymentDate: string | null, paymentDay
   return Math.floor(targetDate.getTime() / 1000);
 }
 
-async function createPaymentSchedule(
+export async function createPaymentSchedule(
   supabaseAdmin: any, 
   mortgage: any, 
   subscriptionId: string,

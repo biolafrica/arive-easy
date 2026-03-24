@@ -145,15 +145,9 @@ vi.mock('@/lib/formatter', () => ({
   formatUSD: vi.fn().mockReturnValue('$1,000.00'),
 }));
 
-// ─── Import route AFTER all mocks ─────────────────────────────────────────────
 import { POST, GET } from '@/app/api/webhook/stripe/route';
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-/**
- * Build a minimal NextRequest with a text body.
- * The webhook route reads request.text() so we supply raw JSON.
- */
 function makeRequest(body: object | string): NextRequest {
   const raw = typeof body === 'string' ? body : JSON.stringify(body);
   return new NextRequest('http://localhost/api/webhook/stripe', {
@@ -163,7 +157,6 @@ function makeRequest(body: object | string): NextRequest {
   });
 }
 
-/** Shorthand: build a minimal Stripe event object */
 function makeEvent(
   type: string,
   data: object,
@@ -177,7 +170,6 @@ function makeEvent(
   };
 }
 
-/** Reset all mocks between tests */
 function resetMocks() {
   vi.clearAllMocks();
 
@@ -211,7 +203,7 @@ function resetMocks() {
   );
 }
 
-// ─── Fixtures ─────────────────────────────────────────────────────────────────
+
 
 const MOCK_MORTGAGE = {
   id: 'mortgage_123',
@@ -251,9 +243,6 @@ const MOCK_USER = {
   email: 'emeka@example.com',
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TESTS
-// ─────────────────────────────────────────────────────────────────────────────
 
 describe('GET /api/webhook/stripe', () => {
   it('returns a health check response', async () => {
@@ -265,7 +254,7 @@ describe('GET /api/webhook/stripe', () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
+
 describe('POST /api/webhook/stripe — signature verification', () => {
   beforeEach(resetMocks);
 
@@ -308,7 +297,6 @@ describe('POST /api/webhook/stripe — signature verification', () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
 describe('checkout.session.completed', () => {
   beforeEach(resetMocks);
 
@@ -574,7 +562,7 @@ describe('checkout.session.completed', () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
+
 describe('checkout.session.expired', () => {
   beforeEach(resetMocks);
 
@@ -599,7 +587,6 @@ describe('checkout.session.expired', () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
 describe('payment_intent.succeeded', () => {
   beforeEach(resetMocks);
 
@@ -706,7 +693,7 @@ describe('payment_intent.succeeded', () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
+
 describe('payment_intent.payment_failed', () => {
   beforeEach(resetMocks);
 
@@ -843,7 +830,7 @@ describe('payment_intent.payment_failed', () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
+
 describe('setup_intent.succeeded', () => {
   beforeEach(resetMocks);
 
@@ -946,7 +933,7 @@ describe('setup_intent.succeeded', () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
+
 describe('invoice.payment_succeeded', () => {
   beforeEach(resetMocks);
 
@@ -1142,7 +1129,7 @@ describe('invoice.payment_succeeded', () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
+
 describe('invoice.payment_failed', () => {
   beforeEach(resetMocks);
 
@@ -1232,7 +1219,7 @@ describe('invoice.payment_failed', () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
+
 describe('customer.subscription.updated', () => {
   beforeEach(resetMocks);
 
@@ -1294,7 +1281,7 @@ describe('customer.subscription.updated', () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
+
 describe('customer.subscription.deleted', () => {
   beforeEach(resetMocks);
 
@@ -1373,7 +1360,7 @@ describe('customer.subscription.deleted', () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
+
 describe('payment_method.attached', () => {
   beforeEach(resetMocks);
 
@@ -1393,7 +1380,7 @@ describe('payment_method.attached', () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
+
 describe('unhandled event types', () => {
   beforeEach(resetMocks);
 
@@ -1412,7 +1399,7 @@ describe('unhandled event types', () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
+
 describe('global error handling', () => {
   beforeEach(resetMocks);
 
