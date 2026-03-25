@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/primitives/Button";
-import { ArrowPathIcon, CheckCircleIcon, XCircleIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { ArrowPathIcon, CheckCircleIcon, XCircleIcon} from "@heroicons/react/24/outline";
 
 interface Props {
   applicationId: string;
@@ -35,7 +35,7 @@ export default function VerificationCallbackClientView({ applicationId }: Props)
 
         if (overall_status === 'approved') {
           setStatus('success');
-          setMessage('Identity Verification Complete! 🎉');
+          setMessage('Identity Verification Complete!');
           setSubMessage('Both your home country ID and immigration ID have been verified. You can now proceed to the next step.');
         } else if (overall_status === 'failed') {
           setStatus('failed');

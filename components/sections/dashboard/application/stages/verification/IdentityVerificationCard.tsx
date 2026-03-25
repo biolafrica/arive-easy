@@ -10,13 +10,11 @@ import { StatusBanner } from '@/components/common/Statusbanner';
 interface IdentityVerificationCardsProps {
   applicationId: string;
   verificationData?: IdentityVerificationData;
-  onStatusUpdate?: () => void;
 }
 
 export function IdentityVerificationCards({ 
   applicationId, 
   verificationData,
-  onStatusUpdate 
 }: IdentityVerificationCardsProps) {
   const router = useRouter();
   
@@ -35,7 +33,6 @@ export function IdentityVerificationCards({
 
   useEffect(() => {
     const checkCurrentStatus = async () => {
-      // Only check if something was in progress
       if (
         verificationData?.home_country_status === 'in_progress' ||
         verificationData?.immigration_status === 'in_progress'
@@ -49,10 +46,8 @@ export function IdentityVerificationCards({
             setImmigrationStatus(data.immigration_status);
             setOverallStatus(data.overall_status);
             
-            // Show appropriate toast based on what changed
             if (data.overall_status === 'approved') {
               toast.success('Identity verification completed successfully!');
-              onStatusUpdate?.();
             } else if (
               data.home_country_status === 'approved' && 
               verificationData?.home_country_status !== 'approved'

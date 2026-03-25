@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.eatupng.com';
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.usekletch.com';
     const callbackUrl = `${baseUrl}/user-dashboard/applications/${application_id}/verification/callback`;
 
     const session = await createVerificationSession(

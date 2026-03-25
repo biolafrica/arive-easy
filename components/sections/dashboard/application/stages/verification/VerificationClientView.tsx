@@ -8,14 +8,12 @@ interface VerificationClientViewProps {
   hasPaid: boolean;
   application_id: string;
   verificationData?: IdentityVerificationData;
-  onStatusUpdate?: () => void;
 }
 
 export default function VerificationClientView({ 
   hasPaid, 
   application_id, 
   verificationData, 
-  onStatusUpdate,
 }: VerificationClientViewProps) {
   return (
     <div className="space-y-6">
@@ -28,7 +26,6 @@ export default function VerificationClientView({
         <IdentityVerificationCards
           applicationId={application_id}
           verificationData={verificationData}
-          onStatusUpdate={onStatusUpdate}
         />
       )}
     </div>

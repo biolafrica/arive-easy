@@ -24,12 +24,6 @@ export default function IdentityVerificationStage({
   isUpdating=false,
 }: Props) {
 
-  const handleStatusUpdate = () => {
-    onUpdate({
-      identity_verification_status: 'pending',
-    });
-  };
-
   const verificationData: IdentityVerificationData | undefined = stageData
     ? {
         home_country_session_id: stageData.home_country_session_id,
@@ -59,7 +53,6 @@ export default function IdentityVerificationStage({
         hasPaid={getHasPaid(application.processing_fee_payment_status)}
         application_id={application.id}
         verificationData={verificationData}
-        onStatusUpdate={handleStatusUpdate}
       />
     </div>
   );

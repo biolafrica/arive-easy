@@ -188,7 +188,6 @@ export function useApplicationStageUpdates(application: ApplicationBase) {
       successMessage: 'Payment setup completed'
     });
   };
-
   
   const updateMortgageActivation = async (data: {
     mortgage_activated: boolean;
