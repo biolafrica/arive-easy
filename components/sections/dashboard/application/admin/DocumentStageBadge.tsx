@@ -3,7 +3,7 @@ import { humanizeSnakeCase } from '@/utils/common/humanizeSnakeCase';
 
 interface DocumentStatusBadgeProps {
   documentType: string;
-  status: 'sent' | 'partially_signed' | 'completed';
+  status: 'sent' | 'partially_signed' | 'completed' | 'fully_signed';
   signaturesCompleted?: number;
   signaturesTotal?: number;
 }
@@ -24,6 +24,10 @@ export function DocumentStatusBadge({
       label: `Partially Signed (${signaturesCompleted}/${signaturesTotal})`,
     },
     completed: {
+      variant: 'success' as const,
+      label: 'Fully Signed',
+    },
+    fully_signed: {
       variant: 'success' as const,
       label: 'Fully Signed',
     },

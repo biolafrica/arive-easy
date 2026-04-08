@@ -10,12 +10,12 @@ export interface MetaOptions {
 
 const APP_NAME = "Kletch";
 const APP_DEFAULT_DESCRIPTION = "Empowering the African diaspora to invest in home.";
-const APP_BASE_URL = "https://usekletch.com";
+const APP_BASE_URL = "https://www.usekletch.com";
 
 export function createMetadata({
   title,
   description = APP_DEFAULT_DESCRIPTION,
-  image = `${APP_BASE_URL}/og-image.png`,
+  image = 'https://rhxbrjeeblfkokellqbb.supabase.co/storage/v1/object/public/media/Kletch%20White.png',
   url = APP_BASE_URL,
   noIndex = false,
 }: MetaOptions = {}): Metadata {
