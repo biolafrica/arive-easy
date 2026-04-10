@@ -75,4 +75,4 @@ const documentTemplateHandlers = createCRUDHandlers<TemplateBase>({
 });
 
 
-export const { GET, PUT, POST, PATCH } = documentTemplateHandlers;
+export const { GET, PUT, POST} = documentTemplateHandlers;

@@ -35,7 +35,6 @@ export interface CustomHandlers<T> {
   GET?: (request: NextRequest, queryBuilder: SupabaseQueryBuilder<T>, context: RequestContext) => Promise<NextResponse>;
   POST?: (request: NextRequest, queryBuilder: SupabaseQueryBuilder<T>, context: RequestContext) => Promise<NextResponse>;
   PUT?: (request: NextRequest, queryBuilder: SupabaseQueryBuilder<T>, context: RequestContext) => Promise<NextResponse>;
-  PATCH?: (request: NextRequest, queryBuilder: SupabaseQueryBuilder<T>, context: RequestContext) => Promise<NextResponse>;
   DELETE?: (request: NextRequest, queryBuilder: SupabaseQueryBuilder<T>, context: RequestContext) => Promise<NextResponse>;
 }
 
@@ -53,7 +52,7 @@ export interface ValidationConfig<T> {
 
 export interface CachingConfig {
   enabled: boolean;
-  ttl?: number; 
+  ttl?: number;
   invalidateOn?: CRUDAction[];
   keyPrefix?: string;
 }
@@ -68,12 +67,7 @@ export interface RateLimitConfig {
 export interface FeatureFlags {
   softDelete?: boolean;
   audit?: boolean;
-  versioning?: boolean;
   bulkOperations?: boolean;
-  export?: boolean;
-  import?: boolean;
-  search?: boolean;
-  aggregations?: boolean;
 }
 
 export interface RequestContext {
@@ -91,40 +85,33 @@ export interface AuthContext {
   [key: string]: any;
 }
 
-export type CRUDAction = 'create' | 'read' | 'update' | 'delete' | 'list' | 'search' | 'bulk' | 'export';
+export type CRUDAction = 'create' | 'read' | 'update' | 'delete' | 'list' | 'search' | 'bulk';
 
 function extractFilters(request: NextRequest): Record<string, any> {
   const filters: Record<string, any> = {};
   const { searchParams } = new URL(request.url);
-  
-  // Skip pagination and control parameters
+
   const skipParams = ['page', 'limit', 'search', 'sortBy', 'sortOrder', 'id', 'ids', 'include', 'endpoint'];
-  
+
   searchParams.forEach((value, key) => {
     if (!skipParams.includes(key)) {
-      // Handle dot notation for nested filters (e.g., filters.status=active)
       if (key.startsWith('filters.')) {
         const filterKey = key.replace('filters.', '');
-        
-        // Handle special operators
         if (filterKey.includes('.')) {
           const [field, operator] = filterKey.split('.');
           filters[field] = { operator, value };
         } else {
-          // Handle array values
           filters[filterKey] = value.includes(',') ? value.split(',') : value;
         }
       } else if (key.includes('.')) {
-        // Handle other dot notation (e.g., address.city=Lagos)
         const [field, operator] = key.split('.');
         filters[field] = { operator, value };
       } else {
-        // Regular filter
         filters[key] = value.includes(',') ? value.split(',') : value;
       }
     }
   });
-  
+
   return filters;
 }
 
@@ -134,30 +121,28 @@ export function createCRUDHandlers<T>({
   searchFields = ['title', 'description'],
   defaultSort = { field: 'created_at', order: 'desc' },
   hooks = {},
-  customHandlers = {},  
+  customHandlers = {},
   middleware = {},
   validation = {},
   caching = { enabled: false },
   rateLimit = { enabled: false },
-  features = {}
+  features = {},
 }: CRUDConfig<T>) {
   const queryBuilder = new SupabaseQueryBuilder<T>(table);
 
-  // Helper to create request context
   const createContext = async (
     request: NextRequest,
     action: CRUDAction
   ): Promise<RequestContext> => {
     const authResult = middleware.auth ? await middleware.auth(request) : undefined;
     return {
-      auth: authResult ?? undefined, 
+      auth: authResult ?? undefined,
       request,
       action,
-      metadata: {}
+      metadata: {},
     };
   };
 
-  // Check permissions
   const checkPermissions = async (
     action: CRUDAction,
     context: RequestContext
@@ -166,7 +151,6 @@ export function createCRUDHandlers<T>({
     return middleware.permissions(action, context);
   };
 
-  // Log actions
   const logAction = async (
     action: CRUDAction,
     context: RequestContext,
@@ -177,50 +161,35 @@ export function createCRUDHandlers<T>({
     }
   };
 
-  // Apply rate limiting
   const applyRateLimit = (request: NextRequest): boolean => {
     if (!rateLimit.enabled) return true;
-    
-    const key = rateLimit.keyExtractor 
+
+    const key = rateLimit.keyExtractor
       ? rateLimit.keyExtractor(request)
       : request.headers.get('x-forwarded-for') || 'anonymous';
-    
-    return response.checkRateLimit(
-      key,
-      rateLimit.limit || 100,
-      rateLimit.windowMs || 60000
-    );
+
+    return response.checkRateLimit(key, rateLimit.limit || 100, rateLimit.windowMs || 60000);
   };
 
   return {
     GET: async (request: NextRequest) => {
-      // Rate limiting
       if (!applyRateLimit(request)) {
-        return NextResponse.json(
-          { error: 'Rate limit exceeded' },
-          { status: 429 }
-        );
+        return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
       }
 
       const id = response.getQueryParam(request, 'id');
       const action: CRUDAction = id ? 'read' : 'list';
       const context = await createContext(request, action);
 
-      // Custom handler
       if (customHandlers.GET) {
         return customHandlers.GET(request, queryBuilder, context);
       }
 
       try {
-        // Permission check
         if (!await checkPermissions(action, context)) {
-          return NextResponse.json(
-            { error: 'Permission denied' },
-            { status: 403 }
-          );
+          return NextResponse.json({ error: 'Permission denied' }, { status: 403 });
         }
 
-        // Before read hook
         if (hooks.beforeRead) {
           await hooks.beforeRead(context);
         }
@@ -229,56 +198,38 @@ export function createCRUDHandlers<T>({
         let headers = {};
 
         if (id) {
-          // Single record
           const joins = response.getQueryParam(request, 'include')?.split(',').map(table => ({ table }));
           data = await queryBuilder.findById(id, { joins });
-          
+
           if (caching.enabled) {
             headers = response.cacheHeaders(caching.ttl || 60);
           }
         } else {
-          // List with pagination
           const params = response.getPaginationParams(request);
           const filters = extractFilters(request);
           const joins = response.getQueryParam(request, 'include')?.split(',').map(table => ({ table }));
 
-          // Handle special endpoints
-          const endpoint = response.getQueryParam(request, 'endpoint');
-          
-          if (endpoint === 'count' && features.aggregations) {
-            data = { count: await queryBuilder.count(filters) };
-          } else if (endpoint === 'export' && features.export) {
-            data = await handleExport(queryBuilder, filters);
-          } else {
-            data = await queryBuilder.findPaginated({
-              ...params,
-              searchFields,
-              filters,
-              joins,
-              sortBy: params.sortBy || defaultSort.field,
-              sortOrder: params.sortOrder || defaultSort.order
-            });
-          }
-          
-          if (caching.enabled && !endpoint) {
-            headers = response.cacheHeaders(caching.ttl || 60);
-          } else {
-            headers = response.noCacheHeaders();
-          }
+          data = await queryBuilder.findPaginated({
+            ...params,
+            searchFields,
+            filters,
+            joins,
+            sortBy: params.sortBy || defaultSort.field,
+            sortOrder: params.sortOrder || defaultSort.order,
+          });
+
+          headers = caching.enabled
+            ? response.cacheHeaders(caching.ttl || 60)
+            : response.noCacheHeaders();
         }
 
-        // After read hook
         if (hooks.afterRead) {
           data = await hooks.afterRead(data, context);
         }
 
-        // Log action
         await logAction(action, context, { success: true });
 
-        return NextResponse.json(
-          { data },
-          { status: 200, headers }
-        );
+        return NextResponse.json({ data }, { status: 200, headers });
       } catch (error) {
         await logAction(action, context, { success: false, error });
         return response.handleError(error);
@@ -286,44 +237,33 @@ export function createCRUDHandlers<T>({
     },
 
     POST: async (request: NextRequest) => {
-  
       if (!applyRateLimit(request)) {
-        return NextResponse.json(
-          { error: 'Rate limit exceeded' },
-          { status: 429 }
-        );
+        return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
       }
 
       const context = await createContext(request, 'create');
 
-      // Custom handler
       if (customHandlers.POST) {
         return customHandlers.POST(request, queryBuilder, context);
       }
 
       try {
-        // Permission check
         if (!await checkPermissions('create', context)) {
-          return NextResponse.json(
-            { error: 'Permission denied' },
-            { status: 403 }
-          );
+          return NextResponse.json({ error: 'Permission denied' }, { status: 403 });
         }
 
         const body: T = await request.json();
 
-        // Handle bulk operations
         if (Array.isArray(body) && features.bulkOperations) {
           return handleBulkCreate(body as T[], queryBuilder, hooks, context);
         }
 
-        // Validation
         const validator = new response.Validator(body);
-        
+
         if (requiredFields.length > 0) {
           validator.required(requiredFields);
         }
-        
+
         if (validation.create) {
           const errors = validation.create(body);
           if (errors) {
@@ -333,7 +273,7 @@ export function createCRUDHandlers<T>({
             );
           }
         }
-        
+
         const validationResult = validator.validate();
         if (!validationResult.isValid) {
           return NextResponse.json(
@@ -342,14 +282,12 @@ export function createCRUDHandlers<T>({
           );
         }
 
-        // Before create hook
         let processedBody = body;
         if (hooks.beforeCreate) {
           const result = await hooks.beforeCreate(body, context);
           if (result) processedBody = result;
         }
 
-        // Add audit fields if enabled
         if (features.audit && context.auth?.userId) {
           (processedBody as any).created_by = context.auth.userId;
           (processedBody as any).updated_by = context.auth.userId;
@@ -357,12 +295,10 @@ export function createCRUDHandlers<T>({
 
         const data = await queryBuilder.create(processedBody);
 
-        // After create hook
         if (hooks.afterCreate) {
           await hooks.afterCreate(data, processedBody, context);
         }
 
-        // Log action
         await logAction('create', context, { success: true, id: (data as any).id });
 
         return response.successResponse(data, 201);
@@ -372,19 +308,13 @@ export function createCRUDHandlers<T>({
       }
     },
 
-    // PUT handler - Full update
     PUT: async (request: NextRequest) => {
-      // Rate limiting
       if (!applyRateLimit(request)) {
-        return NextResponse.json(
-          { error: 'Rate limit exceeded' },
-          { status: 429 }
-        );
+        return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
       }
 
       const context = await createContext(request, 'update');
 
-      // Custom handler
       if (customHandlers.PUT) {
         return customHandlers.PUT(request, queryBuilder, context);
       }
@@ -393,23 +323,15 @@ export function createCRUDHandlers<T>({
         const id = response.getQueryParam(request, 'id');
 
         if (!id) {
-          return NextResponse.json(
-            { error: 'ID is required' },
-            { status: 400 }
-          );
+          return NextResponse.json({ error: 'ID is required' }, { status: 400 });
         }
 
-        // Permission check
         if (!await checkPermissions('update', context)) {
-          return NextResponse.json(
-            { error: 'Permission denied' },
-            { status: 403 }
-          );
+          return NextResponse.json({ error: 'Permission denied' }, { status: 403 });
         }
 
         const body: Partial<T> = await request.json();
 
-        // Validation
         if (validation.update) {
           const errors = validation.update(body);
           if (errors) {
@@ -420,31 +342,22 @@ export function createCRUDHandlers<T>({
           }
         }
 
-        // Before update hook
         let processedBody = body;
         if (hooks.beforeUpdate) {
           const result = await hooks.beforeUpdate(id, body, context);
           if (result) processedBody = result;
         }
 
-        // Add audit fields if enabled
         if (features.audit && context.auth?.userId) {
           (processedBody as any).updated_by = context.auth.userId;
         }
 
-        // Handle versioning if enabled
-        if (features.versioning) {
-          await handleVersioning(queryBuilder, id);
-        }
-
         const data = await queryBuilder.update(id, processedBody);
 
-        // After update hook
         if (hooks.afterUpdate) {
           await hooks.afterUpdate(data, processedBody, context);
         }
 
-        // Log action
         await logAction('update', context, { success: true, id });
 
         return response.successResponse(data);
@@ -454,25 +367,13 @@ export function createCRUDHandlers<T>({
       }
     },
 
-    // PATCH handler - Partial update
-    PATCH: async (request: NextRequest) => {
-      // Reuse PUT handler for PATCH (partial updates)
-      return (createCRUDHandlers({ ...arguments[0] }).PUT as any)(request);
-    },
-
-    // DELETE handler
     DELETE: async (request: NextRequest) => {
-      // Rate limiting
       if (!applyRateLimit(request)) {
-        return NextResponse.json(
-          { error: 'Rate limit exceeded' },
-          { status: 429 }
-        );
+        return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
       }
 
       const context = await createContext(request, 'delete');
 
-      // Custom handler
       if (customHandlers.DELETE) {
         return customHandlers.DELETE(request, queryBuilder, context);
       }
@@ -482,63 +383,44 @@ export function createCRUDHandlers<T>({
         const ids = response.getQueryParam(request, 'ids')?.split(',');
 
         if (!id && !ids) {
-          return NextResponse.json(
-            { error: 'ID or IDs required' },
-            { status: 400 }
-          );
+          return NextResponse.json({ error: 'ID or IDs required' }, { status: 400 });
         }
 
-        // Permission check
         if (!await checkPermissions('delete', context)) {
-          return NextResponse.json(
-            { error: 'Permission denied' },
-            { status: 403 }
-          );
+          return NextResponse.json({ error: 'Permission denied' }, { status: 403 });
         }
 
-        // Handle bulk delete
         if (ids && features.bulkOperations) {
           return handleBulkDelete(ids, queryBuilder, hooks, context, features);
         }
 
         if (id) {
-          // Before delete hook
           if (hooks.beforeDelete) {
             await hooks.beforeDelete(id, context);
           }
 
-          // Handle soft delete if enabled
           if (features.softDelete) {
             await queryBuilder.update(id, {
               deleted_at: new Date().toISOString(),
-              deleted_by: context.auth?.userId
+              deleted_by: context.auth?.userId,
             } as any);
           } else {
             await queryBuilder.delete(id);
           }
 
-          // After delete hook
           if (hooks.afterDelete) {
             await hooks.afterDelete(id, context);
           }
 
-          // Log action
           await logAction('delete', context, { success: true, id });
 
-          const data = { 
-            deleted_id: id, 
-            deleted_at: new Date().toISOString(), 
-            message: 'Property deleted successfully',
-          };
-
-          return response.successResponse(data);
+          return response.successResponse({
+            deleted_id: id,
+            deleted_at: new Date().toISOString(),
+          });
         }
 
-        return NextResponse.json(
-          { error: 'Invalid request' },
-          { status: 400 }
-        );
-
+        return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
       } catch (error) {
         await logAction('delete', context, { success: false, error });
         return response.handleError(error);
@@ -554,8 +436,8 @@ async function handleBulkCreate<T>(
   context: RequestContext
 ): Promise<NextResponse> {
   try {
-    const processedItems = [];
-    
+    const processedItems: T[] = [];
+
     for (const item of items) {
       let processedItem = item;
       if (hooks.beforeCreate) {
@@ -564,19 +446,16 @@ async function handleBulkCreate<T>(
       }
       processedItems.push(processedItem);
     }
-    
+
     const created = await queryBuilder.createMany(processedItems);
-    
+
     if (hooks.afterCreate) {
       for (let i = 0; i < created.length; i++) {
         await hooks.afterCreate(created[i], processedItems[i], context);
       }
     }
-    
-    return response.successResponse({
-      data: created,
-      count: created.length
-    }, 201);
+
+    return response.successResponse({ data: created, count: created.length }, 201);
   } catch (error) {
     return response.handleError(error);
   }
@@ -595,47 +474,26 @@ async function handleBulkDelete<T>(
         await hooks.beforeDelete(id, context);
       }
     }
-    
+
     if (features.softDelete) {
       await queryBuilder.updateMany(ids, {
         deleted_at: new Date().toISOString(),
-        deleted_by: context.auth?.userId
+        deleted_by: context.auth?.userId,
       } as any);
     } else {
       await queryBuilder.deleteMany(ids);
     }
-    
+
     for (const id of ids) {
       if (hooks.afterDelete) {
         await hooks.afterDelete(id, context);
       }
     }
-    
+
     return response.messageResponse(`Deleted ${ids.length} records successfully`);
   } catch (error) {
     return response.handleError(error);
   }
 }
 
-async function handleVersioning<T>(
-  queryBuilder: SupabaseQueryBuilder<T>,
-  id: string
-): Promise<void> {
-  // This would typically copy the current record to a versions table
-  // Implementation depends on your database schema
-  const current = await queryBuilder.findById(id);
-  // TODO: Insert into versions table
-}
-
-async function handleExport<T>(
-  queryBuilder: SupabaseQueryBuilder<T>,
-  filters: Record<string, any>
-): Promise<any> {
-  // Implement export logic (CSV, JSON, etc.)
-  const allData = await queryBuilder.findAll();
-  // TODO: Format for export
-  return allData;
-}
-
-// Export helper types for consumers
-export type CRUDHandlers = ReturnType<typeof createCRUDHandlers>; 
+export type CRUDHandlers = ReturnType<typeof createCRUDHandlers>;

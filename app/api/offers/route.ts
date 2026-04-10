@@ -235,4 +235,4 @@ const offersHandlers = createCRUDHandlers<OfferBase>({
   }
 });
 
-export const { GET, PUT, POST, PATCH } = offersHandlers;
+export const { GET, PUT, POST} = offersHandlers;

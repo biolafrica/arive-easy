@@ -8,23 +8,27 @@ const HOUR = 60 * MINUTE;
 export const CACHE_CONFIGS = {
   client: {
     queries: {
-      staleTime: 5 * MINUTE,     // Data considered fresh for 5 minutes
-      cacheTime: 30 * MINUTE,     // Keep in cache for 30 minutes
+      staleTime: 5 * MINUTE,
+      cacheTime: 30 * MINUTE,
       refetchOnWindowFocus: false,
       refetchOnReconnect: true,
       refetchOnMount: false,
       retry: 3,
       retryDelay: (attemptIndex: number) => Math.min(1000 * 2 ** attemptIndex, 30000),
     },
+    // Mutations must never retry. A failed POST/PUT/DELETE that gets a 4xx
+    // (conflict, validation, forbidden) would fire again and produce a second
+    // request + a second error toast. Only transient network errors are worth
+    // retrying, and React Query mutation retry does not distinguish error types.
     mutations: {
-      retry: 1,
+      retry: 0,
     },
   },
 
   admin: {
     queries: {
-      staleTime: 0,               // Always stale, refetch on every access
-      cacheTime: 5 * MINUTE,       // Keep in cache for 5 minutes (for back navigation)
+      staleTime: 0,
+      cacheTime: 5 * MINUTE,
       refetchOnWindowFocus: true,
       refetchOnReconnect: true,
       refetchOnMount: true,
@@ -32,14 +36,14 @@ export const CACHE_CONFIGS = {
       retryDelay: 1000,
     },
     mutations: {
-      retry: 0,                   // No retries for admin actions (avoid duplicates)
+      retry: 0,
     },
   },
 
   buyer: {
     queries: {
-      staleTime: 1 * MINUTE,      // Data considered fresh for 1 minute
-      cacheTime: 10 * MINUTE,      // Keep in cache for 10 minutes
+      staleTime: 1 * MINUTE,
+      cacheTime: 10 * MINUTE,
       refetchOnWindowFocus: true,
       refetchOnReconnect: true,
       refetchOnMount: false,
@@ -47,54 +51,14 @@ export const CACHE_CONFIGS = {
       retryDelay: (attemptIndex: number) => Math.min(1000 * 2 ** attemptIndex, 10000),
     },
     mutations: {
-      retry: 1,
+      retry: 0,
     },
   },
 } as const;
 
-export const DATA_TYPE_CONFIGS = {
-  // Static or rarely changing data
-  static: {
-    staleTime: 1 * HOUR,
-    cacheTime: 2 * HOUR,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-  },
+// ─── Data type overrides (used inside useCrud / useInfiniteList) ──────────────
 
-  // User-specific data that changes frequently
-  userDynamic: {
-    staleTime: 0,
-    cacheTime: 5 * MINUTE,
-    refetchOnWindowFocus: true,
-    refetchOnMount: true,
-  },
-
-  // Lists that update moderately
-  list: {
-    staleTime: 2 * MINUTE,
-    cacheTime: 10 * MINUTE,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-  },
-
-  // Real-time or critical data
-  realtime: {
-    staleTime: 0,
-    cacheTime: 0,
-    refetchOnWindowFocus: true,
-    refetchOnMount: true,
-    refetchInterval: 30000, // Poll every 30 seconds
-  },
-
-  // Search results
-  search: {
-    staleTime: 5 * MINUTE,
-    cacheTime: 15 * MINUTE,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-  },
-
-  // Infinite scroll data
+const DATA_TYPE_CONFIGS = {
   infinite: {
     staleTime: 5 * MINUTE,
     cacheTime: 30 * MINUTE,
@@ -104,29 +68,35 @@ export const DATA_TYPE_CONFIGS = {
   },
 } as const;
 
-// Helper function to get cache config based on interface and data type
+// Helper to get interface-level cache config (used by useCrud / useInfiniteList)
 export function getCacheConfig(
   interfaceType: InterfaceType,
   dataType?: keyof typeof DATA_TYPE_CONFIGS
 ): Partial<UseQueryOptions<any, any, any, any>> {
   const baseConfig = CACHE_CONFIGS[interfaceType].queries;
-  
   if (dataType) {
-    return {
-      ...baseConfig,
-      ...DATA_TYPE_CONFIGS[dataType],
-    };
+    return { ...baseConfig, ...DATA_TYPE_CONFIGS[dataType] };
   }
-  
   return baseConfig;
 }
 
-// Helper function to get mutation config
+// Helper to get mutation config (used by useCrud)
 export function getMutationConfig(
   interfaceType: InterfaceType
 ): Partial<UseMutationOptions<any, any, any, any>> {
   return CACHE_CONFIGS[interfaceType].mutations;
 }
+
+// ─── Entity-specific cache configs ───────────────────────────────────────────
+//
+// Only entries that are referenced by a createEntityHooks call
+// (via cacheKey + listSubKey / detailSubKey) or by a direct
+// getEntityCacheConfig() call in a hook file are kept here.
+//
+// Removed entirely: transactions, mortgagePayments (as a top-level key)
+// Removed sub-keys:  mortgages.search, preApprovals.statistics/eligibility/byStatus/byProperty,
+//                    applications.byStatus/statistics, offers.statistics,
+//                    profile.public, analytics.reports, notifications.count (moved inline)
 
 export const ENTITY_CACHE_CONFIGS = {
 
@@ -139,10 +109,6 @@ export const ENTITY_CACHE_CONFIGS = {
       staleTime: 10 * MINUTE,
       cacheTime: 1 * HOUR,
     },
-    search: {
-      staleTime: 3 * MINUTE,
-      cacheTime: 15 * MINUTE,
-    },
   },
 
   mortgages: {
@@ -153,10 +119,6 @@ export const ENTITY_CACHE_CONFIGS = {
     detail: {
       staleTime: 10 * MINUTE,
       cacheTime: 1 * HOUR,
-    },
-    search: {
-      staleTime: 3 * MINUTE,
-      cacheTime: 15 * MINUTE,
     },
   },
 
@@ -172,10 +134,7 @@ export const ENTITY_CACHE_CONFIGS = {
   },
 
   documents: {
-    list: {
-      staleTime: 0,
-      cacheTime: 5 * MINUTE,
-    },
+    // detailSubKey used by all three document factory instances
     detail: {
       staleTime: 0,
       cacheTime: 2 * MINUTE,
@@ -194,42 +153,16 @@ export const ENTITY_CACHE_CONFIGS = {
     },
   },
 
-  transactions: {
-    list: {
-      staleTime: 5 * MINUTE,
-      cacheTime: 15 * MINUTE,
-    },
-    summary: {
-      staleTime: 10 * MINUTE,
-      cacheTime: 30 * MINUTE,
-    },
-  },
-
-  mortgagePayments: {
-    list: {
-      staleTime: 5 * MINUTE,
-      cacheTime: 15 * MINUTE,
-    },
-    summary: {
-      staleTime: 10 * MINUTE,
-      cacheTime: 30 * MINUTE,
-    },
-     detail: {
-      staleTime: 1 * MINUTE,
-      cacheTime: 5 * MINUTE,
-    },
-  },
-
   offers: {
     list: {
       staleTime: 5 * MINUTE,
       cacheTime: 15 * MINUTE,
     },
+    // detailSubKey in offerHooks is 'summary'
     summary: {
       staleTime: 10 * MINUTE,
       cacheTime: 30 * MINUTE,
     },
-   
   },
 
   profile: {
@@ -237,15 +170,11 @@ export const ENTITY_CACHE_CONFIGS = {
       staleTime: 5 * MINUTE,
       cacheTime: 30 * MINUTE,
     },
-    public: {
-      staleTime: 10 * MINUTE,
-      cacheTime: 1 * HOUR,
-    },
   },
 
   users: {
     list: {
-      staleTime: 0, 
+      staleTime: 0,
       cacheTime: 5 * MINUTE,
     },
     detail: {
@@ -256,14 +185,14 @@ export const ENTITY_CACHE_CONFIGS = {
 
   notifications: {
     list: {
-      staleTime: 0,              
+      staleTime: 0,
       cacheTime: 5 * MINUTE,
-      refetchInterval: 60000,    
+      refetchInterval: 60000,
     },
     count: {
       staleTime: 0,
       cacheTime: 1 * MINUTE,
-      refetchInterval: 30000,  
+      refetchInterval: 30000,
     },
   },
 
@@ -272,34 +201,22 @@ export const ENTITY_CACHE_CONFIGS = {
       staleTime: 5 * MINUTE,
       cacheTime: 15 * MINUTE,
     },
-    reports: {
-      staleTime: 30 * MINUTE,
-      cacheTime: 2 * HOUR,
-    },
   },
 
   preApprovals: {
     list: {
-      staleTime: 30 * 1000,       
+      staleTime: 30 * 1000,
       cacheTime: 5 * MINUTE,
     },
     detail: {
       staleTime: 1 * MINUTE,
       cacheTime: 5 * MINUTE,
-    },
-    statistics: {
-      staleTime: 2 * MINUTE,
-      cacheTime: 10 * MINUTE,
-    },
-    eligibility: {
-      staleTime: 5 * MINUTE,        
-      cacheTime: 15 * MINUTE,
     },
   },
 
   applications: {
     list: {
-      staleTime: 30 * 1000, 
+      staleTime: 30 * 1000,
       cacheTime: 5 * MINUTE,
     },
     detail: {
@@ -307,13 +224,11 @@ export const ENTITY_CACHE_CONFIGS = {
       cacheTime: 5 * MINUTE,
     },
   },
-  
+
 } as const;
 
-// Export type for entity cache configs
-export type EntityCacheConfig = typeof ENTITY_CACHE_CONFIGS; 
+export type EntityCacheConfig = typeof ENTITY_CACHE_CONFIGS;
 
-// Helper to get entity-specific cache config
 export function getEntityCacheConfig<
   E extends keyof EntityCacheConfig,
   T extends keyof EntityCacheConfig[E]

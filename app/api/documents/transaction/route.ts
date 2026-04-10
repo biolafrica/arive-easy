@@ -167,4 +167,4 @@ const transactionTemplateHandlers = createCRUDHandlers<TransactionDocumentBase>(
   
 });
 
-export const { GET, PUT, POST, PATCH } = transactionTemplateHandlers;
+export const { GET, PUT, POST,} = transactionTemplateHandlers;

@@ -5,15 +5,19 @@ import Link from "next/link";
 import { useState } from "react"
 
 export function NewsletterForm() {
+  console.log('NewsletterForm mounted');
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const { create, isCreating } = useSubscriber();
  
   const handleSubmit = async () => {
-    if (!email) return;
-    await create({ email } as NewsletterValues);
-    setSubmitted(true);
-    setEmail('');
+    if (!email || isCreating) return;
+
+    try {
+      await create({ email } as NewsletterValues);
+      setSubmitted(true);
+      setEmail('');
+    } catch {}
   };
  
   if (submitted) {
@@ -39,7 +43,9 @@ export function NewsletterForm() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !isCreating) handleSubmit();
+            }}
             placeholder="Enter Email"
             required
             className="

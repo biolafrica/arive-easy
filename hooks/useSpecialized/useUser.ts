@@ -1,17 +1,17 @@
-
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient, ApiError } from '@/lib/api-client';
 import { useAuthContext } from '@/providers/auth-provider';
 import { queryKeys } from '@/lib/query-keys';
-import { UserAvatarForm, UserBase} from '@/type/user';
+import { UserAvatarForm, UserBase } from '@/type/user';
 import { useRouter } from 'next/navigation';
 import { useCrud } from '../useCrud';
 import { toast } from 'sonner';
-import { getEntityCacheConfig, } from "@/lib/cache-config";
+import { getEntityCacheConfig } from "@/lib/cache-config";
 import { createEntityHooks } from './useFactory';
 import * as Sentry from '@sentry/nextjs';
 import { createClient } from '@/utils/supabase/client';
 import { clearUserSession } from '@/utils/auth/clearUserSession';
+import { captureError } from '@/utils/auth/captureError';
 
 interface SendWelcomeEmailParams {
   userId: string;
@@ -50,16 +50,13 @@ export const useAdminUsers = userHooks.useAdminList;
 export function useWelcomeEmail() {
   const mutation = useMutation<WelcomeEmailResponse, ApiError, SendWelcomeEmailParams>({
     mutationFn: async (params) => {
-      const response = await apiClient.post<WelcomeEmailResponse>(
-        '/api/user/welcome',
-        params
-      );
-      return response;
+      return apiClient.post<WelcomeEmailResponse>('/api/user/welcome', params);
     },
-    onSuccess: (data, variables) => {
+    onSuccess: (_data, variables) => {
       console.log(`Welcome email sent to ${variables.email}`);
     },
     onError: (error, variables) => {
+      // Welcome emails are invisible to the user — log only, no toast
       console.error('Failed to send welcome email:', error);
     },
     retry: 2,
@@ -70,7 +67,7 @@ export function useWelcomeEmail() {
     try {
       await mutation.mutateAsync(params);
     } catch (error) {
-      console.error('Welcome email error:', error);
+      // Swallow — failure is logged in onError above, no user-facing impact
     }
   };
 
@@ -86,52 +83,47 @@ export function useCurrentUsers() {
   return useQuery({
     queryKey: queryKeys.users.current(),
     queryFn: async () => {
-      if (!user?.id) {
-        throw new Error('No user logged in');
-      }
-      const response = await apiClient.get<UserBase>(`/api/user/me?id=${user.id}`);
-      return response;
+      if (!user?.id) throw new Error('No user logged in');
+      return apiClient.get<UserBase>(`/api/user/me?id=${user.id}`);
     },
     enabled: !!user?.id && !authLoading,
     ...getEntityCacheConfig('profile', 'own'),
   });
 }
 
-export function useUserRegistration(team:boolean) {
+export function useUserRegistration(team: boolean) {
   const router = useRouter();
-  const {
-    create,
-  } = useCrud({
+  const { create } = useCrud({
     resource: 'user',
-    interfaceType: 'client', 
+    interfaceType: 'client',
     showNotifications: false,
     optimisticUpdate: false,
     onSuccess: {
-      create: (data:UserBase) => {
-        if(team){
-          toast.success('team member created successfully!')
-        }else{
-          router.push('/auth/verify-email-sent')
+      create: (_data: UserBase) => {
+        if (team) {
+          toast.success('Team member created successfully');
+        } else {
+          router.push('/auth/verify-email-sent');
         }
-
       },
     },
     onError: {
+      // showNotifications is false so the factory will NOT toast.
+      // This callback is the single source of the error toast for registration.
       create: (error) => {
-        console.log("error received", error)
-        const message = error?.error?.message || "Registration failed";
-        
-        if (message.includes("duplicate key value violates unique constraint")) {
-          toast.error("This email is already registered.");
+        captureError(error, { component: 'useUserRegistration', action: 'create-user' });
+        const raw = error?.error?.message ?? '';
+        if (raw.includes('duplicate key value violates unique constraint')) {
+          toast.error('An account with this email already exists. Please sign in.');
         } else {
-          toast.error(message);
+          // Do NOT forward `raw` — it may contain schema/constraint details
+          toast.error('Registration failed. Please check your details and try again.');
         }
       },
     },
   });
 
-
-  return create
+  return create;
 }
 
 export function useUpdateProfile() {
@@ -146,23 +138,20 @@ export function useUpdateProfile() {
         try {
           const avatarUrl = await apiClient.uploadToSupabase(
             data.avatarFile,
-            'media', 
+            'media',
             `users/${user?.id}`
           );
-          
           if (avatarUrl) {
             updateData.avatar = avatarUrl;
           }
         } catch (error) {
-          console.error('Avatar upload failed:', error);
-          throw new Error('Failed to upload avatar');
+          // Upload error is internal — surface a friendly message
+          throw new Error('avatar-upload-failed');
         }
-        
         delete (updateData as any).avatarFile;
       }
       
-      const response = await apiClient.put(`/api/user/me?id=${user?.id}`, updateData);
-      return response;
+      return apiClient.put(`/api/user/me?id=${user?.id}`, updateData);
     },
     onSuccess: (data) => {
       toast.success('Profile updated successfully');
@@ -170,39 +159,41 @@ export function useUpdateProfile() {
       queryClient.invalidateQueries({ queryKey: queryKeys.users.profile() });
     },
     onError: (error: any) => {
-      toast.error(error.error?.message || 'Failed to update profile');
+      // Map internal sentinel to a friendly message; never forward raw API text
+      if (error?.message === 'avatar-upload-failed') {
+        toast.error('Failed to upload your profile photo. Please try again.');
+      } else {
+        toast.error('Failed to update your profile. Please try again.');
+      }
     },
   });
 }
 
 export function useSubscriber() {
-  const {
-    create, isCreating
-  } = useCrud({
+  const { create, isCreating } = useCrud({
     resource: 'subscribers',
-    interfaceType: 'client', 
+    interfaceType: 'client',
     showNotifications: false,
     optimisticUpdate: false,
     onSuccess: {
-      create: (data:Subscriber) => {
-        toast.success("successfully subscribed")
+      create: (_data: Subscriber) => {
+        toast.success('Subscribed successfully');
       },
     },
     onError: {
+      // showNotifications is false — this is the single toast source for subscribe errors
       create: (error) => {
-        const message = error?.error?.message || "Subscription failed, try again";
-        
-        if (message.includes("duplicate key value violates unique constraint")) {
-          return toast.error("This email is already subscribed.");
+        const raw = error?.error?.message ?? '';
+        if (raw.includes('duplicate key value violates unique constraint')) {
+          toast.error('This email is already subscribed.');
         } else {
-          toast.error(message);
+          toast.error('Subscription failed. Please try again.');
         }
       },
     },
   });
 
-
-  return {create, isCreating}
+  return { create, isCreating };
 }
 
 export function useLogout() {
@@ -217,31 +208,20 @@ export function useLogout() {
  
       if (error) {
         Sentry.captureException(error, { tags: { component: 'logout' } });
-        toast.error('Failed to logout. Please try again.', {
-          description: error.message,
-        });
+        toast.error('Failed to log out. Please try again.');
         return;
       }
  
       await clearUserSession(queryClient);
- 
-      toast.success('Successfully logged out.', {
-        description: 'You have been logged out of your account.',
-      });
- 
+      toast.success('You have been logged out successfully.');
       router.push('/signin');
       
     } catch (err) {
       if ((err as Error)?.name === 'CancelledError') return;
-
       Sentry.captureException(err, { tags: { component: 'logout' } });
-      toast.error('An unexpected error occurred during logout.', {
-        description: String(err),
-      });
-      console.log("error logout", err)
+      toast.error('An unexpected error occurred. Please try again.');
     }
   };
  
   return { logout };
 }
- 

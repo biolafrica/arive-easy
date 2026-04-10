@@ -9,7 +9,6 @@ export const ERROR_CODES = {
   '23514': 'CHECK_VIOLATION',
   '22001': 'STRING_DATA_TOO_LONG',
   '22P02': 'INVALID_TEXT_REPRESENTATION',
-  
   UNAUTHORIZED: 'UNAUTHORIZED',
   FORBIDDEN: 'FORBIDDEN',
   VALIDATION_ERROR: 'VALIDATION_ERROR',
@@ -18,7 +17,6 @@ export const ERROR_CODES = {
 } as const;
 
 export type ErrorCode = keyof typeof ERROR_CODES | (typeof ERROR_CODES)[keyof typeof ERROR_CODES];
-
 
 interface ErrorResponse {
   error: {
@@ -29,7 +27,6 @@ interface ErrorResponse {
     timestamp?: string;
   };
 }
-
 
 interface SuccessResponse<T = any> {
   data?: T;
@@ -43,7 +40,7 @@ interface SuccessResponse<T = any> {
 
 export function normalizeError(err: any): ErrorResponse['error'] {
   const timestamp = new Date().toISOString();
-  
+
   if (err.code) {
     return {
       code: err.code,
@@ -65,6 +62,7 @@ export function normalizeError(err: any): ErrorResponse['error'] {
   return {
     code: 'INTERNAL_ERROR',
     message: err.message || 'An unexpected error occurred',
+    // Only expose stack in development — never in production
     details: process.env.NODE_ENV === 'development' ? err.stack : undefined,
     timestamp,
   };
@@ -85,7 +83,7 @@ function getErrorMessage(code: string): string {
     RATE_LIMIT: 'Too many requests, please try again later',
     INTERNAL_ERROR: 'An internal server error occurred',
   };
-  
+
   return messages[code] || 'An error occurred';
 }
 
@@ -104,20 +102,26 @@ function getStatusCode(errorCode: string): number {
     RATE_LIMIT: 429,
     NOT_FOUND: 404,
   };
-  
+
   return statusMap[errorCode] || 500;
 }
 
 export const handleError = (err: any): NextResponse<ErrorResponse> => {
-  console.error('API Error:', err);
-  
   const error = normalizeError(err);
   const status = getStatusCode(error.code);
-  
-  return NextResponse.json(
-    { error },
-    { status }
-  );
+
+  // Only log unexpected server errors — 4xx errors are expected business outcomes
+  // and are already visible in the Next.js request log as the HTTP status.
+  // The raw Supabase error is also logged by apiClient on the client side.
+  if (status >= 500) {
+    console.error('[API] Internal server error:', {
+      code: error.code,
+      message: error.message,
+      status,
+    });
+  }
+
+  return NextResponse.json({ error }, { status });
 };
 
 export const successResponse = <T = any>(
@@ -132,7 +136,7 @@ export const successResponse = <T = any>(
       ...metadata,
     },
   };
-  
+
   return NextResponse.json(response, { status });
 };
 
@@ -145,14 +149,13 @@ export const messageResponse = (
     {
       message,
       data,
-      metadata: {
-        timestamp: new Date().toISOString(),
-      },
+      metadata: { timestamp: new Date().toISOString() },
     },
     { status }
   );
 };
 
+// ─── Validation ───────────────────────────────────────────────────────────────
 
 export interface ValidationResult {
   isValid: boolean;
@@ -170,18 +173,14 @@ export const validateRequired = (
   requiredFields: string[]
 ): ValidationResult => {
   const errors: ValidationError[] = [];
-  
+
   requiredFields.forEach(field => {
     const value = getNestedValue(data, field);
     if (value === undefined || value === null || value === '') {
-      errors.push({
-        field,
-        message: `${field} is required`,
-        value,
-      });
+      errors.push({ field, message: `${field} is required`, value });
     }
   });
-  
+
   return {
     isValid: errors.length === 0,
     errors: errors.length > 0 ? errors : undefined,
@@ -199,7 +198,7 @@ export const validateLength = (
   max?: number
 ): ValidationResult => {
   const errors: ValidationError[] = [];
-  
+
   if (min !== undefined && value.length < min) {
     errors.push({
       field: 'length',
@@ -207,7 +206,7 @@ export const validateLength = (
       value: value.length,
     });
   }
-  
+
   if (max !== undefined && value.length > max) {
     errors.push({
       field: 'length',
@@ -215,7 +214,7 @@ export const validateLength = (
       value: value.length,
     });
   }
-  
+
   return {
     isValid: errors.length === 0,
     errors: errors.length > 0 ? errors : undefined,
@@ -228,81 +227,59 @@ export const validatePattern = (
   message: string
 ): ValidationResult => {
   const isValid = pattern.test(value);
-  
   return {
     isValid,
-    errors: isValid ? undefined : [{
-      field: 'pattern',
-      message,
-      value,
-    }],
+    errors: isValid ? undefined : [{ field: 'pattern', message, value }],
   };
 };
 
-// Combined validator
 export class Validator {
   private errors: ValidationError[] = [];
-  
+
   constructor(private data: any) {}
-  
+
   required(fields: string[]): this {
     const result = validateRequired(this.data, fields);
-    if (result.errors) {
-      this.errors.push(...result.errors);
-    }
+    if (result.errors) this.errors.push(...result.errors);
     return this;
   }
-  
+
   email(field: string): this {
     const value = getNestedValue(this.data, field);
     if (value && !validateEmail(value)) {
-      this.errors.push({
-        field,
-        message: 'Invalid email format',
-        value,
-      });
+      this.errors.push({ field, message: 'Invalid email format', value });
     }
     return this;
   }
-  
+
   length(field: string, min?: number, max?: number): this {
     const value = getNestedValue(this.data, field);
     if (value && typeof value === 'string') {
       const result = validateLength(value, min, max);
       if (result.errors) {
-        this.errors.push({
-          field,
-          message: result.errors[0].message,
-          value,
-        });
+        this.errors.push({ field, message: result.errors[0].message, value });
       }
     }
     return this;
   }
-  
+
   pattern(field: string, pattern: RegExp, message: string): this {
     const value = getNestedValue(this.data, field);
     if (value && typeof value === 'string') {
       const result = validatePattern(value, pattern, message);
       if (result.errors) {
-        this.errors.push({
-          field,
-          message,
-          value,
-        });
+        this.errors.push({ field, message, value });
       }
     }
     return this;
   }
-  
+
   custom(validator: (data: any) => ValidationError | null): this {
     const error = validator(this.data);
-    if (error) {
-      this.errors.push(error);
-    }
+    if (error) this.errors.push(error);
     return this;
   }
-  
+
   validate(): ValidationResult {
     return {
       isValid: this.errors.length === 0,
@@ -311,12 +288,12 @@ export class Validator {
   }
 }
 
-// Helper function to get nested values
 function getNestedValue(obj: any, path: string): any {
   return path.split('.').reduce((current, key) => current?.[key], obj);
 }
 
-// Request helpers
+// ─── Request helpers ──────────────────────────────────────────────────────────
+
 export const getQueryParam = (
   request: NextRequest,
   param: string,
@@ -332,17 +309,14 @@ export const getQueryParams = (
 ): Record<string, string | undefined> => {
   const result: Record<string, string | undefined> = {};
   const { searchParams } = new URL(request.url);
-  
   params.forEach(param => {
     result[param] = searchParams.get(param) || undefined;
   });
-  
   return result;
 };
 
 export const getPaginationParams = (request: NextRequest) => {
   const { searchParams } = new URL(request.url);
-  
   return {
     page: parseInt(searchParams.get('page') || '1'),
     limit: parseInt(searchParams.get('limit') || '10'),
@@ -352,7 +326,8 @@ export const getPaginationParams = (request: NextRequest) => {
   };
 };
 
-// Response caching utilities
+// ─── Cache headers ────────────────────────────────────────────────────────────
+
 export const cacheHeaders = (seconds: number) => ({
   'Cache-Control': `public, s-maxage=${seconds}, stale-while-revalidate=${seconds * 2}`,
 });
@@ -363,39 +338,32 @@ export const noCacheHeaders = () => ({
   'Expires': '0',
 });
 
-// Rate limiting helper (basic implementation)
+// ─── Rate limiting ────────────────────────────────────────────────────────────
+
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 
 export const checkRateLimit = (
   key: string,
   limit: number = 100,
-  windowMs: number = 60000 // 1 minute
+  windowMs: number = 60000
 ): boolean => {
   const now = Date.now();
   const record = rateLimitStore.get(key);
-  
+
   if (!record || record.resetTime < now) {
-    rateLimitStore.set(key, {
-      count: 1,
-      resetTime: now + windowMs,
-    });
+    rateLimitStore.set(key, { count: 1, resetTime: now + windowMs });
     return true;
   }
-  
-  if (record.count >= limit) {
-    return false;
-  }
-  
+
+  if (record.count >= limit) return false;
+
   record.count++;
   return true;
 };
 
-// Cleanup old rate limit records periodically
 setInterval(() => {
   const now = Date.now();
   rateLimitStore.forEach((value, key) => {
-    if (value.resetTime < now) {
-      rateLimitStore.delete(key);
-    }
+    if (value.resetTime < now) rateLimitStore.delete(key);
   });
-}, 60000); // Clean up every minute
+}, 60000);

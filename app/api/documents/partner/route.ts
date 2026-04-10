@@ -74,4 +74,4 @@ const partnerTemplateHandlers = createCRUDHandlers<PartnerDocumentBase>({
   
 });
 
-export const { GET, PUT, POST, PATCH } = partnerTemplateHandlers;
+export const { GET, PUT, POST } = partnerTemplateHandlers;

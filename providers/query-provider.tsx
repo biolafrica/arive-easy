@@ -9,27 +9,28 @@ import {
   QueryCache
 } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { toast } from 'sonner';
 
 
 const defaultQueryClientConfig: QueryClientConfig = {
   queryCache: new QueryCache({
     onError: (error: any) => {
-      // Handle query errors globally if needed
+      console.error('Query error:', {
+        code: error?.error?.code ?? error?.code ?? 'UNKNOWN',
+      });
     },
   }),
   mutationCache: new MutationCache({
-    onError: (error: any) => {
-      console.error('Mutation error:', error);
-      if (error?._skipGlobalErrorHandler) return;
-      const message = error?.error?.message || error?.message || 'An error occurred';
-      toast.error(message);
+    onError: (error: any, _variables, _context, mutation) => {
+      console.error('Mutation error:', {
+        code: error?.error?.code ?? error?.code ?? 'UNKNOWN',
+        mutationKey: mutation.options.mutationKey,
+      });
     },
   }),
   defaultOptions: {
     queries: {
       staleTime: 60 * 1000,
-      gcTime: 5 * 60 * 1000, // v5 renaming
+      gcTime: 5 * 60 * 1000,
       refetchOnWindowFocus: false,
       retry: (failureCount, error: any) => {
         if (error?.status === 404 || error?.status === 401) return false;
@@ -59,7 +60,6 @@ interface QueryProviderProps {
 }
 
 export function QueryProvider({ children }: QueryProviderProps) {
-  // Initialize the client
   const queryClient = getQueryClient();
 
   return (
@@ -70,15 +70,9 @@ export function QueryProvider({ children }: QueryProviderProps) {
   );
 }
 
-// Re-export core types/hooks
 export { useQueryClient, QueryClient } from '@tanstack/react-query';
 export type { QueryClientConfig };
 
-/**
- * UTILITIES
- * These should be used inside Client Components.
- * Note: For prefetching on Server Components, use queryClient.prefetchQuery directly.
- */
 export const cacheUtils = {
   invalidateQueries: (queryKey: readonly unknown[]) => {
     return getQueryClient().invalidateQueries({ queryKey });
