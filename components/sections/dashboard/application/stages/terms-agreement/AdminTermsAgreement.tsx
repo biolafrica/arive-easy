@@ -22,6 +22,8 @@ export function TermsStage({
   onAddDocuments 
 }: TermsStageProps) {
   const stage = application.stages_completed.terms_agreement;
+  console.log("TermsStage Rendered with stage:", stage);
+  console.log("Application Data:", application);
   
   if (stage?.status === "upcoming") {
     return <StageDescriptionEmpty {...STAGE_EMPTY_CONFIG[2]} />;
@@ -40,7 +42,7 @@ export function TermsStage({
           <Button 
             onClick={onAddTerms} 
             size='xs' 
-            disabled={application.approved_loan_amount !== 0}
+            disabled={application.approved_loan_amount !== null}
           >
             Add Terms
           </Button>
@@ -120,7 +122,7 @@ export function TermsStage({
         <CompleteStageButton 
           onComplete={onComplete} 
           stageType='terms' 
-          disabled={stage?.completed === true} 
+          disabled={stage?.completed === true || application.approved_loan_amount === null} 
         />
       )
     }

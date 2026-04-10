@@ -76,9 +76,9 @@ export function MortgageActivationStage({
         <Button 
           onClick={onCreatePlan} 
           size='xs' 
-          disabled={application.total_payment !== 0}
+          disabled={application.mortgage_start_date !== null}
         >
-          {application.total_payment !== 0 ? 'Plan Created' : 'Create Plan'}
+          {application.mortgage_start_date === null ? 'Create Plan' : 'Plan Created'}
         </Button>
       )
     }

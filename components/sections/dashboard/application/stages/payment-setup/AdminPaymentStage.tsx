@@ -15,6 +15,7 @@ interface PaymentStageProps {
 
 export function PaymentStage({ application, onComplete, onAddPayments }: PaymentStageProps) {
   const payment = application.stages_completed.payment_setup;
+  console.log("PaymentStage Rendered with payment:", payment);
 
   if (payment?.status === 'upcoming') {
     return <StageDescriptionEmpty {...STAGE_EMPTY_CONFIG[3]} />;
@@ -33,7 +34,7 @@ export function PaymentStage({ application, onComplete, onAddPayments }: Payment
             <Button 
               onClick={onAddPayments} 
               size='xs' 
-              disabled={payment?.data.valuation_fee_amount !== 0 && payment?.data.legal_fee_amount !== 0 }
+              disabled={payment?.completed === true}
             >
               Add Payments
             </Button>
@@ -77,7 +78,7 @@ export function PaymentStage({ application, onComplete, onAddPayments }: Payment
             <CompleteStageButton 
               onComplete={onComplete} 
               stageType='payment' 
-              disabled={payment?.completed === true} 
+              disabled={payment?.completed === true || !payment?.data.valuation_fee_amount || !payment?.data.legal_fee_amount} 
             />
           }
         },

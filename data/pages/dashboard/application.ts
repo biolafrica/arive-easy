@@ -45,7 +45,7 @@ export const columns: TableColumn<ApplicationBase>[] = [
 ];
 
 export const statusConfig: StatusConfig[] = [
-  { value: 'in_progress', label: 'In Progress', variant: 'yellow' },
+  { value: 'in_progress', label: 'Pending', variant: 'yellow' },
   { value: 'rejected', label: 'Rejected', variant: 'red' },
   { value: 'active', label: 'Completed', variant: 'green' },
 ];
