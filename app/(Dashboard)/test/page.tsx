@@ -1,4 +1,4 @@
-export default function Test(){
+export default async function Test(){
   return(
     <div>
       test 

@@ -4,6 +4,7 @@ import logo from '@/public/icons/kletch-email.svg'
 
 export interface EmailLayoutConfig {
   companyName?: string;
+  preheader?: string;
   companyLogo?: string;
   companyWebsite?: string;
   supportEmail?: string;
@@ -21,6 +22,7 @@ const defaultConfig: EmailLayoutConfig = {
   companyWebsite: 'https://usekletch.com',
   supportEmail: 'support@usekletch.com',
   companyLogo: 'https://rhxbrjeeblfkokellqbb.supabase.co/storage/v1/object/public/media/Kletch%20White.png',
+  preheader: 'Your trusted mortgage partner for the African diaspora',
 };
 
 export const EmailLayout = (
@@ -45,6 +47,11 @@ export const EmailLayout = (
       <![endif]-->
     </head>
     <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6;">
+      <!--[if !mso]><!-->
+      <div style="display:none;overflow:hidden;max-height:0;max-width:0;opacity:0;mso-hide:all;">
+        ${config.preheader || '&nbsp;'}
+      </div>
+      <!--<![endif]-->
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f3f4f6;">
         <tr>
           <td align="center" style="padding: 40px 20px;">
