@@ -2,10 +2,8 @@ import ErrorState from "@/components/feedbacks/ErrorState";
 import SummaryTable from "@/components/table/SummaryTable";
 import { columns, statusConfig } from "@/data/pages/dashboard/offer";
 import { useAdminOffers } from "@/hooks/useSpecialized/useOffers";
-import { useRouter } from "next/navigation";
 
 export default function AdminHomeOffers(){
-  const router = useRouter()
   const {items:offers, isLoading, error, refresh} = useAdminOffers({
     include: ['users'],
     filters:{

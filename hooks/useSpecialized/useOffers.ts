@@ -6,12 +6,14 @@ import { toast } from "sonner";
 import { getEntityCacheConfig } from "@/lib/cache-config";
 import { useMemo } from "react";
 import { createEntityHooks } from "./useFactory";
+import { captureError } from "@/utils/auth/captureError";
+import { refresh } from "next/cache";
 
-const offerHooks = createEntityHooks< 
+const offerHooks = createEntityHooks<
   OfferBase,
   'offers',
   'list',
-  'summary' 
+  'summary'
 >({
   resource: 'offers',
   cacheKey: 'offers',
@@ -20,23 +22,24 @@ const offerHooks = createEntityHooks<
   createInterface: 'buyer'
 });
 
-export const useAdminOffers = offerHooks.useAdminList
+export const useAdminOffers = offerHooks.useAdminList;
 
 export function useSellerOffers(params?: any, propertyId?: string) {
   const { user, loading: isUserLoading } = useAuthContext();
 
   const crud = useCrud<OfferBase>({
     resource: 'offers',
-    interfaceType: 'buyer', 
-    optimisticUpdate: true,
-    invalidateOnMutation: true,
+    interfaceType: 'buyer',
+    showNotifications: false,
+    optimisticUpdate: false,
+    invalidateOnMutation: false,
     cacheConfig: getEntityCacheConfig('offers', 'list'),
   });
   
   const queryParams = useMemo(() => {
-    if (!user?.id) return null; 
+    if (!user?.id) return null;
 
-      const filters: Record<string, any> = {
+    const filters: Record<string, any> = {
       ...params?.filters,
       developer_id: user.id,
     };
@@ -45,16 +48,12 @@ export function useSellerOffers(params?: any, propertyId?: string) {
       filters.property_id = propertyId;
     }
     
-    return {
-      ...params,
-      filters,
-    };
+    return { ...params, filters };
   }, [params, user?.id, propertyId]);
 
-
   const { data, isLoading, error } = crud.useGetAll(
-    queryParams || undefined, 
-    !isUserLoading && !!user?.id 
+    queryParams || undefined,
+    !isUserLoading && !!user?.id
   );
 
   return {
@@ -62,7 +61,7 @@ export function useSellerOffers(params?: any, propertyId?: string) {
     pagination: data?.pagination,
     isLoading: isLoading || isUserLoading,
     error,
-    ...crud,
+    refresh
   };
 }
 
@@ -73,38 +72,38 @@ export function useCreateOffer() {
   
   const submitOffer = async (data: Partial<OfferBase>) => {
     if (!user?.id) {
-      toast.error('Please login to submit an offer');
+      toast.error('Please sign in to submit an offer');
       return;
     }
 
     try {
-      const result = await  create({
+      const result = await create({
         ...data,
         user_id: user.id,
         status: 'pending',
         created_at: new Date().toISOString(),
       });
 
-      toast.success('Offer submitted successfully!');
+      toast.success('Offer submitted successfully');
 
       if (result?.id) {
         router.push(`/dashboard/offers/${result.id}`);
       }
-      return result
+      return result;
 
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to submit offer.";
-        
-      if (message.includes('already submitted')) {
+      captureError(error, { component: 'useCreateOffer', action: 'submit-offer' });
+      // Branch on known business-rule violations; never forward raw server text
+      const raw = error instanceof Error ? error.message : '';
+      if (raw.includes('already submitted')) {
         toast.error('You have already submitted an offer for this property');
-      } else if (message.includes('not available')) {
+      } else if (raw.includes('not available')) {
         toast.error('This property is no longer available for offers');
       } else {
-        toast.error(message);
+        toast.error('Failed to submit your offer. Please try again.');
       }
       throw error;
     }
- 
   };
   
   return {
@@ -115,11 +114,11 @@ export function useCreateOffer() {
 
 export function useSellerOfferActions() {
   const { user } = useAuthContext();
-  const { update, isUpdating }  = offerHooks.useUpdate()
+  const { update, isUpdating } = offerHooks.useUpdate();
 
   const acceptOffer = async (offerId: string, developerId: string, notes?: string) => {
     if (!user?.id) {
-      toast.error('Please login to accept offers');
+      toast.error('Please sign in to accept offers');
       return;
     }
 
@@ -127,35 +126,35 @@ export function useSellerOfferActions() {
       const result = await update(offerId, {
         status: 'accepted',
         updated_at: new Date().toISOString(),
-        developer_id:developerId
-
+        developer_id: developerId,
       });
       toast.success('Offer accepted successfully');
       return result;
     } catch (error) {
-      toast.error('Failed to accept offer');
+      captureError(error, { component: 'useSellerOfferActions', action: 'accept-offer' });
+      toast.error('Failed to accept the offer. Please try again.');
       throw error;
     }
   };
 
-  const rejectOffer = async (offerId: string, developerId:string, reason?: string) => {
+  const rejectOffer = async (offerId: string, developerId: string, reason?: string) => {
     if (!user?.id) {
-      toast.error('Please login to reject offers');
+      toast.error('Please sign in to reject offers');
       return;
     }
 
     try {
       const result = await update(offerId, {
         status: 'declined',
-        rejection_note:reason,
+        rejection_note: reason,
         updated_at: new Date().toISOString(),
-        developer_id: developerId
-
+        developer_id: developerId,
       });
-      toast.success('Offer rejected successfully');
+      toast.success('Offer declined');
       return result;
     } catch (error) {
-      toast.error('Failed to reject offer');
+      captureError(error, { component: 'useSellerOfferActions', action: 'reject-offer' });
+      toast.error('Failed to decline the offer. Please try again.');
       throw error;
     }
   };

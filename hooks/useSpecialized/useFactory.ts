@@ -3,11 +3,14 @@ import { FilterParams } from "@/lib/query-keys";
 import { useAuthContext } from "@/providers/auth-provider";
 import type { UseQueryOptions } from '@tanstack/react-query'
 import { InterfaceType, getEntityCacheConfig, type EntityCacheConfig} from "@/lib/cache-config";
-import { useCrud } from "../useCrud";
+import { useCrud, UseCrudConfig } from "../useCrud";
 import { useInfiniteList } from "../useInfiniteList";
 
 
 type CacheConfig = Partial<UseQueryOptions<any, any, any, any>>;
+
+// Re-export the messages type so hooks can import it from one place
+export type CrudMessages = UseCrudConfig<any>['messages'];
 
 interface EntityHookConfig<
   T,
@@ -23,7 +26,6 @@ interface EntityHookConfig<
   ownerField?: string;
   developerField?: string;
   createInterface?: 'buyer' | 'admin' | 'client';
-
 }
 
 export function createEntityHooks<
@@ -48,7 +50,7 @@ export function createEntityHooks<
     const crud = useCrud<T>({
       resource,
       interfaceType: buyerInterface,
-      cacheConfig: getEntityCacheConfig(cacheKey, listSubKey)   as CacheConfig,
+      cacheConfig: getEntityCacheConfig(cacheKey, listSubKey) as CacheConfig,
     });
 
     const { data, isLoading, error } = crud.useGetAll(params);
@@ -95,13 +97,14 @@ export function createEntityHooks<
     const crud = useCrud<T>({
       resource,
       interfaceType: 'buyer',
-      optimisticUpdate: true,
-      invalidateOnMutation: true,
+      // Owner lists are read-only — mutations go through useUpdate/useCreate
+      showNotifications: false,
+      optimisticUpdate: false,
+      invalidateOnMutation: false,
     });
 
     const queryParams = useMemo(() => {
       if (!user?.id || !ownerField) return null;
-
       return {
         ...params,
         filters: {
@@ -121,7 +124,8 @@ export function createEntityHooks<
       pagination: data?.pagination,
       isLoading: isLoading || isUserLoading,
       error,
-      ...crud,
+      // Expose only read + utility — not mutation methods from this instance
+      refresh: crud.refresh,
     };
   }
 
@@ -131,13 +135,13 @@ export function createEntityHooks<
     const crud = useCrud<T>({
       resource,
       interfaceType: 'buyer',
-      optimisticUpdate: true,
-      invalidateOnMutation: true,
+      showNotifications: false,
+      optimisticUpdate: false,
+      invalidateOnMutation: false,
     });
 
     const queryParams = useMemo(() => {
       if (!user?.id || !developerField) return null;
-
       return {
         ...params,
         filters: {
@@ -157,7 +161,7 @@ export function createEntityHooks<
       pagination: data?.pagination,
       isLoading: isLoading || isUserLoading,
       error,
-      ...crud,
+      refresh: crud.refresh,
     };
   }
 
@@ -165,8 +169,9 @@ export function createEntityHooks<
     const crud = useCrud<T>({
       resource,
       interfaceType: 'admin',
-      optimisticUpdate: true,
-      invalidateOnMutation: true,
+      showNotifications: false,
+      optimisticUpdate: false,
+      invalidateOnMutation: false,
     });
 
     const { data, isLoading, error } = crud.useGetAll(params);
@@ -176,10 +181,10 @@ export function createEntityHooks<
       pagination: data?.pagination,
       isLoading,
       error,
-      ...crud,
+      refresh: crud.refresh,
     };
   }
-
+  
   function useUpdate(options?: {
     interfaceType?: InterfaceType;
     optimisticUpdate?: boolean;

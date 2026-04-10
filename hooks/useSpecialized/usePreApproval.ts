@@ -1,10 +1,10 @@
-import {useState } from '../useInfiniteList';
+import { useState } from '../useInfiniteList';
 import apiClient from '@/lib/api-client'; 
 import { useAuthContext } from '@/providers/auth-provider';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import * as stage from '@/type/pages/dashboard/approval';
-import { useEffect, } from 'react';
+import { useEffect } from 'react';
 import { createEntityHooks } from './useFactory';
 import { captureError } from '@/utils/auth/captureError';
 
@@ -23,32 +23,31 @@ const preApprovalHooks = createEntityHooks<
   createInterface: 'buyer',
 });
 
-export const usePreApprovals  = preApprovalHooks.useList;
+export const usePreApprovals = preApprovalHooks.useList;
 export const useAdminPrepApprovals = preApprovalHooks.useAdminList;
 
 export function useCreatePreApproval() {
   const router = useRouter();
   const { user } = useAuthContext();
-  const { create, isCreating,  } = preApprovalHooks.useCreate()
+  const { create, isCreating } = preApprovalHooks.useCreate();
   
   const submitPreApproval = async (data: Partial<stage.PreApprovalBase>) => {
     if (!user?.id) {
-      toast.error('Please login to submit a pre-approval');
+      toast.error('Please sign in to submit a pre-approval');
       return;
     }
 
     try {
       const result = await create({ ...data, user_id: user.id });
+      toast.success('Pre-approval submitted successfully');
       if (result?.id) {
         router.push(`/user-dashboard/applications/${result.id}/pre-approvals`);
       }
       return result;
     } catch (error) {
       captureError(error, { component: 'buyer-submit-preApproval', action: 'create-data' });
-      const message = error instanceof Error
-        ? error.message
-        : 'Failed to submit pre-approval';
-      toast.error(message);
+      // Never forward raw server errors — map to user-friendly messages
+      toast.error('Failed to submit your pre-approval. Please try again.');
       throw error;
     }
   };
@@ -62,7 +61,7 @@ export function useCreatePreApproval() {
 export function useUpdatePreApproval() {
   const router = useRouter();
   const { user } = useAuthContext();
-  const { update, isUpdating } = preApprovalHooks.useUpdate()
+  const { update, isUpdating } = preApprovalHooks.useUpdate();
   
   const updatePreApproval = async (
     id: string, 
@@ -74,7 +73,7 @@ export function useUpdatePreApproval() {
     }
   ) => {
     if (!user?.id) {
-      toast.error('Please login to update pre-approval');
+      toast.error('Please sign in to update your pre-approval');
       return;
     }
 
@@ -89,13 +88,13 @@ export function useUpdatePreApproval() {
 
       if (options?.redirectOnSuccess && result) {
         const stages =
-        result.current_step === 1 ? 'employment-info' :
-        result.current_step === 2 ? 'property-info' :
-        result.current_step === 3 ? 'document-info' :
-        'success';
+          result.current_step === 1 ? 'employment-info' :
+          result.current_step === 2 ? 'property-info' :
+          result.current_step === 3 ? 'document-info' :
+          'success';
 
         const path = options.redirectPath ??
-        `/user-dashboard/applications/${id}/pre-approval/${stages}`;
+          `/user-dashboard/applications/${id}/pre-approval/${stages}`;
 
         router.push(path);
       }
@@ -104,19 +103,18 @@ export function useUpdatePreApproval() {
 
     } catch (error) {
       captureError(error, { component: 'user-update-preApproval', action: 'update-data' });
-      const message = error instanceof Error
-        ? error.message : 'Failed to update pre-approval';
-      if (message.includes('cannot update')) {
+      // Map known server-side constraint messages to user-friendly strings.
+      // Use error.message only to branch — never display it directly.
+      const raw = error instanceof Error ? error.message : '';
+      if (raw.includes('cannot update')) {
         toast.error('This pre-approval can no longer be edited');
-      } else if (message.includes('missing required')) {
-        toast.error('Please fill in all required fields');
+      } else if (raw.includes('missing required')) {
+        toast.error('Please fill in all required fields before saving');
       } else {
-        toast.error(message);
+        toast.error('Failed to save your pre-approval. Please try again.');
       }
-
       throw error;
     }
-
   };
   
   return {
@@ -150,18 +148,17 @@ export function useAdminUpdatePreApproval() {
       });
 
       const statusMessage =
-        data.status === 'approved' ? 'Pre-approval approved successfully!' :
-        data.status === 'rejected' ? 'Pre-approval rejected' :
-        'Pre-approval updated successfully!';
+        data.status === 'approved' ? 'Pre-approval approved successfully' :
+        data.status === 'rejected' ? 'Pre-approval declined' :
+        'Pre-approval updated successfully';
 
       toast.success(statusMessage);
       return result;
 
     } catch (error) {
       captureError(error, { component: 'admin-update-preApproval', action: 'update-data' });
-      toast.error( 
-        error instanceof Error ? error.message : 'Failed to update pre-approval'
-      );
+      // Admin sees a slightly more specific message but still no raw DB errors
+      toast.error('Failed to update pre-approval. Please try again.');
       throw error;
     }
   };
@@ -171,7 +168,6 @@ export function useAdminUpdatePreApproval() {
     isUpdating,
   };
 }
-
 
 export function usePreApprovalStages(preApprovalId: string) {
   const { updatePreApproval, isUpdating } = useUpdatePreApproval();
@@ -216,12 +212,12 @@ export function usePreApprovalStages(preApprovalId: string) {
   const updateDocumentInfo = async (data: { 
     document_info: stage.DocumentInfoTypes; 
     current_step: number; 
-    completed_steps: number ;
+    completed_steps: number;
     is_complete: boolean;
-    status:string;
+    status: string;
   }) => {
     try {
-      setIsUploading(true)
+      setIsUploading(true);
       const documentInfoWithUrls = await processDocumentFiles(
         data.document_info,
         (files) => apiClient.uploadMultipleToSupabase(files, 'media', 'pre-approval-documents')
@@ -231,25 +227,19 @@ export function usePreApprovalStages(preApprovalId: string) {
         ...data,
         document_info: documentInfoWithUrls
       }, {
-        successMessage: 'Application Submitted Successfully!',
+        successMessage: 'Application submitted successfully',
         redirectOnSuccess: true,
         redirectPath: `/user-dashboard/applications/${preApprovalId}/pre-approval/success`
       });
 
     } catch (error) {
       captureError(error, { component: 'submit-preApproval-documents', action: 'update-data' });
-      console.error('Document upload error:', error);
-      toast.error('Failed to upload documents');
+      toast.error('Failed to upload your documents. Please try again.');
       throw error;
-
     } finally {
-     
-
       setIsUploading(false);
     }
-  
   };
-  
   
   return {
     updatePersonalInfo,
@@ -266,23 +256,25 @@ export function usePreApprovalState(preApprovalId: string) {
   const [preApproval, setPreApproval] = useState<stage.PreApprovalBase | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   
-  const { items:preApprovals, isLoading: fetchingPreApprovals, error, refresh } = usePreApprovals({
-    filters: {
-      id: preApprovalId
-    }
+  const { items: preApprovals, isLoading: fetchingPreApprovals, error, refresh } = usePreApprovals({
+    filters: { id: preApprovalId }
   });
 
   useEffect(() => {
     if (!fetchingPreApprovals) {
       if (!preApprovals || preApprovals.length === 0) {
-        toast.error('Invalid pre-approval application');
+        toast.error('Pre-approval application not found');
         router.push('/user-dashboard');
         return;
       }
 
       const currentPreApproval = preApprovals[0];
       
-      if (currentPreApproval.status !== 'draft' && currentPreApproval.status !== 'pending' && currentPreApproval.status !== 'rejected') {
+      if (
+        currentPreApproval.status !== 'draft' &&
+        currentPreApproval.status !== 'pending' &&
+        currentPreApproval.status !== 'rejected'
+      ) {
         toast.error('This pre-approval has already been completed');
         router.push('/user-dashboard');
         return;
@@ -321,8 +313,6 @@ export function usePreApprovalState(preApprovalId: string) {
     return Math.min(preApproval.completed_steps + 1, 4);
   };
 
-
-
   return {
     preApproval,
     isLoading,
@@ -338,21 +328,14 @@ export function usePreApprovalState(preApprovalId: string) {
 export const getStepPath = (step: number, id: string): string => {
   const basePath = `/user-dashboard/applications/${id}/pre-approval`;
   
-  switch(step) {
-    case 0:
-      return `/user-dashboard/applications/${id}/pre-approval`;
-    case 1:
-      return `${basePath}/personal-info`;
-    case 2:
-      return `${basePath}/employment-info`;
-    case 3:
-      return `${basePath}/property-info`;
-    case 4:
-      return `${basePath}/document-info`;
-    case 5:
-      return `${basePath}/success`;
-    default:
-      return basePath;
+  switch (step) {
+    case 0: return `/user-dashboard/applications/${id}/pre-approval`;
+    case 1: return `${basePath}/personal-info`;
+    case 2: return `${basePath}/employment-info`;
+    case 3: return `${basePath}/property-info`;
+    case 4: return `${basePath}/document-info`;
+    case 5: return `${basePath}/success`;
+    default: return basePath;
   }
 };
 
@@ -401,7 +384,7 @@ export function useAdminPreApprovalStatus(preApprovalId: string) {
     return updatePreApproval(preApprovalId, data, {
       successMessage: `Application ${data.status === 'approved' ? 'approved' : 'declined'} successfully`,
       redirectOnSuccess: true,
-      redirectPath:'/admin-dashboard/applications'
+      redirectPath: '/admin-dashboard/applications'
     });
   };
 

@@ -7,6 +7,7 @@ import { useMemo } from "react";
 import { createEntityHooks } from "./useFactory";
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { captureError } from "@/utils/auth/captureError";
+import { refresh } from "next/cache";
 
 
 interface PaymentStatus {
@@ -73,8 +74,8 @@ export function useUpdateApplication() {
 
     } catch (error) {
       captureError(error, { component: 'user-update-application', action: 'update-data' });
-      const message = error instanceof Error ? error.message : 'Failed to update application';
-      toast.error(message);
+      // Never forward raw error.message to the user — map to friendly strings
+      toast.error('Failed to update your application. Please try again.');
       throw error;
     }
   };
@@ -92,14 +93,14 @@ export function useApplicationStageUpdates(application: ApplicationBase) {
     property_id: string;
     property_name: string;
     property_price: number;
-    developer_id:string;
+    developer_id: string;
     type: 'mortgage' | 'outright';
   }) => {
     return updateApplication(application.id, {
       property_id: data.property_id,
       property_price: data.property_price,
-      developer_id:data.developer_id,
-      property_name:data.property_name,
+      developer_id: data.developer_id,
+      property_name: data.property_name,
       stages_completed: {
         ...application.stages_completed,
         property_selection: {
@@ -117,7 +118,7 @@ export function useApplicationStageUpdates(application: ApplicationBase) {
         }
       }
     }, 
-    {successMessage: 'Selected Property submitted successfully'}
+    { successMessage: 'Property submitted successfully' }
   )};
   
   const updateIdentityVerification = async (data: {
@@ -125,22 +126,21 @@ export function useApplicationStageUpdates(application: ApplicationBase) {
     kyc_result: any;
     kyc_status: string;
   }) => {
-    return updateApplication(application.id,
-      {
-        stages_completed: {
-          ...application.stages_completed,
-          identity_verification: {
-            completed: true,
-            completed_at: new Date().toISOString(),
-            status: 'completed',
-            kyc_status: 'success',
-          }
-        },
-        current_stage: 'terms_agreement',
-        current_step: 7
-      }, 
-      {successMessage: 'Identity verified successfully'}
-    )
+    return updateApplication(application.id, {
+      stages_completed: {
+        ...application.stages_completed,
+        identity_verification: {
+          completed: true,
+          completed_at: new Date().toISOString(),
+          status: 'completed',
+          kyc_status: 'success',
+        }
+      },
+      current_stage: 'terms_agreement',
+      current_step: 7
+    }, 
+    { successMessage: 'Identity verified successfully' }
+    );
   };
   
   const updateTermsAgreement = async (data: {
@@ -244,8 +244,9 @@ export function usePaymentStatus(sessionId: string | null) {
     refetchInterval: (query) => {
       const data = query.state.data;
       if (!data) return 2000; 
-      
-      return data.status === 'succeeded' || data.status === 'failed' || data.status === 'cancelled' ? false : 2000;
+      return data.status === 'succeeded' || data.status === 'failed' || data.status === 'cancelled'
+        ? false
+        : 2000;
     },
     staleTime: 1000,
     retry: 3,
@@ -256,11 +257,11 @@ export function useApplicationByProperty(propertyId?: string) {
   const crud = useCrud<ApplicationBase>({
     resource: 'applications',
     interfaceType: 'buyer',
+    showNotifications: false,
   });
 
   const queryParams = useMemo(() => {
     if (!propertyId) return null;
-    
     return {
       filters: {
         property_id: propertyId,
@@ -277,7 +278,7 @@ export function useApplicationByProperty(propertyId?: string) {
     application,
     isLoading,
     error,
-    ...crud,
+    refresh
   };
 }
 
@@ -288,10 +289,7 @@ async function completeStageRequest(params: CompleteStageParams): Promise<Applic
   const response = await fetch(`/api/applications/${applicationId}/complete-stage`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      stageType,
-      stageData,
-    }),
+    body: JSON.stringify({ stageType, stageData }),
   });
 
   if (!response.ok) {
@@ -303,6 +301,24 @@ async function completeStageRequest(params: CompleteStageParams): Promise<Applic
   return result.data;
 }
 
+// Stage completion success messages — centralised so they're easy to update
+const STAGE_SUCCESS_MESSAGES: Record<StageType, string> = {
+  identity: 'Identity verification completed',
+  property: 'Property selection completed',
+  terms: 'Terms and agreement completed',
+  payment: 'Payment setup completed',
+  mortgage: 'Mortgage activated successfully',
+};
+
+// Stage completion error messages — never forward raw server errors to users
+const STAGE_ERROR_MESSAGES: Record<StageType, string> = {
+  identity: 'Identity verification could not be completed. Please try again.',
+  property: 'Property selection could not be saved. Please try again.',
+  terms: 'Could not save your agreement. Please try again.',
+  payment: 'Payment setup failed. Please try again.',
+  mortgage: 'Mortgage activation failed. Please contact support.',
+};
+
 export function useStageCompletion(applicationId: string) {
   const queryClient = useQueryClient();
 
@@ -311,24 +327,15 @@ export function useStageCompletion(applicationId: string) {
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['applications'] });
       queryClient.invalidateQueries({ queryKey: ['application', applicationId] });
-
-      const messages: Record<StageType, string> = {
-        identity: 'Identity verification completed',
-        property: 'Property selection completed',
-        terms: 'Terms and agreement completed',
-        payment: 'Payment setup completed',
-        mortgage: 'Mortgage activated successfully',
-      };
-
-      toast.success(messages[variables.stageType]);
+      toast.success(STAGE_SUCCESS_MESSAGES[variables.stageType]);
     },
     onError: (error: Error, variables) => {
       captureError(error, {
-        component: `useStageCompletion for ${variables.stageType}` ,
+        component: `useStageCompletion for ${variables.stageType}`,
         action: 'complete-stage',
       });
-
-      toast.error(error.message || 'Failed to complete stage');
+      // Use the friendly message — raw error.message goes to Sentry, not the user
+      toast.error(STAGE_ERROR_MESSAGES[variables.stageType]);
     },
   });
 

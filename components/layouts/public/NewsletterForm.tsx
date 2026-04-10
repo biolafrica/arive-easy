@@ -5,14 +5,12 @@ import Link from "next/link";
 import { useState } from "react"
 
 export function NewsletterForm() {
-  console.log('NewsletterForm mounted');
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const { create, isCreating } = useSubscriber();
  
   const handleSubmit = async () => {
     if (!email || isCreating) return;
-
     try {
       await create({ email } as NewsletterValues);
       setSubmitted(true);
