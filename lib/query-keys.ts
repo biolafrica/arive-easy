@@ -1,11 +1,5 @@
 import { QueryKey } from "@tanstack/react-query";
 
-// Base factory type
-export interface QueryKeyFactory<TKeys extends Record<string, QueryKey>> {
-  _def: TKeys;
-  keys: () => TKeys[keyof TKeys];
-}
-
 export interface PaginationParams {
   page?: number;
   limit?: number;
@@ -20,7 +14,7 @@ export interface SearchParams extends PaginationParams {
 
 export interface FilterParams extends SearchParams {
   filters?: Record<string, any>;
-  include?: string[];  // For joins/relations
+  include?: string[];
 }
 
 export interface QueryParams extends FilterParams {
@@ -29,366 +23,213 @@ export interface QueryParams extends FilterParams {
 }
 
 export const queryKeys = {
-  all: ['queries'] as const,
-
-  // Properties (for client interface)
   properties: {
     all: ['properties'] as const,
     lists: () => [...queryKeys.properties.all, 'list'] as const,
-    list: (params?: FilterParams) => 
+    list: (params?: FilterParams) =>
       [...queryKeys.properties.lists(), params] as const,
     details: () => [...queryKeys.properties.all, 'detail'] as const,
-    detail: (id: string, params?: QueryParams) => 
+    detail: (id: string, params?: QueryParams) =>
       [...queryKeys.properties.details(), id, params] as const,
     infinite: (params?: FilterParams) =>
       [...queryKeys.properties.all, 'infinite', params] as const,
-    search: (query: string, params?: SearchParams) =>
-      [...queryKeys.properties.all, 'search', query, params] as const,
     featured: () => [...queryKeys.properties.all, 'featured'] as const,
-    byAgent: (agentId: string, params?: FilterParams) =>
-      [...queryKeys.properties.all, 'by-agent', agentId, params] as const,
     similar: (id: string, limit?: number) =>
       [...queryKeys.properties.all, 'similar', id, { limit }] as const,
   },
 
-  // mortgages (for client interface)
   mortgages: {
     all: ['mortgages'] as const,
     lists: () => [...queryKeys.mortgages.all, 'list'] as const,
-    list: (params?: FilterParams) => 
+    list: (params?: FilterParams) =>
       [...queryKeys.mortgages.lists(), params] as const,
     details: () => [...queryKeys.mortgages.all, 'detail'] as const,
-    detail: (id: string, params?: QueryParams) => 
+    detail: (id: string, params?: QueryParams) =>
       [...queryKeys.mortgages.details(), id, params] as const,
     infinite: (params?: FilterParams) =>
       [...queryKeys.mortgages.all, 'infinite', params] as const,
-    search: (query: string, params?: SearchParams) =>
-      [...queryKeys.mortgages.all, 'search', query, params] as const,
-    featured: () => [...queryKeys.mortgages.all, 'featured'] as const,
   },
 
-  mortgagePayments: {
-    all: ['mortgage-payments'] as const,
-    lists: () => [...queryKeys.mortgagePayments.all, 'list'] as const,
-    list: (params?: FilterParams) => 
-      [...queryKeys.mortgagePayments.lists(), params] as const,
-    details: () => [...queryKeys.mortgagePayments.all, 'detail'] as const,
-    detail: (id: string, params?: QueryParams) => 
-      [...queryKeys.mortgagePayments.details(), id, params] as const,
-    infinite: (params?: FilterParams) =>
-      [...queryKeys.mortgagePayments.all, 'infinite', params] as const,
-    search: (query: string, params?: SearchParams) =>
-      [...queryKeys.mortgagePayments.all, 'search', query, params] as const,
-  },
-
-  // Articles/Blog posts
   articles: {
     all: ['articles'] as const,
     lists: () => [...queryKeys.articles.all, 'list'] as const,
-    list: (params?: FilterParams) => 
+    list: (params?: FilterParams) =>
       [...queryKeys.articles.lists(), params] as const,
     details: () => [...queryKeys.articles.all, 'detail'] as const,
-    detail: (slug: string) => 
+    detail: (slug: string) =>
       [...queryKeys.articles.details(), slug] as const,
-    byCategory: (category: string, params?: PaginationParams) =>
-      [...queryKeys.articles.all, 'by-category', category, params] as const,
-    byAuthor: (authorId: string, params?: PaginationParams) =>
-      [...queryKeys.articles.all, 'by-author', authorId, params] as const,
-    trending: (limit?: number) =>
-      [...queryKeys.articles.all, 'trending', { limit }] as const,
     related: (id: string, limit?: number) =>
       [...queryKeys.articles.all, 'related', id, { limit }] as const,
   },
 
-  // Users/Profiles
   users: {
     all: ['users'] as const,
     lists: () => [...queryKeys.users.all, 'list'] as const,
-    list: (params?: FilterParams) => 
+    list: (params?: FilterParams) =>
       [...queryKeys.users.lists(), params] as const,
     details: () => [...queryKeys.users.all, 'detail'] as const,
-    detail: (id: string) => 
+    detail: (id: string) =>
       [...queryKeys.users.details(), id] as const,
     current: () => [...queryKeys.users.all, 'current'] as const,
-    profile: (id?: string) => 
+    profile: (id?: string) =>
       [...queryKeys.users.all, 'profile', id || 'me'] as const,
-    preferences: () => [...queryKeys.users.all, 'preferences'] as const,
   },
 
-  // Documents (buyer dashboard)
   documents: {
     all: ['documents'] as const,
     lists: () => [...queryKeys.documents.all, 'list'] as const,
-    list: (params?: FilterParams) => 
+    list: (params?: FilterParams) =>
       [...queryKeys.documents.lists(), params] as const,
     details: () => [...queryKeys.documents.all, 'detail'] as const,
-    detail: (id: string) => 
+    detail: (id: string) =>
       [...queryKeys.documents.details(), id] as const,
-    byType: (type: 'template' | 'partner' | 'transaction', params?: FilterParams) =>
-      [...queryKeys.documents.all, 'by-type', type, params] as const,
     templates: (params?: FilterParams) =>
       [...queryKeys.documents.all, 'templates', params] as const,
     partners: (params?: FilterParams) =>
       [...queryKeys.documents.all, 'partners', params] as const,
     transactions: (params?: FilterParams) =>
       [...queryKeys.documents.all, 'transactions', params] as const,
-    recent: (type?: 'template' | 'partner' | 'transaction', limit?: number) =>
-      [...queryKeys.documents.all, 'recent', type, { limit }] as const,
-    shared: (params?: PaginationParams) =>
-      [...queryKeys.documents.all, 'shared', params] as const,
-    search: (type: 'template' | 'partner' | 'transaction', query: string, params?: SearchParams) =>
-      [...queryKeys.documents.all, 'search', type, query, params] as const,
-
   },
 
   preApprovals: {
     all: ['pre-approvals'] as const,
     lists: () => [...queryKeys.preApprovals.all, 'list'] as const,
-    list: (params?: FilterParams) => 
+    list: (params?: FilterParams) =>
       [...queryKeys.preApprovals.lists(), params] as const,
     details: () => [...queryKeys.preApprovals.all, 'detail'] as const,
-    detail: (id: string) => 
+    detail: (id: string) =>
       [...queryKeys.preApprovals.details(), id] as const,
-    byStatus: (status: string, params?: PaginationParams) =>
-      [...queryKeys.preApprovals.all, 'by-status', status, params] as const,
-    byProperty: (propertyId: string, params?: PaginationParams) =>
-      [...queryKeys.preApprovals.all, 'by-property', propertyId, params] as const,
-    statistics: () => [...queryKeys.preApprovals.all, 'statistics'] as const,
-    eligibility: (propertyId?: string) =>
-      [...queryKeys.preApprovals.all, 'eligibility', propertyId] as const,
   },
 
-  // Applications
   applications: {
     all: ['applications'] as const,
     lists: () => [...queryKeys.applications.all, 'list'] as const,
-    list: (params?: FilterParams) => 
+    list: (params?: FilterParams) =>
       [...queryKeys.applications.lists(), params] as const,
     details: () => [...queryKeys.applications.all, 'detail'] as const,
-    detail: (id: string) => 
+    detail: (id: string) =>
       [...queryKeys.applications.details(), id] as const,
-    byStatus: (status: string, params?: PaginationParams) =>
-      [...queryKeys.applications.all, 'by-status', status, params] as const,
-    statistics: () => [...queryKeys.applications.all, 'statistics'] as const,
   },
 
-  // Offers
   offers: {
     all: ['offers'] as const,
     lists: () => [...queryKeys.offers.all, 'list'] as const,
-    list: (params?: FilterParams) => 
+    list: (params?: FilterParams) =>
       [...queryKeys.offers.lists(), params] as const,
     details: () => [...queryKeys.offers.all, 'detail'] as const,
-    detail: (id: string) => 
+    detail: (id: string) =>
       [...queryKeys.offers.details(), id] as const,
-    byStatus: (status: string, params?: PaginationParams) =>
-      [...queryKeys.offers.all, 'by-status', status, params] as const,
-    statistics: () => [...queryKeys.offers.all, 'statistics'] as const,
   },
 
-  // transactions
-  transactions: {
-    all: ['transactions'] as const,
-    lists: () => [...queryKeys.transactions.all, 'list'] as const,
-    list: (params?: FilterParams) => 
-      [...queryKeys.transactions.lists(), params] as const,
-    details: () => [...queryKeys.transactions.all, 'detail'] as const,
-    detail: (id: string) => 
-      [...queryKeys.transactions.details(), id] as const,
-    history: (userId?: string, params?: PaginationParams) =>
-      [...queryKeys.transactions.all, 'history', userId, params] as const,
-    summary: (period?: string) =>
-      [...queryKeys.transactions.all, 'summary', period] as const,
-    methods: () => [...queryKeys.transactions.all, 'methods'] as const,
-  },
-
-  // Notifications
   notifications: {
     all: ['notifications'] as const,
     lists: () => [...queryKeys.notifications.all, 'list'] as const,
-    list: (params?: FilterParams) => 
+    list: (params?: FilterParams) =>
       [...queryKeys.notifications.lists(), params] as const,
-    unread: () => [...queryKeys.notifications.all, 'unread'] as const,
     count: () => [...queryKeys.notifications.all, 'count'] as const,
   },
 
-  // Analytics (admin dashboard)
   analytics: {
     all: ['analytics'] as const,
-    dashboard: (period?: string) => 
+    dashboard: (period?: string) =>
       [...queryKeys.analytics.all, 'dashboard', period] as const,
-    revenue: (startDate?: string, endDate?: string) =>
-      [...queryKeys.analytics.all, 'revenue', { startDate, endDate }] as const,
-    users: (period?: string) =>
-      [...queryKeys.analytics.all, 'users', period] as const,
-    properties: (period?: string) =>
-      [...queryKeys.analytics.all, 'properties', period] as const,
-    performance: (metric?: string, period?: string) =>
-      [...queryKeys.analytics.all, 'performance', metric, period] as const,
     mortgagePayments: (period?: string) =>
-    [...queryKeys.analytics.all, 'mortgage-payments', period] as const,
+      [...queryKeys.analytics.all, 'mortgage-payments', period] as const,
   },
 
-  // Settings
-  settings: {
-    all: ['settings'] as const,
-    general: () => [...queryKeys.settings.all, 'general'] as const,
-    notifications: () => [...queryKeys.settings.all, 'notifications'] as const,
-    privacy: () => [...queryKeys.settings.all, 'privacy'] as const,
-    billing: () => [...queryKeys.settings.all, 'billing'] as const,
-  },
-
-  // Generic CRUD factory for any resource
   resource: <T extends string>(resource: T) => ({
     all: [resource] as const,
     lists: () => [resource, 'list'] as const,
-    list: (params?: FilterParams): QueryKey => 
-      [resource, 'list', params],
+    list: (params?: FilterParams): QueryKey => [resource, 'list', params],
     details: () => [resource, 'detail'] as const,
-    detail: (id: string, params?: QueryParams): QueryKey => 
-      [resource, 'detail', id, params],
-    search: (query: string, params?: SearchParams): QueryKey => 
-      [resource, 'search', query, params],
+    detail: (id: string, params?: QueryParams): QueryKey => [resource, 'detail', id, params],
+    search: (query: string, params?: SearchParams): QueryKey => [resource, 'search', query, params],
   }),
 
 } as const;
 
-// Helper functions for invalidation
 export const invalidatePatterns = {
   all: (resource: string) => [resource],
   lists: (resource: string) => [resource, 'list'],
-  detail: (resource: string, id: string) => [resource, 'detail', id],  
-  byPrefix: (...prefix: string[]) => prefix,
+  detail: (resource: string, id: string) => [resource, 'detail', id],
 };
 
-// Type helpers for extracting query key types
-export type PropertyKeys = 
+
+export type PropertyKeys =
   | typeof queryKeys.properties.all
   | ReturnType<typeof queryKeys.properties.lists>
   | ReturnType<typeof queryKeys.properties.list>
   | ReturnType<typeof queryKeys.properties.details>
   | ReturnType<typeof queryKeys.properties.detail>
   | ReturnType<typeof queryKeys.properties.infinite>
-  | ReturnType<typeof queryKeys.properties.search>
   | ReturnType<typeof queryKeys.properties.featured>
-  | ReturnType<typeof queryKeys.properties.byAgent>
   | ReturnType<typeof queryKeys.properties.similar>;
 
-export type mortgageKeys = 
+export type MortgageKeys =
   | typeof queryKeys.mortgages.all
   | ReturnType<typeof queryKeys.mortgages.lists>
   | ReturnType<typeof queryKeys.mortgages.list>
   | ReturnType<typeof queryKeys.mortgages.details>
   | ReturnType<typeof queryKeys.mortgages.detail>
-  | ReturnType<typeof queryKeys.mortgages.infinite>
-  | ReturnType<typeof queryKeys.mortgages.search>
-  | ReturnType<typeof queryKeys.mortgages.featured>;
+  | ReturnType<typeof queryKeys.mortgages.infinite>;
 
-export type mortgagePaymentKeys = 
-  | typeof queryKeys.mortgagePayments.all
-  | ReturnType<typeof queryKeys.mortgagePayments.lists>
-  | ReturnType<typeof queryKeys.mortgagePayments.list>
-  | ReturnType<typeof queryKeys.mortgagePayments.details>
-  | ReturnType<typeof queryKeys.mortgagePayments.detail>
-  | ReturnType<typeof queryKeys.mortgagePayments.infinite>
-  | ReturnType<typeof queryKeys.mortgagePayments.search>;
-
-export type ArticleKeys = 
+export type ArticleKeys =
   | typeof queryKeys.articles.all
   | ReturnType<typeof queryKeys.articles.lists>
   | ReturnType<typeof queryKeys.articles.list>
   | ReturnType<typeof queryKeys.articles.details>
   | ReturnType<typeof queryKeys.articles.detail>
-  | ReturnType<typeof queryKeys.articles.byCategory>
-  | ReturnType<typeof queryKeys.articles.byAuthor>
-  | ReturnType<typeof queryKeys.articles.trending>
   | ReturnType<typeof queryKeys.articles.related>;
 
-export type UserKeys = 
+export type UserKeys =
   | typeof queryKeys.users.all
   | ReturnType<typeof queryKeys.users.lists>
   | ReturnType<typeof queryKeys.users.list>
   | ReturnType<typeof queryKeys.users.details>
   | ReturnType<typeof queryKeys.users.detail>
   | ReturnType<typeof queryKeys.users.current>
-  | ReturnType<typeof queryKeys.users.profile>
-  | ReturnType<typeof queryKeys.users.preferences>;
+  | ReturnType<typeof queryKeys.users.profile>;
 
-export type DocumentKeys=
+export type DocumentKeys =
   | typeof queryKeys.documents.all
   | ReturnType<typeof queryKeys.documents.lists>
   | ReturnType<typeof queryKeys.documents.list>
   | ReturnType<typeof queryKeys.documents.details>
   | ReturnType<typeof queryKeys.documents.detail>
-  | ReturnType<typeof queryKeys.documents.byType>
   | ReturnType<typeof queryKeys.documents.templates>
   | ReturnType<typeof queryKeys.documents.partners>
-  | ReturnType<typeof queryKeys.documents.transactions>
-  | ReturnType<typeof queryKeys.documents.recent>
-  | ReturnType<typeof queryKeys.documents.shared>
-  | ReturnType<typeof queryKeys.documents.search>
+  | ReturnType<typeof queryKeys.documents.transactions>;
 
-export type ApplicationKeys= 
-  |typeof queryKeys.applications.all
-  |ReturnType<typeof queryKeys.applications.lists>
-  |ReturnType<typeof queryKeys.applications.list>
-  |ReturnType<typeof queryKeys.applications.details>
-  |ReturnType<typeof queryKeys.applications.detail>
-  |ReturnType<typeof queryKeys.applications.byStatus>
-  |ReturnType<typeof queryKeys.applications.statistics>
-
-export type OfferKeys= 
-  |typeof queryKeys.offers.all
-  |ReturnType<typeof queryKeys.offers.lists>
-  |ReturnType<typeof queryKeys.offers.list>
-  |ReturnType<typeof queryKeys.offers.details>
-  |ReturnType<typeof queryKeys.offers.detail>
-  |ReturnType<typeof queryKeys.offers.byStatus>
-  |ReturnType<typeof queryKeys.offers.statistics>
-
-export type TransactionKeys= 
-  |typeof queryKeys.transactions.all
-  |ReturnType<typeof queryKeys.transactions.lists>
-  |ReturnType<typeof queryKeys.transactions.list>
-  |ReturnType<typeof queryKeys.transactions.details>
-  |ReturnType<typeof queryKeys.transactions.detail>
-  |ReturnType<typeof queryKeys.transactions.history>
-  |ReturnType<typeof queryKeys.transactions.summary>
-  |ReturnType<typeof queryKeys.transactions.methods>
-
-export type NotificationKeys= 
-  |typeof queryKeys.notifications.all
-  |ReturnType<typeof queryKeys.notifications.lists>
-  |ReturnType<typeof queryKeys.notifications.list>
-  |ReturnType<typeof queryKeys.notifications.unread>
-  |ReturnType<typeof queryKeys.notifications.count>
-
-export type AnalyticsKeys= 
-  |typeof queryKeys.analytics.all
-  |ReturnType<typeof queryKeys.analytics.dashboard>
-  |ReturnType<typeof queryKeys.analytics.revenue>
-  |ReturnType<typeof queryKeys.analytics.users>
-  |ReturnType<typeof queryKeys.analytics.properties>
-  |ReturnType<typeof queryKeys.analytics.performance>
-  |ReturnType<typeof queryKeys.analytics.mortgagePayments>
-
-export type SettingsKeys= 
-  |typeof queryKeys.settings.all
-  |ReturnType<typeof queryKeys.settings.general>
-  |ReturnType<typeof queryKeys.settings.notifications>
-  |ReturnType<typeof queryKeys.settings.privacy>
-  |ReturnType<typeof queryKeys.settings.billing>
-
-export type PreApprovalKeys = 
+export type PreApprovalKeys =
   | typeof queryKeys.preApprovals.all
   | ReturnType<typeof queryKeys.preApprovals.lists>
   | ReturnType<typeof queryKeys.preApprovals.list>
   | ReturnType<typeof queryKeys.preApprovals.details>
-  | ReturnType<typeof queryKeys.preApprovals.detail>
-  | ReturnType<typeof queryKeys.preApprovals.byStatus>
-  | ReturnType<typeof queryKeys.preApprovals.byProperty>
-  | ReturnType<typeof queryKeys.preApprovals.statistics>
-  | ReturnType<typeof queryKeys.preApprovals.eligibility>;
+  | ReturnType<typeof queryKeys.preApprovals.detail>;
 
-// Export for use in queries
+export type ApplicationKeys =
+  | typeof queryKeys.applications.all
+  | ReturnType<typeof queryKeys.applications.lists>
+  | ReturnType<typeof queryKeys.applications.list>
+  | ReturnType<typeof queryKeys.applications.details>
+  | ReturnType<typeof queryKeys.applications.detail>;
+
+export type OfferKeys =
+  | typeof queryKeys.offers.all
+  | ReturnType<typeof queryKeys.offers.lists>
+  | ReturnType<typeof queryKeys.offers.list>
+  | ReturnType<typeof queryKeys.offers.details>
+  | ReturnType<typeof queryKeys.offers.detail>;
+
+export type NotificationKeys =
+  | typeof queryKeys.notifications.all
+  | ReturnType<typeof queryKeys.notifications.lists>
+  | ReturnType<typeof queryKeys.notifications.list>
+  | ReturnType<typeof queryKeys.notifications.count>;
+
+export type AnalyticsKeys =
+  | typeof queryKeys.analytics.all
+  | ReturnType<typeof queryKeys.analytics.dashboard>
+  | ReturnType<typeof queryKeys.analytics.mortgagePayments>;
+
 export type QueryKeysType = typeof queryKeys;

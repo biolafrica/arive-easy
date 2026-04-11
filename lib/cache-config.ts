@@ -224,6 +224,16 @@ export const ENTITY_CACHE_CONFIGS = {
       cacheTime: 5 * MINUTE,
     },
   },
+  transactions: {
+    list: {
+      staleTime: 5 * MINUTE,
+      cacheTime: 15 * MINUTE,
+    },
+    summary: {
+      staleTime: 10 * MINUTE,
+      cacheTime: 30 * MINUTE,
+    },
+  },
 
 } as const;
 

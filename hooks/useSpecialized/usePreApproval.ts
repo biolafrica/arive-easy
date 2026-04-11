@@ -1,10 +1,9 @@
-import { useState } from '../useInfiniteList';
 import apiClient from '@/lib/api-client'; 
 import { useAuthContext } from '@/providers/auth-provider';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import * as stage from '@/type/pages/dashboard/approval';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { createEntityHooks } from './useFactory';
 import { captureError } from '@/utils/auth/captureError';
 

@@ -1,6 +1,5 @@
 import { createClient } from '@/utils/supabase/client';
 
-
 export interface ApiResponse<T = any> {
   data?: T;
   message?: string;
@@ -39,16 +38,13 @@ export interface ApiClientConfig {
   headers?: Record<string, string>;
   onError?: (error: ApiError) => void;
   onRequest?: (config: RequestInit) => RequestInit | Promise<RequestInit>;
-  onResponse?: <T>(response: ApiResponse<T>) => void;
 }
 
 function serializeParams(params: Record<string, any>): string {
   const searchParams = new URLSearchParams();
   
   Object.entries(params).forEach(([key, value]) => {
-    if (value === undefined || value === null) {
-      return;
-    }
+    if (value === undefined || value === null) return;
     
     if (typeof value === 'object' && !Array.isArray(value)) {
       Object.entries(value).forEach(([nestedKey, nestedValue]) => {
@@ -74,7 +70,6 @@ class ApiClient {
   private defaultHeaders: Record<string, string>;
   private onError?: (error: ApiError) => void;
   private onRequest?: (config: RequestInit) => RequestInit | Promise<RequestInit>;
-  private onResponse?: <T>(response: ApiResponse<T>) => void;
 
   constructor(config: ApiClientConfig = {}) {
     this.baseURL = config.baseURL || process.env.NEXT_PUBLIC_API_URL || '';
@@ -85,18 +80,6 @@ class ApiClient {
     };
     this.onError = config.onError;
     this.onRequest = config.onRequest;
-    this.onResponse = config.onResponse;
-  }
-
-  private async getAuthToken(): Promise<string | null> {
-    // Implement your auth token retrieval logic
-    // This could be from localStorage, cookies, or a state management solution
-    if (typeof window !== 'undefined') {
-      // Client-side
-      return localStorage.getItem('auth_token');
-    }
-    // Server-side (Next.js)
-    return null;
   }
 
   private async handleResponse<T>(response: Response): Promise<T> {
@@ -108,30 +91,18 @@ class ApiClient {
         },
       }));
 
-      // Call global error handler if provided
       if (this.onError) {
         this.onError(errorData);
       }
 
-      // Handle specific error codes
-      if (response.status === 401) {
-        // Redirect to login or refresh token
-        if (typeof window !== 'undefined') {
-          window.location.href = '/login';
-        }
+      if (response.status === 401 && typeof window !== 'undefined') {
+        window.location.href = '/login';
       }
 
       throw errorData;
     }
 
     const data: ApiResponse<T> = await response.json();
-    
-    // Call global response handler if provided
-    if (this.onResponse) {
-      this.onResponse(data);
-    }
-
-    // Return the data directly if it exists, otherwise return the whole response
     return (data.data !== undefined ? data.data : data) as T;
   }
 
@@ -140,62 +111,37 @@ class ApiClient {
     options: RequestInit = {}
   ): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
-    const token = await this.getAuthToken();
 
-    // Prepare headers
     const headers: HeadersInit = {
       ...this.defaultHeaders,
       ...(options.headers as Record<string, string>),
     };
 
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
+    let config: RequestInit = { ...options, headers };
 
-    // Prepare request config
-    let config: RequestInit = {
-      ...options,
-      headers,
-    };
-
-    // Apply request interceptor if provided
     if (this.onRequest) {
       config = await this.onRequest(config);
     }
 
-    // Create abort controller for timeout
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
     try {
-      const response = await fetch(url, {
-        ...config,
-        signal: controller.signal,
-      });
-
+      const response = await fetch(url, { ...config, signal: controller.signal });
       clearTimeout(timeoutId);
       return this.handleResponse<T>(response);
     } catch (error: any) {
       clearTimeout(timeoutId);
-      
       if (error.name === 'AbortError') {
-        throw {
-          error: {
-            code: 'TIMEOUT',
-            message: 'Request timeout',
-          },
-        };
+        throw { error: { code: 'TIMEOUT', message: 'Request timeout' } };
       }
-      
       throw error;
     }
   }
 
   async get<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
     const searchParams = params ? `?${serializeParams(params)}` : '';
-    return this.request<T>(`${endpoint}${searchParams}`, {
-      method: 'GET',
-    });
+    return this.request<T>(`${endpoint}${searchParams}`, { method: 'GET' });
   }
 
   async post<T>(endpoint: string, data?: any): Promise<T> {
@@ -212,17 +158,8 @@ class ApiClient {
     });
   }
 
-  async patch<T>(endpoint: string, data?: any): Promise<T> {
-    return this.request<T>(endpoint, {
-      method: 'PATCH',
-      body: data ? JSON.stringify(data) : undefined,
-    });
-  }
-
   async delete<T>(endpoint: string): Promise<T> {
-    return this.request<T>(endpoint, {
-      method: 'DELETE',
-    });
+    return this.request<T>(endpoint, { method: 'DELETE' });
   }
 
   async uploadToSupabase(
@@ -233,24 +170,16 @@ class ApiClient {
     if (!file) return null;
 
     try {
-      const supabase = createClient()
-
+      const supabase = createClient();
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
       const filePath = `${folder}/${fileName}`;
 
-      const { error } = await supabase.storage
-        .from(bucket)
-        .upload(filePath, file);
+      const { error } = await supabase.storage.from(bucket).upload(filePath, file);
 
-      if (error) {
-        throw new Error(error.message);
-      }
+      if (error) throw new Error(error.message);
 
-      const { data: { publicUrl } } = supabase.storage
-        .from(bucket)
-        .getPublicUrl(filePath);
-
+      const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(filePath);
       return publicUrl;
     } catch (error: any) {
       console.error('Supabase upload error:', error);
@@ -277,81 +206,15 @@ class ApiClient {
     const results = await Promise.all(uploadPromises);
     return Object.fromEntries(results);
   }
-
-  async uploadFile<T>(
-    file: File,
-    options: {
-      useSupabase?: boolean;
-      bucket?: string;
-      folder?: string;
-      endpoint?: string;
-      additionalData?: Record<string, any>;
-      onProgress?: (progress: number) => void;
-    } = {}
-  ): Promise<T | string> {
-    const {
-      useSupabase = true,
-      bucket = 'media',
-      folder = 'uploads',
-      endpoint,
-      additionalData,
-      onProgress,
-    } = options;
-
-    // Use Supabase by default
-    if (useSupabase) {
-      return this.uploadToSupabase(file, bucket, folder) as Promise<T>;
-    }
-
-    // Fallback to API endpoint upload
-    if (!endpoint) {
-      throw new Error('Endpoint required for API upload');
-    }
-
-    return this.upload<T>(endpoint, file, additionalData, onProgress);
-  }
-
-  async upload<T>(
-    endpoint: string,
-    file: File,
-    additionalData?: Record<string, any>,
-    onProgress?: (progress: number) => void
-  ): Promise<T> {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    if (additionalData) {
-      Object.entries(additionalData).forEach(([key, value]) => {
-        formData.append(key, value);
-      });
-    }
-
-    const token = await this.getAuthToken();
-    const headers: HeadersInit = {};
-    
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    return this.request<T>(endpoint, {
-      method: 'POST',
-      headers,
-      body: formData,
-    });
-  }
-
 }
-
 
 export const apiClient = new ApiClient({
   onError: (error) => {
     console.error('API Error:', error);
   },
   onRequest: (config) => {
-    // Add any global request modifications here
-    // For example, add correlation ID for tracking
     if (typeof window !== 'undefined') {
-      (config.headers as Record<string, string>)['X-Request-ID'] = 
+      (config.headers as Record<string, string>)['X-Request-ID'] =
         `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     }
     return config;
@@ -361,5 +224,4 @@ export const apiClient = new ApiClient({
 
 export type { ApiClient };
 export default apiClient;
-
 

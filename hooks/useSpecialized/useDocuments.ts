@@ -24,7 +24,7 @@ export interface TransactionalDocumentResponse {
   message: string;
 }
 
-// ─── Template documents ───────────────────────────────────────────────────────
+//  Template documents
 
 const templateDocumentHooks = createEntityHooks<
   document.TemplateBase,
@@ -135,7 +135,7 @@ export function useUploadTemplateDocuments() {
   };
 }
 
-// ─── Partner documents ────────────────────────────────────────────────────────
+// Partner documents 
 
 const partnerDocumentHooks = createEntityHooks<
   document.PartnerDocumentBase,
@@ -192,7 +192,7 @@ export function useUploadPartnerDocuments() {
   };
 }
 
-// ─── Transactional documents ──────────────────────────────────────────────────
+// Transactional documents 
 
 const transactionalDocumentHooks = createEntityHooks<
   document.TransactionDocumentBase,
