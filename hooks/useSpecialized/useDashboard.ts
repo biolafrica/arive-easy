@@ -11,20 +11,20 @@ export function useUserDashboardAnalytics() {
   const { user, loading: isUserLoading } = useAuthContext();
 
   return useQuery({
-    queryKey: queryKeys.analytics.dashboard('user'),
+    queryKey: queryKeys.analytics.dashboard('user-summary'),
     queryFn: async () => {
-      const response = await apiClient.get<analytics.UserDashboardAnalytics>(`/api/analytics/user/dashboard`, {
-        userId: user?.id
-      });
-      
+      const response = await apiClient.get<analytics.UserDashboardAnalytics>(
+        `/api/analytics/user/dashboard`,
+        { userId: user?.id }
+      );
       return response || {
         totalApplications: 0,
         propertiesOwned: 0,
-        totalDownPayments: 0
+        totalDownPayments: 0,
       };
     },
-    enabled: !!user?.id && !isUserLoading, 
-    ...getEntityCacheConfig('analytics', 'dashboard') 
+    enabled: !!user?.id && !isUserLoading,
+    ...getEntityCacheConfig('analytics', 'dashboard'),
   });
 }
 
@@ -32,20 +32,20 @@ export function useUserTransactionAnalytics() {
   const { user, loading: isUserLoading } = useAuthContext();
 
   return useQuery({
-    queryKey: queryKeys.analytics.dashboard('user'),
+    queryKey: queryKeys.analytics.dashboard('user-transactions'),
     queryFn: async () => {
-      const response = await apiClient.get<analytics.UserTransactionAnalytics>(`/api/analytics/user/transaction`, {
-        userId: user?.id
-      });
-      
+      const response = await apiClient.get<analytics.UserTransactionAnalytics>(
+        `/api/analytics/user/transaction`,
+        { userId: user?.id }
+      );
       return response || {
         totalEscrow: 0,
         pendingTransactions: 0,
-        totalSpent: 0
+        totalSpent: 0,
       };
     },
-    enabled: !!user?.id && !isUserLoading, 
-    ...getEntityCacheConfig('analytics', 'dashboard') 
+    enabled: !!user?.id && !isUserLoading,
+    ...getEntityCacheConfig('analytics', 'dashboard'),
   });
 }
 
@@ -53,20 +53,21 @@ export function useSellerDashboardAnalytics() {
   const { user, loading: isUserLoading } = useAuthContext();
   
   return useQuery({
-    queryKey: queryKeys.analytics.dashboard('seller'),
+    queryKey: queryKeys.analytics.dashboard('seller-summary'),
     queryFn: async () => {
-      const response = await apiClient.get<analytics.SellerDashboardAnalytics>(`/api/analytics/seller/dashboard`, {
-        developerId: user?.id
-      });
+      const response = await apiClient.get<analytics.SellerDashboardAnalytics>(
+        `/api/analytics/seller/dashboard`,
+        { developerId: user?.id }
+      );
       return response || {
         totalPendingOffers: 0,
         activeListings: 0,
         escrowTransactionCount: 0,
-        totalEscrowBalance: 0
+        totalEscrowBalance: 0,
       };
     },
     enabled: !!user?.id && !isUserLoading,
-    ...getEntityCacheConfig('analytics', 'dashboard'), 
+    ...getEntityCacheConfig('analytics', 'dashboard'),
   });
 }
 
@@ -74,11 +75,12 @@ export function useSellerTransactionAnalytics() {
   const { user, loading: isUserLoading } = useAuthContext();
   
   return useQuery({
-    queryKey: queryKeys.analytics.dashboard('seller'),
+    queryKey: queryKeys.analytics.dashboard('seller-transactions'),
     queryFn: async () => {
-      const response = await apiClient.get<analytics.SellerTransactionAnalytics>(`/api/analytics/seller/transaction`, {
-        developerId: user?.id
-      });
+      const response = await apiClient.get<analytics.SellerTransactionAnalytics>(
+        `/api/analytics/seller/transaction`,
+        { developerId: user?.id }
+      );
       return response || {
         totalEscrow: 0,
         totalRevenue: 0,
@@ -86,7 +88,7 @@ export function useSellerTransactionAnalytics() {
       };
     },
     enabled: !!user?.id && !isUserLoading,
-    ...getEntityCacheConfig('analytics', 'dashboard'), 
+    ...getEntityCacheConfig('analytics', 'dashboard'),
   });
 }
 

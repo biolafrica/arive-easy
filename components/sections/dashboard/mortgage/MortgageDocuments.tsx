@@ -1,5 +1,5 @@
 import ErrorState from "@/components/feedbacks/ErrorState";
-import { useTransactionalDocuments } from "@/hooks/useSpecialized/useDocuments";
+import { useAllTransactionalDocuments } from "@/hooks/useSpecialized/useDocuments";
 import { DocumentIcon } from "@heroicons/react/24/outline";
 import { StageDescriptionEmpty } from "../application/common/StageDescriptionEmpty";
 import { DescriptionList } from "@/components/common/DescriptionList";
@@ -7,10 +7,7 @@ import { DescriptionListSkeleton } from "@/components/skeleton/DescriptionListSk
 import { formatDocumentFiles } from "@/utils/common/documents";
 
 export default function MortgageDocuments({id}:{id:string}){
-
-  const transactionDocs = useTransactionalDocuments(id);
-  
-  const { documents, isLoading, error, refetch } = transactionDocs.useAll();
+  const { documents, isLoading, error, refetch } = useAllTransactionalDocuments(id);
 
   if(isLoading){
     return(<DescriptionListSkeleton rows={6}/>)

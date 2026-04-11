@@ -1,18 +1,19 @@
 import { useEffect, useMemo } from 'react';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { FilterParams, queryKeys } from '../lib/query-keys';
 import { getEntityCacheConfig } from '../lib/cache-config';
 import { ApiResponse, PaginatedResponse, apiClient } from '../lib/api-client';
 import { ApiError } from 'next/dist/server/api-utils';
 import { useAuthContext } from '@/providers/auth-provider';
 import { toast } from 'sonner';
-import { useCrud} from './useCrud';
-import { useInfiniteList} from './useInfiniteList';
+import { useCrud } from './useCrud';
+import { useInfiniteList } from './useInfiniteList';
 import { PropertyBase, PropertyData } from '@/type/pages/property';
 import { toNumber } from '@/lib/formatter';
 import { FavoriteBase, PropertyFavorite } from '@/type/pages/dashboard/favorite';
 import { Property } from '@/components/sections/dashboard/listing/property-form';
-
+import { captureError } from '@/utils/auth/captureError';
+import { refresh } from 'next/cache';
 
 export interface ApplicationPropertyFilters {
   state?: string;
@@ -24,16 +25,18 @@ export function usesellerProperty(id: string) {
   const crud = useCrud<PropertyBase>({
     resource: 'properties',
     interfaceType: 'buyer',
+    showNotifications: false,
     cacheConfig: getEntityCacheConfig('properties', 'detail'),
   });
   
   const { data, isLoading, error } = crud.useGetOne(id);
   
+  // Read-only — no mutations exposed
   return {
     property: data,
     isLoading,
     error,
-    ...crud,
+    refresh: crud.refresh,
   };
 }
 
@@ -41,16 +44,16 @@ export function useProperty(id: string) {
   const crud = useCrud<PropertyBase>({
     resource: 'properties',
     interfaceType: 'client',
+    showNotifications: false,
     cacheConfig: getEntityCacheConfig('properties', 'detail'),
   });
   
   const { data, isLoading, error } = crud.useGetOne(id);
-  
 
   useEffect(() => {
     if (data?.id) {
       apiClient.post(`/api/properties/${id}/view`)
-      .catch(err => console.log('View tracking failed:', err));
+        .catch(err => console.log('View tracking failed:', err));
     }
   }, [data?.id, id]);
   
@@ -58,26 +61,22 @@ export function useProperty(id: string) {
     property: data,
     isLoading,
     error,
-    ...crud,
   };
 }
 
 export function useInfiniteProperties(params?: any) {
-  console.log('received params', params)
-  const queryParams = useMemo(() => {
-    return {
-      ...params,
-      filters: {
-        ...params?.filters,
-        is_active :true
-      },
-    };
-  }, [params]);
+  const queryParams = useMemo(() => ({
+    ...params,
+    filters: {
+      ...params?.filters,
+      is_active: true,
+    },
+  }), [params]);
 
   return useInfiniteList<PropertyBase>({
     resource: 'properties',
     interfaceType: 'client',
-    params:queryParams,
+    params: queryParams,
     limit: 15,
     autoFetch: true,
   });
@@ -126,15 +125,13 @@ export function useFeaturedProperties() {
   return useQuery<PropertyData[], ApiError>({
     queryKey: queryKeys.properties.featured(),
     queryFn: async (): Promise<PropertyData[]> => {
-
       const response = await apiClient.get<ApiResponse<PropertyData[]>>('/api/properties', {
         is_featured: true,
         status: ['active', 'offers'],
         limit: 3,
-        is_active :true
+        is_active: true,
       });
-
-      return response.data ?? []; 
+      return response.data ?? [];
     },
     ...getEntityCacheConfig('properties', 'list'),
   });
@@ -152,15 +149,15 @@ export function useSimilarProperties(
       const response = await apiClient.get<ApiResponse<PropertyData[]>>('/api/properties', {
         city: currentProperty.city,
         status: ['active', 'offers'],
-        is_active :true,
+        is_active: true,
         property_type: currentProperty.property_type,
         'price.gte': toNumber(currentProperty.price, { min: 0 }) * 0.8,
-        'price.lte': toNumber(currentProperty.price, { min: 0 }) * 1.2,  
-        'id.neq': currentProperty.id,  
+        'price.lte': toNumber(currentProperty.price, { min: 0 }) * 1.2,
+        'id.neq': currentProperty.id,
         limit,
       });
       
-      return response.data ;
+      return response.data;
     },
     enabled: !!currentProperty,
     ...getEntityCacheConfig('properties', 'list'),
@@ -173,19 +170,19 @@ export function useFavorites() {
   const { useGetAll, create, remove, isCreating, isDeleting } = useCrud<FavoriteBase>({
     resource: 'favorites',
     interfaceType: 'client',
-    showNotifications: false, 
+    showNotifications: false,
   });
 
-
   const { data: favoritesData, isLoading } = useGetAll(
-    { filters: { user_id: user?.id } },!!user?.id
+    { filters: { user_id: user?.id } },
+    !!user?.id
   );
 
   const favorites = favoritesData?.data || [];
   
   const toggleFavorite = async (propertyId: string) => {
     if (!user) {
-      toast.error('Please login to save properties');
+      toast.error('Please sign in to save properties');
       return;
     }
     
@@ -194,13 +191,14 @@ export function useFavorites() {
     try {
       if (existing) {
         await remove(existing.id);
-        toast.success('Removed from favorites');
+        toast.success('Removed from saved properties');
       } else {
         await create({ property_id: propertyId, user_id: user.id });
-        toast.success('Added to favorites');
+        toast.success('Property saved');
       }
     } catch (error) {
-      console.error("Error toggling favorite:", error);
+      captureError(error, { component: 'useFavorites', action: 'toggle' });
+      toast.error('Could not update saved properties. Please try again.');
     }
   };
   
@@ -211,7 +209,7 @@ export function useFavorites() {
   
   return {
     favorites,
-    isLoading: isLoading && user,
+    isLoading: isLoading && !!user,
     toggleFavorite,
     isFavorited,
     isToggling: isCreating || isDeleting,
@@ -230,9 +228,16 @@ export function useInfiniteFavoriteProperties(params?: any) {
 
 export function usePropertyOffer() {
   return useMutation({
-    mutationFn: async (propertyId: string) => {return apiClient.post(`/api/properties/${propertyId}/offer`)},
-    onSuccess: () => {toast.success('Offer submitted successfully!')},
-    onError: (error: any) => {toast.error(error?.error?.message || 'Failed to submit offer')},
+    mutationFn: async (propertyId: string) => {
+      return apiClient.post(`/api/properties/${propertyId}/offer`);
+    },
+    onSuccess: () => {
+      toast.success('Offer submitted successfully');
+    },
+    onError: (error: any) => {
+      captureError(error, { component: 'usePropertyOffer', action: 'submit' });
+      toast.error('Failed to submit your offer. Please try again.');
+    },
   });
 }
 
@@ -240,6 +245,7 @@ export function useAdminProperties(params?: any) {
   const crud = useCrud<PropertyBase>({
     resource: 'properties',
     interfaceType: 'admin',
+    showNotifications: false,
     optimisticUpdate: true,
     invalidateOnMutation: true,
   });
@@ -249,9 +255,9 @@ export function useAdminProperties(params?: any) {
   return {
     properties: data?.data || [],
     pagination: data?.pagination,
-    isLoading: isLoading,
+    isLoading,
     error,
-    ...crud,
+    refresh: crud.refresh,
   };
 }
 
@@ -259,53 +265,37 @@ export function useAdminPropertyActions() {
   const { update, isUpdating } = useCrud<PropertyBase>({
     resource: 'properties',
     interfaceType: 'admin',
-    showNotifications: true,
-    optimisticUpdate: false, 
-    
-    onSuccess: {
-      update: (data: PropertyBase) => {
-        // Success message handled below based on action
-      },
-    },
-    onError: {
-      update: (error) => {
-        toast.error(error?.error?.message || 'Failed to update property');
-      },
-    },
+    showNotifications: false,
+    optimisticUpdate: false,
   });
 
   const toggleApproval = async (propertyId: string, currentStatus: boolean) => {
     const newStatus = !currentStatus;
-    
     try {
       await update(propertyId, {
         is_active: newStatus,
-        ...(newStatus && { updated_at: new Date().toISOString() }),
-        ...(!newStatus && { updated_at: "" }),
+        updated_at: newStatus ? new Date().toISOString() : '',
       });
-      
-      toast.success(newStatus ? 'Property approved successfully' : 'Property unapproved successfully' );
+      toast.success(newStatus ? 'Property approved' : 'Property approval removed');
     } catch (error) {
-      // Error already handled by onError
+      captureError(error, { component: 'useAdminPropertyActions', action: 'toggle-approval' });
+      toast.error('Failed to update property approval. Please try again.');
     }
   };
 
   const toggleFeature = async (propertyId: string, currentStatus: boolean) => {
     const newStatus = !currentStatus;
-    
     try {
       await update(propertyId, {
         is_featured: newStatus,
-        ...(newStatus && { updated_at: new Date().toISOString() }),
-        ...(!newStatus && { updated_at: "" }),
+        updated_at: newStatus ? new Date().toISOString() : '',
       });
-      
-      toast.success( newStatus ? 'Property added to featured' : 'Property removed from featured');
+      toast.success(newStatus ? 'Property added to featured' : 'Property removed from featured');
     } catch (error) {
-      // Error already handled by onError
+      captureError(error, { component: 'useAdminPropertyActions', action: 'toggle-feature' });
+      toast.error('Failed to update featured status. Please try again.');
     }
   };
-
 
   return {
     toggleApproval,
@@ -330,7 +320,6 @@ export function useApplicationProperties(
     ...(filters?.city && { city: filters.city }),
     ...(filters?.propertyType && { property_type: filters.propertyType }),
   };
- 
 
   const {
     data: propertiesList,
@@ -339,15 +328,11 @@ export function useApplicationProperties(
   } = useQuery({
     queryKey: queryKeys.properties.list({ filters: queryFilters }),
     queryFn: async () => {
-      const response = await apiClient.get<PaginatedResponse<PropertyBase>>(
-        '/api/properties',
-        {
-          filters: queryFilters,
-          sortBy: 'created_at',
-          sortOrder: 'desc',
-        }
-      );
-      return response;
+      return apiClient.get<PaginatedResponse<PropertyBase>>('/api/properties', {
+        filters: queryFilters,
+        sortBy: 'created_at',
+        sortOrder: 'desc',
+      });
     },
     enabled: isDefaultProperty,
     ...getEntityCacheConfig('properties', 'list'),
@@ -360,10 +345,7 @@ export function useApplicationProperties(
   } = useQuery({
     queryKey: queryKeys.properties.detail(propertyId || '', {}),
     queryFn: async () => {
-      const response = await apiClient.get<PropertyBase>('/api/properties', {
-        id: propertyId,
-      });
-      return response;
+      return apiClient.get<PropertyBase>('/api/properties', { id: propertyId });
     },
     enabled: !isDefaultProperty && !!propertyId,
     ...getEntityCacheConfig('properties', 'detail'),
@@ -372,12 +354,9 @@ export function useApplicationProperties(
   return {
     properties: isDefaultProperty ? (propertiesList?.data || []) : [],
     pagination: isDefaultProperty ? propertiesList?.pagination : undefined,
-    
     property: !isDefaultProperty ? selectedProperty : null,
-    
     isLoading: isDefaultProperty ? isLoadingList : isLoadingSingle,
     error: isDefaultProperty ? listError : singleError,
-    
     mode: isDefaultProperty ? ('list' as const) : ('single' as const),
     isDefaultProperty,
     canSelectProperty: isDefaultProperty,
@@ -393,48 +372,37 @@ export function useDeleteProperty() {
     showNotifications: false,
     optimisticUpdate: false,
     invalidateOnMutation: true,
-    onError: {
-      delete: (error) => {
-        const errorMessage = error?.error?.message || '';
-        
-        if (
-          errorMessage.includes('foreign key constraint') ||
-          errorMessage.includes('violates foreign key') ||
-          errorMessage.includes('still referenced') ||
-          errorMessage.includes('has related') ||
-          errorMessage.includes('linked') ||
-          errorMessage.includes('in use')
-        ) {
-          toast.error(
-            'Cannot delete this property',
-            {
-              description: 'This property has active applications, offers, or other linked records. Please remove or archive those first.',
-              duration: 5000,
-            }
-          );
-        } else if (errorMessage.includes('not found')) {
-          toast.error('Property not found or already deleted');
-        } else if (errorMessage.includes('permission') || errorMessage.includes('unauthorized')) {
-          toast.error('You do not have permission to delete this property');
-        } else {
-          toast.error('Failed to delete property', {
-            description: errorMessage || 'An unexpected error occurred',
-          });
-        }
-      },
-    },
-    onSuccess: {
-      delete: () => {
-        toast.success('Property deleted successfully');
-      },
-    },
   });
 
   const deleteProperty = async (propertyId: string): Promise<boolean> => {
-    try { 
+    try {
       await remove(propertyId);
+      toast.success('Property deleted successfully');
       return true;
-    } catch (error) {
+    } catch (error: any) {
+      captureError(error, { component: 'useDeleteProperty', action: 'delete' });
+      // Branch on known constraint violations using raw message for detection only —
+      // never display raw DB text. Description field is always user-friendly.
+      const raw = error?.error?.message ?? '';
+      if (
+        raw.includes('foreign key constraint') ||
+        raw.includes('violates foreign key') ||
+        raw.includes('still referenced') ||
+        raw.includes('has related') ||
+        raw.includes('linked') ||
+        raw.includes('in use')
+      ) {
+        toast.error('Cannot delete this property', {
+          description: 'This property has active applications, offers, or other linked records. Please remove or archive those first.',
+          duration: 5000,
+        });
+      } else if (raw.includes('not found')) {
+        toast.error('Property not found or already deleted');
+      } else if (raw.includes('permission') || raw.includes('unauthorized')) {
+        toast.error('You do not have permission to delete this property');
+      } else {
+        toast.error('Failed to delete property. Please try again.');
+      }
       return false;
     }
   };
@@ -445,13 +413,11 @@ export function useDeleteProperty() {
         status: 'archived',
         updated_at: new Date().toISOString(),
       });
-      
       toast.success('Property archived successfully');
       return true;
-    } catch (error: any) {
-      toast.error('Failed to archive property', {
-        description: error?.error?.message || 'An unexpected error occurred',
-      });
+    } catch (error) {
+      captureError(error, { component: 'useDeleteProperty', action: 'archive' });
+      toast.error('Failed to archive property. Please try again.');
       return false;
     }
   };
@@ -462,13 +428,11 @@ export function useDeleteProperty() {
         status: 'active',
         updated_at: new Date().toISOString(),
       });
-      
-      toast.success('Property removed from archive successfully');
+      toast.success('Property removed from archive');
       return true;
-    } catch (error: any) {
-      toast.error('Failed to remove property from archive', {
-        description: error?.error?.message || 'An unexpected error occurred',
-      });
+    } catch (error) {
+      captureError(error, { component: 'useDeleteProperty', action: 'unarchive' });
+      toast.error('Failed to restore property. Please try again.');
       return false;
     }
   };

@@ -7,7 +7,7 @@ import { useMemo } from "react";
 import { createEntityHooks } from "./useFactory";
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { captureError } from "@/utils/auth/captureError";
-import { refresh } from "next/cache";
+
 
 
 interface PaymentStatus {
@@ -278,7 +278,7 @@ export function useApplicationByProperty(propertyId?: string) {
     application,
     isLoading,
     error,
-    refresh
+    refresh:crud.refresh,
   };
 }
 

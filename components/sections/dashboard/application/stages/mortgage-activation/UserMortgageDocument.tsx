@@ -1,16 +1,14 @@
 import { DescriptionList } from "@/components/common/DescriptionList";
 import ErrorState from "@/components/feedbacks/ErrorState";
 import { DescriptionListSkeleton } from "@/components/skeleton/DescriptionListSkeleton";
-import { useTransactionalDocuments } from "@/hooks/useSpecialized/useDocuments";
+import { useStaticTransactionalDocuments} from "@/hooks/useSpecialized/useDocuments";
 import { formatDocumentFiles } from "@/utils/common/documents";
 
 
 export default function UserMortgageDocument({id}:{
   id:string
 }){
-  const transactionDocs = useTransactionalDocuments(id);
-  
-  const { documents, isLoading, error, refetch } = transactionDocs.useStatic();
+  const { documents, isLoading, error, refetch } = useStaticTransactionalDocuments(id);
 
   if(isLoading){
     return(<DescriptionListSkeleton rows={6}/>)

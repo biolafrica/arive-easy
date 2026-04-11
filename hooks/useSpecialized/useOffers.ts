@@ -7,7 +7,6 @@ import { getEntityCacheConfig } from "@/lib/cache-config";
 import { useMemo } from "react";
 import { createEntityHooks } from "./useFactory";
 import { captureError } from "@/utils/auth/captureError";
-import { refresh } from "next/cache";
 
 const offerHooks = createEntityHooks<
   OfferBase,
@@ -61,7 +60,7 @@ export function useSellerOffers(params?: any, propertyId?: string) {
     pagination: data?.pagination,
     isLoading: isLoading || isUserLoading,
     error,
-    refresh
+    refresh:crud.refresh,
   };
 }
 

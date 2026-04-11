@@ -1,14 +1,13 @@
 import ErrorState from "@/components/feedbacks/ErrorState";
 import { DescriptionListSkeleton } from "@/components/skeleton/DescriptionListSkeleton";
-import { useTransactionalDocuments } from "@/hooks/useSpecialized/useDocuments";
+import { useAnvilTransactionalDocuments} from "@/hooks/useSpecialized/useDocuments";
 import { StageDescriptionEmpty } from "../../common/StageDescriptionEmpty";
 import { DocumentIcon } from "@heroicons/react/24/outline";
 import UserAgreementDocumentList from "./UsersAgreementDetails";
 
 export default function AgreementClientView({id}:{id:string}){
-  const transactionDocs = useTransactionalDocuments(id);
   
-  const { documents, isLoading, error, refetch } = transactionDocs.useAnvil();
+  const { documents, isLoading, error, refetch } = useAnvilTransactionalDocuments(id);
 
   if(isLoading){
     return(<DescriptionListSkeleton rows={6}/>)
