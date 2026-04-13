@@ -4,7 +4,9 @@ import { createVerificationSession, getVerificationSession } from '@/utils/serve
 import { requireAuth } from '@/utils/server/authMiddleware';
 import { SupabaseQueryBuilder } from '@/utils/supabase/queryBuilder';
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/utils/server/logger';
 
+const ROUTE_CONTEXT = { component: 'didit', action: 'create_session' };
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,7 +20,12 @@ export async function POST(request: NextRequest) {
 
     const body: CreateSessionRequest = await request.json();
     const { application_id, verification_type } = body;
-    console.log("application_id received;", application_id, "verification type received", verification_type)
+
+    logger.info(`Create session request received`, {
+      ...ROUTE_CONTEXT,
+      applicationId: application_id,
+      verificationType: verification_type,
+    });
 
     if (!application_id || !verification_type) {
       return NextResponse.json(
@@ -33,8 +40,8 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-  
-    const application = await queryBuilder.findById(application_id)
+
+    const application = await queryBuilder.findById(application_id);
     if (!application) {
       return NextResponse.json({ error: 'Application not found' }, { status: 404 });
     }
@@ -63,7 +70,6 @@ export async function POST(request: NextRequest) {
         );
       }
 
-
       const isResumable = ['in_progress', 'in_review', 'not_finished'].includes(currentStatus);
       if (isResumable) {
         const sessionIdField = verification_type === 'home_country'
@@ -75,9 +81,12 @@ export async function POST(request: NextRequest) {
           try {
             const existingSession = await getVerificationSession(existingSessionId);
 
-            // Didit returns session_url on the session object
             if (existingSession?.url || existingSession?.session_url) {
-              console.log(`Resuming existing session ${existingSessionId} for application ${application_id}`);
+              logger.info(`Resuming existing session ${existingSessionId}`, {
+                ...ROUTE_CONTEXT,
+                applicationId: application_id,
+                sessionId: existingSessionId,
+              });
               return NextResponse.json({
                 success: true,
                 url: existingSession.url || existingSession.session_url,
@@ -86,8 +95,11 @@ export async function POST(request: NextRequest) {
               });
             }
           } catch (sessionError) {
-            // Session no longer retrievable (expired/deleted on Didit side) — fall through to create a new one
-            console.warn(`Could not retrieve session ${existingSessionId}, will create new:`, sessionError);
+            logger.warn(`Could not retrieve session ${existingSessionId}, creating new one`, {
+              ...ROUTE_CONTEXT,
+              applicationId: application_id,
+              sessionId: existingSessionId,
+            });
           }
         }
       }
@@ -101,7 +113,7 @@ export async function POST(request: NextRequest) {
       { user_id: user.id }
     );
 
-    const sessionField = verification_type === 'home_country' ? 'home_country_session_id':'immigration_session_id';
+    const sessionField = verification_type === 'home_country' ? 'home_country_session_id' : 'immigration_session_id';
 
     const updateData = {
       [sessionField]: session.session_id,
@@ -110,7 +122,7 @@ export async function POST(request: NextRequest) {
     };
 
     if (existingVerification) {
-      await verificationQueryBuilder.update(existingVerification.id, updateData)
+      await verificationQueryBuilder.update(existingVerification.id, updateData);
     } else {
       await verificationQueryBuilder.create({
         application_id, user_id: user.id,
@@ -118,8 +130,15 @@ export async function POST(request: NextRequest) {
         immigration_status: 'not_started',
         overall_status: 'not_started',
         ...updateData,
-      })
+      });
     }
+
+    logger.info(`Verification session created`, {
+      ...ROUTE_CONTEXT,
+      applicationId: application_id,
+      sessionId: session.session_id,
+      verificationType: verification_type,
+    });
 
     return NextResponse.json({
       success: true,
@@ -128,7 +147,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error creating Didit session:', error);
+    logger.error(error, 'Error creating Didit session', ROUTE_CONTEXT);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to create verification session' },
       { status: 500 }

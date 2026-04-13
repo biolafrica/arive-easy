@@ -3,10 +3,12 @@ import { ApplicationBase } from '@/type/pages/dashboard/application';
 import { requireAuth } from '@/utils/server/authMiddleware';
 import { SupabaseQueryBuilder } from '@/utils/supabase/queryBuilder';
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/utils/server/logger';
+
+const ROUTE_CONTEXT = { component: 'didit', action: 'check_status' };
 
 export async function GET(request: NextRequest) {
   try {
-    
     const user = await requireAuth();
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -14,7 +16,7 @@ export async function GET(request: NextRequest) {
 
     const queryBuilder = new SupabaseQueryBuilder<ApplicationBase>("applications");
     const verificationQueryBuilder = new SupabaseQueryBuilder<VerificationBase>("identity_verifications");
-  
+
     const { searchParams } = new URL(request.url);
     const applicationId = searchParams.get('applicationId');
 
@@ -25,7 +27,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const application = await queryBuilder.findById(applicationId)
+    const application = await queryBuilder.findById(applicationId);
     if (!application) {
       return NextResponse.json({ error: 'Application not found' }, { status: 404 });
     }
@@ -34,10 +36,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
-    const verification = await verificationQueryBuilder.findOneByCondition('application_id', applicationId)
+    const verification = await verificationQueryBuilder.findOneByCondition('application_id', applicationId);
 
     if (!verification) {
-      console.error('Error fetching verification for this application');
+      logger.warn('No verification record found for application', { ...ROUTE_CONTEXT, applicationId });
       return NextResponse.json({
         success: true,
         home_country_status: 'not_started',
@@ -75,7 +77,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error checking verification status:', error);
+    logger.error(error, 'Error checking verification status', ROUTE_CONTEXT);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
