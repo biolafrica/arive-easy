@@ -3,8 +3,11 @@ import { storageManager } from "@/utils/server/storageManager";
 import { SupabaseQueryBuilder } from "@/utils/supabase/queryBuilder";
 import { TransactionDocumentBase } from "@/type/pages/dashboard/documents";
 import { ApplicationBase } from "@/type/pages/dashboard/application";
+import { logger } from "@/utils/server/logger";
 
 const ANVIL_WEBHOOK_TOKEN = process.env.ANVIL_WEBHOOK_TOKEN!;
+
+const WEBHOOK_CONTEXT = { component: 'webhook', action: 'anvil' };
 
 export async function POST(request: NextRequest) {
   let body: any;
@@ -12,19 +15,17 @@ export async function POST(request: NextRequest) {
   try {
     body = await request.json();
   } catch (error) {
-    console.error('Anvil webhook: Failed to parse request body', error);
+    logger.error(error, 'Anvil webhook: Failed to parse request body', WEBHOOK_CONTEXT);
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
   }
 
   if (body.token !== ANVIL_WEBHOOK_TOKEN) {
-    console.error('Anvil webhook: Invalid token');
+    logger.warn('Anvil webhook: Invalid token', WEBHOOK_CONTEXT);
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  console.log('Anvil webhook raw body:', JSON.stringify(body, null, 2));
-
   const { action, data } = body;
-  console.log('Anvil webhook received:', action);
+  logger.info(`Anvil webhook received: ${action}`, WEBHOOK_CONTEXT);
 
   try {
     if (action === 'etchPacketComplete') {
@@ -32,10 +33,10 @@ export async function POST(request: NextRequest) {
     } else if (action === 'signerComplete') {
       await handleSignerComplete(data);
     } else {
-      console.log('Anvil webhook: Unhandled action', action);
+      logger.info(`Anvil webhook: Unhandled action — ${action}`, WEBHOOK_CONTEXT);
     }
   } catch (error) {
-    console.error(`Anvil webhook: Error handling action "${action}"`, error);
+    logger.error(error, `Anvil webhook: Error handling action "${action}"`, WEBHOOK_CONTEXT);
   }
 
   return NextResponse.json({ ok: true });
@@ -63,16 +64,15 @@ async function handleEtchPacketComplete(data: any) {
   });
 
   if (!transactionDoc) {
-    console.warn('Anvil webhook: No transaction document found for etchPacketEid:', etchPacketEid);
+    logger.warn(`Anvil webhook: No transaction document found for etchPacketEid: ${etchPacketEid}`, WEBHOOK_CONTEXT);
     return;
   }
 
   if (transactionDoc.status === 'completed') {
-    console.log('Anvil webhook: Transaction already completed, skipping:', transactionDoc.id);
+    logger.info(`Anvil webhook: Transaction already completed, skipping: ${transactionDoc.id}`, WEBHOOK_CONTEXT);
     return;
   }
 
-  // Fetch the zip directly from Anvil's URL
   const response = await fetch(downloadZipURL, {
     headers: {
       Authorization: `Basic ${Buffer.from(`${process.env.ANVIL_API_KEY}:`).toString('base64')}`,
@@ -86,7 +86,7 @@ async function handleEtchPacketComplete(data: any) {
   const arrayBuffer = await response.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
 
-  console.log('Anvil webhook: Downloaded zip, size:', buffer.byteLength, 'bytes');
+  logger.info(`Anvil webhook: Downloaded zip — ${buffer.byteLength} bytes`, WEBHOOK_CONTEXT);
 
   const file = new File(
     [buffer],
@@ -101,7 +101,7 @@ async function handleEtchPacketComplete(data: any) {
 
   if (!publicUrl) throw new Error('Supabase upload returned no public URL');
 
-  console.log('Anvil webhook: Uploaded to storage:', publicUrl);
+  logger.info(`Anvil webhook: Uploaded to storage: ${publicUrl}`, WEBHOOK_CONTEXT);
 
   await transactionDocumentQB.update(transactionDoc.id, {
     generated_document_url: publicUrl,
@@ -115,7 +115,7 @@ async function handleEtchPacketComplete(data: any) {
     transactionDoc.document_type
   );
 
-  console.log('Anvil webhook: Transaction completed successfully:', transactionDoc.id);
+  logger.info(`Anvil webhook: Transaction completed successfully: ${transactionDoc.id}`, WEBHOOK_CONTEXT);
 }
 
 async function handleSignerComplete(data: any) {
@@ -130,13 +130,12 @@ async function handleSignerComplete(data: any) {
   );
   const applicationQB = new SupabaseQueryBuilder<ApplicationBase>('applications');
 
-
   const transactionDoc = await transactionDocumentQB.findOneByCondition({
     esign_document_id: etchPacket.eid,
   });
 
   if (!transactionDoc) {
-    console.warn('Anvil webhook: No transaction document found for etchPacketEid:', etchPacket.eid);
+    logger.warn(`Anvil webhook: No transaction document found for etchPacketEid: ${etchPacket.eid}`, WEBHOOK_CONTEXT);
     return;
   }
 
@@ -144,7 +143,7 @@ async function handleSignerComplete(data: any) {
 
   const updatedSignatures = {
     ...existingSignatures,
-    [aliasId]: {                
+    [aliasId]: {
       eid,
       name,
       email,
@@ -173,9 +172,11 @@ async function handleSignerComplete(data: any) {
     totalCount
   );
 
-  console.log(`Anvil webhook: Signer "${aliasId}" (${name}) completed. ${completedCount}/${totalCount} signed.`);
+  logger.info(
+    `Anvil webhook: Signer "${aliasId}" (${name}) completed — ${completedCount}/${totalCount} signed`,
+    WEBHOOK_CONTEXT
+  );
 }
-
 
 async function updateApplicationStageOnCompletion(
   applicationQB: SupabaseQueryBuilder<ApplicationBase>,
@@ -185,7 +186,7 @@ async function updateApplicationStageOnCompletion(
   try {
     const application = await applicationQB.findById(applicationId);
     if (!application) {
-      console.warn('Application not found:', applicationId);
+      logger.warn(`Application not found: ${applicationId}`, WEBHOOK_CONTEXT);
       return;
     }
 
@@ -202,14 +203,14 @@ async function updateApplicationStageOnCompletion(
             ...currentStage?.data,
             [`${documentType}_status`]: 'completed',
             [`${documentType}_completed_at`]: new Date().toISOString(),
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
-    console.log(`Updated terms and agreement: ${documentType} completed`);
+    logger.info(`Updated terms and agreement: ${documentType} completed`, WEBHOOK_CONTEXT);
   } catch (error) {
-    console.error('Failed to update application stage on completion:', error);
+    logger.error(error, 'Failed to update application stage on completion', WEBHOOK_CONTEXT);
   }
 }
 
@@ -224,7 +225,7 @@ async function updateApplicationStageOnSignature(
   try {
     const application = await applicationQB.findById(applicationId);
     if (!application) {
-      console.warn('Application not found:', applicationId);
+      logger.warn(`Application not found: ${applicationId}`, WEBHOOK_CONTEXT);
       return;
     }
 
@@ -244,13 +245,16 @@ async function updateApplicationStageOnSignature(
             [`${documentType}_${signerRole}_signed_at`]: new Date().toISOString(),
             [`${documentType}_signatures_completed`]: completedCount,
             [`${documentType}_signatures_total`]: totalCount,
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
-    console.log(`Updated terms and agreement: ${documentType} - ${signerRole} signed (${completedCount}/${totalCount})`);
+    logger.info(
+      `Updated terms and agreement: ${documentType} — ${signerRole} signed (${completedCount}/${totalCount})`,
+      WEBHOOK_CONTEXT
+    );
   } catch (error) {
-    console.error('Failed to update application stage on signature:', error);
+    logger.error(error, 'Failed to update application stage on signature', WEBHOOK_CONTEXT);
   }
 }
