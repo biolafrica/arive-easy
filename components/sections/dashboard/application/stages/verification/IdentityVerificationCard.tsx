@@ -119,6 +119,7 @@ export function IdentityVerificationCards({
       expired: 'Retry Verification',
       abandoned: 'Resume Verification',
       kyc_expired: 'Retry Verification',
+      not_finished: 'Continue Verification', 
     };
     return labels[status];
   };
@@ -132,7 +133,7 @@ export function IdentityVerificationCards({
   };
 
   const canRetry = (status: DiditVerificationStatus): boolean => {
-    return ['declined', 'expired', 'abandoned', 'kyc_expired'].includes(status);
+    return ['declined', 'expired', 'abandoned', 'kyc_expired', 'not_finished'].includes(status);
   };
 
   return (
@@ -187,6 +188,17 @@ function StatusAlerts({
   overallStatus: string;
   canRetry: (status: DiditVerificationStatus) => boolean;
 }) {
+
+  if (homeCountryStatus === 'not_finished' || immigrationStatus === 'not_finished') {
+    return (
+      <StatusBanner
+        variant="warning"
+        title="Verification Incomplete"
+        message="It looks like you left the verification process early. Click 'Continue Verification' to pick up where you left off."
+      />
+    );
+  }
+  
   if (homeCountryStatus === 'in_progress' || immigrationStatus === 'in_progress') {
     return (
       <StatusBanner 

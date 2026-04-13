@@ -63,14 +63,7 @@ export async function POST(request: NextRequest) {
 
     const internalStatus = mapDiditStatus(payload.status);
 
-    console.log(`Webhook received for application ${applicationId}:`, {
-      verificationType,
-      status: internalStatus,
-      sessionId: payload.session_id,
-    });
-
     const verification = await verificationQueryBuilder.findOneByCondition('application_id', applicationId);
-    console.log('findbyapplication id condition', verification)
 
     if (!verification) {
       console.error('Verification record not found');
@@ -80,6 +73,14 @@ export async function POST(request: NextRequest) {
     const updateData: Record<string, any> = {
       updated_at: new Date().toISOString(),
     };
+
+    if (internalStatus === 'not_finished') {
+      console.log(`Verification not finished for application ${applicationId} — user can resume`);
+      return NextResponse.json({
+        message: 'Webhook processed successfully',
+        status: updateData.overall_status,
+      });
+    }
 
 
     if (verificationType === 'home_country') {

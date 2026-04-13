@@ -57,6 +57,10 @@ export default function VerificationCallbackClientView({ applicationId }: Props)
           setStatus('failed');
           setMessage('Verification Needs Attention');
           setSubMessage('One of your verifications was not successful. Please return to retry with clearer documents.');
+        } else if (home_country_status === 'not_finished' || immigration_status === 'not_finished') {
+          setStatus('partial');
+          setMessage('Verification Not Completed');
+          setSubMessage('It looks like you left before finishing. Return to your application and click "Continue Verification" to pick up where you left off.');
         } else {
           setStatus('pending');
           setMessage('Verification Processing');

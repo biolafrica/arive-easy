@@ -123,6 +123,7 @@ export function mapDiditStatus(diditStatus: string): string {
     'Declined': 'declined',
     'Expired': 'expired',
     'Abandoned': 'abandoned',
+    'Not Finished': 'not_finished',
     'KYC Expired': 'kyc_expired',
   };
 
@@ -148,6 +149,10 @@ export function calculateOverallStatus(
   if ( 
     homeCountryStatus === 'in_progress' || immigrationStatus === 'in_progress' || homeCountryStatus === 'approved' || immigrationStatus === 'approved'
   ) {
+    return 'partial';
+  }
+  
+  if (homeCountryStatus === 'not_finished' || immigrationStatus === 'not_finished') {
     return 'partial';
   }
   return 'not_started';

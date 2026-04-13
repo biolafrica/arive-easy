@@ -1,4 +1,13 @@
-export type DiditVerificationStatus = |'not_started'|'in_progress'|'in_review'|'approved'|'declined'|'expired'|'abandoned'|'kyc_expired';
+export type DiditVerificationStatus = 
+|'not_started'
+|'in_progress'
+|'in_review'
+|'approved'
+|'declined'
+|'expired'
+|'abandoned'
+| 'not_finished'
+|'kyc_expired';
 
 export type DiditOverallStatus =| 'not_started'| 'partial'| 'pending'| 'approved'| 'failed';
 

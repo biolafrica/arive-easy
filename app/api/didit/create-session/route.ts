@@ -1,6 +1,6 @@
 import { CreateSessionRequest, VerificationBase, VerificationType } from '@/type/common/didit';
 import { ApplicationBase } from '@/type/pages/dashboard/application';
-import { createVerificationSession } from '@/utils/server/didit';
+import { createVerificationSession, getVerificationSession } from '@/utils/server/didit';
 import { requireAuth } from '@/utils/server/authMiddleware';
 import { SupabaseQueryBuilder } from '@/utils/supabase/queryBuilder';
 import { NextRequest, NextResponse } from 'next/server';
@@ -55,17 +55,41 @@ export async function POST(request: NextRequest) {
 
     if (existingVerification) {
       const currentStatus = existingVerification[statusField];
+
       if (currentStatus === 'approved') {
         return NextResponse.json(
           { error: 'This verification is already completed' },
           { status: 400 }
         );
       }
-      if (currentStatus === 'in_progress' || currentStatus === 'in_review') {
-        return NextResponse.json(
-          { error: 'Verification is already in progress' },
-          { status: 400 }
-        );
+
+
+      const isResumable = ['in_progress', 'in_review', 'not_finished'].includes(currentStatus);
+      if (isResumable) {
+        const sessionIdField = verification_type === 'home_country'
+          ? 'home_country_session_id'
+          : 'immigration_session_id';
+        const existingSessionId = existingVerification[sessionIdField];
+
+        if (existingSessionId) {
+          try {
+            const existingSession = await getVerificationSession(existingSessionId);
+
+            // Didit returns session_url on the session object
+            if (existingSession?.url || existingSession?.session_url) {
+              console.log(`Resuming existing session ${existingSessionId} for application ${application_id}`);
+              return NextResponse.json({
+                success: true,
+                url: existingSession.url || existingSession.session_url,
+                session_id: existingSessionId,
+                resumed: true,
+              });
+            }
+          } catch (sessionError) {
+            // Session no longer retrievable (expired/deleted on Didit side) — fall through to create a new one
+            console.warn(`Could not retrieve session ${existingSessionId}, will create new:`, sessionError);
+          }
+        }
       }
     }
 
@@ -76,9 +100,6 @@ export async function POST(request: NextRequest) {
       application_id, verification_type as VerificationType, callbackUrl,
       { user_id: user.id }
     );
-
-    console.log("session received", session);
-
 
     const sessionField = verification_type === 'home_country' ? 'home_country_session_id':'immigration_session_id';
 
