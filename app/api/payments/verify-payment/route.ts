@@ -1,6 +1,9 @@
 import { TransactionBase } from "@/type/pages/dashboard/transactions";
 import { SupabaseQueryBuilder } from "@/utils/supabase/queryBuilder";
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from "@/utils/server/logger";
+
+const ROUTE_CONTEXT = { component: 'payment', action: 'verify_payment' };
 
 export async function GET(request: NextRequest) {
   const queryBuilder = new SupabaseQueryBuilder<TransactionBase>("transactions");
@@ -8,16 +11,16 @@ export async function GET(request: NextRequest) {
   const sessionId = searchParams.get('session_id');
 
   try {
-    if (!sessionId) { 
-      return NextResponse.json({ error: 'Session ID required' }, { status: 400 } )
+    if (!sessionId) {
+      return NextResponse.json({ error: 'Session ID required' }, { status: 400 });
     }
 
     const transaction = await queryBuilder.findOneByCondition({
       stripe_session_id: sessionId
-    })
+    });
 
     if (!transaction) {
-      return NextResponse.json({ error: 'Transaction not found' },{ status: 404 } );
+      return NextResponse.json({ error: 'Transaction not found' }, { status: 404 });
     }
 
     return NextResponse.json({
@@ -27,14 +30,15 @@ export async function GET(request: NextRequest) {
       transaction_id: transaction.id,
       payment_date: transaction.created_at
     });
-    
+
   } catch (error) {
-    console.error('Error fetching transaction', error);
+    logger.error(error, 'Error fetching transaction', {
+      ...ROUTE_CONTEXT,
+      extra: { session_id: sessionId },
+    });
     return NextResponse.json(
       { error: 'Failed to fetch transaction' },
       { status: 500 }
     );
-    
   }
-
 }

@@ -13,6 +13,7 @@ import { createNotification } from '@/utils/notifications/createNotification';
 import { buildNotificationPayload } from '@/utils/notifications/notificationContent';
 import { formatUSD } from '@/lib/formatter';
 import { PropertyBase } from '@/type/pages/property';
+import { logger } from '@/utils/server/logger';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2026-02-25.clover"
@@ -23,6 +24,8 @@ const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+const WEBHOOK_CONTEXT = { component: 'webhook', action: 'stripe' };
+
 type PaymentType = 'escrow_down_payment' | 'legal_fee' | 'valuation_fee' | 'processing_fee' | string;
 
 export async function POST(request: NextRequest) {
@@ -32,7 +35,7 @@ export async function POST(request: NextRequest) {
     const signature = headersList.get('stripe-signature');
 
     if (!signature) {
-      console.error('No signature found in webhook request');
+      logger.warn('No signature found in webhook request', WEBHOOK_CONTEXT);
       return NextResponse.json({ error: 'No signature found' }, { status: 400 });
     }
 
@@ -41,11 +44,11 @@ export async function POST(request: NextRequest) {
     try {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
     } catch (err) {
-      console.error('Webhook signature verification failed:', err);
+      logger.error(err, 'Webhook signature verification failed', WEBHOOK_CONTEXT);
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
     }
 
-    console.log(`Processing webhook event: ${event.type}`);
+    logger.info(`Processing webhook event: ${event.type}`, WEBHOOK_CONTEXT);
 
     switch (event.type) {
       case 'checkout.session.completed':
@@ -85,17 +88,17 @@ export async function POST(request: NextRequest) {
         break;
 
       case 'payment_method.attached':
-        console.log('Payment method attached:', (event.data.object as Stripe.PaymentMethod).id);
+        logger.info(`Payment method attached: ${(event.data.object as Stripe.PaymentMethod).id}`, WEBHOOK_CONTEXT);
         break;
 
       default:
-        console.log(`Unhandled event type: ${event.type}`);
+        logger.info(`Unhandled event type: ${event.type}`, WEBHOOK_CONTEXT);
     }
 
     return NextResponse.json({ received: true });
 
   } catch (error) {
-    console.error('Webhook processing failed:', error);
+    logger.error(error, 'Webhook processing failed', WEBHOOK_CONTEXT);
     return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 });
   }
 }
@@ -103,7 +106,7 @@ export async function POST(request: NextRequest) {
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const paymentType = session.metadata?.payment_type as PaymentType;
 
-  console.log('Checkout completed:', { sessionId: session.id, paymentType });
+  logger.info(`Checkout completed: ${session.id} — type: ${paymentType}`, WEBHOOK_CONTEXT);
 
   if (!paymentType) {
     await processGenericPayment(session);
@@ -126,7 +129,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 }
 
 async function handleCheckoutExpired(session: Stripe.Checkout.Session) {
-  console.log('Checkout expired:', session.id);
+  logger.info(`Checkout expired: ${session.id}`, WEBHOOK_CONTEXT);
 
   await updateTransactionBySessionId(session.id, {
     status: 'cancelled',
@@ -135,7 +138,7 @@ async function handleCheckoutExpired(session: Stripe.Checkout.Session) {
 }
 
 async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
-  console.log('Payment intent succeeded:', paymentIntent.id);
+  logger.info(`Payment intent succeeded: ${paymentIntent.id}`, WEBHOOK_CONTEXT);
 
   const mortgageId = paymentIntent.metadata?.mortgage_id;
   const paymentIds = paymentIntent.metadata?.payment_ids;
@@ -159,7 +162,7 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
 }
 
 async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
-  console.log('Payment intent failed:', paymentIntent.id);
+  logger.info(`Payment intent failed: ${paymentIntent.id}`, WEBHOOK_CONTEXT);
 
   const mortgageId = paymentIntent.metadata?.mortgage_id;
   const paymentIds = paymentIntent.metadata?.payment_ids;
@@ -177,8 +180,8 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
 
 async function handleSetupIntentSucceeded(setupIntent: Stripe.SetupIntent) {
   const applicationId = setupIntent.metadata?.application_id;
-  
-  console.log('Setup intent succeeded:', { id: setupIntent.id, applicationId });
+
+  logger.info(`Setup intent succeeded: ${setupIntent.id}`, { ...WEBHOOK_CONTEXT, applicationId });
 
   if (!applicationId) return;
 
@@ -190,7 +193,7 @@ async function handleSetupIntentSucceeded(setupIntent: Stripe.SetupIntent) {
   });
 
   if (!mortgage || (mortgage.status !== 'pending_verification' && mortgage.status !== 'pending_payment_method')) {
-    console.log('Mortgage not pending verification:', mortgage?.status);
+    logger.info(`Mortgage not pending verification: ${mortgage?.status}`, WEBHOOK_CONTEXT);
     return;
   }
 
@@ -212,7 +215,7 @@ async function handleSetupIntentSucceeded(setupIntent: Stripe.SetupIntent) {
         mortgage_activation: {
           ...application.stages_completed?.mortgage_activation,
           completed: false,
-          status  : 'current',
+          status: 'current',
           data: {
             ...application.stages_completed?.mortgage_activation?.data,
             direct_debit_status: 'active',
@@ -223,14 +226,14 @@ async function handleSetupIntentSucceeded(setupIntent: Stripe.SetupIntent) {
     });
   }
 
-  console.log(`Bank verification completed for mortgage ${mortgage.id}`);
+  logger.info(`Bank verification completed for mortgage ${mortgage.id}`, WEBHOOK_CONTEXT);
 }
 
 async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
   const subscriptionId = getSubscriptionId(invoice);
   const paymentIntentId = getPaymentIntentId(invoice);
 
-  console.log('Invoice payment succeeded:', { invoiceId: invoice.id, subscriptionId });
+  logger.info(`Invoice payment succeeded: ${invoice.id}`, { ...WEBHOOK_CONTEXT, extra: { subscription_id: subscriptionId } });
 
   if (!subscriptionId) return;
 
@@ -238,27 +241,26 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
   const userQueryBuilder = new SupabaseQueryBuilder<UserBase>("users");
   const applicationQueryBuilder = new SupabaseQueryBuilder<ApplicationBase>("applications");
 
-
   const mortgage = await mortgageQueryBuilder.findOneByCondition({
     stripe_subscription_id: subscriptionId
   });
 
   if (!mortgage) {
-    console.error('Mortgage not found for subscription:', subscriptionId);
+    logger.error(new Error('Mortgage not found'), `Mortgage not found for subscription: ${subscriptionId}`, WEBHOOK_CONTEXT);
     return;
   }
 
   const { data: nextPayment, error: findError } = await supabaseAdmin
-  .from('mortgage_payments')
-  .select('*')
-  .eq('mortgage_id', mortgage.id)
-  .eq('status', 'scheduled')
-  .order('payment_number', { ascending: true })
-  .limit(1)
-  .single();
+    .from('mortgage_payments')
+    .select('*')
+    .eq('mortgage_id', mortgage.id)
+    .eq('status', 'scheduled')
+    .order('payment_number', { ascending: true })
+    .limit(1)
+    .single();
 
   if (findError || !nextPayment) {
-    console.error('No scheduled payment found for mortgage:', mortgage.id, findError);
+    logger.warn(`No scheduled payment found for mortgage: ${mortgage.id}`, WEBHOOK_CONTEXT);
   }
 
   let paymentId: string | null = null;
@@ -274,12 +276,12 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
         paid_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })
-      .eq('id', nextPayment.id) // Update by specific ID, not by conditions
+      .eq('id', nextPayment.id)
       .select()
       .single();
 
     if (updateError) {
-      console.error('Failed to update payment record:', updateError);
+      logger.error(updateError, 'Failed to update payment record', WEBHOOK_CONTEXT);
     } else {
       paymentId = updatedPayment.id;
       paymentNumber = updatedPayment.payment_number;
@@ -302,35 +304,34 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
   });
 
   const { error: transactionError } = await supabaseAdmin
-  .from('transactions')
-  .insert({
-    user_id: mortgage.user_id,
-    application_id: mortgage.application_id,
-    mortgage_id: mortgage.id,
-    mortgage_payment_id: paymentId, // Can be null if payment record wasn't found
-    stripe_payment_intent_id: paymentIntentId,
-    stripe_invoice_id: invoice.id,
-    amount: invoice.amount_paid,
-    currency: invoice.currency,
-    status: 'succeeded',
-    type: 'mortgage_payment',
-    description: `Mortgage payment ${newPaymentsMade} of ${mortgage.number_of_payments || mortgage.total_payments}`,
-    metadata: { 
-      payment_number: paymentNumber, 
-      subscription_id: subscriptionId,
-      invoice_id: invoice.id,
-    },
-  });
+    .from('transactions')
+    .insert({
+      user_id: mortgage.user_id,
+      application_id: mortgage.application_id,
+      mortgage_id: mortgage.id,
+      mortgage_payment_id: paymentId,
+      stripe_payment_intent_id: paymentIntentId,
+      stripe_invoice_id: invoice.id,
+      amount: invoice.amount_paid,
+      currency: invoice.currency,
+      status: 'succeeded',
+      type: 'mortgage_payment',
+      description: `Mortgage payment ${newPaymentsMade} of ${mortgage.number_of_payments || mortgage.total_payments}`,
+      metadata: { 
+        payment_number: paymentNumber, 
+        subscription_id: subscriptionId,
+        invoice_id: invoice.id,
+      },
+    });
 
   if (transactionError) {
-    console.error('Failed to create transaction:', transactionError);
+    logger.error(transactionError, 'Failed to create transaction', WEBHOOK_CONTEXT);
   }
 
   const application = await applicationQueryBuilder.findById(mortgage.application_id);
   const user = await userQueryBuilder.findById(mortgage.user_id);
 
   if (user?.email) {
-
     sendEmail({
       to: user.email,
       subject: 'Payment Successful - Kletch',
@@ -344,7 +345,7 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
         nextPaymentDate: nextPaymentDate.toISOString().split('T')[0],
         applicationNumber: application?.application_number || '',
       }),
-    }).catch(err => console.error('Failed to send payment success email:', err));
+    }).catch(err => logger.error(err, 'Failed to send payment success email', WEBHOOK_CONTEXT));
 
     if (application) {
       try {
@@ -352,35 +353,33 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
           buildNotificationPayload('subscription_payment_success', {
             user_id: user.id,
             application_id: application.id,
-            property_id:application.property_id,
-            payment_id:paymentId || mortgage.id,
-            type:'subscription_payment_success',
+            property_id: application.property_id,
+            payment_id: paymentId || mortgage.id,
+            type: 'subscription_payment_success',
             channel: 'in_app',
             metadata: {
-              amount: formatUSD({amount:invoice.amount_paid/100}),
-              currency:'USD',
+              amount: formatUSD({ amount: invoice.amount_paid / 100 }),
+              currency: 'USD',
               cta_url: `/user-dashboard/properties/${mortgage.id}/mortgages`,
               property_name: application.property_name,
-              reference_number:mortgage.id
+              reference_number: mortgage.id
             },
           })
-        )
+        );
       } catch (notificationError) {
-        console.error('Failed to create in-app notification:', notificationError);
-        
+        logger.error(notificationError, 'Failed to create in-app notification', WEBHOOK_CONTEXT);
       }
     }
-
   }
 
-  console.log(`Mortgage payment ${newPaymentsMade}/${mortgage.total_payments} succeeded for ${mortgage.id}`);
+  logger.info(`Mortgage payment ${newPaymentsMade}/${mortgage.total_payments} succeeded for ${mortgage.id}`, WEBHOOK_CONTEXT);
 }
 
 async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
   const subscriptionId = getSubscriptionId(invoice);
   const paymentIntentId = getPaymentIntentId(invoice);
 
-  console.log('Invoice payment failed:', { invoiceId: invoice.id, subscriptionId });
+  logger.info(`Invoice payment failed: ${invoice.id}`, { ...WEBHOOK_CONTEXT, extra: { subscription_id: subscriptionId } });
 
   if (!subscriptionId) return;
 
@@ -395,18 +394,18 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
   if (!mortgage) return;
 
   await supabaseAdmin
-  .from('mortgage_payments')
-  .update({
-    status: 'failed',
-    stripe_invoice_id: invoice.id,
-    stripe_payment_intent_id: paymentIntentId,
-    failure_reason: invoice.last_finalization_error?.message || 'Payment failed',
-    updated_at: new Date().toISOString(),
-  })
-  .eq('mortgage_id', mortgage.id)
-  .eq('status', 'scheduled')
-  .order('payment_number', { ascending: true })
-  .limit(1);
+    .from('mortgage_payments')
+    .update({
+      status: 'failed',
+      stripe_invoice_id: invoice.id,
+      stripe_payment_intent_id: paymentIntentId,
+      failure_reason: invoice.last_finalization_error?.message || 'Payment failed',
+      updated_at: new Date().toISOString(),
+    })
+    .eq('mortgage_id', mortgage.id)
+    .eq('status', 'scheduled')
+    .order('payment_number', { ascending: true })
+    .limit(1);
 
   await mortgageQueryBuilder.update(mortgage.id, {
     status: 'payment_failed',
@@ -414,49 +413,48 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
   });
 
   const application = await applicationQueryBuilder.findById(mortgage.application_id);
-
   const user = await userQueryBuilder.findById(mortgage.user_id);
-  
+
   if (user?.email) {
     sendEmail({
       to: user.email,
       subject: 'Payment Failed - Action Required - Kletch',
       html: getPaymentFailedEmailTemplate({
         userName: user.name || 'Customer',
-        amount: invoice.amount_due ,
+        amount: invoice.amount_due,
         failureReason: invoice.last_finalization_error?.message || 'Your payment could not be processed',
         retryDate: invoice.next_payment_attempt 
           ? new Date(invoice.next_payment_attempt * 1000).toISOString().split('T')[0]
           : null,
         applicationNumber: application?.application_number || '',
-        updatePaymentUrl: `${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/mortgages/${mortgage.id}`,  
+        updatePaymentUrl: `${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/mortgages/${mortgage.id}`,
       }),
-    }).catch(err => console.error('Failed to send payment failure email:', err));
+    }).catch(err => logger.error(err, 'Failed to send payment failure email', WEBHOOK_CONTEXT));
 
     await createNotification(
       buildNotificationPayload('subscription_payment_success', {
         user_id: user.id,
         application_id: application.id,
-        property_id:application.property_id,
-        payment_id:mortgage.id,
-        type:'subscription_payment_failed',
+        property_id: application.property_id,
+        payment_id: mortgage.id,
+        type: 'subscription_payment_failed',
         channel: 'in_app',
         metadata: {
-          amount: formatUSD({amount:invoice.amount_due,fromCents:true}),
-          currency:'USD',
+          amount: formatUSD({ amount: invoice.amount_due, fromCents: true }),
+          currency: 'USD',
           cta_url: `/user-dashboard/properties/${mortgage.id}/mortgages`,
           property_name: application.property_name,
-          reference_number:mortgage.id
+          reference_number: mortgage.id
         },
       })
-    )
+    );
   }
 
-  console.log(`Mortgage payment failed for ${mortgage.id}`);
+  logger.info(`Mortgage payment failed for ${mortgage.id}`, WEBHOOK_CONTEXT);
 }
 
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
-  console.log('Subscription updated:', subscription.id);
+  logger.info(`Subscription updated: ${subscription.id}`, WEBHOOK_CONTEXT);
 
   const mortgageQueryBuilder = new SupabaseQueryBuilder<Mortgage>("mortgages");
 
@@ -481,7 +479,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
 }
 
 async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
-  console.log('Subscription cancelled:', subscription.id);
+  logger.info(`Subscription cancelled: ${subscription.id}`, WEBHOOK_CONTEXT);
 
   const mortgageQueryBuilder = new SupabaseQueryBuilder<Mortgage>("mortgages");
 
@@ -564,19 +562,17 @@ async function processEscrowPayment(session: Stripe.Checkout.Session, paymentTyp
       buildNotificationPayload('down_payment_success', {
         user_id: userId,
         application_id: applicationId,
-        type:'down_payment_success',
-        payment_id:transaction.id,
+        type: 'down_payment_success',
+        payment_id: transaction.id,
         channel: 'in_app',
         metadata: {
-          application_number:applicationId,
-          currency: "USD",
+          application_number: applicationId,
+          currency: 'USD',
           amount: `${session.amount_total}`,
           cta_url: `/user-dashboard/applications`,
         },
       })
     );
-
-
   }
 }
 
@@ -626,18 +622,17 @@ async function processFeePayment(session: Stripe.Checkout.Session, feeType: 'leg
       buildNotificationPayload(`${feeType}_success`, {
         user_id: userId,
         application_id: applicationId,
-        type:`${feeType}_success`,
-        payment_id:transaction.id,
+        type: `${feeType}_success`,
+        payment_id: transaction.id,
         channel: 'in_app',
         metadata: {
-          application_number:applicationId,
-          currency: "USD",
+          application_number: applicationId,
+          currency: 'USD',
           amount: `${session.amount_total}`,
           cta_url: `/user-dashboard/applications`,
         },
       })
     );
-
   }
 }
 
@@ -679,19 +674,17 @@ async function processGenericPayment(session: Stripe.Checkout.Session) {
       buildNotificationPayload('processing_fee_success', {
         user_id: userId,
         application_id: applicationId,
-        type:'processing_fee_success',
-        payment_id:transaction.id,
+        type: 'processing_fee_success',
+        payment_id: transaction.id,
         channel: 'in_app',
         metadata: {
-          application_number:applicationId,
-          currency: "USD",
+          application_number: applicationId,
+          currency: 'USD',
           amount: `${session.amount_total}`,
           cta_url: `/user-dashboard/applications`,
         },
       })
     );
-
-    
   }
 }
 
@@ -707,7 +700,7 @@ async function updateTransactionBySessionId(
     .single();
 
   if (error) {
-    console.error('Failed to update transaction:', error);
+    logger.error(error, 'Failed to update transaction by session ID', WEBHOOK_CONTEXT);
     return null;
   }
   return transaction;
@@ -725,7 +718,7 @@ async function updateTransactionByPaymentIntentId(
     .single();
 
   if (error) {
-    console.error('Failed to update transaction:', error);
+    logger.error(error, 'Failed to update transaction by payment intent ID', WEBHOOK_CONTEXT);
     return null;
   }
   return transaction;
@@ -771,7 +764,6 @@ async function updateTermsStageData(applicationId: string, stageDataUpdate: Reco
       },
     },
   });
-
 }
 
 async function sendPaymentConfirmationEmail(
@@ -798,10 +790,9 @@ async function sendPaymentConfirmationEmail(
       }),
     });
 
-
-    console.log(`Payment confirmation email sent to: ${user.email}`);
+    logger.info(`Payment confirmation email sent to: ${user.email}`, WEBHOOK_CONTEXT);
   } catch (error) {
-    console.error('Failed to send payment confirmation email:', error);
+    logger.error(error, 'Failed to send payment confirmation email', WEBHOOK_CONTEXT);
   }
 }
 
@@ -815,13 +806,13 @@ async function sendReceiptUrlEmail(userId: string, receiptUrl: string): Promise<
       to: user.email,
       subject: 'Your Payment Receipt is Ready - Kletch',
       html: generalPaymentReceipt({
-        userName:user.name,
+        userName: user.name,
         receiptUrl,
       })
     });
-    console.log(`Receipt URL email sent to: ${user.email}`);
+    logger.info(`Receipt URL email sent to: ${user.email}`, WEBHOOK_CONTEXT);
   } catch (error) {
-    console.error('Failed to send receipt URL email:', error);
+    logger.error(error, 'Failed to send receipt URL email', WEBHOOK_CONTEXT);
   }
 }
 
@@ -849,16 +840,14 @@ async function updatePropertyStatus(applicationId: string): Promise<void> {
     status: 'reserved',
     updated_at: new Date().toISOString(),
   });
-  
-} 
+}
 
 async function handleManualMortgagePaymentSucceeded(paymentIntent: Stripe.PaymentIntent) {
   const { mortgage_id, user_id, payment_ids, payment_count, payment_numbers } = paymentIntent.metadata;
 
-  console.log('Manual mortgage payment succeeded:', {
-    paymentIntentId: paymentIntent.id,
-    mortgageId: mortgage_id,
-    paymentIds: payment_ids,
+  logger.info(`Manual mortgage payment succeeded: ${paymentIntent.id}`, {
+    ...WEBHOOK_CONTEXT,
+    extra: { mortgage_id, payment_ids },
   });
 
   const mortgageQueryBuilder = new SupabaseQueryBuilder<Mortgage>("mortgages");
@@ -867,7 +856,7 @@ async function handleManualMortgagePaymentSucceeded(paymentIntent: Stripe.Paymen
 
   const mortgage = await mortgageQueryBuilder.findById(mortgage_id);
   if (!mortgage) {
-    console.error('Mortgage not found:', mortgage_id);
+    logger.error(new Error('Mortgage not found'), `Mortgage not found: ${mortgage_id}`, WEBHOOK_CONTEXT);
     return;
   }
 
@@ -885,7 +874,7 @@ async function handleManualMortgagePaymentSucceeded(paymentIntent: Stripe.Paymen
     .in('id', paymentIdArray);
 
   if (updateError) {
-    console.error('Failed to update mortgage payments:', updateError);
+    logger.error(updateError, 'Failed to update mortgage payments', WEBHOOK_CONTEXT);
   }
 
   await supabaseAdmin
@@ -925,7 +914,6 @@ async function handleManualMortgagePaymentSucceeded(paymentIntent: Stripe.Paymen
   const application = await applicationQueryBuilder.findById(mortgage.application_id);
 
   if (user?.email) {
-
     await sendEmail({
       to: user.email,
       subject: `Payment Successful - ${numPayments > 1 ? `${numPayments} Payments` : 'Mortgage Payment'} - Kletch`,
@@ -939,7 +927,7 @@ async function handleManualMortgagePaymentSucceeded(paymentIntent: Stripe.Paymen
         nextPaymentDate: nextScheduled?.due_date || mortgage.last_payment_date,
         applicationNumber: application?.application_number || '',
       }),
-    }).catch(err => console.error('Failed to send payment success email:', err));
+    }).catch(err => logger.error(err, 'Failed to send manual payment success email', WEBHOOK_CONTEXT));
 
     await createNotification(
       buildNotificationPayload('subscription_payment_success', {
@@ -962,15 +950,15 @@ async function handleManualMortgagePaymentSucceeded(paymentIntent: Stripe.Paymen
     );
   }
 
-  console.log(`Manual mortgage payment completed: ${numPayments} payment(s) for mortgage ${mortgage_id}`);
+  logger.info(`Manual mortgage payment completed: ${numPayments} payment(s) for mortgage ${mortgage_id}`, WEBHOOK_CONTEXT);
 }
 
 async function handleManualMortgagePaymentFailed(paymentIntent: Stripe.PaymentIntent) {
   const { mortgage_id, user_id, payment_ids } = paymentIntent.metadata;
 
-  console.log('Manual mortgage payment failed:', {
-    paymentIntentId: paymentIntent.id,
-    mortgageId: mortgage_id,
+  logger.info(`Manual mortgage payment failed: ${paymentIntent.id}`, {
+    ...WEBHOOK_CONTEXT,
+    extra: { mortgage_id },
   });
 
   const mortgageQueryBuilder = new SupabaseQueryBuilder<Mortgage>("mortgages");
@@ -979,7 +967,6 @@ async function handleManualMortgagePaymentFailed(paymentIntent: Stripe.PaymentIn
 
   const paymentIdArray = payment_ids?.split(',') || [];
 
-  // Revert payments back to their appropriate status
   const { data: payments } = await supabaseAdmin
     .from('mortgage_payments')
     .select('id, due_date')
@@ -1040,13 +1027,13 @@ async function handleManualMortgagePaymentFailed(paymentIntent: Stripe.PaymentIn
       subject: 'Payment Failed - Action Required - Kletch',
       html: getPaymentFailedEmailTemplate({
         userName: user.name || 'Customer',
-        amount: paymentIntent.amount ,
+        amount: paymentIntent.amount,
         failureReason: paymentIntent.last_payment_error?.message || 'Your payment could not be processed',
         retryDate: null,
         applicationNumber: application?.application_number || '',
         updatePaymentUrl: `${process.env.NEXT_PUBLIC_APP_URL}/user-dashboard/mortgages/${mortgage_id}`,
       }),
-    }).catch(err => console.error('Failed to send payment failure email:', err));
+    }).catch(err => logger.error(err, 'Failed to send manual payment failure email', WEBHOOK_CONTEXT));
 
     await createNotification(
       buildNotificationPayload('subscription_payment_failed', {
@@ -1057,7 +1044,7 @@ async function handleManualMortgagePaymentFailed(paymentIntent: Stripe.PaymentIn
         type: 'subscription_payment_failed',
         channel: 'in_app',
         metadata: {
-          amount: formatUSD({ amount: paymentIntent.amount , fromCents: true }),
+          amount: formatUSD({ amount: paymentIntent.amount, fromCents: true }),
           currency: 'USD',
           error: paymentIntent.last_payment_error?.message,
           cta_url: `/user-dashboard/properties/${mortgage_id}/mortgages`,
@@ -1068,7 +1055,7 @@ async function handleManualMortgagePaymentFailed(paymentIntent: Stripe.PaymentIn
     );
   }
 
-  console.log(`Manual mortgage payment failed for mortgage ${mortgage_id}`);
+  logger.info(`Manual mortgage payment failed for mortgage ${mortgage_id}`, WEBHOOK_CONTEXT);
 }
 
 export async function GET() {

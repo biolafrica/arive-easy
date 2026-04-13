@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/utils/server/authMiddleware';
 import { paymentService, PaymentType } from '@/utils/server/paymentService';
+import { logger } from '@/utils/server/logger';
+
+const ROUTE_CONTEXT = { component: 'payment', action: 'create_session' };
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,7 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { application_id, payment_type, amount, seller_id, property_id, description,} = body;
+    const { application_id, payment_type, amount, seller_id, property_id, description } = body;
 
     if (!application_id || !payment_type) {
       return NextResponse.json(
@@ -28,7 +31,7 @@ export async function POST(request: NextRequest) {
 
     if (!validPaymentTypes.includes(payment_type)) {
       return NextResponse.json(
-        { error: 'Invalid payment type' },{ status: 400 }
+        { error: 'Invalid payment type' }, { status: 400 }
       );
     }
 
@@ -45,10 +48,21 @@ export async function POST(request: NextRequest) {
     });
 
     if (!result.success) {
+      logger.warn(`Payment session creation failed: ${result.error}`, {
+        ...ROUTE_CONTEXT,
+        applicationId: application_id,
+        extra: { payment_type, details: result.details },
+      });
       return NextResponse.json(
         { error: result.error, details: result.details }, { status: 400 }
       );
     }
+
+    logger.info(`Payment session created`, {
+      ...ROUTE_CONTEXT,
+      applicationId: application_id,
+      extra: { payment_type, session_id: result.sessionId },
+    });
 
     return NextResponse.json({
       url: result.url,
@@ -56,9 +70,9 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Payment creation error:', error);
+    logger.error(error, 'Payment creation error', ROUTE_CONTEXT);
     return NextResponse.json(
-      { error: 'Failed to create payment session' },{ status: 500 }
+      { error: 'Failed to create payment session' }, { status: 500 }
     );
   }
 }

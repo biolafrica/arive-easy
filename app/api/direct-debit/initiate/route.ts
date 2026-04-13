@@ -7,13 +7,15 @@ import { ApplicationBase } from '@/type/pages/dashboard/application';
 import { PreApprovalBase } from '@/type/pages/dashboard/approval';
 import { Mortgage } from '@/type/pages/dashboard/mortgage';
 import { generateApplicationRefNo } from '@/utils/common/generateApplicationRef';
+import { logger } from '@/utils/server/logger';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2026-02-25.clover",
 });
 
-export async function POST(request: NextRequest) {
+const ROUTE_CONTEXT = { component: 'direct_debit', action: 'initiate' };
 
+export async function POST(request: NextRequest) {
   try {
     const user = await requireAuth();
     const body = await request.json();
@@ -22,7 +24,7 @@ export async function POST(request: NextRequest) {
     const preApprovalQueryBuilder = new SupabaseQueryBuilder<PreApprovalBase>("pre_approvals");
     const mortgageQueryBuilder = new SupabaseQueryBuilder<Mortgage>("mortgages");
     const userQueryBuilder = new SupabaseQueryBuilder<UserBase>("users");
-    
+
     const { application_id, user_country } = body;
 
     if (!application_id) {
@@ -49,10 +51,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const existingMortgage = await mortgageQueryBuilder.findOneByCondition({ 
-      application_id: application_id 
+    const existingMortgage = await mortgageQueryBuilder.findOneByCondition({
+      application_id: application_id
     });
-   
+
     if (existingMortgage?.stripe_subscription_id) {
       return NextResponse.json(
         { error: 'Direct debit is already set up for this application' }, { status: 400 }
@@ -61,9 +63,9 @@ export async function POST(request: NextRequest) {
 
     const applicationUser = await userQueryBuilder.findById(application.user_id);
     const pre_approvals = await preApprovalQueryBuilder.findById(application.pre_approval_id);
-    
+
     let stripeCustomerId = applicationUser?.stripe_customer_id;
-    
+
     if (!stripeCustomerId) {
       const customer = await stripe.customers.create({
         email: pre_approvals?.personal_info?.email || applicationUser?.email,
@@ -73,7 +75,7 @@ export async function POST(request: NextRequest) {
           application_id: application_id,
         },
       });
-      
+
       stripeCustomerId = customer.id;
 
       await userQueryBuilder.update(user.id, {
@@ -83,7 +85,7 @@ export async function POST(request: NextRequest) {
 
     const country = user_country || pre_approvals?.personal_info?.residence_country || 'canada';
     const isCanadian = country === 'CA' || country === 'canada' || country === 'Canada';
-    
+
     let paymentMethodTypes: ('acss_debit' | 'us_bank_account' | 'card')[];
     let paymentMethodOptions: Stripe.SetupIntentCreateParams['payment_method_options'] = {};
 
@@ -96,7 +98,7 @@ export async function POST(request: NextRequest) {
             interval_description: 'Monthly mortgage payment on the agreed date',
             transaction_type: 'personal',
           },
-          currency: 'usd', 
+          currency: 'usd',
         },
       };
     } else {
@@ -121,50 +123,54 @@ export async function POST(request: NextRequest) {
         monthly_amount: application.monthly_payment.toString(),
         country: country,
       },
-      usage: 'off_session', 
+      usage: 'off_session',
     });
 
     const numberOfPayments = calculateNumberOfPayments(
-      application.first_payment_date, 
+      application.first_payment_date,
       application.last_payment_date,
       application.loan_term_months
     );
 
-    console.log('Mortgage data being saved:', {
-      first_payment_date: application.first_payment_date,
-      last_payment_date: application.last_payment_date,
-      loan_term_months: application.loan_term_months,
-      calculated_number_of_payments: numberOfPayments,
-      total_payment_amount: application.total_payment,
-      monthly_payment: application.monthly_payment,
+    logger.info('Mortgage payment schedule calculated', {
+      ...ROUTE_CONTEXT,
+      applicationId: application_id,
+      extra: {
+        first_payment_date: application.first_payment_date,
+        last_payment_date: application.last_payment_date,
+        loan_term_months: application.loan_term_months,
+        calculated_number_of_payments: numberOfPayments,
+        total_payment_amount: application.total_payment,
+        monthly_payment: application.monthly_payment,
+      },
     });
 
     const mortgageData = {
       application_id: application_id,
       user_id: applicationUser.id,
       property_id: application.property_id,
-      user_name:applicationUser.name,
-      mortgage_number:generateApplicationRefNo('MOR'),
+      user_name: applicationUser.name,
+      mortgage_number: generateApplicationRefNo('MOR'),
       property_price: application.property_price,
       down_payment_made: application.down_payment_amount,
       approved_loan_amount: application.approved_loan_amount,
       interest_rate_annual: application.interest_rate,
       loan_term_months: application.loan_term_months,
-      
+
       monthly_payment: application.monthly_payment,
       total_payments: application.total_payment,
       number_of_payments: numberOfPayments,
-      
+
       first_payment_date: application.first_payment_date,
       last_payment_date: application.last_payment_date,
       payment_day_of_month: application.payment_day_of_month,
-      
+
       stripe_customer_id: stripeCustomerId,
       stripe_setup_intent_id: setupIntent.id,
-      
+
       status: 'pending_payment_method' as const,
       payments_made: 0,
-      
+
       updated_at: new Date().toISOString(),
     };
 
@@ -172,9 +178,8 @@ export async function POST(request: NextRequest) {
 
     if (existingMortgage) {
       const updateMortgage = await mortgageQueryBuilder.update(existingMortgage.id, mortgageData);
-      
+
       if (!updateMortgage) {
-        console.error('Failed to update mortgage record');
         throw new Error('Failed to update mortgage record');
       }
       mortgageId = existingMortgage.id;
@@ -185,7 +190,6 @@ export async function POST(request: NextRequest) {
       });
 
       if (!newMortgage) {
-        console.error('Failed to create mortgage record');
         throw new Error('Failed to create mortgage record');
       }
       mortgageId = newMortgage.id;
@@ -197,9 +201,9 @@ export async function POST(request: NextRequest) {
       stages_completed: {
         ...application.stages_completed,
         mortgage_activation: {
-          completed: false, 
+          completed: false,
           completed_at: undefined,
-          status: 'current', 
+          status: 'current',
           data: {
             direct_debit_status: 'pending_setup',
             current_step: 'payment_method',
@@ -211,6 +215,12 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    logger.info('Direct debit initiation complete', {
+      ...ROUTE_CONTEXT,
+      applicationId: application_id,
+      extra: { mortgage_id: mortgageId, setup_intent_id: setupIntent.id },
+    });
+
     return NextResponse.json({
       client_secret: setupIntent.client_secret,
       setup_intent_id: setupIntent.id,
@@ -219,7 +229,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Direct debit initiation error:', error);
+    logger.error(error, 'Direct debit initiation error', ROUTE_CONTEXT);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to initiate direct debit setup' },
       { status: 500 }
@@ -232,27 +242,18 @@ export function calculateNumberOfPayments(
   lastPaymentDate: string | null | undefined,
   loanTermMonths: number | null | undefined
 ): number {
-
-  // Method 1: Calculate from first and last payment dates
   if (firstPaymentDate && lastPaymentDate) {
     const start = new Date(firstPaymentDate);
     const end = new Date(lastPaymentDate);
-    
-    // + because both dates are inclusive1
-    const months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth()) + 1; 
-    
-    console.log(`Calculated ${months} payments from dates: ${firstPaymentDate} to ${lastPaymentDate}`);
+    const months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth()) + 1;
     return Math.max(1, months);
   }
-  
-  // Method 2: Use loan term months directly
+
   if (loanTermMonths && loanTermMonths > 0) {
-    console.log(`Using loan_term_months: ${loanTermMonths}`);
     return loanTermMonths;
   }
-  
-  // Fallback: Default to 12 months if nothing else works
-  console.warn('Could not determine number of payments, defaulting to 12');
+
+  logger.warn('Could not determine number of payments, defaulting to 12', ROUTE_CONTEXT);
   return 12;
 }
 

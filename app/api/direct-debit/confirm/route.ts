@@ -10,17 +10,19 @@ import { sendEmail } from '@/utils/email/send_email';
 import { getDirectDebitConfirmationEmailTemplate } from '@/utils/email/templates/direct-debit';
 import { calculateNumberOfPayments } from '../initiate/route';
 import { calculateBillingCycleAnchor, createPaymentSchedule } from '../utils';
-
+import { logger } from '@/utils/server/logger';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2026-02-25.clover',
 });
 
+const ROUTE_CONTEXT = { component: 'direct_debit', action: 'confirm' };
+
 export async function POST(request: NextRequest) {
   try {
     const user = await requireAuth();
     const body = await request.json();
-    
+
     const mortgageQueryBuilder = new SupabaseQueryBuilder<Mortgage>("mortgages");
     const applicationQueryBuilder = new SupabaseQueryBuilder<ApplicationBase>("applications");
     const preApprovalQueryBuilder = new SupabaseQueryBuilder<PreApprovalBase>("pre_approvals");
@@ -34,7 +36,7 @@ export async function POST(request: NextRequest) {
     }
 
     const setupIntent = await stripe.setupIntents.retrieve(setup_intent_id);
-    
+
     if (setupIntent.status !== 'succeeded' && setupIntent.status !== 'processing') {
       return NextResponse.json(
         { error: `SetupIntent status is ${setupIntent.status}. Expected succeeded or processing.` },
@@ -71,7 +73,7 @@ export async function POST(request: NextRequest) {
 
     const paymentMethod = await stripe.paymentMethods.retrieve(payment_method_id);
     const paymentMethodType = paymentMethod.type;
-    
+
     let paymentMethodDisplay = '';
     if (paymentMethodType === 'us_bank_account' && paymentMethod.us_bank_account) {
       paymentMethodDisplay = `${paymentMethod.us_bank_account.bank_name} ****${paymentMethod.us_bank_account.last4}`;
@@ -87,7 +89,7 @@ export async function POST(request: NextRequest) {
 
     const price = await stripe.prices.create({
       currency: 'usd',
-      unit_amount: Math.round(mortgage.monthly_payment * 100), 
+      unit_amount: Math.round(mortgage.monthly_payment * 100),
       recurring: {
         interval: 'month',
       },
@@ -111,13 +113,17 @@ export async function POST(request: NextRequest) {
       mortgage.loan_term_months
     );
 
-    console.log('Payment schedule calculation:', {
-      first_payment_date: mortgage.first_payment_date,
-      last_payment_date: mortgage.last_payment_date,
-      loan_term_months: mortgage.loan_term_months,
-      calculated_number_of_payments: numberOfPayments,
-      total_payments_amount: mortgage.total_payments,
-      monthly_payment: mortgage.monthly_payment,
+    logger.info('Payment schedule calculation', {
+      ...ROUTE_CONTEXT,
+      applicationId: application_id,
+      extra: {
+        first_payment_date: mortgage.first_payment_date,
+        last_payment_date: mortgage.last_payment_date,
+        loan_term_months: mortgage.loan_term_months,
+        calculated_number_of_payments: numberOfPayments,
+        total_payments_amount: mortgage.total_payments,
+        monthly_payment: mortgage.monthly_payment,
+      },
     });
 
     const subscription = await stripe.subscriptions.create({
@@ -135,7 +141,7 @@ export async function POST(request: NextRequest) {
         mortgage_id: mortgage.id,
         number_of_payments: numberOfPayments.toString()
       },
-      cancel_at: mortgage.last_payment_date 
+      cancel_at: mortgage.last_payment_date
         ? Math.floor(new Date(mortgage.last_payment_date).getTime() / 1000) + (30 * 24 * 60 * 60)
         : undefined,
     });
@@ -153,7 +159,10 @@ export async function POST(request: NextRequest) {
     });
 
     if (!updateMortgage) {
-      console.error('Failed to update mortgage record');
+      logger.error(new Error('DB update returned null'), 'Failed to update mortgage record', {
+        ...ROUTE_CONTEXT,
+        applicationId: application_id,
+      });
     }
 
     await applicationQueryBuilder.update(application_id, {
@@ -188,11 +197,10 @@ export async function POST(request: NextRequest) {
     const userEmail = preApproval?.personal_info?.email || user.email;
     const userName = `${preApproval?.personal_info?.first_name} ${preApproval?.personal_info?.last_name}`;
 
-   
     if (userEmail) {
       sendEmail({
         to: userEmail,
-        subject: isProcessing 
+        subject: isProcessing
           ? 'Bank Verification in Progress - Kletch'
           : 'Automatic Payments Set Up Successfully - Kletch',
         html: getDirectDebitConfirmationEmailTemplate({
@@ -204,8 +212,22 @@ export async function POST(request: NextRequest) {
           totalPayments: mortgage.total_payments,
           applicationNumber: application?.application_number,
         }),
-      }).catch(err => console.error('Failed to send confirmation email:', err));
+      }).catch(err => logger.error(err, 'Failed to send direct debit confirmation email', {
+        ...ROUTE_CONTEXT,
+        applicationId: application_id,
+      }));
     }
+
+    logger.info('Direct debit confirmed', {
+      ...ROUTE_CONTEXT,
+      applicationId: application_id,
+      extra: {
+        mortgage_id: mortgage.id,
+        subscription_id: subscription.id,
+        status: mortgageStatus,
+        is_pending_verification: isProcessing,
+      },
+    });
 
     return NextResponse.json({
       success: true,
@@ -217,7 +239,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Direct debit confirmation error:', error);
+    logger.error(error, 'Direct debit confirmation error', ROUTE_CONTEXT);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to confirm direct debit setup' },
       { status: 500 }
