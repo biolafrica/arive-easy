@@ -15,7 +15,7 @@ export default function CalculatorPage(){
       <SectionHeading
         eyebrow="Estimate Your Mortgage"
         title="Mortgage Calculator"
-        description="Explore a curated selection of our finest properties, handpicked for their investment potential and unique appeal."
+        description="Quickly estimate your monthly payments, loan amount, and affordability."
       />
 
       <MortgageCalculator/>

@@ -158,7 +158,7 @@ export function IdentityVerificationCards({
 
         <VerificationActionCard
           title="Immigration ID"
-          description="US Green Card, Work Permit, or Canadian PR"
+          description="Immmigration Citizen Document"
           actionLabel={getStatusLabel(immigrationStatus)}
           onAction={() => startVerification('immigration')}
           disabled={isDisabled(immigrationStatus) || isImmigrationLoading}

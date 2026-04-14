@@ -40,7 +40,7 @@ export default function PropertySelectionStage({
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const userBuyingPower = 500000 // change to selected property price later
+  const userBuyingPower = 50000000 // change to selected property price later
 
   const { property: submittedProperty,properties, isLoading, mode} = useApplicationProperties(
     application.property_id,

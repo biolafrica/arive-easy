@@ -5,7 +5,7 @@ import { Button } from '@/components/primitives/Button';
 import { Card, Row } from './Card';
 import { Field } from './Field';
 import { MortgageInputs, MortgageOutputs } from '@/type/pages/calculator';
-import { formatCurrency, parseCurrencyInput } from '@/lib/formatter';
+import { formatCurrency, formatUSD, parseCurrencyInput } from '@/lib/formatter';
 import {
   calculateMortgage,
   FIXED_INTEREST_RATE,
@@ -52,7 +52,6 @@ export default function MortgageCalculator() {
     return calculateMortgage(inputs);
   }, [parsedPrice, parsedDP, parsedPercent, loanTerm, propertyTaxRate, homeInsurance, pmiRate]);
 
-  // ── Handlers ──────────────────────────────────────────────────────────────
 
   const handleHomePriceChange = (value: string) => {
     setHomePrice(value);
@@ -79,7 +78,6 @@ export default function MortgageCalculator() {
     return num > 0 ? formatCurrency(num) : '';
   };
 
-  // ── Render ────────────────────────────────────────────────────────────────
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-12">
@@ -90,24 +88,7 @@ export default function MortgageCalculator() {
           <div className="rounded-xl border border-border bg-white p-6">
             <h3 className="mb-1 text-lg font-semibold text-heading">Loan Configuration</h3>
 
-            {/* Fixed-rate info strip */}
-            <p className="mb-6 text-sm text-secondary">
-              Fixed rate:{' '}
-              <span className="font-medium text-heading">
-                {(FIXED_INTEREST_RATE * 100).toFixed(2)}% APR
-              </span>
-              {' · '}Management fee:{' '}
-              <span className="font-medium text-heading">
-                {(FIXED_MANAGEMENT_FEE * 100).toFixed(0)}% p.a.
-              </span>
-              {' · '}Advisory fee:{' '}
-              <span className="font-medium text-heading">
-                {(FIXED_ADVISORY_FEE * 100).toFixed(0)}% p.a.
-              </span>
-            </p>
-
             <div className="space-y-5">
-
               {/* Home Price */}
               <Field label="Home Price">
                 <div className="relative">
@@ -122,7 +103,7 @@ export default function MortgageCalculator() {
                 </div>
                 {isPriceTooLow && (
                   <p className="mt-2 text-sm text-red-600">
-                    Minimum property value is {formatCurrency(MIN_HOME_PRICE)}.
+                    Minimum property value is {formatUSD({amount:MIN_HOME_PRICE, decimals:2})}.
                   </p>
                 )}
               </Field>
@@ -188,7 +169,7 @@ export default function MortgageCalculator() {
           <div className="rounded-xl bg-orange-600 p-6 text-white">
             <p className="text-sm opacity-90">Total Monthly Payment</p>
             <h2 className="mt-2 text-3xl font-semibold">
-              {formatCurrency(calculations.totalMonthlyPayment)}
+              {formatUSD({amount:calculations.monthlyPrincipalInterest , decimals:2})}
             </h2>
             <p className="mt-2 text-xs opacity-75">
               {(FIXED_INTEREST_RATE * 100).toFixed(2)}% fixed APR · {loanTerm}-year term
@@ -197,25 +178,21 @@ export default function MortgageCalculator() {
 
           {/* Payment breakdown */}
           <Card title="Payment Breakdown (Monthly)">
-            <Row label="Principal & Interest"   value={formatCurrency(calculations.monthlyPrincipalInterest)} />
-            <Row label="Property Tax"            value={formatCurrency(calculations.monthlyPropertyTax)} />
-            <Row label="Home Insurance"          value={formatCurrency(calculations.monthlyHomeInsurance)} />
-            {calculations.monthlyPMI > 0 && (
-              <Row label="PMI"                   value={formatCurrency(calculations.monthlyPMI)} />
-            )}
-            <Row label="Management Fee (1% p.a.)" value={formatCurrency(calculations.monthlyManagementFee)} />
-            <Row label="Advisory Fee (1% p.a.)"   value={formatCurrency(calculations.monthlyAdvisoryFee)} />
+            <Row label="Principal & Interest"   value={formatUSD({amount:calculations.monthlyPrincipalInterest, decimals:2})} />
+            <Row label="Property Tax"   value={formatUSD({amount:0, decimals:2})} />
+            <Row label="Home Insurance" value={formatUSD({amount:0, decimals:2})} />
+            
           </Card>
 
           {/* Loan summary */}
           <Card title="Loan Summary">
-            <Row label="Loan Amount"       value={formatCurrency(calculations.loanAmount)} />
+            <Row label="Loan Amount"  value={formatUSD({amount:calculations.loanAmount, decimals:2})} />
             <Row
               label="Down Payment"
               value={`${formatCurrency(parsedDP)} (${downPaymentPercent}%)`}
             />
-            <Row label="Total Interest Paid" value={formatCurrency(calculations.totalInterestPaid)} />
-            <Row label="Total Cost of Loan"  value={formatCurrency(calculations.totalCostOfLoan)} />
+            <Row label="Total Interest Paid" value={formatUSD({amount:calculations.totalInterestPaid, decimals:2})} />
+            <Row label="Total Cost of Loan"  value={formatUSD({amount:calculations.totalCostOfLoan, decimals:2})} />
           </Card>
 
           {/* CTA */}

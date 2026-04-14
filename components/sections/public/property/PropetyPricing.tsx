@@ -1,5 +1,5 @@
 import { InfoCard, InfoItem } from "@/components/common/Item";
-import { formatNaira } from "@/lib/formatter";
+import {formatUSD, toNumber } from "@/lib/formatter";
 import { PropertyPricingProps } from "@/type/pages/property";
 
 
@@ -10,13 +10,13 @@ export function PropertyPricing({
   payment_period,
   interest_rate,
 }: PropertyPricingProps) {
+  const depositAmount = toNumber(price) * 0.1;
   return (
     <InfoCard title="Pricing">
-      <InfoItem label="Property Price" value={formatNaira(price)} />
-      <InfoItem label="Deposit Required" value={formatNaira(deposit)} />
-      <InfoItem label="Down Payment" value={formatNaira(down_payment)} />
-      <InfoItem label="Payment Period" value={`${payment_period} years`} />
-      <InfoItem label="Interest Rate" value={`${interest_rate}% p.a`} />
+      <InfoItem label="Property Price" value={formatUSD({amount:toNumber(price), decimals:2})} />
+      <InfoItem label="Deposit Required" value={formatUSD({amount:depositAmount, decimals:2})} />
+      <InfoItem label="Payment Period" value={`0 - 20 years`} />
+      <InfoItem label="Interest Rate" value={`10% p.a`} />
     </InfoCard>
   );
 }

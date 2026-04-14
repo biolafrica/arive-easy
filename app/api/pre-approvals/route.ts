@@ -94,7 +94,7 @@ const preApprovalHandlers = createCRUDHandlers<PreApprovalBase>({
             pre_approval_id: `${created.id}`,
             user_id: `${created.user_id}`,
             property_id: '0ca3e480-6a3e-4c47-bed0-637386b5f64c',
-            property_name:"Placeholder Property",
+            property_name:"No Property Selected",
             stages_completed: {
               personal_info: {
                 completed: true,

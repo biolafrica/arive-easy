@@ -131,7 +131,7 @@ export const generalPaymentReceipt =({userName, receiptUrl}:{userName:string, re
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
       <h2 style="color: #4F46E5;">Your Receipt is Ready!</h2>
       <p>Dear ${userName || 'Customer'},</p>
-      <p>Your official Stripe receipt is now available.</p>
+      <p>Your official receipt is now available.</p>
       <div style="margin: 30px 0;">
         <a href="${receiptUrl}" style="display: inline-block; padding: 12px 24px; background-color: #4F46E5; color: white; text-decoration: none; border-radius: 6px; font-weight: 500;">
           Download Receipt PDF

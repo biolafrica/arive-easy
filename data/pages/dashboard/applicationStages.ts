@@ -82,7 +82,7 @@ export const STAGE_CONFIGURATIONS: StageConfig[] = [
   {
     step: 8,
     key: 'payment_setup',
-    title: 'Payment Setup & Down Payment',
+    title: 'Payment Setup',
     description: 'Setup payment method and make down payment',
     requiresAction: true,
     actionLabel: 'Make Down Payment',

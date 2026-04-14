@@ -82,7 +82,7 @@ export const PRE_APPROVAL_UI_CONFIG = {
     title: 'Application under review',
     description:
       "Your pre-approval application is currently being reviewed. We'll notify you once a decision has been made.",
-    primaryAction: 'Check Applocation Status',
+    primaryAction: 'Check Application Status',
   },
 
   approved: {

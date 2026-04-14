@@ -13,7 +13,6 @@ import { toNumber } from '@/lib/formatter';
 import { FavoriteBase, PropertyFavorite } from '@/type/pages/dashboard/favorite';
 import { Property } from '@/components/sections/dashboard/listing/property-form';
 import { captureError } from '@/utils/auth/captureError';
-import { refresh } from 'next/cache';
 
 export interface ApplicationPropertyFilters {
   state?: string;

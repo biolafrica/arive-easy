@@ -220,14 +220,14 @@ function DirectDebitForm({
         {userCountry === 'CA' ? (
           <p>
             By providing your bank account information and confirming this payment, you authorize
-            Ariveasy and Stripe, our payment service provider, to debit your bank account for the
+            Kletch and Stripe, our payment service provider, to debit your bank account for the
             monthly mortgage payment amount. You can cancel this authorization at any time by
             contacting us. Payments are processed on the agreed payment date each month.
           </p>
         ) : (
           <p>
             By providing your bank account information and confirming this payment, you authorize
-            Ariveasy to debit your bank account via ACH for the monthly mortgage payment amount.
+            Kletch to debit your bank account via ACH for the monthly mortgage payment amount.
             You can cancel this authorization at any time by contacting us. Payments typically
             take 3-5 business days to process.
           </p>

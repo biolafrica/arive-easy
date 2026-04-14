@@ -87,6 +87,8 @@ const handlers = createCRUDHandlers<UserBackendFormProps>({
       return data;
     },
 
+    // send email to the admin when a user is added 
+
   },
 });
 

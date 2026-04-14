@@ -88,15 +88,18 @@ const ImageField: React.FC<ImageFieldProps> = ({
     e.stopPropagation();
     if (!disabled) setIsDragging(true);
   };
+
   const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
   };
+
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
   };
+
   const handleDrop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -112,12 +115,14 @@ const ImageField: React.FC<ImageFieldProps> = ({
       handleFileSelect(files[0]);
     }
   };
+
   const handleRemove = () => {
     onChange(null);
     setPreviewUrl(null);
     setUploadError('');
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
+
   const handleClick = () => {
     if (!disabled) fileInputRef.current?.click();
   };
@@ -212,7 +217,7 @@ const ImageField: React.FC<ImageFieldProps> = ({
         {isNonImageFile && (
           <div className="p-6 flex items-center gap-4">
             <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center">
-              <DocumentIcon className="h-6 w-6 text-accent" />
+              <DocumentIcon className="h-4 w-4 text-accent" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-heading truncate">{(value as File).name}</p>
@@ -259,21 +264,7 @@ const ImageField: React.FC<ImageFieldProps> = ({
         {/* ── Empty state ── */}
         {!value && (
           <div className="py-10 px-6 flex flex-col items-center text-center gap-4">
-            {/* Cloud upload icon — inline SVG matching the reference */}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 64 64"
-              className={`w-14 h-14 transition-colors ${isDragging ? 'text-accent' : 'text-heading'}`}
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M44 38c4.4 0 8-3.6 8-8 0-4-2.9-7.3-6.7-7.9C44.4 16.4 40.5 13 36 13c-1.3 0-2.5.3-3.6.7C30.5 11 27.4 9 24 9c-5.5 0-10 4.5-10 10 0 .3 0 .7.1 1C10.2 21.5 8 24.5 8 28c0 5.5 4.5 10 10 10h4" />
-              <polyline points="24 44 32 36 40 44" />
-              <line x1="32" y1="36" x2="32" y2="56" />
-            </svg>
+            <DocumentIcon className={`w-7 h-7 transition-colors ${isDragging ? 'text-accent' : 'text-heading'}`} />
 
             <div className="space-y-1">
               <p className="text-sm font-semibold text-heading">

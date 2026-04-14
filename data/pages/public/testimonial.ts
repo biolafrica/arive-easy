@@ -7,7 +7,7 @@ export const testimonials = [
     id: '1',
     rating: 5,
     quote:
-      'Arive made buying property in Nigeria for Nigeria outside Nigeria straightforward and stress-free.',
+      'Kletch made buying property in Nigeria for Nigeria outside Nigeria straightforward and stress-free.',
     author: {
       name: 'Muhammed Olaleye',
       role: 'Product Designer',
@@ -31,7 +31,7 @@ export const testimonials = [
     id: '3',
     rating: 5,
     quote:
-      'Highly transparent and easy to trust. Thank Ariveeasy.. ',
+      'Highly transparent and easy to trust. Thank Kletch.. ',
     author: {
       name: 'Folaji Jamiu',
       role: 'Founder',

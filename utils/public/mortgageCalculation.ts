@@ -4,7 +4,7 @@ export const FIXED_INTEREST_RATE  = 0.0975;      // 9.75% p.a. — fixed
 export const FIXED_MANAGEMENT_FEE = 0.01;         // 1% of loan amount p.a.
 export const FIXED_ADVISORY_FEE   = 0.01;         // 1% of loan amount p.a.
 export const MIN_EQUITY_PERCENT   = 10;           // 10% minimum down payment
-export const MIN_HOME_PRICE       = 12_500_000;   // $12.5M minimum property value
+export const MIN_HOME_PRICE       = 0;   // $12.5M minimum property value
 
 export function calculateMortgage(inputs: MortgageInputs): MortgageOutputs {
   const {
@@ -12,7 +12,7 @@ export function calculateMortgage(inputs: MortgageInputs): MortgageOutputs {
     downPayment,
     loanTerm,
     propertyTaxRate = 0.0052,
-    homeInsurance   = 100,
+    homeInsurance   = 0,
     pmiRate         = 0.005,
   } = inputs;
 
@@ -29,13 +29,13 @@ export function calculateMortgage(inputs: MortgageInputs): MortgageOutputs {
         (Math.pow(1 + monthlyRate, numberOfPayments) - 1)
       : loanAmount / numberOfPayments;
 
-  const monthlyPropertyTax = (homePrice * propertyTaxRate) / 12;
+  const monthlyPropertyTax = 0;
   const downPaymentPercent = (downPayment / homePrice) * 100;
-  const monthlyPMI         = downPaymentPercent < 20 ? (loanAmount * pmiRate) / 12 : 0;
+  const monthlyPMI         = 0;
 
   // New fees — annual rate on loan amount, divided to monthly
-  const monthlyManagementFee = (loanAmount * FIXED_MANAGEMENT_FEE) / 12;
-  const monthlyAdvisoryFee   = (loanAmount * FIXED_ADVISORY_FEE)   / 12;
+  const monthlyManagementFee = 0;
+  const monthlyAdvisoryFee   = 0;
 
   const totalMonthlyPayment =
     monthlyPrincipalInterest +

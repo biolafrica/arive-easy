@@ -12,7 +12,7 @@ interface Props {
 
 export const TestimonialsSection: React.FC<Props> = ({
   title = 'What Our Users Are Saying',
-  description = 'Real experiences from people who trusted Arive.',
+  description = 'Real experiences from people who trusted Kletch.',
   testimonials,
 }) => {
   return (

@@ -1,6 +1,6 @@
 import { PropertyImageCarousel } from '@/components/common/PropertyImageCarousel';
 import { useFavorites } from '@/hooks/useSpecialized';
-import { formatNaira, formatNumber } from '@/lib/formatter';
+import { formatNumber, formatUSD, toNumber } from '@/lib/formatter';
 import { useAuthContext } from '@/providers/auth-provider';
 import { PropertyData } from '@/type/pages/property';
 import { HeartIcon as HeartOutline } from '@heroicons/react/24/outline';
@@ -72,11 +72,11 @@ export function PropertyCard({ property, interfaceType = 'client' }: Props) {
           <div className="mt-4 space-y-2 text-sm">
             <div className="flex justify-between text-accent">
               <span>Property Price</span>
-              <span>{formatNaira(property.price)}</span>
+              <span>{formatUSD({amount:toNumber(property.price)})}</span>
             </div>
             <div className="flex justify-between text-accent">
               <span>Deposit</span>
-              <span>{formatNaira(property.deposit)}</span>
+              <span>{formatUSD({amount:toNumber(property.price)*0.1})}</span>
             </div>
           </div>
 
@@ -94,18 +94,18 @@ export function PropertyCard({ property, interfaceType = 'client' }: Props) {
 
           <div className="mt-4 space-y-1 text-sm text-secondary">
             <div className="flex justify-between">
-              <span>Down Payment</span>
+              <span>Minimum Down Payment</span>
               <span className="text-heading">
-                {formatNaira(property.down_payment)}
+                10%
               </span>
             </div>
             <div className="flex justify-between">
               <span>Payment Period</span>
-              <span className="text-heading">{`${property.payment_period} Years`}</span>
+              <span className="text-heading"> 0 - 20 Years</span>
             </div>
             <div className="flex justify-between">
               <span>Interest Rate</span>
-              <span className="text-heading">{`${property.interest_rate} p.a`}</span>
+              <span className="text-heading">10 p.a</span>
             </div>
           </div>
         </div>

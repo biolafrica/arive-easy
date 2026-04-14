@@ -18,7 +18,7 @@ export const personalInfoFields:FormField[] = [
   { name: 'residence_country', label: 'Country', type: 'select', required: true,
     options: [
       { label: 'Select country', value: '' },
-      { label: 'United State', value: 'united_state' },
+      { label: 'United States', value: 'united_state' },
       { label: 'Canada', value: 'canada' },
     ],
   },
@@ -58,9 +58,7 @@ export const employmentInfoFields:FormField[] = [
   },
 
   { name: 'employer_name', label: 'Employer Name', type: 'text', required: true, placeholder:'Enter employer name'},
-
   { name: 'job_title', label: 'Job Title', type: 'text', placeholder: 'Enter job title', required: true},
-
   { name: 'current_job_years', label: 'Years at Current Job', type: 'text', placeholder: 'Enter years', required: false },
 
   { name: 'employment_type', label: 'Employment Type', type: 'select', required: true,
@@ -130,9 +128,8 @@ export const propertyPreferenceFields:FormField[] = [
       { label: 'Select loan term', value: '' },
       { value: '0-5', label: '0-5 years' },
       { value: '6-10', label: '6-10 years' },
-      { value: '11-30', label: '11-30 years'},
-      { value: '31-50', label: '31-50 years'},
-      { value: '50+', label: '50 years+'},
+      { value: '11-15', label: '11-15 years'},
+      { value: '16-20', label: '16-20 years'},
     ],
   },
 
