@@ -102,10 +102,21 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const billingCycleAnchor = calculateBillingCycleAnchor(
+    const {billingCycleAnchor, trialEnd} = calculateBillingCycleAnchor(
       mortgage.first_payment_date,
       mortgage.payment_day_of_month
     );
+
+    logger.info('Billing cycle calculated', {
+      ...ROUTE_CONTEXT,
+      applicationId: application_id,
+      extra: {
+        billing_cycle_anchor: new Date(billingCycleAnchor * 1000).toISOString(),
+        trial_end: trialEnd ? new Date(trialEnd * 1000).toISOString() : 'none — first payment aligns with anchor',
+        first_payment_date: mortgage.first_payment_date,
+        payment_day_of_month: mortgage.payment_day_of_month,
+      },
+    });
 
     const numberOfPayments = calculateNumberOfPayments(
       mortgage.first_payment_date,
@@ -132,6 +143,7 @@ export async function POST(request: NextRequest) {
       default_payment_method: payment_method_id,
       billing_cycle_anchor: billingCycleAnchor,
       proration_behavior: 'none',
+      ...(trialEnd ? { trial_end: trialEnd } : {}),
       payment_settings: {
         payment_method_types: [paymentMethodType] as Stripe.SubscriptionCreateParams.PaymentSettings.PaymentMethodType[],
         save_default_payment_method: 'on_subscription',

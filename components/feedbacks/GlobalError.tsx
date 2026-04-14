@@ -111,7 +111,8 @@ export default function GlobalError({ error, reset }: ErrorProps) {
           An unexpected error occurred. You can try again — if the problem
           persists, our team has been notified.
         </p>
-
+        
+        {/* 
         {error?.message && (
           <div
             className="mt-6 w-full rounded-lg border border-border bg-card overflow-hidden text-left"
@@ -141,7 +142,7 @@ export default function GlobalError({ error, reset }: ErrorProps) {
               )}
             </div>
           </div>
-        )}
+        )} */}
 
         <div
           className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 w-full sm:w-auto"

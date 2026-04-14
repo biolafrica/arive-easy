@@ -42,7 +42,6 @@ export function TermsStage({
           <Button 
             onClick={onAddTerms} 
             size='xs' 
-            disabled={application.approved_loan_amount !== null}
           >
             Add Terms
           </Button>

@@ -34,7 +34,6 @@ export function PaymentStage({ application, onComplete, onAddPayments }: Payment
             <Button 
               onClick={onAddPayments} 
               size='xs' 
-              disabled={payment?.completed === true}
             >
               Add Payments
             </Button>

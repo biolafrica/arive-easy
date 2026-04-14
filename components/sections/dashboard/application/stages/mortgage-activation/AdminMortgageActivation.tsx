@@ -93,7 +93,7 @@ export function MortgageActivationStage({
         <Button 
           onClick={onActivate} 
           size='xs' 
-          disabled={!stage?.data?.direct_debit_status || stage.completed === true}
+          disabled={stage?.completed === true}
         >
           {stage?.completed ? 'Mortgage Activated' : 'Activate Mortgage'}
         </Button>

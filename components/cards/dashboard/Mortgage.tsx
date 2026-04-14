@@ -88,9 +88,6 @@ export function MortgageCard({ mortgage}: MortgageCardProps) {
   } = mortgage;
 
   const paidAmount = payments_made * monthly_payment;
-  const totalLoanAmount = approved_loan_amount - down_payment_made;
-
- 
 
   return (
     <div className="bg-white rounded-2xl border border-dashed border-gray-300 p-6 hover:shadow-lg transition-shadow duration-200">
@@ -113,7 +110,7 @@ export function MortgageCard({ mortgage}: MortgageCardProps) {
         />
         <DetailRow 
           label="Loan Balance" 
-          value={formatUSD({ amount: totalLoanAmount - paidAmount })} 
+          value={formatUSD({ amount: approved_loan_amount - paidAmount })} 
         />
         <DetailRow 
           label="Interest Rate" 

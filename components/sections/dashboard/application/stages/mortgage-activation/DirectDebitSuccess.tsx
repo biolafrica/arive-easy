@@ -155,7 +155,7 @@ export function DirectDebitSuccess({
         </div>
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+      {/* <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
         <h4 className="font-semibold text-blue-900 mb-3">What Happens Next?</h4>
         <ul className="space-y-3 text-sm text-blue-800">
           {isPendingVerification ? (
@@ -198,7 +198,7 @@ export function DirectDebitSuccess({
             </>
           )}
         </ul>
-      </div>
+      </div> */}
 
       <div className="flex flex-col sm:flex-row gap-4">
         <Link href='/user-dashboard/properties/' className="flex-1">

@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { calculateNumberOfPayments } from '@/app/api/direct-debit/initiate/route';
-import { calculateBillingCycleAnchor } from '@/app/api/direct-debit/confirm/route';
+import { calculateBillingCycleAnchor } from './utils';
+
 
 
 

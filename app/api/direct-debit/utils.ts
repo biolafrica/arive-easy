@@ -1,16 +1,43 @@
-export function calculateBillingCycleAnchor(firstPaymentDate: string | null, paymentDayOfMonth: number): number {
-  if (firstPaymentDate) {
-    return Math.floor(new Date(firstPaymentDate).getTime() / 1000);
-  }
-
+export function calculateBillingCycleAnchor(
+  firstPaymentDate: string | null,
+  paymentDayOfMonth: number
+): { billingCycleAnchor: number; trialEnd: number | undefined } {
   const now = new Date();
-  const targetDate = new Date(now.getFullYear(), now.getMonth(), paymentDayOfMonth);
-  
-  if (targetDate <= now) {
-    targetDate.setMonth(targetDate.getMonth() + 1);
+
+  // Find the nearest future date that falls on paymentDayOfMonth
+  // This is always within ~30 days, which Stripe accepts
+  const anchorDate = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    paymentDayOfMonth,
+    0, 0, 0, 0
+  );
+
+  // If this month's day has already passed, move to next month
+  if (anchorDate <= now) {
+    anchorDate.setMonth(anchorDate.getMonth() + 1);
   }
 
-  return Math.floor(targetDate.getTime() / 1000);
+  const billingCycleAnchor = Math.floor(anchorDate.getTime() / 1000);
+
+  // If firstPaymentDate is provided and is AFTER the anchor,
+  // we need trial_end to delay the first actual charge
+  let trialEnd: number | undefined;
+
+  if (firstPaymentDate) {
+    const firstPayment = new Date(firstPaymentDate);
+    // Normalize to midnight UTC to avoid time-of-day drift
+    firstPayment.setHours(0, 0, 0, 0);
+    const firstPaymentUnix = Math.floor(firstPayment.getTime() / 1000);
+
+    if (firstPaymentUnix > billingCycleAnchor) {
+      // First payment is in the future beyond the anchor —
+      // put the subscription in trial until that date
+      trialEnd = firstPaymentUnix;
+    }
+  }
+
+  return { billingCycleAnchor, trialEnd };
 }
 
 export async function createPaymentSchedule(
@@ -53,3 +80,5 @@ export async function createPaymentSchedule(
 
   console.log(`Successfully created payment schedule with ${payments.length} payments`);
 }
+
+// billing_cycle_anchor cannot be later than next natural billing data(1778433215) for plan
