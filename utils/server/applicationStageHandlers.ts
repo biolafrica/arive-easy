@@ -409,6 +409,7 @@ async function handleMortgageActivation(
   }
 ): Promise<void> {
   const { propertyQB, userQB, transactionQB } = context;
+  console.log('Handling mortgage activation for application:', app.id);
 
   const [user, seller, escrowTransaction] = await Promise.all([
     userQB.findById(app.user_id),
@@ -419,6 +420,10 @@ async function handleMortgageActivation(
       status: 'succeeded',
     }),
   ]);
+
+  console.log('Fetched user:', user) 
+  console.log('Fetched seller:', seller),
+  console.log('Fetched escrow transaction:', escrowTransaction)
 
   if (!user) {
     throw new Error(`User ${app.user_id} not found`);
@@ -442,6 +447,8 @@ async function handleMortgageActivation(
     });
   }
 
+  console.log('Updated property status and escrow transaction');
+
   await sendEmail({
     to: user.email,
     subject: "Congratulations! You're Now a Property Owner!",
@@ -455,6 +462,8 @@ async function handleMortgageActivation(
       firstPaymentDate: app.first_payment_date,
     }),
   });
+
+  console.log('Sent mortgage activation email to user');
 
   await createNotification(
     buildNotificationPayload('mortgage_activated', {
